@@ -1,0 +1,10 @@
+
+
+services:
+    payment-next:
+        image: payment-next          
+        build:
+            context: .      
+        container_name: pn-container
+        ports:
+            - "8082:8080"     
