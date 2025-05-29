@@ -3,3 +3,4 @@ payment
 logs
 **/.DS_Store
 config.yaml
+bin/

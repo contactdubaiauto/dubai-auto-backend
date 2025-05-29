@@ -1,14 +1,17 @@
-dev:
-	@go run main.go
-
-build:
-	@go build main.go
 
 deploy:
 	@echo "Started building..."
-	@env GOOS=linux GOARCH=amd64 go build -o bin/
+	@GOOS=linux GOARCH=amd64 go build -o ./bin/da ./cmd/http/main.go
 	@echo "Building done"
 
+	@echo "Stopping remote service..."
+	@ssh ubuntu@95.85.126.220 "sudo -S systemctl stop da.service"
+
 	@echo "Deploying..."
-	@scp ./bin/dubai-auto user@0.0.0.0:/var/www/
+	@scp ./bin/da ubuntu@95.85.126.220:/var/www/
+	@scp ./.env ubuntu@95.85.126.220:/var/www/
+	
+	@echo "Starting remote service..."
+	@ssh ubuntu@95.85.126.220 "sudo -S systemctl start da.service"
 	@echo "Done"
+
