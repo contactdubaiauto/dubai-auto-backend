@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	app "empty/internal"
-	"empty/internal/config"
-	"empty/internal/storage/postgres"
-	"empty/pkg"
+	app "dubai-auto/internal"
+	"dubai-auto/internal/config"
+	"dubai-auto/internal/storage/postgres"
+	"dubai-auto/pkg"
 	"net/http"
 	"os"
 	"os/signal"

@@ -10,5 +10,5 @@ deploy:
 	@echo "Building done"
 
 	@echo "Deploying..."
-	@scp ./bin/payment payment@95.85.108.126:/var/www/
+	@scp ./bin/dubai-auto user@0.0.0.0:/var/www/
 	@echo "Done"

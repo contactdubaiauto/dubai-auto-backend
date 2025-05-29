@@ -1,9 +1,9 @@
 package internal
 
 import (
-	"empty/internal/config"
-	"empty/internal/route"
-	"empty/pkg"
+	"dubai-auto/internal/config"
+	"dubai-auto/internal/route"
+	"dubai-auto/pkg"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -21,7 +21,7 @@ func InitApp(db *pgxpool.Pool, conf *config.Config) *gin.Engine {
 
 	router.Use(pkg.Cors)
 
-	router.Static("/uploads", conf.UPLOAD_PATH)
+	router.Static("/images", conf.STATIC_PATH)
 
 	// new routers
 	route.Init(router, db)

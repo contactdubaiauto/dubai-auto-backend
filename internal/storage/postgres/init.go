@@ -7,7 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"empty/internal/config"
+	"dubai-auto/internal/config"
 )
 
 func Init() *pgxpool.Pool {

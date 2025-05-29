@@ -1,0 +1,216 @@
+package repository
+
+import (
+	"context"
+	"fmt"
+
+	"dubai-auto/internal/model"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+type UserRepository struct {
+	db *pgxpool.Pool
+}
+
+func NewUserRepository(db *pgxpool.Pool) *UserRepository {
+	return &UserRepository{db}
+}
+
+func (r *UserRepository) Create(ctx context.Context, user *model.User) error {
+	_, err := r.db.Exec(ctx, "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)", user.Name, user.Email, user.Password)
+
+	return err
+}
+
+func (r *UserRepository) GetByID(ctx context.Context, id int64) (*model.User, error) {
+	var user model.User
+	err := r.db.QueryRow(ctx, "SELECT * FROM users WHERE id = $1", id).Scan(&user.ID, &user.Name, &user.Email, &user.Password)
+
+	return &user, err
+}
+
+func (r *UserRepository) GetAll(ctx context.Context) ([]*model.User, error) {
+	rows, err := r.db.Query(ctx, "SELECT * FROM users")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []*model.User
+	for rows.Next() {
+		var user model.User
+		if err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.Password); err != nil {
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+	return users, nil
+}
+
+func (r *UserRepository) GetBrands(ctx context.Context) ([]*model.GetBrandsResponse, error) {
+	rows, err := r.db.Query(ctx, "SELECT id, name, logo, car_count FROM brands")
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	var brands []*model.GetBrandsResponse
+
+	for rows.Next() {
+		var brand model.GetBrandsResponse
+		if err := rows.Scan(&brand.ID, &brand.Name, &brand.Logo, &brand.CarCount); err != nil {
+			return nil, err
+		}
+		brands = append(brands, &brand)
+	}
+	return brands, err
+}
+
+func (r *UserRepository) GetModelsByBrandID(ctx context.Context, brandID int64) ([]model.Model, error) {
+	fmt.Println(brandID)
+	q := `
+			SELECT id, name FROM models WHERE brand_id = $1
+		`
+
+	rows, err := r.db.Query(ctx, q, brandID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	models := make([]model.Model, 0)
+
+	for rows.Next() {
+		var model model.Model
+
+		if err := rows.Scan(&model.ID, &model.Name); err != nil {
+			return nil, err
+		}
+		models = append(models, model)
+	}
+
+	return models, err
+}
+
+func (r *UserRepository) GetBodyTypes(ctx context.Context) ([]model.BodyType, error) {
+	q := `
+		SELECT id, name FROM body_types
+	`
+
+	rows, err := r.db.Query(ctx, q)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	bodyTypes := make([]model.BodyType, 0)
+
+	for rows.Next() {
+		var bodyType model.BodyType
+		if err := rows.Scan(&bodyType.ID, &bodyType.Name); err != nil {
+			return nil, err
+		}
+		bodyTypes = append(bodyTypes, bodyType)
+	}
+	return bodyTypes, err
+}
+
+func (r *UserRepository) GetTransmissions(ctx context.Context) ([]model.Transmission, error) {
+	q := `
+		SELECT id, name FROM transmissions
+	`
+
+	rows, err := r.db.Query(ctx, q)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	transmissions := make([]model.Transmission, 0)
+
+	for rows.Next() {
+		var transmission model.Transmission
+		if err := rows.Scan(&transmission.ID, &transmission.Name); err != nil {
+			return nil, err
+		}
+		transmissions = append(transmissions, transmission)
+	}
+	return transmissions, err
+}
+
+func (r *UserRepository) GetEngines(ctx context.Context) ([]model.Engine, error) {
+	q := `
+		SELECT id, value FROM engines
+	`
+
+	rows, err := r.db.Query(ctx, q)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	engines := make([]model.Engine, 0)
+
+	for rows.Next() {
+		var engine model.Engine
+		if err := rows.Scan(&engine.ID, &engine.Value); err != nil {
+			return nil, err
+		}
+		engines = append(engines, engine)
+	}
+	return engines, err
+}
+
+func (r *UserRepository) GetDrives(ctx context.Context) ([]model.Drive, error) {
+	q := `
+		SELECT id, name FROM drives
+	`
+
+	rows, err := r.db.Query(ctx, q)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	drives := make([]model.Drive, 0)
+
+	for rows.Next() {
+		var drive model.Drive
+		if err := rows.Scan(&drive.ID, &drive.Name); err != nil {
+			return nil, err
+		}
+		drives = append(drives, drive)
+	}
+	return drives, err
+}
+
+func (r *UserRepository) GetFuelTypes(ctx context.Context) ([]model.FuelType, error) {
+	q := `
+		SELECT id, name FROM fuel_types
+	`
+
+	rows, err := r.db.Query(ctx, q)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	fuelTypes := make([]model.FuelType, 0)
+
+	for rows.Next() {
+		var fuelType model.FuelType
+		if err := rows.Scan(&fuelType.ID, &fuelType.Name); err != nil {
+			return nil, err
+		}
+		fuelTypes = append(fuelTypes, fuelType)
+	}
+	return fuelTypes, err
+}

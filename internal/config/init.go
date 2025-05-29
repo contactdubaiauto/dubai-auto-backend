@@ -32,7 +32,7 @@ type Config struct {
 	GIN_MODE           string
 	LOGGER_FOLDER_PATH string
 	LOGGER_FILENAME    string
-	UPLOAD_PATH        string
+	STATIC_PATH        string
 }
 
 var ENV Config
@@ -61,6 +61,6 @@ func Init() *Config {
 	ENV.REFRESH_TIME = RT
 
 	ENV.APP_VERSION = loadEnvVariable("APP_VERSION")
-	ENV.UPLOAD_PATH = loadEnvVariable("UPLOAD_PATH")
+	ENV.STATIC_PATH = loadEnvVariable("STATIC_PATH")
 	return &ENV
 }
