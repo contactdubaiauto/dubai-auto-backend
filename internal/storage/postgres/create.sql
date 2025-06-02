@@ -7,6 +7,7 @@ alter default privileges in schema public grant all on tables to da;
 alter default privileges in schema public grant all on sequences to da;
 
 
+drop table if exists images;
 drop table if exists vehicles;
 drop table if exists services;
 drop table if exists service_types;
@@ -283,32 +284,32 @@ insert into services (name, service_type_id) values ('Electrical Repair', 3);
 
 create table vehicles (
     "id" serial primary key,
-    "user_id" int not null,
-    "brand_id" int not null,
-    "region_id" int not null,
-    "city_id" int not null,
-    "model_id" int not null,
-    "transmission_id" int not null,
-    "engine_id" int not null,
-    "drive_id" int not null,
-    "body_type_id" int not null,
-    "fuel_type_id" int not null,
-    "ownership" int not null default 0,
+    "user_id" int,
+    "brand_id" int,
+    "region_id" int,
+    "city_id" int,
+    "model_id" int,
+    "transmission_id" int,
+    "engine_id" int,
+    "drive_id" int,
+    "body_type_id" int,
+    "fuel_type_id" int,
+    "ownership" int not null default 1,
     "announcement_type" int not null default 0,
     "view_count" int not null default 0,
     "year" int not null,
     "exchange" boolean not null default false,
     "credit" boolean not null default false,
-    "mileage" int not null,
-    "vin_code" varchar(255) not null,
-    "images" jsonb not null,
-    "door_count" int not null,
+    "mileage" int,
+    "vin_code" varchar(255),
+    "door_count" int,
     "phone_number" varchar(255) not null,
     "price" int not null,
     "new" boolean not null default false,
-    "color" varchar(255) not null default '',
-    "credit_price" int not null default 0,
-    "status" int not null default 0,
+    "color" varchar(255),
+    "credit_price" int,
+    "status" int not null default 1,
+    "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
     constraint vehicles_user_id_fk
         foreign key (user_id)
@@ -362,4 +363,50 @@ create table vehicles (
                 on update cascade
 );
 
+insert into vehicles (
+        user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership, year, 
+        exchange, credit, mileage, vin_code, door_count, phone_number, price, new, color, 
+        credit_price, status
+    ) 
+    values (
+        1, 1, 1, 1, 1, 1, 1, 2020, false, false, 100000, '1234567890', 4, '01234567890', 100000, true, '#ffffff', 100000, 1
+    );
+insert into vehicles (
+        user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership, year, 
+        exchange, credit, mileage, vin_code, door_count, phone_number, price, new, color, 
+        credit_price, status
+    ) 
+    values (
+        1, 1, 1, 1, 1, 1, 1, 2020, false, false, 100000, '1234567890', 4, '01234567890', 100000, true, '#rfffff', 100000, 1
+    );
+insert into vehicles (
+        user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership, year, 
+        exchange, credit, mileage, vin_code, door_count, phone_number, price, new, color, 
+        credit_price, status
+    ) 
+    values (
+        1, 1, 1, 1, 1, 1, 1, 2020, false, false, 100000, '1234567890', 4, '01234567890', 100000, true, '#rfffff', 100000, 1
+    );
+
+
+create table images (
+    "vehicle_id" int not null,
+    "image" varchar(255) not null,
+    constraint images_vehicle_id_fk
+        foreign key (vehicle_id)
+            references vehicles(id)
+                on delete cascade
+                on update cascade
+);
+
+insert into images (vehicle_id, image) values (1, '/images/cars/1/1.jpg');
+insert into images (vehicle_id, image) values (1, '/images/cars/1/2.jpg');
+insert into images (vehicle_id, image) values (1, '/images/cars/1/3.jpg');
+insert into images (vehicle_id, image) values (1, '/images/cars/1/4.jpg');
+insert into images (vehicle_id, image) values (1, '/images/cars/1/5.jpg');
+insert into images (vehicle_id, image) values (1, '/images/cars/1/6.jpg');
+insert into images (vehicle_id, image) values (1, '/images/cars/1/7.jpg');
+insert into images (vehicle_id, image) values (1, '/images/cars/1/8.jpg');
+insert into images (vehicle_id, image) values (1, '/images/cars/1/9.jpg');
+insert into images (vehicle_id, image) values (1, '/images/cars/1/10.jpg');
 

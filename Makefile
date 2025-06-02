@@ -14,4 +14,7 @@ deploy:
 	@echo "Starting remote service..."
 	@ssh ubuntu@95.85.126.220 "sudo -S systemctl start da.service"
 	@echo "Done"
-
+folder:
+	@echo "deploying images..."
+	@scp -r ./images ubuntu@95.85.126.220:/var/www/images
+	@echo "done"

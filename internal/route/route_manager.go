@@ -7,6 +7,7 @@ import (
 	"dubai-auto/internal/delivery/http"
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/service"
+	"dubai-auto/pkg"
 )
 
 func Init(r *gin.Engine, db *pgxpool.Pool) {
@@ -32,6 +33,9 @@ func SetupUserRoutes(r *gin.RouterGroup, db *pgxpool.Pool) {
 		r.GET("/engines", userHandler.GetEngines)
 		r.GET("/drives", userHandler.GetDrives)
 		r.GET("/fuel-types", userHandler.GetFuelTypes)
+		r.GET("/cars", userHandler.GetCars)
+		r.POST("/cars", pkg.TokenGuard, userHandler.CreateCar)
+
 	}
 }
 

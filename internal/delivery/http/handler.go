@@ -32,7 +32,6 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 		return
 	}
 	utils.GinResponse(c, &model.Response{
-		Status: 200,
 		Data: model.Success{
 			Message: "User created successfully",
 			Id:      int(user.ID),
@@ -164,3 +163,58 @@ func (h *UserHandler) GetFuelTypes(c *gin.Context) {
 		Data: fuelTypes,
 	})
 }
+
+func (h *UserHandler) GetCars(c *gin.Context) {
+	cars, err := h.UserService.GetCars(c.Request.Context())
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	utils.GinResponse(c, &model.Response{Data: cars})
+}
+
+func (h *UserHandler) CreateCar(c *gin.Context) {
+	var car model.CreateCarRequest
+	userID := c.MustGet("id").(int)
+	car.UserID = int64(userID)
+
+	if err := c.ShouldBindJSON(&car); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	id, err := h.UserService.CreateCar(c.Request.Context(), &car)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	utils.GinResponse(c, &model.Response{
+		Data: model.Success{
+			Message: "Car created successfully",
+			Id:      id,
+		},
+	})
+}
+
+// func (h *UserHandler) CreateCarImages(c *gin.Context) {
+// 	carID := c.Param("id")
+// 	carIDInt, err := strconv.ParseInt(carID, 10, 64)
+
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// 	images, err := h.UserService.CreateCarImages(c.Request.Context(), carIDInt)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	utils.GinResponse(c, &model.Response{
+// 		Data: images,
+// 	})
+// }

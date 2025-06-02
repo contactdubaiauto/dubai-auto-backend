@@ -54,3 +54,12 @@ func (s *UserService) GetDrives(ctx context.Context) ([]model.Drive, error) {
 func (s *UserService) GetFuelTypes(ctx context.Context) ([]model.FuelType, error) {
 	return s.UserRepository.GetFuelTypes(ctx)
 }
+
+func (s *UserService) GetCars(ctx context.Context) ([]model.GetCarsResponse, error) {
+	return s.UserRepository.GetCars(ctx)
+}
+
+func (s *UserService) CreateCar(ctx context.Context, car *model.CreateCarRequest) (int, error) {
+
+	return s.UserRepository.CreateCar(ctx, car)
+}
