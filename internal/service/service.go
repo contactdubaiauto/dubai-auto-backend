@@ -27,12 +27,12 @@ func (s *UserService) GetAllUsers(ctx context.Context) ([]*model.User, error) {
 	return s.UserRepository.GetAll(ctx)
 }
 
-func (s *UserService) GetBrands(ctx context.Context) ([]*model.GetBrandsResponse, error) {
-	return s.UserRepository.GetBrands(ctx)
+func (s *UserService) GetBrands(ctx context.Context, text string) ([]*model.GetBrandsResponse, error) {
+	return s.UserRepository.GetBrands(ctx, text)
 }
 
-func (s *UserService) GetModelsByBrandID(ctx context.Context, brandID int64) ([]model.Model, error) {
-	return s.UserRepository.GetModelsByBrandID(ctx, brandID)
+func (s *UserService) GetModelsByBrandID(ctx context.Context, brandID int64, text string) ([]model.Model, error) {
+	return s.UserRepository.GetModelsByBrandID(ctx, brandID, text)
 }
 
 func (s *UserService) GetBodyTypes(ctx context.Context) ([]model.BodyType, error) {

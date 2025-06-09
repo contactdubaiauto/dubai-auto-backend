@@ -74,7 +74,8 @@ func (h *UserHandler) GetAllUsers(c *gin.Context) {
 }
 
 func (h *UserHandler) GetBrands(c *gin.Context) {
-	brands, err := h.UserService.GetBrands(c.Request.Context())
+	text := c.Query("text")
+	brands, err := h.UserService.GetBrands(c.Request.Context(), text)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -89,6 +90,7 @@ func (h *UserHandler) GetBrands(c *gin.Context) {
 
 func (h *UserHandler) GetModelsByBrandID(c *gin.Context) {
 	brandID := c.Param("id")
+	text := c.Query("text")
 	brandIDInt, err := strconv.ParseInt(brandID, 10, 64)
 
 	if err != nil {
@@ -96,7 +98,7 @@ func (h *UserHandler) GetModelsByBrandID(c *gin.Context) {
 		return
 	}
 
-	models, err := h.UserService.GetModelsByBrandID(c.Request.Context(), brandIDInt)
+	models, err := h.UserService.GetModelsByBrandID(c.Request.Context(), brandIDInt, text)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

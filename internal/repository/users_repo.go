@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"dubai-auto/internal/model"
@@ -50,8 +49,11 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]*model.User, error) {
 	return users, nil
 }
 
-func (r *UserRepository) GetBrands(ctx context.Context) ([]*model.GetBrandsResponse, error) {
-	rows, err := r.db.Query(ctx, "SELECT id, name, logo, car_count FROM brands")
+func (r *UserRepository) GetBrands(ctx context.Context, text string) ([]*model.GetBrandsResponse, error) {
+	q := `
+		SELECT id, name, logo, car_count FROM brands WHERE name ILIKE '%' || $1 || '%'
+	`
+	rows, err := r.db.Query(ctx, q, text)
 
 	if err != nil {
 		return nil, err
@@ -70,13 +72,11 @@ func (r *UserRepository) GetBrands(ctx context.Context) ([]*model.GetBrandsRespo
 	return brands, err
 }
 
-func (r *UserRepository) GetModelsByBrandID(ctx context.Context, brandID int64) ([]model.Model, error) {
-	fmt.Println(brandID)
+func (r *UserRepository) GetModelsByBrandID(ctx context.Context, brandID int64, text string) ([]model.Model, error) {
 	q := `
-			SELECT id, name FROM models WHERE brand_id = $1
+			SELECT id, name FROM models WHERE brand_id = $1 AND name ILIKE '%' || $2 || '%'
 		`
-
-	rows, err := r.db.Query(ctx, q, brandID)
+	rows, err := r.db.Query(ctx, q, brandID, text)
 
 	if err != nil {
 		return nil, err
@@ -301,7 +301,6 @@ func (r *UserRepository) CreateCar(ctx context.Context, car *model.CreateCarRequ
 			) RETURNING id
 	`
 	var id int
-	fmt.Println(q)
 	err := r.db.QueryRow(ctx, q, args...).Scan(&id)
 
 	return id, err
