@@ -28,6 +28,7 @@ create table users (
     "id" serial primary key,
     "username" varchar(255) not null,
     "email" varchar(255) not null,
+    "role_id" int not null default 1,
     "password" varchar(255) not null,
     "phone" varchar(255) not null,
     "notification" boolean default false,
@@ -281,6 +282,14 @@ insert into services (name, service_type_id) values ('Transmission Repair', 3);
 insert into services (name, service_type_id) values ('Suspension Repair', 3);
 insert into services (name, service_type_id) values ('Electrical Repair', 3);
 
+create table ownership_types (
+    "id" serial primary key,
+    "name" varchar(255) not null,
+    "created_at" timestamp default now()
+);
+
+insert into ownership_types (name) values ('Dealership');
+insert into ownership_types (name) values ('Private Owner');
 
 create table vehicles (
     "id" serial primary key,
@@ -294,7 +303,7 @@ create table vehicles (
     "drivetrain_id" int,
     "body_type_id" int,
     "fuel_type_id" int,
-    "ownership_type" int not null default 1,
+    "ownership_type_id" int not null default 1,
     "announcement_type" int not null default 0,
     "view_count" int not null default 0,
     "year" int not null,
@@ -315,6 +324,11 @@ create table vehicles (
     "status" int not null default 1,
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
+    constraint vehicles_ownership_type_id_fk
+        foreign key (ownership_type_id)
+            references ownership_types(id)
+                on delete cascade
+                on update cascade,
     constraint vehicles_user_id_fk
         foreign key (user_id)
             references users(id)
@@ -368,16 +382,16 @@ create table vehicles (
 );
 
 insert into vehicles (
-        user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type, year, 
+        user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year, 
         exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new, color, 
-        interior_color, credit_price, status, crash, negotiable
+        interior_color, credit_price, status, crash, negotiable, drivetrain_id
     ) 
     values (
-        1, 1, 1, 1, 1, 1, 1, 2020, false, false, false, 100000, '1234567890', 4, '01234567890', 100000, true, '922d50', '54484C', 100000, 1, false, true
+        1, 1, 1, 1, 1, 1, 1, 2020, false, false, false, 100000, '1234567890', 4, '01234567890', 100000, true, '922d50', '54484C', 100000, 1, false, true, 2
     );
 
 insert into vehicles (
-        user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type, year, 
+        user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year, 
         exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new, color, 
         interior_color, credit_price, status, crash, negotiable
     ) 
@@ -386,7 +400,7 @@ insert into vehicles (
     );
 
 insert into vehicles (
-        user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type, year, 
+        user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year, 
         exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new, color, 
         interior_color, credit_price, status, crash, negotiable
     ) 

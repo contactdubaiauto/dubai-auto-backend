@@ -37,7 +37,7 @@ func (s *AuthService) UserLogin(ctx context.Context, user *model.UserLogin) mode
 		}
 	}
 
-	accessToken, refreshToken := pkg.CreateRefreshAccsessToken(userByEmail.ID, "user")
+	accessToken, refreshToken := pkg.CreateRefreshAccsessToken(userByEmail.ID, 1)
 
 	return model.Response{
 		Data: model.LoginResponse{

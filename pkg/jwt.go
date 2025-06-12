@@ -8,13 +8,13 @@ import (
 )
 
 func CreateToken(
-	id int, expiration time.Duration, secret_key, role string,
+	id int, expiration time.Duration, secret_key string, role_id int,
 ) string {
 	unixTime := time.Now().Add(expiration).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":   id,
-		"role": role,
-		"exp":  unixTime,
+		"id":      id,
+		"role_id": role_id,
+		"exp":     unixTime,
 	})
 
 	tokenString, _ := token.SignedString([]byte(secret_key))
@@ -22,10 +22,10 @@ func CreateToken(
 	return tokenString
 }
 
-func CreateRefreshAccsessToken(id int, role string) (string, string) {
+func CreateRefreshAccsessToken(id, role_id int) (string, string) {
 
-	accessToken := CreateToken(id, ENV.REFRESH_TIME, ENV.ACCESS_KEY, role)
-	refreshToken := CreateToken(id, ENV.REFRESH_TIME, ENV.REFRESH_KEY, role)
+	accessToken := CreateToken(id, ENV.REFRESH_TIME, ENV.ACCESS_KEY, role_id)
+	refreshToken := CreateToken(id, ENV.REFRESH_TIME, ENV.REFRESH_KEY, role_id)
 
 	return accessToken, refreshToken
 }

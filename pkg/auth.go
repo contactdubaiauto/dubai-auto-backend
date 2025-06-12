@@ -44,7 +44,7 @@ func TokenGuard(c *gin.Context) {
 	}
 
 	c.Set("id", int(claims["id"].(float64)))
-	c.Set("role", claims["role"])
+	c.Set("role_id", claims["role_id"].(float64))
 	c.Next()
 }
 
