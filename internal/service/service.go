@@ -15,18 +15,6 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 	return &UserService{repo}
 }
 
-func (s *UserService) CreateUser(ctx context.Context, user *model.User) error {
-	return s.UserRepository.Create(ctx, user)
-}
-
-func (s *UserService) GetUserByID(ctx context.Context, id int64) (*model.User, error) {
-	return s.UserRepository.GetByID(ctx, id)
-}
-
-func (s *UserService) GetAllUsers(ctx context.Context) ([]*model.User, error) {
-	return s.UserRepository.GetAll(ctx)
-}
-
 func (s *UserService) GetBrands(ctx context.Context, text string) ([]*model.GetBrandsResponse, error) {
 	return s.UserRepository.GetBrands(ctx, text)
 }
@@ -47,8 +35,8 @@ func (s *UserService) GetEngines(ctx context.Context) ([]model.Engine, error) {
 	return s.UserRepository.GetEngines(ctx)
 }
 
-func (s *UserService) GetDrives(ctx context.Context) ([]model.Drive, error) {
-	return s.UserRepository.GetDrives(ctx)
+func (s *UserService) GetDrivetrains(ctx context.Context) ([]model.Drivetrain, error) {
+	return s.UserRepository.GetDrivetrains(ctx)
 }
 
 func (s *UserService) GetFuelTypes(ctx context.Context) ([]model.FuelType, error) {

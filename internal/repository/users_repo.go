@@ -18,37 +18,6 @@ func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 	return &UserRepository{db}
 }
 
-func (r *UserRepository) Create(ctx context.Context, user *model.User) error {
-	_, err := r.db.Exec(ctx, "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)", user.Name, user.Email, user.Password)
-
-	return err
-}
-
-func (r *UserRepository) GetByID(ctx context.Context, id int64) (*model.User, error) {
-	var user model.User
-	err := r.db.QueryRow(ctx, "SELECT * FROM users WHERE id = $1", id).Scan(&user.ID, &user.Name, &user.Email, &user.Password)
-
-	return &user, err
-}
-
-func (r *UserRepository) GetAll(ctx context.Context) ([]*model.User, error) {
-	rows, err := r.db.Query(ctx, "SELECT * FROM users")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var users []*model.User
-	for rows.Next() {
-		var user model.User
-		if err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.Password); err != nil {
-			return nil, err
-		}
-		users = append(users, &user)
-	}
-	return users, nil
-}
-
 func (r *UserRepository) GetBrands(ctx context.Context, text string) ([]*model.GetBrandsResponse, error) {
 	q := `
 		SELECT id, name, logo, car_count FROM brands WHERE name ILIKE '%' || $1 || '%'
@@ -169,9 +138,9 @@ func (r *UserRepository) GetEngines(ctx context.Context) ([]model.Engine, error)
 	return engines, err
 }
 
-func (r *UserRepository) GetDrives(ctx context.Context) ([]model.Drive, error) {
+func (r *UserRepository) GetDrivetrains(ctx context.Context) ([]model.Drivetrain, error) {
 	q := `
-		SELECT id, name FROM drives
+		SELECT id, name FROM drivetrains
 	`
 
 	rows, err := r.db.Query(ctx, q)
@@ -181,16 +150,16 @@ func (r *UserRepository) GetDrives(ctx context.Context) ([]model.Drive, error) {
 	}
 
 	defer rows.Close()
-	drives := make([]model.Drive, 0)
+	drivetrains := make([]model.Drivetrain, 0)
 
 	for rows.Next() {
-		var drive model.Drive
-		if err := rows.Scan(&drive.ID, &drive.Name); err != nil {
+		var drivetrain model.Drivetrain
+		if err := rows.Scan(&drivetrain.ID, &drivetrain.Name); err != nil {
 			return nil, err
 		}
-		drives = append(drives, drive)
+		drivetrains = append(drivetrains, drivetrain)
 	}
-	return drives, err
+	return drivetrains, err
 }
 
 func (r *UserRepository) GetFuelTypes(ctx context.Context) ([]model.FuelType, error) {
@@ -276,7 +245,7 @@ func (r *UserRepository) GetCars(ctx context.Context) ([]model.GetCarsResponse, 
 		var car model.GetCarsResponse
 		if err := rows.Scan(
 			&car.ID, &car.Brand, &car.Region, &car.City, &car.Model, &car.Transmission, &car.Engine,
-			&car.Drive, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
+			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
 			&car.Exchange, &car.Credit, &car.New, &car.Color, &car.CreditPrice, &car.Status, &car.CreatedAt,
 			&car.UpdatedAt, &car.Images, &car.PhoneNumber,
 		); err != nil {

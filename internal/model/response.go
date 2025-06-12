@@ -29,7 +29,7 @@ type Engine struct {
 	Value string `json:"value"`
 }
 
-type Drive struct {
+type Drivetrain struct {
 	ID   int64  `json:"id"`
 	Name string `json:"name"`
 }
@@ -47,7 +47,7 @@ type GetCarsResponse struct {
 	Model        string     `json:"model"`
 	Transmission *string    `json:"transmission"`
 	Engine       *string    `json:"engine"`
-	Drive        *string    `json:"drive"`
+	Drivetrain   *string    `json:"drivetrain"`
 	BodyType     string     `json:"body_type"`
 	FuelType     *string    `json:"fuel_type"`
 	Year         int        `json:"year"`

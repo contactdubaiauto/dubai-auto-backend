@@ -31,10 +31,11 @@ func SetupUserRoutes(r *gin.RouterGroup, db *pgxpool.Pool) {
 		r.GET("/body-types", userHandler.GetBodyTypes)
 		r.GET("/transmissions", userHandler.GetTransmissions)
 		r.GET("/engines", userHandler.GetEngines)
-		r.GET("/drives", userHandler.GetDrives)
+		r.GET("/drivetrains", userHandler.GetDrivetrains)
 		r.GET("/fuel-types", userHandler.GetFuelTypes)
 		r.GET("/cars", userHandler.GetCars)
 		r.POST("/cars", pkg.TokenGuard, userHandler.CreateCar)
+		// r.POST("/cars/images", pkg.TokenGuard, userHandler.CreateCarImages)
 
 	}
 }
