@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"strconv"
 	"strings"
 
 	"dubai-auto/internal/model"
@@ -18,11 +19,11 @@ func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 	return &UserRepository{db}
 }
 
-func (r *UserRepository) GetBrands(ctx context.Context, text string) ([]*model.GetBrandsResponse, error) {
+func (r *UserRepository) GetBrands(ctx *context.Context, text string) ([]*model.GetBrandsResponse, error) {
 	q := `
 		SELECT id, name, logo, car_count FROM brands WHERE name ILIKE '%' || $1 || '%'
 	`
-	rows, err := r.db.Query(ctx, q, text)
+	rows, err := r.db.Query(*ctx, q, text)
 
 	if err != nil {
 		return nil, err
@@ -41,11 +42,11 @@ func (r *UserRepository) GetBrands(ctx context.Context, text string) ([]*model.G
 	return brands, err
 }
 
-func (r *UserRepository) GetModelsByBrandID(ctx context.Context, brandID int64, text string) ([]model.Model, error) {
+func (r *UserRepository) GetModelsByBrandID(ctx *context.Context, brandID int64, text string) ([]model.Model, error) {
 	q := `
 			SELECT id, name FROM models WHERE brand_id = $1 AND name ILIKE '%' || $2 || '%'
 		`
-	rows, err := r.db.Query(ctx, q, brandID, text)
+	rows, err := r.db.Query(*ctx, q, brandID, text)
 
 	if err != nil {
 		return nil, err
@@ -66,12 +67,12 @@ func (r *UserRepository) GetModelsByBrandID(ctx context.Context, brandID int64, 
 	return models, err
 }
 
-func (r *UserRepository) GetBodyTypes(ctx context.Context) ([]model.BodyType, error) {
+func (r *UserRepository) GetBodyTypes(ctx *context.Context) ([]model.BodyType, error) {
 	q := `
 		SELECT id, name FROM body_types
 	`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(*ctx, q)
 
 	if err != nil {
 		return nil, err
@@ -90,12 +91,12 @@ func (r *UserRepository) GetBodyTypes(ctx context.Context) ([]model.BodyType, er
 	return bodyTypes, err
 }
 
-func (r *UserRepository) GetTransmissions(ctx context.Context) ([]model.Transmission, error) {
+func (r *UserRepository) GetTransmissions(ctx *context.Context) ([]model.Transmission, error) {
 	q := `
 		SELECT id, name FROM transmissions
 	`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(*ctx, q)
 
 	if err != nil {
 		return nil, err
@@ -114,12 +115,12 @@ func (r *UserRepository) GetTransmissions(ctx context.Context) ([]model.Transmis
 	return transmissions, err
 }
 
-func (r *UserRepository) GetEngines(ctx context.Context) ([]model.Engine, error) {
+func (r *UserRepository) GetEngines(ctx *context.Context) ([]model.Engine, error) {
 	q := `
 		SELECT id, value FROM engines
 	`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(*ctx, q)
 
 	if err != nil {
 		return nil, err
@@ -138,12 +139,12 @@ func (r *UserRepository) GetEngines(ctx context.Context) ([]model.Engine, error)
 	return engines, err
 }
 
-func (r *UserRepository) GetDrivetrains(ctx context.Context) ([]model.Drivetrain, error) {
+func (r *UserRepository) GetDrivetrains(ctx *context.Context) ([]model.Drivetrain, error) {
 	q := `
 		SELECT id, name FROM drivetrains
 	`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(*ctx, q)
 
 	if err != nil {
 		return nil, err
@@ -162,12 +163,12 @@ func (r *UserRepository) GetDrivetrains(ctx context.Context) ([]model.Drivetrain
 	return drivetrains, err
 }
 
-func (r *UserRepository) GetFuelTypes(ctx context.Context) ([]model.FuelType, error) {
+func (r *UserRepository) GetFuelTypes(ctx *context.Context) ([]model.FuelType, error) {
 	q := `
 		SELECT id, name FROM fuel_types
 	`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(*ctx, q)
 
 	if err != nil {
 		return nil, err
@@ -186,7 +187,7 @@ func (r *UserRepository) GetFuelTypes(ctx context.Context) ([]model.FuelType, er
 	return fuelTypes, err
 }
 
-func (r *UserRepository) GetCars(ctx context.Context) ([]model.GetCarsResponse, error) {
+func (r *UserRepository) GetCars(ctx *context.Context) ([]model.GetCarsResponse, error) {
 	q := `
 		select 
 			vs.id,
@@ -232,7 +233,7 @@ func (r *UserRepository) GetCars(ctx context.Context) ([]model.GetCarsResponse, 
 
 	`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(*ctx, q)
 
 	if err != nil {
 		return nil, err
@@ -257,7 +258,7 @@ func (r *UserRepository) GetCars(ctx context.Context) ([]model.GetCarsResponse, 
 	return cars, err
 }
 
-func (r *UserRepository) CreateCar(ctx context.Context, car *model.CreateCarRequest) (int, error) {
+func (r *UserRepository) CreateCar(ctx *context.Context, car *model.CreateCarRequest) (int, error) {
 
 	keys, values, args := pkg.BuildParams(car)
 
@@ -270,7 +271,30 @@ func (r *UserRepository) CreateCar(ctx context.Context, car *model.CreateCarRequ
 			) RETURNING id
 	`
 	var id int
-	err := r.db.QueryRow(ctx, q, args...).Scan(&id)
+	err := r.db.QueryRow(*ctx, q, args...).Scan(&id)
 
 	return id, err
+}
+
+func (r *UserRepository) CreateCarImages(ctx *context.Context, carID int, images []string) error {
+	if len(images) == 0 {
+		return nil
+	}
+
+	q := `
+		INSERT INTO images (vehicle_id, image) VALUES 
+	`
+
+	values := make([]string, 0, len(images))
+	args := make([]interface{}, 0, len(images)*2)
+
+	for i := range images {
+		values = append(values, "($1, $"+strconv.Itoa(i+2)+")")
+		args = append(args, carID, images[i])
+	}
+
+	q += strings.Join(values, ", ")
+
+	_, err := r.db.Exec(*ctx, q, args...)
+	return err
 }

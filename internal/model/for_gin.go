@@ -90,9 +90,13 @@ type ResultMessage struct {
 	En string `json:"en"`
 }
 
-type Success struct {
+type SuccessWithId struct {
 	Message string `json:"message"`
 	Id      int    `json:"id"`
+}
+
+type Success struct {
+	Message string `json:"message"`
 }
 
 type ServerError struct {

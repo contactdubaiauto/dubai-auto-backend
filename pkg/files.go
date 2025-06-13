@@ -98,7 +98,7 @@ func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]str
 		readerFile, _ := files[index].Open()
 		buf := bytes.NewBuffer(nil)
 		io.Copy(buf, readerFile)
-
+		fmt.Println("." + base + "/" + fileNames[index])
 		err := os.WriteFile(
 			"."+base+"/"+fileNames[index],
 			buf.Bytes(),

@@ -17,22 +17,23 @@ func loadEnvVariable(key string) string {
 }
 
 type Config struct {
-	DB_HOST            string
-	DB_PORT            string
-	DB_USER            string
-	DB_PASSWORD        string
-	DB_NAME            string
-	DB_URL             string
-	ACCESS_KEY         string
-	ACCESS_TIME        time.Duration
-	REFRESH_KEY        string
-	REFRESH_TIME       time.Duration
-	APP_VERSION        string
-	PORT               string
-	GIN_MODE           string
-	LOGGER_FOLDER_PATH string
-	LOGGER_FILENAME    string
-	STATIC_PATH        string
+	DB_HOST              string
+	DB_PORT              string
+	DB_USER              string
+	DB_PASSWORD          string
+	DB_NAME              string
+	DB_URL               string
+	ACCESS_KEY           string
+	ACCESS_TIME          time.Duration
+	REFRESH_KEY          string
+	REFRESH_TIME         time.Duration
+	APP_VERSION          string
+	PORT                 string
+	GIN_MODE             string
+	LOGGER_FOLDER_PATH   string
+	LOGGER_FILENAME      string
+	STATIC_PATH          string
+	DEFAULT_IMAGE_WIDTHS []uint
 }
 
 var ENV Config
@@ -62,5 +63,6 @@ func Init() *Config {
 
 	ENV.APP_VERSION = loadEnvVariable("APP_VERSION")
 	ENV.STATIC_PATH = loadEnvVariable("STATIC_PATH")
+	ENV.DEFAULT_IMAGE_WIDTHS = []uint{320, 640}
 	return &ENV
 }

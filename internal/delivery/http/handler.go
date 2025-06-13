@@ -1,14 +1,17 @@
 package http
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
 	"dubai-auto/internal/utils"
+	"dubai-auto/pkg"
 )
 
 type UserHandler struct {
@@ -21,7 +24,8 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 
 func (h *UserHandler) GetBrands(c *gin.Context) {
 	text := c.Query("text")
-	brands, err := h.UserService.GetBrands(c.Request.Context(), text)
+	ctx := c.Request.Context()
+	brands, err := h.UserService.GetBrands(&ctx, text)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -44,7 +48,8 @@ func (h *UserHandler) GetModelsByBrandID(c *gin.Context) {
 		return
 	}
 
-	models, err := h.UserService.GetModelsByBrandID(c.Request.Context(), brandIDInt, text)
+	ctx := c.Request.Context()
+	models, err := h.UserService.GetModelsByBrandID(&ctx, brandIDInt, text)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -57,7 +62,8 @@ func (h *UserHandler) GetModelsByBrandID(c *gin.Context) {
 }
 
 func (h *UserHandler) GetBodyTypes(c *gin.Context) {
-	bodyTypes, err := h.UserService.GetBodyTypes(c.Request.Context())
+	ctx := c.Request.Context()
+	bodyTypes, err := h.UserService.GetBodyTypes(&ctx)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -70,7 +76,8 @@ func (h *UserHandler) GetBodyTypes(c *gin.Context) {
 }
 
 func (h *UserHandler) GetTransmissions(c *gin.Context) {
-	transmissions, err := h.UserService.GetTransmissions(c.Request.Context())
+	ctx := c.Request.Context()
+	transmissions, err := h.UserService.GetTransmissions(&ctx)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -82,7 +89,8 @@ func (h *UserHandler) GetTransmissions(c *gin.Context) {
 }
 
 func (h *UserHandler) GetEngines(c *gin.Context) {
-	engines, err := h.UserService.GetEngines(c.Request.Context())
+	ctx := c.Request.Context()
+	engines, err := h.UserService.GetEngines(&ctx)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -94,7 +102,8 @@ func (h *UserHandler) GetEngines(c *gin.Context) {
 }
 
 func (h *UserHandler) GetDrivetrains(c *gin.Context) {
-	drivetrains, err := h.UserService.GetDrivetrains(c.Request.Context())
+	ctx := c.Request.Context()
+	drivetrains, err := h.UserService.GetDrivetrains(&ctx)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -107,7 +116,8 @@ func (h *UserHandler) GetDrivetrains(c *gin.Context) {
 }
 
 func (h *UserHandler) GetFuelTypes(c *gin.Context) {
-	fuelTypes, err := h.UserService.GetFuelTypes(c.Request.Context())
+	ctx := c.Request.Context()
+	fuelTypes, err := h.UserService.GetFuelTypes(&ctx)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -119,7 +129,8 @@ func (h *UserHandler) GetFuelTypes(c *gin.Context) {
 }
 
 func (h *UserHandler) GetCars(c *gin.Context) {
-	cars, err := h.UserService.GetCars(c.Request.Context())
+	ctx := c.Request.Context()
+	cars, err := h.UserService.GetCars(&ctx)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -133,42 +144,60 @@ func (h *UserHandler) CreateCar(c *gin.Context) {
 	var car model.CreateCarRequest
 	userID := c.MustGet("id").(int)
 	car.UserID = int64(userID)
+	ctx := c.Request.Context()
 
 	if err := c.ShouldBindJSON(&car); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	id, err := h.UserService.CreateCar(c.Request.Context(), &car)
+	data := h.UserService.CreateCar(&ctx, &car)
+
+	utils.GinResponse(c, data)
+}
+
+func (h *UserHandler) CreateCarImages(c *gin.Context) {
+	ctx := c.Request.Context()
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid car ID"),
+		})
 		return
 	}
 
-	utils.GinResponse(c, &model.Response{
-		Data: model.Success{
-			Message: "Car created successfully",
-			Id:      id,
-		},
-	})
+	form, _ := c.MultipartForm()
+
+	if form == nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the files"),
+		})
+		return
+	}
+	image := form.File["image"]
+
+	if len(image) != 1 {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("must load just 1 file"),
+		})
+		return
+	}
+
+	paths, status, err := pkg.SaveFiles(image, config.ENV.STATIC_PATH+"cars/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: status,
+			Error:  err,
+		})
+		return
+	}
+
+	data := h.UserService.CreateCarImages(&ctx, id, paths)
+	utils.GinResponse(c, data)
 }
-
-// func (h *UserHandler) CreateCarImages(c *gin.Context) {
-// 	carID := c.Param("id")
-// 	carIDInt, err := strconv.ParseInt(carID, 10, 64)
-
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	images, err := h.UserService.CreateCarImages(c.Request.Context(), carIDInt)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	utils.GinResponse(c, &model.Response{
-// 		Data: images,
-// 	})
-// }
