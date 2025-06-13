@@ -22,6 +22,7 @@ drop table if exists models;
 drop table if exists brands;
 drop table if exists users;
 drop table if exists admins;
+drop table if exists ownership_types;
 
 
 create table users (
@@ -318,6 +319,7 @@ create table vehicles (
     "new" boolean not null default false,
     "color" varchar(255),
     "interior_color" varchar(255),
+    "mileage_km" int,
     "crash" boolean not null default false,
     "negotiable" boolean not null default false,
     "credit_price" int,
@@ -384,28 +386,28 @@ create table vehicles (
 insert into vehicles (
         user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year, 
         exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new, color, 
-        interior_color, credit_price, status, crash, negotiable, drivetrain_id
+        interior_color, credit_price, status, crash, negotiable, drivetrain_id, mileage_km
     ) 
     values (
-        1, 1, 1, 1, 1, 1, 1, 2020, false, false, false, 100000, '1234567890', 4, '01234567890', 100000, true, '922d50', '54484C', 100000, 1, false, true, 2
+        1, 1, 1, 1, 1, 1, 1, 2020, false, false, false, 100000, '1234567890', 4, '01234567890', 100000, true, '922d50', '54484C', 100000, 1, false, true, 2, 200000
     );
 
 insert into vehicles (
         user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year, 
         exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new, color, 
-        interior_color, credit_price, status, crash, negotiable
+        interior_color, credit_price, status, crash, negotiable, mileage_km
     ) 
     values (
-        1, 1, 1, 1, 1, 1, 1, 2020, false, false, false, 100000, '1234567890', 4, '01234567890', 100000, true, 'C6AEB6', '020102', 100000, 1, false, true
+        1, 1, 1, 1, 1, 1, 1, 2020, false, false, false, 100000, '1234567890', 4, '01234567890', 100000, true, 'C6AEB6', '020102', 100000, 1, false, true, 500
     );
 
 insert into vehicles (
         user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year, 
         exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new, color, 
-        interior_color, credit_price, status, crash, negotiable
+        interior_color, credit_price, status, crash, negotiable, mileage_km
     ) 
     values (
-        1, 1, 1, 1, 1, 1, 2, 2020, false, false, true, 100000, '1234567890', 4, '01234567890', 100000, true, '787878', '9EC4B7', 100000, 1, true, false
+        1, 1, 1, 1, 1, 1, 2, 2020, false, false, true, 100000, '1234567890', 4, '01234567890', 100000, true, '787878', '9EC4B7', 100000, 1, true, false, 100
     );
 
 

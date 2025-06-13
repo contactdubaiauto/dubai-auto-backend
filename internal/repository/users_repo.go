@@ -201,7 +201,7 @@ func (r *UserRepository) GetCars(ctx context.Context) ([]model.GetCarsResponse, 
 			fts.name as fuel_type,
 			vs.year,
 			vs.price,
-			vs.mileage,
+			vs.mileage_km,
 			vs.vin_code,
 			vs.exchange,
 			vs.credit,
@@ -220,7 +220,7 @@ func (r *UserRepository) GetCars(ctx context.Context) ([]model.GetCarsResponse, 
 		left join models ms on vs.model_id = ms.id
 		left join transmissions ts on vs.transmission_id = ts.id
 		left join engines es on vs.engine_id = es.id
-		left join drives ds on vs.drive_id = ds.id
+		left join drivetrains ds on vs.drivetrain_id = ds.id
 		left join body_types bts on vs.body_type_id = bts.id
 		left join fuel_types fts on vs.fuel_type_id = fts.id
 		left join lateral (

@@ -18,7 +18,7 @@ type CreateCarRequest struct {
 	DrivetrainID    int64  `json:"drivetrain_id"`
 	BodyTypeID      int64  `json:"body_type_id" binding:"required"`
 	FuelTypeID      int64  `json:"fuel_type_id"`
-	OwnershipTypeId int64  `json:"ownership_type_id"` // take it of user's token
+	OwnershipTypeId int64  `json:"ownership_type_id"`
 	Year            int64  `json:"year" binding:"required"`
 	Exchange        bool   `json:"exchange"`
 	Credit          bool   `json:"credit"`
