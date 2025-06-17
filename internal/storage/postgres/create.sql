@@ -8,6 +8,7 @@ alter default privileges in schema public grant all on sequences to da;
 
 
 drop table if exists images;
+drop table if exists generations;
 drop table if exists vehicles;
 drop table if exists services;
 drop table if exists service_types;
@@ -34,7 +35,8 @@ create table users (
     "phone" varchar(255) not null,
     "notification" boolean default false,
     "last_active_date" timestamp default now(),
-    "created_at" timestamp default now()
+    "created_at" timestamp default now(),
+    unique("email")
 );
 
 insert into users (username, email, password, phone, notification, last_active_date, created_at) 
@@ -283,6 +285,27 @@ insert into services (name, service_type_id) values ('Transmission Repair', 3);
 insert into services (name, service_type_id) values ('Suspension Repair', 3);
 insert into services (name, service_type_id) values ('Electrical Repair', 3);
 
+
+
+create table generations (
+    "id" serial primary key,
+    "name" varchar(255) not null,
+    "model_id" int not null,
+    "start_year" int not null,
+    "image" varchar(255) not null,
+    "end_year" int not null,
+    "created_at" timestamp default now(),
+    constraint generations_model_id_fk
+        foreign key (model_id)
+            references models(id)
+                on delete cascade,
+    unique(model_id, start_year, end_year)
+);
+
+insert into generations (name, model_id, start_year, end_year, image) values ('First Generation', 1, 2020, 2022, '/images/gens/1.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Second Generation', 1, 2023, 2025, '/images/gens/2.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('First Generation', 3, 2020, 2022, '/images/gens/3.jpg');
+
 create table ownership_types (
     "id" serial primary key,
     "name" varchar(255) not null,
@@ -431,4 +454,3 @@ insert into images (vehicle_id, image) values (1, '/images/cars/1/7.jpg');
 insert into images (vehicle_id, image) values (1, '/images/cars/1/8.jpg');
 insert into images (vehicle_id, image) values (1, '/images/cars/1/9.jpg');
 insert into images (vehicle_id, image) values (1, '/images/cars/1/10.jpg');
-

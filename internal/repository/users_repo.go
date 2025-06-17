@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"strconv"
 	"strings"
 
 	"dubai-auto/internal/model"
@@ -65,6 +64,29 @@ func (r *UserRepository) GetModelsByBrandID(ctx *context.Context, brandID int64,
 	}
 
 	return models, err
+}
+
+func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID int64) ([]model.Generation, error) {
+	q := `
+		SELECT id, name, image, start_year, end_year FROM generations where model_id = $1;
+	`
+	rows, err := r.db.Query(*ctx, q, modelID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	generations := make([]model.Generation, 0)
+
+	for rows.Next() {
+		var generation model.Generation
+		if err := rows.Scan(&generation.ID, &generation.Name, &generation.Image, &generation.StartYear, &generation.EndYear); err != nil {
+			return nil, err
+		}
+		generations = append(generations, generation)
+	}
+	return generations, err
 }
 
 func (r *UserRepository) GetBodyTypes(ctx *context.Context) ([]model.BodyType, error) {
@@ -282,19 +304,9 @@ func (r *UserRepository) CreateCarImages(ctx *context.Context, carID int, images
 	}
 
 	q := `
-		INSERT INTO images (vehicle_id, image) VALUES 
+		INSERT INTO images (vehicle_id, image) VALUES ($1, $2)
 	`
 
-	values := make([]string, 0, len(images))
-	args := make([]interface{}, 0, len(images)*2)
-
-	for i := range images {
-		values = append(values, "($1, $"+strconv.Itoa(i+2)+")")
-		args = append(args, carID, images[i])
-	}
-
-	q += strings.Join(values, ", ")
-
-	_, err := r.db.Exec(*ctx, q, args...)
+	_, err := r.db.Exec(*ctx, q, carID, images[0])
 	return err
 }

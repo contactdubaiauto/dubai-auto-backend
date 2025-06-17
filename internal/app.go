@@ -21,7 +21,7 @@ func InitApp(db *pgxpool.Pool, conf *config.Config) *gin.Engine {
 
 	router.Use(pkg.Cors)
 
-	router.Static("/images", conf.STATIC_PATH)
+	router.Static("/images", "."+conf.STATIC_PATH)
 
 	// new routers
 	route.Init(router, db)

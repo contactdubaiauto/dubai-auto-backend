@@ -28,6 +28,7 @@ func SetupUserRoutes(r *gin.RouterGroup, db *pgxpool.Pool) {
 	{
 		r.GET("/brands", userHandler.GetBrands)
 		r.GET("/brands/:id/models", userHandler.GetModelsByBrandID)
+		r.GET("/brands/:id/models/:model_id/generations", userHandler.GetGenerationsByModelID)
 		r.GET("/body-types", userHandler.GetBodyTypes)
 		r.GET("/transmissions", userHandler.GetTransmissions)
 		r.GET("/engines", userHandler.GetEngines)
@@ -47,5 +48,6 @@ func SetupAuthRoutes(r *gin.RouterGroup, db *pgxpool.Pool) {
 
 	{
 		r.POST("/user-login", authHandler.UserLogin)
+		r.POST("/user-register", authHandler.UserRegister)
 	}
 }

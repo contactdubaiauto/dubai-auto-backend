@@ -5,6 +5,7 @@ import (
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
 	"dubai-auto/pkg"
+	"fmt"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
@@ -39,6 +40,36 @@ func (s *AuthService) UserLogin(ctx context.Context, user *model.UserLogin) mode
 
 	accessToken, refreshToken := pkg.CreateRefreshAccsessToken(userByEmail.ID, 1)
 
+	return model.Response{
+		Data: model.LoginResponse{
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+		},
+	}
+}
+
+func (s *AuthService) UserRegister(ctx context.Context, user *model.UserRegister) model.Response {
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+
+	if err != nil {
+		return model.Response{
+			Error:  err,
+			Status: http.StatusInternalServerError,
+		}
+	}
+
+	user.Password = string(hashedPassword)
+	id, err := s.repo.UserRegister(ctx, user)
+
+	if err != nil {
+		return model.Response{
+			Error:  fmt.Errorf("user already exist: %w", err),
+			Status: http.StatusConflict,
+		}
+	}
+
+	accessToken, refreshToken := pkg.CreateRefreshAccsessToken(*id, 1)
 	return model.Response{
 		Data: model.LoginResponse{
 			AccessToken:  accessToken,

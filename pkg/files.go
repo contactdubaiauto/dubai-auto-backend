@@ -11,7 +11,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -69,6 +68,7 @@ func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]str
 	var fileNames []string
 	var video = 0
 	var images = 0
+
 	for index := range files {
 
 		if files[index].Size > maxFileSize {
@@ -108,6 +108,7 @@ func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]str
 		if err != nil {
 			return nil, 500, err
 		}
+
 		go func() {
 			for _, width := range widths {
 
@@ -141,8 +142,13 @@ func resizeImage(imagePath string, width uint) error {
 	}
 
 	resizedImg := resize.Resize(width, 0, img, resize.Lanczos3)
+	size := "l"
 
-	outputPath := strings.TrimSuffix(imagePath, filepath.Ext(imagePath)) + "_" + strconv.Itoa(int(width)) + ".jpg"
+	if width == 320 {
+		size = "m"
+	}
+
+	outputPath := strings.TrimSuffix(imagePath, filepath.Ext(imagePath)) + "_" + size + ".jpg"
 	outFile, err := os.Create(outputPath)
 	if err != nil {
 		return fmt.Errorf("failed to create output file: %w", err)

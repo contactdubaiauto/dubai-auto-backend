@@ -23,6 +23,10 @@ func (s *UserService) GetModelsByBrandID(ctx *context.Context, brandID int64, te
 	return s.UserRepository.GetModelsByBrandID(ctx, brandID, text)
 }
 
+func (s *UserService) GetGenerationsByModelID(ctx *context.Context, modelID int64) ([]model.Generation, error) {
+	return s.UserRepository.GetGenerationsByModelID(ctx, modelID)
+}
+
 func (s *UserService) GetBodyTypes(ctx *context.Context) ([]model.BodyType, error) {
 	return s.UserRepository.GetBodyTypes(ctx)
 }

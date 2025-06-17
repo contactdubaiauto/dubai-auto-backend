@@ -28,7 +28,7 @@ func (h *UserHandler) GetBrands(c *gin.Context) {
 	brands, err := h.UserService.GetBrands(&ctx, text)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
 		return
 	}
 
@@ -44,7 +44,7 @@ func (h *UserHandler) GetModelsByBrandID(c *gin.Context) {
 	brandIDInt, err := strconv.ParseInt(brandID, 10, 64)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error: ": err.Error()})
 		return
 	}
 
@@ -52,7 +52,7 @@ func (h *UserHandler) GetModelsByBrandID(c *gin.Context) {
 	models, err := h.UserService.GetModelsByBrandID(&ctx, brandIDInt, text)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
 		return
 	}
 
@@ -61,12 +61,34 @@ func (h *UserHandler) GetModelsByBrandID(c *gin.Context) {
 	})
 }
 
+func (h *UserHandler) GetGenerationsByModelID(c *gin.Context) {
+	modelID := c.Param("model_id")
+	modelIDInt, err := strconv.ParseInt(modelID, 10, 64)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error: ": err.Error()})
+		return
+	}
+
+	ctx := c.Request.Context()
+	generations, err := h.UserService.GetGenerationsByModelID(&ctx, modelIDInt)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
+		return
+	}
+
+	utils.GinResponse(c, &model.Response{
+		Data: generations,
+	})
+}
+
 func (h *UserHandler) GetBodyTypes(c *gin.Context) {
 	ctx := c.Request.Context()
 	bodyTypes, err := h.UserService.GetBodyTypes(&ctx)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
 		return
 	}
 
@@ -80,7 +102,7 @@ func (h *UserHandler) GetTransmissions(c *gin.Context) {
 	transmissions, err := h.UserService.GetTransmissions(&ctx)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
 		return
 	}
 	utils.GinResponse(c, &model.Response{
@@ -93,7 +115,7 @@ func (h *UserHandler) GetEngines(c *gin.Context) {
 	engines, err := h.UserService.GetEngines(&ctx)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
 		return
 	}
 	utils.GinResponse(c, &model.Response{
@@ -106,7 +128,7 @@ func (h *UserHandler) GetDrivetrains(c *gin.Context) {
 	drivetrains, err := h.UserService.GetDrivetrains(&ctx)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
 		return
 	}
 
@@ -120,7 +142,7 @@ func (h *UserHandler) GetFuelTypes(c *gin.Context) {
 	fuelTypes, err := h.UserService.GetFuelTypes(&ctx)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
 		return
 	}
 	utils.GinResponse(c, &model.Response{
@@ -133,7 +155,7 @@ func (h *UserHandler) GetCars(c *gin.Context) {
 	cars, err := h.UserService.GetCars(&ctx)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
 		return
 	}
 
@@ -147,7 +169,7 @@ func (h *UserHandler) CreateCar(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	if err := c.ShouldBindJSON(&car); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error: ": err.Error()})
 		return
 	}
 

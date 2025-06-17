@@ -29,3 +29,16 @@ func (h *AuthHandler) UserLogin(c *gin.Context) {
 
 	utils.GinResponse(c, &data)
 }
+
+func (h *AuthHandler) UserRegister(c *gin.Context) {
+	user := &model.UserRegister{}
+
+	if err := c.ShouldBindJSON(user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	data := h.service.UserRegister(c.Request.Context(), user)
+
+	utils.GinResponse(c, &data)
+}

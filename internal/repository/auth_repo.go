@@ -26,3 +26,16 @@ func (r *AuthRepository) UserLogin(ctx context.Context, user *model.UserLogin) (
 
 	return &userByEmail, err
 }
+
+func (r *AuthRepository) UserRegister(ctx context.Context, user *model.UserRegister) (*int, error) {
+	query := `
+		INSERT INTO users (email, password, phone, username)
+		VALUES ($1, $2, $3, $4)
+		RETURNING id
+	`
+	var id int
+
+	err := r.db.QueryRow(ctx, query, user.Email, user.Password, user.Phone, user.Username).Scan(&id)
+
+	return &id, err
+}

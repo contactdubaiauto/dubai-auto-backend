@@ -14,6 +14,14 @@ type Model struct {
 	Name string `json:"name"`
 }
 
+type Generation struct {
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	Image     string `json:"image"`
+	StartYear int    `json:"start_year"`
+	EndYear   int    `json:"end_year"`
+}
+
 type BodyType struct {
 	ID   int64  `json:"id"`
 	Name string `json:"name"`
