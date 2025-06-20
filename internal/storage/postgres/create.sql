@@ -315,6 +315,25 @@ create table ownership_types (
 insert into ownership_types (name) values ('Dealership');
 insert into ownership_types (name) values ('Private Owner');
 
+create table colors (
+    "id" serial primary key,
+    "name" varchar(255) not null,
+    "hex_code" varchar(7) not null,
+    "created_at" timestamp default now()
+);
+
+insert into colors (name, hex_code) values ('Black', '#000000');
+insert into colors (name, hex_code) values ('White', '#FFFFFF');
+insert into colors (name, hex_code) values ('Red', '#FF0000');
+insert into colors (name, hex_code) values ('Blue', '#0000FF');
+insert into colors (name, hex_code) values ('Green', '#008000');
+insert into colors (name, hex_code) values ('Yellow', '#FFFF00');
+insert into colors (name, hex_code) values ('Silver', '#C0C0C0');
+insert into colors (name, hex_code) values ('Gray', '#808080');
+insert into colors (name, hex_code) values ('Orange', '#FFA500');
+insert into colors (name, hex_code) values ('Purple', '#800080');
+
+
 create table vehicles (
     "id" serial primary key,
     "user_id" int,
@@ -322,6 +341,7 @@ create table vehicles (
     "region_id" int,
     "city_id" int,
     "model_id" int,
+    "generation_id" int,
     "transmission_id" int,
     "engine_id" int,
     "drivetrain_id" int,
@@ -340,8 +360,8 @@ create table vehicles (
     "phone_number" varchar(255) not null,
     "price" int not null,
     "new" boolean not null default false,
-    "color" varchar(255),
-    "interior_color" varchar(255),
+    "color_id" int,
+    "interior_color_id" int,
     "mileage_km" int,
     "crash" boolean not null default false,
     "negotiable" boolean not null default false,
@@ -349,6 +369,21 @@ create table vehicles (
     "status" int not null default 1,
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
+    constraint vehicles_generation_id_fk
+        foreign key (generation_id)
+            references generations(id)
+                on delete set null
+                on update cascade,
+    constraint vehicles_color_id_fk
+        foreign key (color_id)
+            references colors(id)
+                on delete set null
+                on update cascade,
+    constraint vehicles_interior_color_id_fk
+        foreign key (interior_color_id)
+            references colors(id)
+                on delete set null
+                on update cascade,
     constraint vehicles_ownership_type_id_fk
         foreign key (ownership_type_id)
             references ownership_types(id)
@@ -407,31 +442,31 @@ create table vehicles (
 );
 
 insert into vehicles (
-        user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year, 
-        exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new, color, 
-        interior_color, credit_price, status, crash, negotiable, drivetrain_id, mileage_km
-    ) 
-    values (
-        1, 1, 1, 1, 1, 1, 1, 2020, false, false, false, 100000, '1234567890', 4, '01234567890', 100000, true, '922d50', '54484C', 100000, 1, false, true, 2, 200000
-    );
-
+    user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year, 
+    exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new,
+    credit_price, status, crash, negotiable, drivetrain_id, mileage_km, interior_color_id, color_id
+)  values (
+    1, 1, 1, 1, 1, 1, 1, 2020, false, false, false, 100000, '1234567890', 4, '01234567890', 100000, true, 100000, 1, false, true, 2, 200000, 
+    2, 1
+);
 insert into vehicles (
-        user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year, 
-        exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new, color, 
-        interior_color, credit_price, status, crash, negotiable, mileage_km
-    ) 
-    values (
-        1, 1, 1, 1, 1, 1, 1, 2020, false, false, false, 100000, '1234567890', 4, '01234567890', 100000, true, 'C6AEB6', '020102', 100000, 1, false, true, 500
-    );
-
+    user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year, 
+    exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new,
+    credit_price, status, crash, negotiable, drivetrain_id, mileage_km, interior_color_id, color_id
+)  values (
+    1, 2, 1, 2, 2, 2, 1, 2021, false, false, false, 50000, '0987654321', 4, '01234567890', 150000, true,
+    150000, 1, false, true, 3, 100000,
+    3, 2
+);
 insert into vehicles (
-        user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year, 
-        exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new, color, 
-        interior_color, credit_price, status, crash, negotiable, mileage_km
-    ) 
-    values (
-        1, 1, 1, 1, 1, 1, 2, 2020, false, false, true, 100000, '1234567890', 4, '01234567890', 100000, true, '787878', '9EC4B7', 100000, 1, true, false, 100
-    );
+    user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year,
+    exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new,
+    credit_price, status, crash, negotiable, drivetrain_id, mileage_km, interior_color_id, color_id
+)  values (
+    1, 3, 1, 3, 3, 3, 1, 2022, false, false, false, 30000, '1122334455', 4, '01234567890', 200000, true,
+    200000, 1, false, true, 1, 50000,
+    5, 3
+);
 
 
 create table images (

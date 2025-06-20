@@ -85,29 +85,14 @@ func (h *UserHandler) GetGenerationsByModelID(c *gin.Context) {
 
 func (h *UserHandler) GetBodyTypes(c *gin.Context) {
 	ctx := c.Request.Context()
-	bodyTypes, err := h.UserService.GetBodyTypes(&ctx)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
-		return
-	}
-
-	utils.GinResponse(c, &model.Response{
-		Data: bodyTypes,
-	})
+	data := h.UserService.GetBodyTypes(&ctx)
+	utils.GinResponse(c, data)
 }
 
 func (h *UserHandler) GetTransmissions(c *gin.Context) {
 	ctx := c.Request.Context()
-	transmissions, err := h.UserService.GetTransmissions(&ctx)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
-		return
-	}
-	utils.GinResponse(c, &model.Response{
-		Data: transmissions,
-	})
+	data := h.UserService.GetTransmissions(&ctx)
+	utils.GinResponse(c, data)
 }
 
 func (h *UserHandler) GetEngines(c *gin.Context) {
@@ -139,27 +124,41 @@ func (h *UserHandler) GetDrivetrains(c *gin.Context) {
 
 func (h *UserHandler) GetFuelTypes(c *gin.Context) {
 	ctx := c.Request.Context()
-	fuelTypes, err := h.UserService.GetFuelTypes(&ctx)
+	data := h.UserService.GetFuelTypes(&ctx)
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
-		return
-	}
-	utils.GinResponse(c, &model.Response{
-		Data: fuelTypes,
-	})
+	utils.GinResponse(c, data)
+}
+
+func (h *UserHandler) GetColors(c *gin.Context) {
+	ctx := c.Request.Context()
+	data := h.UserService.GetColors(&ctx)
+	utils.GinResponse(c, data)
 }
 
 func (h *UserHandler) GetCars(c *gin.Context) {
 	ctx := c.Request.Context()
-	cars, err := h.UserService.GetCars(&ctx)
+	data := h.UserService.GetCars(&ctx)
+	// brands := c.Query("brands")
+	// models := c.Query("models")
+	// cities := c.Query("cities")
+	// regions := c.Query("regions")
+
+	utils.GinResponse(c, data)
+}
+
+func (h *UserHandler) GetCarByID(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error: ": "invalid car ID"})
 		return
 	}
 
-	utils.GinResponse(c, &model.Response{Data: cars})
+	ctx := c.Request.Context()
+	data := h.UserService.GetCarByID(&ctx, id)
+
+	utils.GinResponse(c, data)
 }
 
 func (h *UserHandler) CreateCar(c *gin.Context) {

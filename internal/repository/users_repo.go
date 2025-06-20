@@ -209,13 +209,43 @@ func (r *UserRepository) GetFuelTypes(ctx *context.Context) ([]model.FuelType, e
 	return fuelTypes, err
 }
 
-func (r *UserRepository) GetCars(ctx *context.Context) ([]model.GetCarsResponse, error) {
+func (r *UserRepository) GetColors(ctx *context.Context) ([]model.Color, error) {
 	q := `
+		SELECT id, name, hex_code FROM colors
+	`
+
+	rows, err := r.db.Query(*ctx, q)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	colors := make([]model.Color, 0)
+
+	for rows.Next() {
+		var color model.Color
+
+		if err := rows.Scan(&color.ID, &color.Name, &color.HexCode); err != nil {
+			return nil, err
+		}
+		colors = append(colors, color)
+	}
+	return colors, err
+}
+
+func (r *UserRepository) GetCars(ctx *context.Context) ([]model.GetCarsResponse, error) {
+	cars := make([]model.GetCarsResponse, 0)
+
+	q := `
+		
 		select 
 			vs.id,
 			bs.name as brand,
 			rs.name as region,
 			cs.name as city,
+			cls.name as color,
+			icls.name as interior_color,
 			ms.name as model,
 			ts.name as transmission,
 			es.value as engine,
@@ -229,7 +259,6 @@ func (r *UserRepository) GetCars(ctx *context.Context) ([]model.GetCarsResponse,
 			vs.exchange,
 			vs.credit,
 			vs.new,
-			vs.color,
 			vs.credit_price,
 			vs.status,
 			vs.created_at,
@@ -237,6 +266,8 @@ func (r *UserRepository) GetCars(ctx *context.Context) ([]model.GetCarsResponse,
 			images,
 			vs.phone_number
 		from vehicles vs
+		left join colors icls on icls.id = vs.interior_color_id
+		left join colors cls on vs.color_id = cls.id
 		left join brands bs on vs.brand_id = bs.id
 		left join regions rs on vs.region_id = rs.id
 		left join cities cs on vs.city_id = cs.id
@@ -251,25 +282,24 @@ func (r *UserRepository) GetCars(ctx *context.Context) ([]model.GetCarsResponse,
 				json_agg(image) as images
 			from images 
 			where vehicle_id = vs.id
-		) images on true;
+		) images on true
 
 	`
 
 	rows, err := r.db.Query(*ctx, q)
 
 	if err != nil {
-		return nil, err
+		return cars, err
 	}
 
 	defer rows.Close()
-	cars := make([]model.GetCarsResponse, 0)
 
 	for rows.Next() {
 		var car model.GetCarsResponse
 		if err := rows.Scan(
-			&car.ID, &car.Brand, &car.Region, &car.City, &car.Model, &car.Transmission, &car.Engine,
+			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.InteriorColor, &car.Model, &car.Transmission, &car.Engine,
 			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
-			&car.Exchange, &car.Credit, &car.New, &car.Color, &car.CreditPrice, &car.Status, &car.CreatedAt,
+			&car.Exchange, &car.Credit, &car.New, &car.CreditPrice, &car.Status, &car.CreatedAt,
 			&car.UpdatedAt, &car.Images, &car.PhoneNumber,
 		); err != nil {
 			return cars, err
@@ -278,6 +308,68 @@ func (r *UserRepository) GetCars(ctx *context.Context) ([]model.GetCarsResponse,
 	}
 
 	return cars, err
+}
+
+func (r *UserRepository) GetCarByID(ctx *context.Context, carID int) (model.GetCarsResponse, error) {
+	car := model.GetCarsResponse{}
+
+	q := `
+		select 
+			vs.id,
+			bs.name as brand,
+			rs.name as region,
+			cs.name as city,
+			cls.name as color,
+			icls.name as interior_color,
+			ms.name as model,
+			ts.name as transmission,
+			es.value as engine,
+			ds.name as drive,
+			bts.name as body_type,
+			fts.name as fuel_type,
+			vs.year,
+			vs.price,
+			vs.mileage_km,
+			vs.vin_code,
+			vs.exchange,
+			vs.credit,
+			vs.new,
+			vs.credit_price,
+			vs.status,
+			vs.created_at,
+			vs.updated_at,
+			images,
+			vs.phone_number
+		from vehicles vs
+		left join colors icls on icls.id = vs.interior_color_id
+		left join colors cls on vs.color_id = cls.id
+		left join brands bs on vs.brand_id = bs.id
+		left join regions rs on vs.region_id = rs.id
+		left join cities cs on vs.city_id = cs.id
+		left join models ms on vs.model_id = ms.id
+		left join transmissions ts on vs.transmission_id = ts.id
+		left join engines es on vs.engine_id = es.id
+		left join drivetrains ds on vs.drivetrain_id = ds.id
+		left join body_types bts on vs.body_type_id = bts.id
+		left join fuel_types fts on vs.fuel_type_id = fts.id
+		left join lateral (
+			select 
+				json_agg(image) as images
+			from images 
+			where vehicle_id = vs.id
+		) images on true
+		where vs.id = $1;
+
+	`
+
+	err := r.db.QueryRow(*ctx, q, carID).Scan(
+		&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.InteriorColor, &car.Model, &car.Transmission, &car.Engine,
+		&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
+		&car.Exchange, &car.Credit, &car.New, &car.CreditPrice, &car.Status, &car.CreatedAt,
+		&car.UpdatedAt, &car.Images, &car.PhoneNumber,
+	)
+
+	return car, err
 }
 
 func (r *UserRepository) CreateCar(ctx *context.Context, car *model.CreateCarRequest) (int, error) {

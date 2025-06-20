@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"net/http"
 
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
@@ -27,12 +28,23 @@ func (s *UserService) GetGenerationsByModelID(ctx *context.Context, modelID int6
 	return s.UserRepository.GetGenerationsByModelID(ctx, modelID)
 }
 
-func (s *UserService) GetBodyTypes(ctx *context.Context) ([]model.BodyType, error) {
-	return s.UserRepository.GetBodyTypes(ctx)
+func (s *UserService) GetBodyTypes(ctx *context.Context) *model.Response {
+	data, err := s.UserRepository.GetBodyTypes(ctx)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: data, Status: http.StatusOK}
 }
 
-func (s *UserService) GetTransmissions(ctx *context.Context) ([]model.Transmission, error) {
-	return s.UserRepository.GetTransmissions(ctx)
+func (s *UserService) GetTransmissions(ctx *context.Context) *model.Response {
+	data, err := s.UserRepository.GetTransmissions(ctx)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: data, Status: http.StatusOK}
 }
 
 func (s *UserService) GetEngines(ctx *context.Context) ([]model.Engine, error) {
@@ -43,12 +55,40 @@ func (s *UserService) GetDrivetrains(ctx *context.Context) ([]model.Drivetrain, 
 	return s.UserRepository.GetDrivetrains(ctx)
 }
 
-func (s *UserService) GetFuelTypes(ctx *context.Context) ([]model.FuelType, error) {
-	return s.UserRepository.GetFuelTypes(ctx)
+func (s *UserService) GetFuelTypes(ctx *context.Context) *model.Response {
+	data, err := s.UserRepository.GetFuelTypes(ctx)
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetCars(ctx *context.Context) ([]model.GetCarsResponse, error) {
-	return s.UserRepository.GetCars(ctx)
+func (s *UserService) GetColors(ctx *context.Context) *model.Response {
+	data, err := s.UserRepository.GetColors(ctx)
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: data}
+}
+
+func (s *UserService) GetCars(ctx *context.Context) *model.Response {
+	cars, err := s.UserRepository.GetCars(ctx)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: cars}
+}
+
+func (s *UserService) GetCarByID(ctx *context.Context, carID int) *model.Response {
+	car, err := s.UserRepository.GetCarByID(ctx, carID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: car}
 }
 
 func (s *UserService) CreateCar(ctx *context.Context, car *model.CreateCarRequest) *model.Response {
