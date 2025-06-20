@@ -8,8 +8,8 @@ alter default privileges in schema public grant all on sequences to da;
 
 
 drop table if exists images;
-drop table if exists generations;
 drop table if exists vehicles;
+drop table if exists colors;
 drop table if exists services;
 drop table if exists service_types;
 drop table if exists regions;
@@ -19,6 +19,7 @@ drop table if exists drivetrains;
 drop table if exists engines;
 drop table if exists transmissions;
 drop table if exists body_types;
+drop table if exists generations;
 drop table if exists models;
 drop table if exists brands;
 drop table if exists users;
@@ -479,13 +480,8 @@ create table images (
                 on update cascade
 );
 
-insert into images (vehicle_id, image) values (1, '/images/cars/1/1.jpg');
-insert into images (vehicle_id, image) values (1, '/images/cars/1/2.jpg');
-insert into images (vehicle_id, image) values (1, '/images/cars/1/3.jpg');
-insert into images (vehicle_id, image) values (1, '/images/cars/1/4.jpg');
-insert into images (vehicle_id, image) values (1, '/images/cars/1/5.jpg');
-insert into images (vehicle_id, image) values (1, '/images/cars/1/6.jpg');
-insert into images (vehicle_id, image) values (1, '/images/cars/1/7.jpg');
-insert into images (vehicle_id, image) values (1, '/images/cars/1/8.jpg');
-insert into images (vehicle_id, image) values (1, '/images/cars/1/9.jpg');
-insert into images (vehicle_id, image) values (1, '/images/cars/1/10.jpg');
+insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+

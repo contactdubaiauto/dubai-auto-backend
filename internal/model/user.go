@@ -28,8 +28,8 @@ type CreateCarRequest struct {
 	PhoneNumber     string `json:"phone_number" binding:"required"`
 	Price           int64  `json:"price" binding:"required"`
 	New             bool   `json:"new"`
-	Color           string `json:"color"`
-	InteriorColor   string `json:"interior_color"`
+	ColorID         int    `json:"color_id"`
+	InteriorColorID int64  `json:"interior_color_id"`
 	Crash           bool   `json:"crash"`
 	Negotiable      bool   `json:"negotiable"`
 	CreditPrice     int64  `json:"credit_price"`
