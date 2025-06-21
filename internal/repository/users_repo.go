@@ -91,7 +91,7 @@ func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID i
 
 func (r *UserRepository) GetBodyTypes(ctx *context.Context) ([]model.BodyType, error) {
 	q := `
-		SELECT id, name FROM body_types
+		SELECT id, name, image FROM body_types
 	`
 
 	rows, err := r.db.Query(*ctx, q)
@@ -105,9 +105,11 @@ func (r *UserRepository) GetBodyTypes(ctx *context.Context) ([]model.BodyType, e
 
 	for rows.Next() {
 		var bodyType model.BodyType
-		if err := rows.Scan(&bodyType.ID, &bodyType.Name); err != nil {
+
+		if err := rows.Scan(&bodyType.ID, &bodyType.Name, &bodyType.Images); err != nil {
 			return nil, err
 		}
+
 		bodyTypes = append(bodyTypes, bodyType)
 	}
 	return bodyTypes, err

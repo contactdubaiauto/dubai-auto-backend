@@ -129,24 +129,25 @@ insert into models (name, brand_id) values ('K7', 7);
 create table body_types (
     "id" serial primary key,
     "name" varchar(255) not null,
+    "image" character varying(255) not null,
     "created_at" timestamp default now()
 );
 
-insert into body_types (name) values ('Sedan');
-insert into body_types (name) values ('Hatchback');
-insert into body_types (name) values ('SUV');
-insert into body_types (name) values ('Crossover');
-insert into body_types (name) values ('Coupe');
-insert into body_types (name) values ('Convertible');
-insert into body_types (name) values ('Wagon');
-insert into body_types (name) values ('Pickup Truck');
-insert into body_types (name) values ('Van');
-insert into body_types (name) values ('Minivan');
-insert into body_types (name) values ('Roadster');
-insert into body_types (name) values ('Sports Car');
-insert into body_types (name) values ('Off-Road');
-insert into body_types (name) values ('Limousine'); 
-insert into body_types (name) values ('Utility');
+insert into body_types (name, image) values ('Sedan','/images/body/sedan.png');
+insert into body_types (name, image) values ('Hatchback', '/images/body/hatchback.png');
+insert into body_types (name, image) values ('SUV', '/images/body/suv.png');
+insert into body_types (name, image) values ('Crossover', '/images/body/crossover.png');
+insert into body_types (name, image) values ('Coupe', '/images/body/coupe.png');
+insert into body_types (name, image) values ('Convertible', '/images/body/convertible.png');
+insert into body_types (name, image) values ('Wagon', '/images/body/wagon.png');
+insert into body_types (name, image) values ('Pickup Truck', '/images/body/pickup_truck.png');
+insert into body_types (name, image) values ('Van', '/images/body/van.png');
+insert into body_types (name, image) values ('Minivan', '/images/body/minivan.png');
+insert into body_types (name, image) values ('Roadster', '/images/body/roadster.png');
+insert into body_types (name, image) values ('Sports Car', '/images/body/sports_car.png');
+insert into body_types (name, image) values ('Off-Road', '/images/body/off_road.png');
+insert into body_types (name, image) values ('Limousine', '/images/body/limousine.png'); 
+insert into body_types (name, image) values ('Utility', '/images/body/utility.png');
 
 
 

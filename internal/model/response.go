@@ -23,8 +23,9 @@ type Generation struct {
 }
 
 type BodyType struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
+	ID     int64  `json:"id"`
+	Name   string `json:"name"`
+	Images string `json:"images"`
 }
 
 type Transmission struct {
