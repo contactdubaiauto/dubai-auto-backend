@@ -22,6 +22,18 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 	return &UserHandler{service}
 }
 
+func (h *UserHandler) GetProfileCars(c *gin.Context) {
+	ctx := c.Request.Context()
+	userID := c.MustGet("id").(int)
+	data := h.UserService.GetProfileCars(&ctx, &userID)
+	// brands := c.Query("brands")
+	// models := c.Query("models")
+	// cities := c.Query("cities")
+	// regions := c.Query("regions")
+
+	utils.GinResponse(c, data)
+}
+
 func (h *UserHandler) GetBrands(c *gin.Context) {
 	text := c.Query("text")
 	ctx := c.Request.Context()

@@ -26,6 +26,8 @@ func SetupUserRoutes(r *gin.RouterGroup, db *pgxpool.Pool) {
 	userHandler := http.NewUserHandler(userService)
 
 	{
+		r.GET("/profile/cars", pkg.TokenGuard, userHandler.GetProfileCars)
+
 		r.GET("/brands", userHandler.GetBrands)
 		r.GET("/brands/:id/models", userHandler.GetModelsByBrandID)
 		r.GET("/brands/:id/models/:model_id/generations", userHandler.GetGenerationsByModelID)

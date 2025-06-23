@@ -16,6 +16,16 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 	return &UserService{repo}
 }
 
+func (s *UserService) GetProfileCars(ctx *context.Context, userID *int) *model.Response {
+	cars, err := s.UserRepository.GetProfileCars(ctx, userID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: cars}
+}
+
 func (s *UserService) GetBrands(ctx *context.Context, text string) ([]*model.GetBrandsResponse, error) {
 	return s.UserRepository.GetBrands(ctx, text)
 }
