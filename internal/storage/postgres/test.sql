@@ -381,3 +381,100 @@ left join lateral (
     from images 
     where vehicle_id = vs.id
 ) images on true;
+
+
+with fts as (
+    select
+        gft.generation_id,
+        json_agg(
+            json_build_object(
+                'id', ft.id,
+                'name', ft.name
+            )
+        ) as fuel_types
+    from generation_fuel_types gft
+    left join fuel_types ft on gft.fuel_type_id = ft.id
+    group by gft.generation_id
+), bts as (
+    select
+        gbts.generation_id,
+        json_agg(
+            json_build_object(
+                'id', bts.id,
+                'name', bts.name,
+                'image', bts.image
+            )
+        ) as body_types
+    from generation_body_types gbts 
+    left join body_types bts on gbts.body_type_id = bts.id
+    group by gbts.generation_id
+), dts as (
+    select
+        gds.generation_id,
+        json_agg(
+            json_build_object(
+                'id', ds.id,
+                'name', ds.name
+            )
+        ) as drivetrains
+    from generation_drivetrains gds
+    left join drivetrains ds on gds.drivetrain_id = ds.id
+    group by gds.generation_id
+), ts as (
+    select
+        gts.generation_id,
+        json_agg(
+            json_build_object(
+                'id', t.id,
+                'name', t.name
+            )
+        ) as transmissions
+    from generation_transmissions gts
+    left join transmissions t on gts.transmission_id = t.id
+    group by gts.generation_id
+)
+
+SELECT 
+    gs.id, 
+    gs.name, 
+    gs.image, 
+    gs.start_year, 
+    gs.end_year,
+    fts.fuel_types,
+    bts.body_types,
+    dts.drivetrains,
+    ts.transmissions
+FROM generations gs
+left join fts on gs.id = fts.generation_id
+left join bts on gs.id = bts.generation_id
+left join dts on gs.id = dts.generation_id
+left join ts on gs.id = ts.generation_id
+WHERE gs.model_id = 1;
+
+
+
+
+
+
+
+SELECT 
+    gs.id, 
+    gs.name, 
+    gs.image, 
+    gs.start_year, 
+    gs.end_year,
+    ARRAY_AGG(DISTINCT bt.name) AS body_types,
+    ARRAY_AGG(DISTINCT t.name) AS transmissions,
+    ARRAY_AGG(DISTINCT ft.name) AS fuel_types,
+    ARRAY_AGG(DISTINCT d.name) AS drivetrains
+FROM generations gs
+LEFT JOIN generation_body_types gbt ON gs.id = gbt.generation_id
+LEFT JOIN body_types bt ON gbt.body_type_id = bt.id
+LEFT JOIN generation_transmissions gt ON gs.id = gt.generation_id
+LEFT JOIN transmissions t ON gt.transmission_id = t.id
+LEFT JOIN generation_fuel_types gft ON gs.id = gft.generation_id
+LEFT JOIN fuel_types ft ON gft.fuel_type_id = ft.id
+LEFT JOIN generation_drivetrains gd ON gs.id = gd.generation_id
+LEFT JOIN drivetrains d ON gd.drivetrain_id = d.id
+WHERE gs.model_id = 1
+GROUP BY gs.id, gs.name, gs.image, gs.start_year, gs.end_year;

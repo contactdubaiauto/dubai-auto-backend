@@ -68,7 +68,73 @@ func (r *UserRepository) GetModelsByBrandID(ctx *context.Context, brandID int64,
 
 func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID int64) ([]model.Generation, error) {
 	q := `
-		SELECT id, name, image, start_year, end_year FROM generations where model_id = $1;
+		with fts as (
+			select
+				gft.generation_id,
+				json_agg(
+					json_build_object(
+						'id', ft.id,
+						'name', ft.name
+					)
+				) as fuel_types
+			from generation_fuel_types gft
+			left join fuel_types ft on gft.fuel_type_id = ft.id
+			group by gft.generation_id
+		), bts as (
+			select
+				gbts.generation_id,
+				json_agg(
+					json_build_object(
+						'id', bts.id,
+						'name', bts.name,
+						'image', bts.image
+					)
+				) as body_types
+			from generation_body_types gbts 
+			left join body_types bts on gbts.body_type_id = bts.id
+			group by gbts.generation_id
+		), dts as (
+			select
+				gds.generation_id,
+				json_agg(
+					json_build_object(
+						'id', ds.id,
+						'name', ds.name
+					)
+				) as drivetrains
+			from generation_drivetrains gds
+			left join drivetrains ds on gds.drivetrain_id = ds.id
+			group by gds.generation_id
+		), ts as (
+			select
+				gts.generation_id,
+				json_agg(
+					json_build_object(
+						'id', t.id,
+						'name', t.name
+					)
+				) as transmissions
+			from generation_transmissions gts
+			left join transmissions t on gts.transmission_id = t.id
+			group by gts.generation_id
+		)
+
+		SELECT 
+			gs.id, 
+			gs.name, 
+			gs.image, 
+			gs.start_year, 
+			gs.end_year,
+			fts.fuel_types,
+			bts.body_types,
+			dts.drivetrains,
+			ts.transmissions
+		FROM generations gs
+		left join fts on gs.id = fts.generation_id
+		left join bts on gs.id = bts.generation_id
+		left join dts on gs.id = dts.generation_id
+		left join ts on gs.id = ts.generation_id
+		WHERE gs.model_id = $1;
 	`
 	rows, err := r.db.Query(*ctx, q, modelID)
 
@@ -81,7 +147,10 @@ func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID i
 
 	for rows.Next() {
 		var generation model.Generation
-		if err := rows.Scan(&generation.ID, &generation.Name, &generation.Image, &generation.StartYear, &generation.EndYear); err != nil {
+		if err := rows.Scan(&generation.ID, &generation.Name,
+			&generation.Image, &generation.StartYear, &generation.EndYear,
+			&generation.FuelTypes, &generation.BodyTypes, &generation.Drivetrains, &generation.Transmissions,
+		); err != nil {
 			return nil, err
 		}
 		generations = append(generations, generation)
@@ -106,7 +175,7 @@ func (r *UserRepository) GetBodyTypes(ctx *context.Context) ([]model.BodyType, e
 	for rows.Next() {
 		var bodyType model.BodyType
 
-		if err := rows.Scan(&bodyType.ID, &bodyType.Name, &bodyType.Images); err != nil {
+		if err := rows.Scan(&bodyType.ID, &bodyType.Name, &bodyType.Image); err != nil {
 			return nil, err
 		}
 
@@ -400,7 +469,12 @@ func (r *UserRepository) CreateCarImages(ctx *context.Context, carID int, images
 	q := `
 		INSERT INTO images (vehicle_id, image) VALUES ($1, $2)
 	`
+	for i := range images {
+		_, err := r.db.Exec(*ctx, q, carID, images[i])
+		if err != nil {
+			return err
+		}
+	}
 
-	_, err := r.db.Exec(*ctx, q, carID, images[0])
-	return err
+	return nil
 }

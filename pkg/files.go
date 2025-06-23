@@ -13,6 +13,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	// _ "github.com/chai2010/webp" // for decoding webp images
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/nfnt/resize"
@@ -24,6 +26,7 @@ var extensions map[string]bool = map[string]bool{
 	"jpg":  true,
 	"jpeg": true,
 	"png":  true,
+	// "webp": true,
 	// "mp4":  true,
 	// "heic": true,
 }
@@ -88,7 +91,7 @@ func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]str
 			images += 1
 		}
 
-		if video > 1 || images > 5 {
+		if video > 1 || images > 10 {
 			return nil, 400, fmt.Errorf("trying to upload %v video and %v images", video, images)
 		}
 		fileNames = append(fileNames, uuid.NewString())
@@ -114,6 +117,7 @@ func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]str
 
 				err = resizeImage("."+base+"/"+fileNames[index], width)
 				if err != nil {
+					fmt.Println("error 98sdujf:", err)
 					return
 				}
 
@@ -121,6 +125,7 @@ func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]str
 			err = os.Remove("." + base + "/" + fileNames[index])
 
 			if err != nil {
+				fmt.Println("error sduihfjnkmjjhjh:", err)
 				return
 			}
 		}()

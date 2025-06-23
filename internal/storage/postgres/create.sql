@@ -308,6 +308,107 @@ insert into generations (name, model_id, start_year, end_year, image) values ('F
 insert into generations (name, model_id, start_year, end_year, image) values ('Second Generation', 1, 2023, 2025, '/images/gens/2.jpg');
 insert into generations (name, model_id, start_year, end_year, image) values ('First Generation', 3, 2020, 2022, '/images/gens/3.jpg');
 
+create table generation_body_types (
+    "id" serial primary key,
+    "generation_id" int not null,
+    "body_type_id" int not null,
+    "created_at" timestamp default now(),
+    constraint generation_body_types_generation_id_fk
+        foreign key (generation_id)
+            references generations(id)
+                on delete cascade
+                on update cascade,
+    constraint generation_body_types_body_type_id_fk
+        foreign key (body_type_id)
+            references body_types(id)
+                on delete cascade
+                on update cascade,
+    unique(generation_id, body_type_id)
+);
+
+insert into generation_body_types (generation_id, body_type_id) values (1, 1); -- First Generation Camry - Sedan
+insert into generation_body_types (generation_id, body_type_id) values (1, 2); -- First Generation Camry - Hatchback
+insert into generation_body_types (generation_id, body_type_id) values (2, 1); -- Second Generation Camry - Sedan
+insert into generation_body_types (generation_id, body_type_id) values (2, 2); -- Second Generation Camry - Hatchback
+insert into generation_body_types (generation_id, body_type_id) values (3, 1); -- First Generation Rav4 - Sedan
+insert into generation_body_types (generation_id, body_type_id) values (3, 2); -- First Generation Rav4 - Hatchback
+
+create table generation_fuel_types (
+    "id" serial primary key,
+    "generation_id" int not null,
+    "fuel_type_id" int not null,
+    "created_at" timestamp default now(),
+    constraint generation_fuel_types_generation_id_fk
+        foreign key (generation_id)
+            references generations(id)
+                on delete cascade
+                on update cascade,
+    constraint generation_fuel_types_fuel_type_id_fk
+        foreign key (fuel_type_id)
+            references fuel_types(id)
+                on delete cascade
+                on update cascade,
+    unique(generation_id, fuel_type_id)
+);
+
+insert into generation_fuel_types (generation_id, fuel_type_id) values (1, 1); -- First Generation Camry - Gasoline
+insert into generation_fuel_types (generation_id, fuel_type_id) values (1, 2); -- First Generation Camry - Diesel
+insert into generation_fuel_types (generation_id, fuel_type_id) values (2, 1); -- Second Generation Camry - Gasoline
+insert into generation_fuel_types (generation_id, fuel_type_id) values (2, 2); -- Second Generation Camry - Diesel
+insert into generation_fuel_types (generation_id, fuel_type_id) values (3, 1); -- First Generation Rav4 - Gasoline
+insert into generation_fuel_types (generation_id, fuel_type_id) values (3, 2); -- First Generation Rav4 - Diesel
+
+create table generation_drivetrains (
+    "id" serial primary key,
+    "generation_id" int not null,
+    "drivetrain_id" int not null,
+    "created_at" timestamp default now(),
+    constraint generation_drivetrains_generation_id_fk
+        foreign key (generation_id)
+            references generations(id)
+                on delete cascade
+                on update cascade,
+    constraint generation_drivetrains_drivetrain_id_fk
+        foreign key (drivetrain_id)
+            references drivetrains(id)
+                on delete cascade
+                on update cascade,
+    unique(generation_id, drivetrain_id)
+);
+
+insert into generation_drivetrains (generation_id, drivetrain_id) values (1, 1); -- First Generation Camry - Front-Wheel Drive
+insert into generation_drivetrains (generation_id, drivetrain_id) values (1, 2); -- First Generation Camry - Rear-Wheel Drive
+insert into generation_drivetrains (generation_id, drivetrain_id) values (2, 1); -- Second Generation Camry - Front-Wheel Drive
+insert into generation_drivetrains (generation_id, drivetrain_id) values (2, 2); -- Second Generation Camry - Rear-Wheel Drive
+insert into generation_drivetrains (generation_id, drivetrain_id) values (3, 1); -- First Generation Rav4 - Front-Wheel Drive
+insert into generation_drivetrains (generation_id, drivetrain_id) values (3, 2); -- First Generation Rav4 - Rear-Wheel Drive
+
+create table generation_transmissions (
+    "id" serial primary key,
+    "generation_id" int not null,
+    "transmission_id" int not null,
+    "created_at" timestamp default now(),
+    constraint generation_transmissions_generation_id_fk
+        foreign key (generation_id)
+            references generations(id)
+                on delete cascade
+                on update cascade,
+    constraint generation_transmissions_transmission_id_fk
+        foreign key (transmission_id)
+            references transmissions(id)
+                on delete cascade
+                on update cascade,
+    unique(generation_id, transmission_id)
+);
+
+insert into generation_transmissions (generation_id, transmission_id) values (1, 1); -- First Generation Camry - Automatic
+insert into generation_transmissions (generation_id, transmission_id) values (1, 2); -- First Generation Camry - Manual
+insert into generation_transmissions (generation_id, transmission_id) values (2, 1); -- Second Generation Camry - Automatic
+insert into generation_transmissions (generation_id, transmission_id) values (2, 2); -- Second Generation Camry - Manual
+insert into generation_transmissions (generation_id, transmission_id) values (3, 1); -- First Generation Rav4 - Automatic
+insert into generation_transmissions (generation_id, transmission_id) values (3, 2); -- First Generation Rav4 - Manual
+
+
 create table ownership_types (
     "id" serial primary key,
     "name" varchar(255) not null,
@@ -486,3 +587,6 @@ insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-
 insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
 insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
 
+-- steps for add vehicle
+-- 1. vin code, 2. marka, 3. model, 4. year, 5. generations, 6. body types, 7. engine, 8. driveride, 
+-- 9. transmission, 10. modification, 11. color, 12. images

@@ -15,17 +15,21 @@ type Model struct {
 }
 
 type Generation struct {
-	ID        int64  `json:"id"`
-	Name      string `json:"name"`
-	Image     string `json:"image"`
-	StartYear int    `json:"start_year"`
-	EndYear   int    `json:"end_year"`
+	ID            int64           `json:"id"`
+	Name          string          `json:"name"`
+	Image         string          `json:"image"`
+	StartYear     int             `json:"start_year"`
+	EndYear       int             `json:"end_year"`
+	FuelTypes     []*FuelType     `json:"fuel_types"`
+	BodyTypes     []*BodyType     `json:"body_types"`
+	Drivetrains   []*Drivetrain   `json:"drivetrains"`
+	Transmissions []*Transmission `json:"transmissions"`
 }
 
 type BodyType struct {
-	ID     int64  `json:"id"`
-	Name   string `json:"name"`
-	Images string `json:"images"`
+	ID    int64  `json:"id"`
+	Name  string `json:"name"`
+	Image string `json:"image"`
 }
 
 type Transmission struct {

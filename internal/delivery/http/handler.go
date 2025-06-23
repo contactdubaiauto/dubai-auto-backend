@@ -199,17 +199,17 @@ func (h *UserHandler) CreateCarImages(c *gin.Context) {
 		})
 		return
 	}
-	image := form.File["image"]
+	images := form.File["images"]
 
-	if len(image) != 1 {
+	if len(images) > 10 {
 		utils.GinResponse(c, &model.Response{
 			Status: 400,
-			Error:  errors.New("must load just 1 file"),
+			Error:  errors.New("must load maximum 10 files"),
 		})
 		return
 	}
 
-	paths, status, err := pkg.SaveFiles(image, config.ENV.STATIC_PATH+"cars/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
+	paths, status, err := pkg.SaveFiles(images, config.ENV.STATIC_PATH+"cars/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
 
 	if err != nil {
 		utils.GinResponse(c, &model.Response{
