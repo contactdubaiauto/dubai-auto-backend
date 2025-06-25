@@ -15,7 +15,7 @@ func NewAuthRepository(db *pgxpool.Pool) *AuthRepository {
 	return &AuthRepository{db}
 }
 
-func (r *AuthRepository) UserLogin(ctx context.Context, user *model.UserLogin) (*model.UserByEmail, error) {
+func (r *AuthRepository) UserLogin(ctx context.Context, user *model.UserLoginRequest) (*model.UserByEmail, error) {
 	query := `
 		SELECT id, email, password FROM users WHERE email = $1
 	`
@@ -27,7 +27,7 @@ func (r *AuthRepository) UserLogin(ctx context.Context, user *model.UserLogin) (
 	return &userByEmail, err
 }
 
-func (r *AuthRepository) UserRegister(ctx context.Context, user *model.UserRegister) (*int, error) {
+func (r *AuthRepository) UserRegister(ctx context.Context, user *model.UserRegisterRequest) (*int, error) {
 	query := `
 		INSERT INTO users (email, password, phone, username)
 		VALUES ($1, $2, $3, $4)

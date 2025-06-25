@@ -30,12 +30,22 @@ func (s *UserService) GetBrands(ctx *context.Context, text string) ([]*model.Get
 	return s.UserRepository.GetBrands(ctx, text)
 }
 
-func (s *UserService) GetModelsByBrandID(ctx *context.Context, brandID int64, text string) ([]model.Model, error) {
-	return s.UserRepository.GetModelsByBrandID(ctx, brandID, text)
+func (s *UserService) GetModelsByBrandID(ctx *context.Context, brandID int64, text string) *model.Response {
+	data, err := s.UserRepository.GetModelsByBrandID(ctx, brandID, text)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: 400}
+	}
+	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetGenerationsByModelID(ctx *context.Context, modelID int64) ([]model.Generation, error) {
-	return s.UserRepository.GetGenerationsByModelID(ctx, modelID)
+func (s *UserService) GetGenerationsByModelID(ctx *context.Context, modelID int64) *model.Response {
+	data, err := s.UserRepository.GetGenerationsByModelID(ctx, modelID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: 400}
+	}
+	return &model.Response{Data: data}
 }
 
 func (s *UserService) GetBodyTypes(ctx *context.Context) *model.Response {
@@ -45,7 +55,7 @@ func (s *UserService) GetBodyTypes(ctx *context.Context) *model.Response {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: data, Status: http.StatusOK}
+	return &model.Response{Data: data}
 }
 
 func (s *UserService) GetTransmissions(ctx *context.Context) *model.Response {
@@ -54,19 +64,30 @@ func (s *UserService) GetTransmissions(ctx *context.Context) *model.Response {
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: data, Status: http.StatusOK}
+	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetEngines(ctx *context.Context) ([]model.Engine, error) {
-	return s.UserRepository.GetEngines(ctx)
+func (s *UserService) GetEngines(ctx *context.Context) *model.Response {
+	data, err := s.UserRepository.GetEngines(ctx)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetDrivetrains(ctx *context.Context) ([]model.Drivetrain, error) {
-	return s.UserRepository.GetDrivetrains(ctx)
+func (s *UserService) GetDrivetrains(ctx *context.Context) *model.Response {
+	data, err := s.UserRepository.GetDrivetrains(ctx)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: data}
 }
 
 func (s *UserService) GetFuelTypes(ctx *context.Context) *model.Response {
 	data, err := s.UserRepository.GetFuelTypes(ctx)
+
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -75,6 +96,7 @@ func (s *UserService) GetFuelTypes(ctx *context.Context) *model.Response {
 
 func (s *UserService) GetColors(ctx *context.Context) *model.Response {
 	data, err := s.UserRepository.GetColors(ctx)
+
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}

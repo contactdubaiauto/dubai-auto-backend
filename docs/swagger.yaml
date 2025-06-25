@@ -1,0 +1,890 @@
+definitions:
+  model.BodyType:
+    properties:
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+    type: object
+  model.Color:
+    properties:
+      hex_code:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.CreateCarRequest:
+    properties:
+      body_type_id:
+        type: integer
+      brand_id:
+        type: integer
+      city_id:
+        type: integer
+      color_id:
+        type: integer
+      crash:
+        type: boolean
+      credit:
+        type: boolean
+      credit_price:
+        type: integer
+      door_count:
+        type: integer
+      drivetrain_id:
+        type: integer
+      engine_id:
+        type: integer
+      exchange:
+        type: boolean
+      fuel_type_id:
+        type: integer
+      interior_color_id:
+        type: integer
+      model_id:
+        type: integer
+      negotiable:
+        type: boolean
+      new:
+        type: boolean
+      odometer:
+        type: integer
+      ownership_type_id:
+        type: integer
+      phone_number:
+        type: string
+      price:
+        type: integer
+      region_id:
+        type: integer
+      right_hand_drive:
+        type: boolean
+      transmission_id:
+        type: integer
+      user_id:
+        type: integer
+      vin_code:
+        type: string
+      year:
+        type: integer
+    required:
+    - body_type_id
+    - brand_id
+    - model_id
+    - phone_number
+    - price
+    - year
+    type: object
+  model.Drivetrain:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.Engine:
+    properties:
+      id:
+        type: integer
+      value:
+        type: string
+    type: object
+  model.FuelType:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.Generation:
+    properties:
+      body_types:
+        items:
+          $ref: '#/definitions/model.BodyType'
+        type: array
+      drivetrains:
+        items:
+          $ref: '#/definitions/model.Drivetrain'
+        type: array
+      end_year:
+        type: integer
+      fuel_types:
+        items:
+          $ref: '#/definitions/model.FuelType'
+        type: array
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+      start_year:
+        type: integer
+      transmissions:
+        items:
+          $ref: '#/definitions/model.Transmission'
+        type: array
+    type: object
+  model.GetCarsResponse:
+    properties:
+      body_type:
+        type: string
+      brand:
+        type: string
+      city:
+        type: string
+      color:
+        type: string
+      created_at:
+        type: string
+      credit:
+        type: boolean
+      credit_price:
+        type: integer
+      drivetrain:
+        type: string
+      engine:
+        type: string
+      exchange:
+        type: boolean
+      fuel_type:
+        type: string
+      id:
+        type: integer
+      images:
+        items:
+          type: string
+        type: array
+      interior_color:
+        type: string
+      mileage:
+        type: integer
+      model:
+        type: string
+      new:
+        type: boolean
+      phone_number:
+        type: string
+      price:
+        type: integer
+      region:
+        type: string
+      status:
+        type: integer
+      transmission:
+        type: string
+      updated_at:
+        type: string
+      vin_code:
+        type: string
+      year:
+        type: integer
+    type: object
+  model.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  model.Model:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.ResultMessage:
+    properties:
+      en:
+        type: string
+      ru:
+        type: string
+      tk:
+        type: string
+    type: object
+  model.Success:
+    properties:
+      message:
+        type: string
+    type: object
+  model.SuccessWithId:
+    properties:
+      id:
+        type: integer
+      message:
+        type: string
+    type: object
+  model.Transmission:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.UserLogin:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  model.UserRegister:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      phone:
+        maxLength: 15
+        minLength: 6
+        type: string
+      username:
+        maxLength: 20
+        minLength: 3
+        type: string
+    required:
+    - email
+    - password
+    - phone
+    - username
+    type: object
+  pkg.ErrorResponse:
+    properties:
+      message:
+        example: Invalid param ID
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/auth/user-login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token
+      parameters:
+      - description: User login credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: User login
+      tags:
+      - auth
+  /api/v1/auth/user-register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user
+      parameters:
+      - description: User registration data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserRegister'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: User registration
+      tags:
+      - auth
+  /api/v1/users/body-types:
+    get:
+      description: Returns a list of car body types
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.BodyType'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get body types
+      tags:
+      - users
+  /api/v1/users/brands:
+    get:
+      description: Returns a list of car brands, optionally filtered by text
+      parameters:
+      - description: Filter brands by text
+        in: query
+        name: text
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get car brands
+      tags:
+      - users
+  /api/v1/users/brands/{id}/models:
+    get:
+      description: Returns a list of car models for a given brand ID, optionally filtered
+        by text
+      parameters:
+      - description: Brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: coroll
+        in: query
+        name: text
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Model'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get models by brand ID
+      tags:
+      - users
+  /api/v1/users/brands/{id}/models/{model_id}/generations:
+    get:
+      description: Returns a list of generations for a given model ID
+      parameters:
+      - description: Model ID
+        in: path
+        name: model_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Generation'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get generations by model ID
+      tags:
+      - users
+  /api/v1/users/cars:
+    get:
+      description: Returns a list of cars
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetCarsResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get cars
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Creates a new car for the authenticated user
+      parameters:
+      - description: Car data
+        in: body
+        name: car
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateCarRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a car
+      tags:
+      - users
+  /api/v1/users/cars/{id}:
+    get:
+      description: Returns a car by its ID
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetCarsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get car by ID
+      tags:
+      - users
+  /api/v1/users/cars/{id}/images:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads images for a car (max 10 files)
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Car images (max 10)
+        in: formData
+        name: images
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Upload car images
+      tags:
+      - users
+  /api/v1/users/colors:
+    get:
+      description: Returns a list of car colors
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Color'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get colors
+      tags:
+      - users
+  /api/v1/users/drivetrains:
+    get:
+      description: Returns a list of car drivetrains
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Drivetrain'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get drivetrains
+      tags:
+      - users
+  /api/v1/users/engines:
+    get:
+      description: Returns a list of car engines
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Engine'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get engines
+      tags:
+      - users
+  /api/v1/users/fuel-types:
+    get:
+      description: Returns a list of car fuel types
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.FuelType'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get fuel types
+      tags:
+      - users
+  /api/v1/users/profile/cars:
+    get:
+      description: Returns the cars associated with the authenticated user's profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetCarsResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Get user's profile cars
+      tags:
+      - users
+  /api/v1/users/transmissions:
+    get:
+      description: Returns a list of car transmissions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Transmission'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get transmissions
+      tags:
+      - users
+swagger: "2.0"

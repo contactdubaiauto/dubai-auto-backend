@@ -9,6 +9,7 @@ deploy:
 
 	@echo "Deploying..."
 	@scp ./bin/da ubuntu@95.85.126.220:/var/www/
+	@scp ./bin/da ubuntu@95.85.126.220:/var/www/
 	# @scp ./.env ubuntu@95.85.126.220:/var/www/
 	
 	@echo "Starting remote service..."

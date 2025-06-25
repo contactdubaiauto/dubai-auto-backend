@@ -19,7 +19,7 @@ func NewAuthService(repo *repository.AuthRepository) *AuthService {
 	return &AuthService{repo}
 }
 
-func (s *AuthService) UserLogin(ctx context.Context, user *model.UserLogin) model.Response {
+func (s *AuthService) UserLogin(ctx context.Context, user *model.UserLoginRequest) model.Response {
 	userByEmail, err := s.repo.UserLogin(ctx, user)
 
 	if err != nil {
@@ -48,7 +48,7 @@ func (s *AuthService) UserLogin(ctx context.Context, user *model.UserLogin) mode
 	}
 }
 
-func (s *AuthService) UserRegister(ctx context.Context, user *model.UserRegister) model.Response {
+func (s *AuthService) UserRegister(ctx context.Context, user *model.UserRegisterRequest) model.Response {
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 

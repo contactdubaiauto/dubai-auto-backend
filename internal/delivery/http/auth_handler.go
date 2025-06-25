@@ -17,8 +17,32 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 	return &AuthHandler{service}
 }
 
+type User struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Price int    `json:"price"`
+}
+
+var users = []User{
+	{ID: 1, Name: "User One", Price: 100},
+}
+
+// UserLogin godoc
+// @Summary      User login
+// @Description  Authenticates a user and returns a JWT token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      model.UserLogin  true  "User login credentials"
+// @Success      200   {object}  model.LoginResponse
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  pkg.ErrorResponse
+// @Failure      403   {object}  pkg.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/auth/user-login [post]
 func (h *AuthHandler) UserLogin(c *gin.Context) {
-	user := &model.UserLogin{}
+	user := &model.UserLoginRequest{}
 
 	if err := c.ShouldBindJSON(user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -30,8 +54,22 @@ func (h *AuthHandler) UserLogin(c *gin.Context) {
 	utils.GinResponse(c, &data)
 }
 
+// UserRegister godoc
+// @Summary      User registration
+// @Description  Registers a new user
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      model.UserRegister  true  "User registration data"
+// @Success      200   {object}  model.LoginResponse
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  pkg.ErrorResponse
+// @Failure      403   {object}  pkg.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/auth/user-register [post]
 func (h *AuthHandler) UserRegister(c *gin.Context) {
-	user := &model.UserRegister{}
+	user := &model.UserRegisterRequest{}
 
 	if err := c.ShouldBindJSON(user); err != nil {
 		utils.GinResponse(c, &model.Response{Error: err, Status: http.StatusBadRequest})

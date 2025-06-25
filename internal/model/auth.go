@@ -1,8 +1,8 @@
 package model
 
-type UserLogin struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+type UserLoginRequest struct {
+	Email    string `json:"email" binding:"required,email""`
+	Password string `json:"password" binding:"required,email""`
 }
 
 type UserByEmail struct {
@@ -16,7 +16,7 @@ type LoginResponse struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-type UserRegister struct {
+type UserRegisterRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=6"`
 	Phone    string `json:"phone" binding:"required,min=6,max=15"`

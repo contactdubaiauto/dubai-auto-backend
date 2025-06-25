@@ -12,18 +12,22 @@ import (
 	"golang.org/x/time/rate"
 )
 
+type ErrorResponse struct {
+	Message string `json:"message" example:"Invalid param ID"`
+}
+
 func TokenGuard(c *gin.Context) {
 	authorization := c.Request.Header["Authorization"]
 
 	if len(authorization) == 0 {
-		c.AbortWithStatus(401)
+		c.JSON(http.StatusUnauthorized, ErrorResponse{Message: "not found any token there!"})
 		return
 	}
 
 	bearer := strings.Split(authorization[0], "Bearer ")
 
 	if len(bearer) < 2 {
-		c.AbortWithStatus(401)
+		c.JSON(http.StatusUnauthorized, ErrorResponse{Message: "not found any token there!"})
 		return
 	}
 
@@ -39,7 +43,7 @@ func TokenGuard(c *gin.Context) {
 
 	if err != nil {
 		log.Println("Error:", err.Error())
-		c.AbortWithStatus(403)
+		c.JSON(http.StatusForbidden, ErrorResponse{Message: err.Error()})
 		return
 	}
 
