@@ -163,7 +163,10 @@ func (h *UserHandler) GetCarByID(c *gin.Context) {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error: ": "invalid car ID"})
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid car ID"),
+		})
 		return
 	}
 
@@ -180,12 +183,14 @@ func (h *UserHandler) CreateCar(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	if err := c.ShouldBindJSON(&car); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error: ": err.Error()})
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data" + err.Error()),
+		})
 		return
 	}
 
 	data := h.UserService.CreateCar(&ctx, &car)
-
 	utils.GinResponse(c, data)
 }
 

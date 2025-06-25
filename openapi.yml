@@ -1,620 +1,293 @@
 openapi: 3.0.3
 info:
   title: Car Marketplace API
-  description: API for a car marketplace application with user authentication and car listing functionality
+  description: API for a car marketplace application with user authentication and car management
   version: 1.0.0
   contact:
     name: API Support
 servers:
-  - url: http://localhost:8080
-    description: Local development server
-  - url: http://{host}
-    description: Configurable host
-    variables:
-      host:
-        default: localhost:8080
-        description: Server host and port
-
-paths:
-  /api/v1/users/profile/cars:
-    get:
-      summary: Get user's profile cars
-      description: Returns a list of cars belonging to the authenticated user.
-      tags:
-        - Users
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: List of user's cars
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Car'
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-          
-  /api/v1/auth/user-register:
-    post:
-      tags:
-        - Authentication
-      summary: Register a new user
-      description: Register a new user account with email, password, username, and phone
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - email
-                - password
-                - username
-                - phone
-              properties:
-                email:
-                  type: string
-                  format: email
-                  example: user2@gmail.com
-                password:
-                  type: string
-                  minLength: 8
-                  example: "12345678"
-                username:
-                  type: string
-                  example: "John doe"
-                phone:
-                  type: string
-                  example: "+12345678"
-      responses:
-        '201':
-          description: User registered successfully
-        '400':
-          description: Invalid input data
-        '409':
-          description: User already exists
-
-  /api/v1/auth/user-login:
-    post:
-      tags:
-        - Authentication
-      summary: User login
-      description: Authenticate user with email and password
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - email
-                - password
-              properties:
-                email:
-                  type: string
-                  format: email
-                  example: user@gmail.com
-                password:
-                  type: string
-                  example: "12345678"
-      responses:
-        '200':
-          description: Login successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                  user:
-                    $ref: '#/components/schemas/User'
-        '401':
-          description: Invalid credentials
-        '400':
-          description: Invalid input data
-
-  /api/v1/users/body-types:
-    get:
-      tags:
-        - Reference Data
-      summary: Get all body types
-      description: Retrieve all available car body types
-      responses:
-        '200':
-          description: List of body types
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/BodyType'
-
-  /api/v1/users/brands:
-    get:
-      tags:
-        - Reference Data
-      summary: Get car brands
-      description: Retrieve car brands with optional text search
-      parameters:
-        - name: text
-          in: query
-          description: Search text to filter brands
-          required: false
-          schema:
-            type: string
-            example: "o"
-      responses:
-        '200':
-          description: List of car brands
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Brand'
-
-  /api/v1/users/brands/{brandId}/models:
-    get:
-      tags:
-        - Reference Data
-      summary: Get models by brand
-      description: Retrieve car models for a specific brand with optional text search
-      parameters:
-        - name: brandId
-          in: path
-          required: true
-          description: Brand ID
-          schema:
-            type: integer
-            example: 1
-        - name: text
-          in: query
-          description: Search text to filter models
-          required: false
-          schema:
-            type: string
-            example: "r"
-      responses:
-        '200':
-          description: List of car models
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Model'
-
-  /api/v1/users/brands/{brandId}/models/{modelId}/generations:
-    get:
-      tags:
-        - Reference Data
-      summary: Get generations by model
-      description: Retrieve car generations for a specific model
-      parameters:
-        - name: brandId
-          in: path
-          required: true
-          description: Brand ID
-          schema:
-            type: integer
-            example: 1
-        - name: modelId
-          in: path
-          required: true
-          description: Model ID
-          schema:
-            type: integer
-            example: 1
-      responses:
-        '200':
-          description: List of car generations
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Generation'
-
-  /api/v1/users/colors:
-    get:
-      tags:
-        - Reference Data
-      summary: Get all colors
-      description: Retrieve all available car colors
-      responses:
-        '200':
-          description: List of colors
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Color'
-
-  /api/v1/users/drives:
-    get:
-      tags:
-        - Reference Data
-      summary: Get all drivetrain types
-      description: Retrieve all available drivetrain types
-      responses:
-        '200':
-          description: List of drivetrain types
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Drivetrain'
-
-  /api/v1/users/engines:
-    get:
-      tags:
-        - Reference Data
-      summary: Get all engine types
-      description: Retrieve all available engine types
-      responses:
-        '200':
-          description: List of engine types
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Engine'
-
-  /api/v1/users/fuel-types:
-    get:
-      tags:
-        - Reference Data
-      summary: Get all fuel types
-      description: Retrieve all available fuel types
-      responses:
-        '200':
-          description: List of fuel types
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FuelType'
-
-  /api/v1/users/transmissions:
-    get:
-      tags:
-        - Reference Data
-      summary: Get all transmission types
-      description: Retrieve all available transmission types
-      responses:
-        '200':
-          description: List of transmission types
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Transmission'
-
-  /api/v1/users/cars:
-    get:
-      tags:
-        - Cars
-      summary: Get cars with filters
-      description: Retrieve cars with various filter options
-      parameters:
-        - name: brands
-          in: query
-          description: Comma-separated list of brand IDs
-          schema:
-            type: string
-            example: "1,2,3"
-        - name: models
-          in: query
-          description: Comma-separated list of model IDs
-          schema:
-            type: string
-            example: "1,2,3"
-        - name: regions
-          in: query
-          description: Comma-separated list of region IDs
-          schema:
-            type: string
-            example: "1,2,3"
-        - name: cities
-          in: query
-          description: Comma-separated list of city IDs
-          schema:
-            type: string
-            example: "1,2,3"
-        - name: generations
-          in: query
-          description: Comma-separated list of generation IDs
-          schema:
-            type: string
-            example: "1,2,3"
-        - name: transmissions
-          in: query
-          description: Comma-separated list of transmission IDs
-          schema:
-            type: string
-            example: "1,2,3"
-        - name: engines
-          in: query
-          description: Comma-separated list of engine IDs
-          schema:
-            type: string
-            example: "1,2,3"
-        - name: drivetrains
-          in: query
-          description: Comma-separated list of drivetrain IDs
-          schema:
-            type: string
-            example: "1,2,3"
-        - name: body_types
-          in: query
-          description: Comma-separated list of body type IDs
-          schema:
-            type: string
-            example: "1,2"
-        - name: fuel_types
-          in: query
-          description: Comma-separated list of fuel type IDs
-          schema:
-            type: string
-            example: "1,2"
-        - name: ownership_types
-          in: query
-          description: Comma-separated list of ownership type IDs
-          schema:
-            type: string
-            example: "1,2"
-        - name: announcement_types
-          in: query
-          description: Comma-separated list of announcement type IDs
-          schema:
-            type: string
-            example: "1,2,3"
-        - name: year_start
-          in: query
-          description: Minimum year
-          schema:
-            type: integer
-            example: 2020
-        - name: year_end
-          in: query
-          description: Maximum year
-          schema:
-            type: integer
-            example: 2025
-        - name: exchange
-          in: query
-          description: Exchange available (1 for yes, 0 for no)
-          schema:
-            type: integer
-            enum: [0, 1]
-            example: 1
-        - name: credit
-          in: query
-          description: Credit available (1 for yes, 0 for no)
-          schema:
-            type: integer
-            enum: [0, 1]
-            example: 1
-        - name: right_hand_drive
-          in: query
-          description: Right hand drive (1 for yes, 0 for no)
-          schema:
-            type: integer
-            enum: [0, 1]
-            example: 1
-        - name: price_start
-          in: query
-          description: Minimum price
-          schema:
-            type: number
-            example: 1000
-        - name: price_end
-          in: query
-          description: Maximum price
-          schema:
-            type: number
-            example: 50000
-      responses:
-        '200':
-          description: List of cars matching filters
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Car'
-
-    post:
-      tags:
-        - Cars
-      summary: Create a new car listing
-      description: Create a new car listing with all required details
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateCarRequest'
-      responses:
-        '201':
-          description: Car created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Car'
-        '400':
-          description: Invalid input data
-        '401':
-          description: Unauthorized
-
-  /api/v1/users/cars/{carId}:
-    get:
-      tags:
-        - Cars
-      summary: Get car by ID
-      description: Retrieve a specific car by its ID
-      parameters:
-        - name: carId
-          in: path
-          required: true
-          description: Car ID
-          schema:
-            type: integer
-            example: 4
-      responses:
-        '200':
-          description: Car details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Car'
-        '404':
-          description: Car not found
-
-  /api/v1/users/cars/{carId}/images:
-    post:
-      tags:
-        - Cars
-      summary: Upload car images
-      description: Upload images for a specific car
-      parameters:
-        - name: carId
-          in: path
-          required: true
-          description: Car ID
-          schema:
-            type: integer
-            example: 4
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                images:
-                  type: array
-                  items:
-                    type: string
-                    format: binary
-                  description: Car images to upload
-      responses:
-        '201':
-          description: Images uploaded successfully
-        '400':
-          description: Invalid file format or size
-        '404':
-          description: Car not found
+  - url: http://95.85.126.220/api/v1
+    description: Production server
+  - url: http://localhost:8080/api/v1
+    description: Development server
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  
   schemas:
-    User:
+    UserRegister:
+      type: object
+      required:
+        - email
+        - password
+        - username
+        - phone
+      properties:
+        email:
+          type: string
+          format: email
+          example: "user2@gmail.com"
+        password:
+          type: string
+          minLength: 8
+          example: "123456783"
+        username:
+          type: string
+          example: "John doe"
+        phone:
+          type: string
+          example: "+12345678"
+    
+    UserLogin:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: "user@gmail.com"
+        password:
+          type: string
+          example: "12345678"
+    
+    AuthResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        refresh_token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    
+    ErrorResponse:
+      type: object
+      properties:
+        tk:
+          type: string
+          description: Turkmen error message
+        ru:
+          type: string
+          description: Russian error message
+        en:
+          type: string
+          description: English error message
+    
+    BodyType:
       type: object
       properties:
         id:
           type: integer
-        email:
+          example: 1
+        name:
           type: string
-          format: email
-        username:
+          example: "Sedan"
+        image:
           type: string
-        phone:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-
+          example: "/images/body/sedan.png"
+    
     Brand:
       type: object
       properties:
         id:
           type: integer
+          example: 1
         name:
           type: string
-
+          example: "Toyota"
+        logo:
+          type: string
+          example: "/images/logo/toyota.png"
+        car_count:
+          type: integer
+          example: 0
+    
     Model:
       type: object
       properties:
         id:
           type: integer
+          example: 1
         name:
           type: string
-        brand_id:
-          type: integer
+          example: "Camry"
 
     Generation:
       type: object
       properties:
         id:
           type: integer
+          example: 1
         name:
           type: string
-        model_id:
-          type: integer
-
-    BodyType:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
+          example: "XV70"
+        image:
           type: string
-
-    Color:
-      type: object
-      properties:
-        id:
+          example: "/images/gens/1.jpg"
+        start_year:
           type: integer
-        name:
-          type: string
-        hex_code:
-          type: string
-
-    Drivetrain:
-      type: object
-      properties:
-        id:
+          example: 2018
+        end_year:
           type: integer
-        name:
-          type: string
-
-    Engine:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        volume:
-          type: number
-
-    FuelType:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
+          example: 2024
+        fuel_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/FuelType'
+        body_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyType'
+        drivetrains:
+          type: array
+          items:
+            $ref: '#/components/schemas/Drivetrain'
+        transmissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transmission'
 
     Transmission:
       type: object
       properties:
         id:
           type: integer
+          example: 1
         name:
           type: string
+          example: "Automatic"
 
-    CreateCarRequest:
+    Engine:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        value:
+          type: string
+          example: "2.5L"
+
+    Drivetrain:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "FWD"
+
+    FuelType:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Gasoline"
+
+    Color:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Black"
+        hex_code:
+          type: string
+          example: "#000000"
+
+    GetCarsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        brand:
+          type: string
+          example: "Toyota"
+        region:
+          type: string
+          example: "Ashgabat"
+        city:
+          type: string
+          example: "Ashgabat"
+        model:
+          type: string
+          example: "Camry"
+        transmission:
+          type: string
+          example: "Automatic"
+        engine:
+          type: string
+          example: "2.5L"
+        drivetrain:
+          type: string
+          example: "FWD"
+        body_type:
+          type: string
+          example: "Sedan"
+        fuel_type:
+          type: string
+          example: "Gasoline"
+        year:
+          type: integer
+          example: 2023
+        price:
+          type: integer
+          example: 35000
+        mileage:
+          type: integer
+          example: 15000
+        vin_code:
+          type: string
+          example: "1HGCM82633A123456"
+        exchange:
+          type: boolean
+          example: false
+        credit:
+          type: boolean
+          example: true
+        new:
+          type: boolean
+          example: false
+        color:
+          type: string
+          example: "Black"
+        interior_color:
+          type: string
+          example: "Beige"
+        credit_price:
+          type: integer
+          example: 38000
+        status:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        images:
+          type: array
+          items:
+            type: string
+          example: ["/images/cars/1/image1.jpg", "/images/cars/1/image2.jpg"]
+        phone_number:
+          type: string
+          example: "+99361234567"
+
+    CreateCar:
       type: object
       required:
         - brand_id
@@ -702,92 +375,529 @@ components:
           type: boolean
           example: true
 
-    Car:
+    SuccessWithId:
       type: object
       properties:
+        message:
+          type: string
+          example: "Car created successfully"
         id:
           type: integer
-        brand_id:
-          type: integer
-        city_id:
-          type: integer
-        year:
-          type: integer
-        model_id:
-          type: integer
-        body_type_id:
-          type: integer
-        phone_number:
-          type: string
-        ownership_type_id:
-          type: integer
-        price:
-          type: number
-        region_id:
-          type: integer
-        transmission_id:
-          type: integer
-        crash:
-          type: boolean
-        engine_id:
-          type: integer
-        drivetrain_id:
-          type: integer
-        fuel_type_id:
-          type: integer
-        exchange:
-          type: boolean
-        credit:
-          type: boolean
-        Odometer:
-          type: integer
-        vin_code:
-          type: string
-        door_count:
-          type: integer
-        new:
-          type: boolean
-        interior_color_id:
-          type: integer
-        color_id:
-          type: integer
-        right_hand_drive:
-          type: boolean
-        credit_price:
-          type: number
-        negotiable:
-          type: boolean
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        images:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              url:
-                type: string
-              is_primary:
-                type: boolean
+          example: 1
 
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-security:
-  - BearerAuth: []
+paths:
+  /auth/user-register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Register a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid request body or validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  /auth/user-login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user and get access tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  /users/body-types:
+    get:
+      tags:
+        - Car Data
+      summary: Get all body types
+      description: Retrieve list of all available car body types
+      responses:
+        '200':
+          description: List of body types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BodyType'
+  
+  /users/brands:
+    get:
+      tags:
+        - Car Data
+      summary: Get car brands
+      description: Retrieve list of car brands with optional text filter
+      parameters:
+        - name: text
+          in: query
+          description: Filter brands by text
+          required: false
+          schema:
+            type: string
+            example: "o"
+      responses:
+        '200':
+          description: List of car brands
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Brand'
+  
+  /users/brands/{brand_id}/models:
+    get:
+      tags:
+        - Car Data
+      summary: Get models by brand
+      description: Retrieve car models for a specific brand
+      parameters:
+        - name: brand_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: text
+          in: query
+          description: Filter models by text
+          required: false
+          schema:
+            type: string
+            example: "r"
+      responses:
+        '200':
+          description: List of car models
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Model'
+  
+  /users/brands/{brand_id}/models/{model_id}/generations:
+    get:
+      tags:
+        - Car Data
+      summary: Get generations by model
+      description: Retrieve car generations for a specific model
+      parameters:
+        - name: brand_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: List of car generations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Generation'
+  
+  /users/cars:
+    get:
+      tags:
+        - Cars
+      summary: Get cars with filters
+      description: Retrieve cars with various filtering options
+      parameters:
+        - name: brands
+          in: query
+          description: Filter by brand IDs (comma-separated)
+          schema:
+            type: string
+            example: "1,2,3"
+        - name: models
+          in: query
+          description: Filter by model IDs (comma-separated)
+          schema:
+            type: string
+            example: "1,2,3"
+        - name: regions
+          in: query
+          description: Filter by region IDs (comma-separated)
+          schema:
+            type: string
+            example: "1,2,3"
+        - name: cities
+          in: query
+          description: Filter by city IDs (comma-separated)
+          schema:
+            type: string
+            example: "1,2,3"
+        - name: generations
+          in: query
+          description: Filter by generation IDs (comma-separated)
+          schema:
+            type: string
+            example: "1,2,3"
+        - name: transmissions
+          in: query
+          description: Filter by transmission IDs (comma-separated)
+          schema:
+            type: string
+            example: "1,2,3"
+        - name: engines
+          in: query
+          description: Filter by engine IDs (comma-separated)
+          schema:
+            type: string
+            example: "1,2,3"
+        - name: drivetrains
+          in: query
+          description: Filter by drivetrain IDs (comma-separated)
+          schema:
+            type: string
+            example: "1,2,3"
+        - name: body_types
+          in: query
+          description: Filter by body type IDs (comma-separated)
+          schema:
+            type: string
+            example: "1,2"
+        - name: fuel_types
+          in: query
+          description: Filter by fuel type IDs (comma-separated)
+          schema:
+            type: string
+            example: "1,2"
+        - name: ownership_types
+          in: query
+          description: Filter by ownership type IDs (comma-separated)
+          schema:
+            type: string
+            example: "1,2"
+        - name: announcement_types
+          in: query
+          description: Filter by announcement type IDs (comma-separated)
+          schema:
+            type: string
+            example: "1,2,3"
+        - name: year_start
+          in: query
+          description: Filter by minimum year
+          schema:
+            type: integer
+            example: 2020
+        - name: year_end
+          in: query
+          description: Filter by maximum year
+          schema:
+            type: integer
+            example: 2025
+        - name: exchange
+          in: query
+          description: Filter by exchange availability
+          schema:
+            type: integer
+            enum: [0, 1]
+            example: 1
+        - name: credit
+          in: query
+          description: Filter by credit availability
+          schema:
+            type: integer
+            enum: [0, 1]
+            example: 1
+        - name: right_hand_drive
+          in: query
+          description: Filter by right hand drive
+          schema:
+            type: integer
+            enum: [0, 1]
+            example: 1
+        - name: price_start
+          in: query
+          description: Filter by minimum price
+          schema:
+            type: number
+            example: 1000
+        - name: price_end
+          in: query
+          description: Filter by maximum price
+          schema:
+            type: number
+            example: 50000
+      responses:
+        '200':
+          description: List of cars matching filters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetCarsResponse'
+    
+    post:
+      tags:
+        - Cars
+      summary: Create a new car listing
+      description: Create a new car listing
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCar'
+      responses:
+        '201':
+          description: Car created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithId'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  /users/cars/{car_id}:
+    get:
+      tags:
+        - Cars
+      summary: Get car by ID
+      description: Retrieve a specific car by its ID
+      parameters:
+        - name: car_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 4
+      responses:
+        '200':
+          description: Car details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCarsResponse'
+        '404':
+          description: Car not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  /users/cars/{car_id}/images:
+    post:
+      tags:
+        - Cars
+      summary: Upload car images
+      description: Upload images for a specific car
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: car_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 4
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '201':
+          description: Images uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Car images created successfully"
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Car not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  /users/colors:
+    get:
+      tags:
+        - Car Data
+      summary: Get car colors
+      description: Retrieve list of available car colors
+      responses:
+        '200':
+          description: List of car colors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Color'
+  
+  /users/drivetrains:
+    get:
+      tags:
+        - Car Data
+      summary: Get drivetrain types
+      description: Retrieve list of available drivetrain types
+      responses:
+        '200':
+          description: List of drivetrain types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Drivetrain'
+  
+  /users/engines:
+    get:
+      tags:
+        - Car Data
+      summary: Get engine types
+      description: Retrieve list of available engine types
+      responses:
+        '200':
+          description: List of engine types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Engine'
+  
+  /users/fuel-types:
+    get:
+      tags:
+        - Car Data
+      summary: Get fuel types
+      description: Retrieve list of available fuel types
+      responses:
+        '200':
+          description: List of fuel types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FuelType'
+  
+  /users/transmissions:
+    get:
+      tags:
+        - Car Data
+      summary: Get transmission types
+      description: Retrieve list of available transmission types
+      responses:
+        '200':
+          description: List of transmission types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transmission'
+  
+  /users/profile/cars:
+    get:
+      tags:
+        - User Profile
+      summary: Get user's cars
+      description: Retrieve cars belonging to the authenticated user
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of user's cars
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetCarsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 tags:
   - name: Authentication
     description: User authentication endpoints
-  - name: Reference Data
-    description: Reference data for car attributes
+  - name: Car Data
+    description: Car-related reference data
   - name: Cars
-    description: Car listing and management endpoints
+    description: Car listing management
+  - name: User Profile
+    description: User profile management

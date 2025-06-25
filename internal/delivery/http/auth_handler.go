@@ -34,7 +34,7 @@ func (h *AuthHandler) UserRegister(c *gin.Context) {
 	user := &model.UserRegister{}
 
 	if err := c.ShouldBindJSON(user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.GinResponse(c, &model.Response{Error: err, Status: http.StatusBadRequest})
 		return
 	}
 

@@ -95,7 +95,7 @@ func (s *UserService) GetCarByID(ctx *context.Context, carID int) *model.Respons
 	car, err := s.UserRepository.GetCarByID(ctx, carID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return &model.Response{Error: err, Status: http.StatusNotFound}
 	}
 
 	return &model.Response{Data: car}
@@ -107,7 +107,7 @@ func (s *UserService) CreateCar(ctx *context.Context, car *model.CreateCarReques
 
 	if err != nil {
 		return &model.Response{
-			Status: 500,
+			Status: 400,
 			Error:  err,
 		}
 	}
