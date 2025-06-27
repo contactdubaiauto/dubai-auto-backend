@@ -17,23 +17,13 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 	return &AuthHandler{service}
 }
 
-type User struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Price int    `json:"price"`
-}
-
-var users = []User{
-	{ID: 1, Name: "User One", Price: 100},
-}
-
 // UserLogin godoc
 // @Summary      User login
 // @Description  Authenticates a user and returns a JWT token
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        user  body      model.UserLogin  true  "User login credentials"
+// @Param        user  body      model.UserLoginRequest  true  "User login credentials"
 // @Success      200   {object}  model.LoginResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
@@ -60,7 +50,7 @@ func (h *AuthHandler) UserLogin(c *gin.Context) {
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        user  body      model.UserRegister  true  "User registration data"
+// @Param        user  body      model.UserRegisterRequest  true  "User registration data"
 // @Success      200   {object}  model.LoginResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse

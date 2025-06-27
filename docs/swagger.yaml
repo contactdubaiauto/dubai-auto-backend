@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   model.BodyType:
     properties:
@@ -64,8 +65,6 @@ definitions:
       right_hand_drive:
         type: boolean
       transmission_id:
-        type: integer
-      user_id:
         type: integer
       vin_code:
         type: string
@@ -226,7 +225,7 @@ definitions:
       name:
         type: string
     type: object
-  model.UserLogin:
+  model.UserLoginRequest:
     properties:
       email:
         type: string
@@ -236,7 +235,7 @@ definitions:
     - email
     - password
     type: object
-  model.UserRegister:
+  model.UserRegisterRequest:
     properties:
       email:
         type: string
@@ -263,8 +262,12 @@ definitions:
         example: Invalid param ID
         type: string
     type: object
+host: localhost:8080
 info:
   contact: {}
+  description: "sale or rent cars \U0001F698, also garages, services"
+  title: Dubai Auto
+  version: "1.0"
 paths:
   /api/v1/auth/user-login:
     post:
@@ -277,7 +280,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/model.UserLogin'
+          $ref: '#/definitions/model.UserLoginRequest'
       produces:
       - application/json
       responses:
@@ -319,7 +322,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/model.UserRegister'
+          $ref: '#/definitions/model.UserRegisterRequest'
       produces:
       - application/json
       responses:
@@ -478,6 +481,11 @@ paths:
         name: model_id
         required: true
         type: integer
+      - description: brand id ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -584,7 +592,7 @@ paths:
           schema:
             $ref: '#/definitions/model.ResultMessage'
       security:
-      - ApiKeyAuth: []
+      - BearerAuth: []
       summary: Create a car
       tags:
       - users
@@ -887,4 +895,10 @@ paths:
       summary: Get transmissions
       tags:
       - users
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

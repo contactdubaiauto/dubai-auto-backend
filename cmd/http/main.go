@@ -11,7 +11,23 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	_ "dubai-auto/docs"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
+// @title Project name
+// @version 1.0
+// @description Project Description
+// @host localhost:8080
+// @BasePath /
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 
 func main() {
 	// TODO: all wrong info send 400 status, ingo log and error log must be seperately
@@ -20,6 +36,8 @@ func main() {
 	logger := config.InitLogger(conf.LOGGER_FOLDER_PATH, conf.LOGGER_FILENAME, conf.GIN_MODE)
 	db := postgres.Init()
 	server := app.InitApp(db, conf)
+	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// utils.InitCron(logger)
 
 	srv := &http.Server{

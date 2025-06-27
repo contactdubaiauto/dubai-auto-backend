@@ -9,7 +9,9 @@ deploy:
 
 	@echo "Deploying..."
 	@scp ./bin/da ubuntu@95.85.126.220:/var/www/
-	@scp ./bin/da ubuntu@95.85.126.220:/var/www/
+	@scp ./docs/docs.go ubuntu@95.85.126.220:/var/www/docs/
+	@scp ./docs/swagger.json ubuntu@95.85.126.220:/var/www/docs/
+	@scp ./docs/swagger.yaml ubuntu@95.85.126.220:/var/www/docs/
 	# @scp ./.env ubuntu@95.85.126.220:/var/www/
 	
 	@echo "Starting remote service..."

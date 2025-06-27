@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -18,7 +19,7 @@ type ErrorResponse struct {
 
 func TokenGuard(c *gin.Context) {
 	authorization := c.Request.Header["Authorization"]
-
+	fmt.Println("hh")
 	if len(authorization) == 0 {
 		c.JSON(http.StatusUnauthorized, ErrorResponse{Message: "not found any token there!"})
 		return

@@ -1,8 +1,13 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "sale or rent cars 🚘, also garages, services",
+        "title": "Dubai Auto",
+        "contact": {},
+        "version": "1.0"
     },
+    "host": "localhost:8080",
+    "basePath": "/",
     "paths": {
         "/api/v1/auth/user-login": {
             "post": {
@@ -24,7 +29,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.UserLogin"
+                            "$ref": "#/definitions/model.UserLoginRequest"
                         }
                     }
                 ],
@@ -88,7 +93,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.UserRegister"
+                            "$ref": "#/definitions/model.UserRegisterRequest"
                         }
                     }
                 ],
@@ -328,6 +333,13 @@
                         "name": "model_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "brand id ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -428,7 +440,7 @@
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Creates a new car for the authenticated user",
@@ -1059,9 +1071,6 @@
                 "transmission_id": {
                     "type": "integer"
                 },
-                "user_id": {
-                    "type": "integer"
-                },
                 "vin_code": {
                     "type": "string"
                 },
@@ -1296,7 +1305,7 @@
                 }
             }
         },
-        "model.UserLogin": {
+        "model.UserLoginRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -1311,7 +1320,7 @@
                 }
             }
         },
-        "model.UserRegister": {
+        "model.UserRegisterRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -1347,6 +1356,14 @@
                     "example": "Invalid param ID"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.UserLogin"
+                            "$ref": "#/definitions/model.UserLoginRequest"
                         }
                     }
                 ],
@@ -99,7 +99,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.UserRegister"
+                            "$ref": "#/definitions/model.UserRegisterRequest"
                         }
                     }
                 ],
@@ -339,6 +339,13 @@ const docTemplate = `{
                         "name": "model_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "brand id ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -439,7 +446,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Creates a new car for the authenticated user",
@@ -1070,9 +1077,6 @@ const docTemplate = `{
                 "transmission_id": {
                     "type": "integer"
                 },
-                "user_id": {
-                    "type": "integer"
-                },
                 "vin_code": {
                     "type": "string"
                 },
@@ -1307,7 +1311,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.UserLogin": {
+        "model.UserLoginRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -1322,7 +1326,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.UserRegister": {
+        "model.UserRegisterRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -1359,17 +1363,25 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
+	Version:          "1.0",
+	Host:             "localhost:8080",
+	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Dubai Auto",
+	Description:      "sale or rent cars 🚘, also garages, services",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

@@ -9,15 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
-
-// @title           Gin Swagger Example API
-// @version         1.0
-// @description     This is a simple CRUD API with Gin and Swagger
-// @host            localhost:8080
-// @BasePath        /
 
 func Init(r *gin.Engine, db *pgxpool.Pool) {
 
@@ -26,8 +18,6 @@ func Init(r *gin.Engine, db *pgxpool.Pool) {
 
 	authRoute := r.Group("/api/v1/auth")
 	SetupAuthRoutes(authRoute, db)
-
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 }
 

@@ -112,6 +112,7 @@ func (h *UserHandler) GetModelsByBrandID(c *gin.Context) {
 // @Tags         users
 // @Produce      json
 // @Param        model_id  path  int  true  "Model ID"
+// @Param        id  path  int  true  "brand id ID"
 // @Success      200   {array}  model.Generation
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
@@ -303,9 +304,9 @@ func (h *UserHandler) GetCarByID(c *gin.Context) {
 // @Summary      Create a car
 // @Description  Creates a new car for the authenticated user
 // @Tags         users
-// @Security     ApiKeyAuth
 // @Accept       json
 // @Produce      json
+// @Security 	 BearerAuth
 // @Param        car  body      model.CreateCarRequest  true  "Car data"
 // @Success      200  {object}  model.SuccessWithId
 // @Failure      400  {object}  model.ResultMessage
@@ -344,7 +345,7 @@ func (h *UserHandler) CreateCar(c *gin.Context) {
 // @Success      200     {object}  model.Success
 // @Failure      400     {object}  model.ResultMessage
 // @Failure      401     {object}  pkg.ErrorResponse
-// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure	 	 403  {object} pkg.ErrorResponse
 // @Failure      404     {object}  model.ResultMessage
 // @Failure      500     {object}  model.ResultMessage
 // @Router       /api/v1/users/cars/{id}/images [post]
