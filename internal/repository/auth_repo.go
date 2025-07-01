@@ -15,7 +15,7 @@ func NewAuthRepository(db *pgxpool.Pool) *AuthRepository {
 	return &AuthRepository{db}
 }
 
-func (r *AuthRepository) UserByMail(ctx context.Context, email *string) (*model.UserByEmail, error) {
+func (r *AuthRepository) UserByEmail(ctx context.Context, email *string) (*model.UserByEmail, error) {
 	query := `
 		SELECT id, email, password FROM users WHERE email = $1
 	`
@@ -39,7 +39,7 @@ func (r *AuthRepository) UserByPhone(ctx context.Context, phone *string) (model.
 	return userByPhone, err
 }
 
-func (r *AuthRepository) UserMailGetOrRegister(ctx context.Context, username, email, password string) error {
+func (r *AuthRepository) UserEmailGetOrRegister(ctx context.Context, username, email, password string) error {
 	q := `
 		insert into users (username, email, password)
 		values ($1, $2, $3)
@@ -53,15 +53,16 @@ func (r *AuthRepository) UserMailGetOrRegister(ctx context.Context, username, em
 	return err
 }
 
-func (r *AuthRepository) UserRegister(ctx context.Context, user *model.UserRegisterRequest) (*int, error) {
-	query := `
-		INSERT INTO users (email, password, phone, username)
-		VALUES ($1, $2, $3, $4)
-		RETURNING id
+func (r *AuthRepository) UserPhoneGetOrRegister(ctx context.Context, username, phone, password string) error {
+	q := `
+		insert into users (username, phone, password)
+		values ($1, $2, $3)
+		on conflict (phone)
+		do update
+		set 
+			password = EXCLUDED.password
 	`
-	var id int
+	_, err := r.db.Exec(ctx, q, username, phone, password)
 
-	err := r.db.QueryRow(ctx, query, user.Email, user.Password, user.Phone, user.Username).Scan(&id)
-
-	return &id, err
+	return err
 }

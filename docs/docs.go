@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/auth/user-login": {
+        "/api/v1/auth/user-email-confirmation": {
             "post": {
                 "description": "Authenticates a user and returns a JWT token",
                 "consumes": [
@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.UserLoginRequest"
+                            "$ref": "#/definitions/model.UserEmailConfirmationRequest"
                         }
                     }
                 ],
@@ -79,9 +79,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/auth/user-register": {
+        "/api/v1/auth/user-login-email": {
             "post": {
-                "description": "Registers a new user",
+                "description": "Authenticates a user and returns a JWT token",
                 "consumes": [
                     "application/json"
                 ],
@@ -91,15 +91,143 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "User registration",
+                "summary": "User login",
                 "parameters": [
                     {
-                        "description": "User registration data",
+                        "description": "User login credentials",
                         "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.UserRegisterRequest"
+                            "$ref": "#/definitions/model.UserLoginEmail"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/user-login-phone": {
+            "post": {
+                "description": "Authenticates a user and returns a JWT token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "User login",
+                "parameters": [
+                    {
+                        "description": "User login credentials",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UserLoginPhone"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/user-phone-confirmation": {
+            "post": {
+                "description": "Authenticates a user and returns a JWT token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "User login",
+                "parameters": [
+                    {
+                        "description": "User login credentials",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UserPhoneConfirmationRequest"
                         }
                     }
                 ],
@@ -1311,46 +1439,55 @@ const docTemplate = `{
                 }
             }
         },
-        "model.UserLoginRequest": {
+        "model.UserEmailConfirmationRequest": {
             "type": "object",
             "required": [
                 "email",
-                "password"
+                "otp"
             ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
-                "password": {
+                "otp": {
                     "type": "string"
                 }
             }
         },
-        "model.UserRegisterRequest": {
+        "model.UserLoginEmail": {
             "type": "object",
             "required": [
-                "email",
-                "password",
-                "phone",
-                "username"
+                "email"
             ],
             "properties": {
                 "email": {
                     "type": "string"
-                },
-                "password": {
-                    "type": "string",
-                    "minLength": 6
+                }
+            }
+        },
+        "model.UserLoginPhone": {
+            "type": "object",
+            "required": [
+                "phone"
+            ],
+            "properties": {
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserPhoneConfirmationRequest": {
+            "type": "object",
+            "required": [
+                "otp",
+                "phone"
+            ],
+            "properties": {
+                "otp": {
+                    "type": "string"
                 },
                 "phone": {
-                    "type": "string",
-                    "maxLength": 15,
-                    "minLength": 6
-                },
-                "username": {
-                    "type": "string",
-                    "maxLength": 20,
-                    "minLength": 3
+                    "type": "string"
                 }
             }
         },
@@ -1380,8 +1517,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8080",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Dubai Auto",
-	Description:      "sale or rent cars 🚘, also garages, services",
+	Title:            "Project name",
+	Description:      "Project Description",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

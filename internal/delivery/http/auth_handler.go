@@ -23,23 +23,23 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        user  body      model.UserLoginMailRequest  true  "User login credentials"
+// @Param        user  body      model.UserEmailConfirmationRequest  true  "User login credentials"
 // @Success      200   {object}  model.LoginResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
 // @Failure      403   {object}  pkg.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
-// @Router       /api/v1/auth/user-login [post]
-func (h *AuthHandler) UserLoginMail(c *gin.Context) {
-	user := &model.UserLoginMailRequest{}
+// @Router       /api/v1/auth/user-email-confirmation [post]
+func (h *AuthHandler) UserEmailConfirmation(c *gin.Context) {
+	user := &model.UserEmailConfirmationRequest{}
 
 	if err := c.ShouldBindJSON(user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	data := h.service.UserLoginMail(c.Request.Context(), user)
+	data := h.service.UserEmailConfirmation(c.Request.Context(), user)
 
 	utils.GinResponse(c, &data)
 }
@@ -50,50 +50,75 @@ func (h *AuthHandler) UserLoginMail(c *gin.Context) {
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        user  body      model.UserMailConfirmationRequest  true  "User login credentials"
-// @Success      200   {object}  model.Success
-// @Failure      400   {object}  model.ResultMessage
-// @Failure      401   {object}  pkg.ErrorResponse
-// @Failure      403   {object}  pkg.ErrorResponse
-// @Failure      404   {object}  model.ResultMessage
-// @Failure      500   {object}  model.ResultMessage
-// @Router       /api/v1/auth/user-login [post]
-func (h *AuthHandler) UserMailConfirmation(c *gin.Context) {
-	user := &model.UserMailConfirmationRequest{}
-
-	if err := c.ShouldBindJSON(user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	data := h.service.UserMailConfirmation(c.Request.Context(), user)
-
-	utils.GinResponse(c, &data)
-}
-
-// UserRegister godoc
-// @Summary      User registration
-// @Description  Registers a new user
-// @Tags         auth
-// @Accept       json
-// @Produce      json
-// @Param        user  body      model.UserRegisterRequest  true  "User registration data"
+// @Param        user  body      model.UserPhoneConfirmationRequest  true  "User login credentials"
 // @Success      200   {object}  model.LoginResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
 // @Failure      403   {object}  pkg.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
-// @Router       /api/v1/auth/user-register [post]
-func (h *AuthHandler) UserRegister(c *gin.Context) {
-	user := &model.UserRegisterRequest{}
+// @Router       /api/v1/auth/user-phone-confirmation [post]
+func (h *AuthHandler) UserPhoneConfirmation(c *gin.Context) {
+	user := &model.UserPhoneConfirmationRequest{}
 
 	if err := c.ShouldBindJSON(user); err != nil {
-		utils.GinResponse(c, &model.Response{Error: err, Status: http.StatusBadRequest})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	data := h.service.UserRegister(c.Request.Context(), user)
+	data := h.service.UserPhoneConfirmation(c.Request.Context(), user)
 
+	utils.GinResponse(c, &data)
+}
+
+// UserLogin godoc
+// @Summary      User login
+// @Description  Authenticates a user and returns a JWT token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      model.UserLoginEmail  true  "User login credentials"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  pkg.ErrorResponse
+// @Failure      403   {object}  pkg.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/auth/user-login-email [post]
+func (h *AuthHandler) UserLoginEmail(c *gin.Context) {
+	user := &model.UserLoginEmail{}
+
+	if err := c.ShouldBindJSON(user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	data := h.service.UserLoginEmail(c.Request.Context(), user)
+	utils.GinResponse(c, &data)
+}
+
+// UserLogin godoc
+// @Summary      User login
+// @Description  Authenticates a user and returns a JWT token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      model.UserLoginPhone  true  "User login credentials"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  pkg.ErrorResponse
+// @Failure      403   {object}  pkg.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/auth/user-login-phone [post]
+func (h *AuthHandler) UserLoginPhone(c *gin.Context) {
+	user := &model.UserLoginPhone{}
+
+	if err := c.ShouldBindJSON(user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	data := h.service.UserLoginPhone(c.Request.Context(), user)
 	utils.GinResponse(c, &data)
 }

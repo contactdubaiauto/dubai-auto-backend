@@ -39,16 +39,24 @@ create table users (
     "role_id" int not null default 1,
     "password" varchar(100) not null,
     "phone" varchar(100),
-    "notification" boolean default false,
-    "last_active_date" timestamp default now(),
+    "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
     unique("email"),
     unique("phone")
 );
 
-insert into users (username, email, password, phone, notification, last_active_date, created_at) 
-    values ('user', 'user@gmail.com', '$2a$10$Cya9x0xSJSnRknBmJpW.Bu8ukZpVTqzwgrQgAYNPXdrX2HYGRk33W', '01234567890', true, now(), now()); -- password: 12345678
+insert into users (username, email, password, phone, created_at) 
+    values ('user', 'user@gmail.com', '$2a$10$Cya9x0xSJSnRknBmJpW.Bu8ukZpVTqzwgrQgAYNPXdrX2HYGRk33W', '01234567890', now()); -- password: 12345678
 
+create table profiles (
+    "id" serial primary key, 
+    "user_id" int not null,
+    "notification" boolean default false,
+    "last_active_date" timestamp default now(),
+    "created_at" timestamp default now(),
+    constraint profiles_user_id_fk 
+    foreign key (user_id) references users(id) on delete cascade on update cascade
+)
 
 create table admins (
     "id" serial primary key,

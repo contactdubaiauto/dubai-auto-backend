@@ -225,36 +225,39 @@ definitions:
       name:
         type: string
     type: object
-  model.UserLoginRequest:
+  model.UserEmailConfirmationRequest:
     properties:
       email:
         type: string
-      password:
+      otp:
         type: string
     required:
     - email
-    - password
+    - otp
     type: object
-  model.UserRegisterRequest:
+  model.UserLoginEmail:
     properties:
       email:
         type: string
-      password:
-        minLength: 6
+    required:
+    - email
+    type: object
+  model.UserLoginPhone:
+    properties:
+      phone:
+        type: string
+    required:
+    - phone
+    type: object
+  model.UserPhoneConfirmationRequest:
+    properties:
+      otp:
         type: string
       phone:
-        maxLength: 15
-        minLength: 6
-        type: string
-      username:
-        maxLength: 20
-        minLength: 3
         type: string
     required:
-    - email
-    - password
+    - otp
     - phone
-    - username
     type: object
   pkg.ErrorResponse:
     properties:
@@ -265,11 +268,11 @@ definitions:
 host: localhost:8080
 info:
   contact: {}
-  description: "sale or rent cars \U0001F698, also garages, services"
-  title: Dubai Auto
+  description: Project Description
+  title: Project name
   version: "1.0"
 paths:
-  /api/v1/auth/user-login:
+  /api/v1/auth/user-email-confirmation:
     post:
       consumes:
       - application/json
@@ -280,7 +283,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/model.UserLoginRequest'
+          $ref: '#/definitions/model.UserEmailConfirmationRequest'
       produces:
       - application/json
       responses:
@@ -311,18 +314,102 @@ paths:
       summary: User login
       tags:
       - auth
-  /api/v1/auth/user-register:
+  /api/v1/auth/user-login-email:
     post:
       consumes:
       - application/json
-      description: Registers a new user
+      description: Authenticates a user and returns a JWT token
       parameters:
-      - description: User registration data
+      - description: User login credentials
         in: body
         name: user
         required: true
         schema:
-          $ref: '#/definitions/model.UserRegisterRequest'
+          $ref: '#/definitions/model.UserLoginEmail'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: User login
+      tags:
+      - auth
+  /api/v1/auth/user-login-phone:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token
+      parameters:
+      - description: User login credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserLoginPhone'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: User login
+      tags:
+      - auth
+  /api/v1/auth/user-phone-confirmation:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token
+      parameters:
+      - description: User login credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserPhoneConfirmationRequest'
       produces:
       - application/json
       responses:
@@ -350,7 +437,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
-      summary: User registration
+      summary: User login
       tags:
       - auth
   /api/v1/users/body-types:

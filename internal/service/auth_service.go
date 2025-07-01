@@ -19,8 +19,8 @@ func NewAuthService(repo *repository.AuthRepository) *AuthService {
 	return &AuthService{repo}
 }
 
-func (s *AuthService) UserLoginMail(ctx context.Context, user *model.UserLoginMailRequest) model.Response {
-	userByEmail, err := s.repo.UserByMail(ctx, &user.Email)
+func (s *AuthService) UserEmailConfirmation(ctx context.Context, user *model.UserEmailConfirmationRequest) model.Response {
+	userByEmail, err := s.repo.UserByEmail(ctx, &user.Email)
 
 	if err != nil {
 		return model.Response{
@@ -48,7 +48,36 @@ func (s *AuthService) UserLoginMail(ctx context.Context, user *model.UserLoginMa
 	}
 }
 
-func (s *AuthService) UserMailConfirmation(ctx context.Context, user *model.UserMailConfirmationRequest) model.Response {
+func (s *AuthService) UserPhoneConfirmation(ctx context.Context, user *model.UserPhoneConfirmationRequest) model.Response {
+	userByPhone, err := s.repo.UserByPhone(ctx, &user.Phone)
+
+	if err != nil {
+		return model.Response{
+			Error:  err,
+			Status: http.StatusNotFound,
+		}
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(userByPhone.OTP), []byte(user.OTP))
+
+	if err != nil {
+		return model.Response{
+			Error:  err,
+			Status: http.StatusBadRequest,
+		}
+	}
+
+	accessToken, refreshToken := pkg.CreateRefreshAccsessToken(userByPhone.ID, 1)
+
+	return model.Response{
+		Data: model.LoginResponse{
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+		},
+	}
+}
+
+func (s *AuthService) UserLoginEmail(ctx context.Context, user *model.UserLoginEmail) model.Response {
 	otp := pkg.RandomOTP()
 	// todo: send otp to the mail
 	fmt.Println(otp)
@@ -63,7 +92,7 @@ func (s *AuthService) UserMailConfirmation(ctx context.Context, user *model.User
 		}
 	}
 
-	err = s.repo.UserMailGetOrRegister(ctx, username, user.Email, string(hashedPassword))
+	err = s.repo.UserEmailGetOrRegister(ctx, username, user.Email, string(hashedPassword))
 
 	if err != nil {
 		return model.Response{
@@ -76,9 +105,13 @@ func (s *AuthService) UserMailConfirmation(ctx context.Context, user *model.User
 	}
 }
 
-func (s *AuthService) UserRegister(ctx context.Context, user *model.UserRegisterRequest) model.Response {
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+func (s *AuthService) UserLoginPhone(ctx context.Context, user *model.UserLoginPhone) model.Response {
+	otp := pkg.RandomOTP()
+	// todo: send otp to the mail
+	fmt.Println(otp)
+	otp = 123456
+	username := pkg.RandomUsername()
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%d", otp)), bcrypt.DefaultCost)
 
 	if err != nil {
 		return model.Response{
@@ -87,21 +120,16 @@ func (s *AuthService) UserRegister(ctx context.Context, user *model.UserRegister
 		}
 	}
 
-	user.Password = string(hashedPassword)
-	id, err := s.repo.UserRegister(ctx, user)
+	err = s.repo.UserPhoneGetOrRegister(ctx, username, user.Phone, string(hashedPassword))
 
 	if err != nil {
 		return model.Response{
-			Error:  fmt.Errorf("user already exist: %w", err),
-			Status: http.StatusConflict,
+			Error:  err,
+			Status: http.StatusInternalServerError,
 		}
 	}
 
-	accessToken, refreshToken := pkg.CreateRefreshAccsessToken(*id, 1)
 	return model.Response{
-		Data: model.LoginResponse{
-			AccessToken:  accessToken,
-			RefreshToken: refreshToken,
-		},
+		Data: model.Success{Message: "Successfully sended mail confirmation code."},
 	}
 }

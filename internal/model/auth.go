@@ -1,12 +1,21 @@
 package model
 
-type UserLoginMailRequest struct {
+type UserEmailConfirmationRequest struct {
 	Email string `json:"email" binding:"required,email"`
 	OTP   string `json:"otp" binding:"required"`
 }
 
-type UserMailConfirmationRequest struct {
+type UserPhoneConfirmationRequest struct {
+	Phone string `json:"phone" binding:"required"`
+	OTP   string `json:"otp" binding:"required"`
+}
+
+type UserLoginEmail struct {
 	Email string `json:"email" binding:"required,email"`
+}
+
+type UserLoginPhone struct {
+	Phone string `json:"phone" binding:"required"`
 }
 
 type UserByEmail struct {

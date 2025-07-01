@@ -52,8 +52,9 @@ func SetupAuthRoutes(r *gin.RouterGroup, db *pgxpool.Pool) {
 	authHandler := http.NewAuthHandler(authService)
 
 	{
-		r.POST("/user-email-confirmation", authHandler.UserMailConfirmation)
-		r.POST("/user-login-email", authHandler.UserLoginMail)
-		r.POST("/user-register", authHandler.UserRegister)
+		r.POST("/user-login-email", authHandler.UserLoginEmail)
+		r.POST("/user-email-confirmation", authHandler.UserEmailConfirmation)
+		r.POST("/user-login-phone", authHandler.UserLoginPhone)
+		r.POST("/user-phone-confirmation", authHandler.UserPhoneConfirmation)
 	}
 }
