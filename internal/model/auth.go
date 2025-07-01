@@ -1,14 +1,24 @@
 package model
 
-type UserLoginRequest struct {
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required"`
+type UserLoginMailRequest struct {
+	Email string `json:"email" binding:"required,email"`
+	OTP   string `json:"otp" binding:"required"`
+}
+
+type UserMailConfirmationRequest struct {
+	Email string `json:"email" binding:"required,email"`
 }
 
 type UserByEmail struct {
-	ID       int    `json:"id"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	ID    int    `json:"id"`
+	Email string `json:"email"`
+	OTP   string `json:"otp"`
+}
+
+type UserByPhone struct {
+	ID    int    `json:"id"`
+	Phone string `json:"phone"`
+	OTP   string `json:"otp"`
 }
 
 type LoginResponse struct {

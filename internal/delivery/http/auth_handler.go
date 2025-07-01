@@ -23,7 +23,7 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        user  body      model.UserLoginRequest  true  "User login credentials"
+// @Param        user  body      model.UserLoginMailRequest  true  "User login credentials"
 // @Success      200   {object}  model.LoginResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
@@ -31,15 +31,42 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/auth/user-login [post]
-func (h *AuthHandler) UserLogin(c *gin.Context) {
-	user := &model.UserLoginRequest{}
+func (h *AuthHandler) UserLoginMail(c *gin.Context) {
+	user := &model.UserLoginMailRequest{}
 
 	if err := c.ShouldBindJSON(user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	data := h.service.UserLogin(c.Request.Context(), user)
+	data := h.service.UserLoginMail(c.Request.Context(), user)
+
+	utils.GinResponse(c, &data)
+}
+
+// UserLogin godoc
+// @Summary      User login
+// @Description  Authenticates a user and returns a JWT token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      model.UserMailConfirmationRequest  true  "User login credentials"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  pkg.ErrorResponse
+// @Failure      403   {object}  pkg.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/auth/user-login [post]
+func (h *AuthHandler) UserMailConfirmation(c *gin.Context) {
+	user := &model.UserMailConfirmationRequest{}
+
+	if err := c.ShouldBindJSON(user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	data := h.service.UserMailConfirmation(c.Request.Context(), user)
 
 	utils.GinResponse(c, &data)
 }

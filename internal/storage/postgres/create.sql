@@ -9,6 +9,11 @@ alter default privileges in schema public grant all on sequences to da;
 
 drop table if exists images;
 drop table if exists vehicles;
+drop table if exists generation_modifications;
+drop table if exists generation_body_types;
+drop table if exists generation_transmissions;
+drop table if exists generation_fuel_types;
+drop table if exists generation_drivetrains;
 drop table if exists colors;
 drop table if exists services;
 drop table if exists service_types;
@@ -29,15 +34,16 @@ drop table if exists ownership_types;
 
 create table users (
     "id" serial primary key,
-    "username" varchar(255) not null,
-    "email" varchar(255) not null,
+    "username" varchar(100) not null,
+    "email" varchar(100),
     "role_id" int not null default 1,
-    "password" varchar(255) not null,
-    "phone" varchar(255) not null,
+    "password" varchar(100) not null,
+    "phone" varchar(100),
     "notification" boolean default false,
     "last_active_date" timestamp default now(),
     "created_at" timestamp default now(),
-    unique("email")
+    unique("email"),
+    unique("phone")
 );
 
 insert into users (username, email, password, phone, notification, last_active_date, created_at) 
@@ -408,6 +414,84 @@ insert into generation_transmissions (generation_id, transmission_id) values (2,
 insert into generation_transmissions (generation_id, transmission_id) values (3, 1); -- First Generation Rav4 - Automatic
 insert into generation_transmissions (generation_id, transmission_id) values (3, 2); -- First Generation Rav4 - Manual
 
+create table generation_modifications (
+    "id" serial primary key,
+    "generation_id" int not null,
+    "body_type_id" int not null,
+    "fuel_type_id" int not null, 
+    "drivetrain_id" int not null,
+    "transmission_id" int not null, 
+    "title" character varying(100) not null,
+    constraint generation_modifications_generation_id_fk
+        foreign key (generation_id)
+            references generations(id)
+                on delete cascade
+                on update cascade,
+    constraint generation_modifications_body_type_id_fk
+        foreign key (body_type_id)
+            references body_types(id)
+                on delete cascade
+                on update cascade,
+    constraint generation_modifications_fuel_type_id_fk
+        foreign key (fuel_type_id)
+            references fuel_types(id)
+                on delete cascade
+                on update cascade,
+    constraint generation_modifications_drivetrain_id_fk
+        foreign key (drivetrain_id)
+            references drivetrains(id)
+                on delete cascade
+                on update cascade,
+    constraint generation_modifications_transmission_id_fk
+        foreign key (transmission_id)
+            references transmissions(id)
+                on delete cascade
+                on update cascade
+);
+
+insert into generation_modifications (generation_id, body_type_id, fuel_type_id, drivetrain_id, transmission_id, title) 
+values 
+    (1, 1, 1, 1, 1, '2.8 MT Gas (170 l.c.)'),    
+    (1, 1, 1, 1, 1, '2.5 MT Gas (150 l.c.)'),
+    (1, 1, 1, 1, 1, '3.0 MT Gas (180 l.c.)'),
+    (1, 1, 1, 1, 1, '3.0 MT Gas (200 l.c.)'),
+    (1, 1, 1, 1, 1, '2.0 MT Gas (140 l.c.)'),
+    (1, 1, 1, 1, 1, '2.4 MT Gas (160 l.c.)'),
+
+    (1, 1, 1, 1, 2, '2.5 MT Gas (150 l.c.)'),
+    (1, 1, 1, 1, 2, '3.0 MT Gas (180 l.c.)'),
+    (1, 1, 1, 1, 2, '3.0 MT Gas (200 l.c.)'),
+
+    (1, 1, 1, 2, 1, '3.0 MT Gas (180 l.c.)'),
+    (1, 1, 1, 2, 2, '3.0 MT Gas (200 l.c.)'),
+    (1, 2, 1, 1, 1, '2.0 MT Gas (140 l.c.)'),
+    (1, 2, 1, 1, 2, '2.4 MT Gas (160 l.c.)'),
+    (1, 2, 1, 2, 1, '2.5 MT Gas (155 l.c.)'),
+    (1, 2, 1, 2, 2, '2.7 MT Gas (165 l.c.)'),
+    (2, 1, 2, 1, 1, '2.8 AT Diesel (180 l.c.)'),
+    (2, 1, 2, 1, 2, '2.5 AT Diesel (160 l.c.)'),
+    (2, 1, 2, 2, 1, '3.0 AT Diesel (200 l.c.)'),
+    (2, 1, 2, 2, 2, '3.2 AT Diesel (220 l.c.)'),
+    (2, 2, 2, 1, 1, '2.0 AT Diesel (130 l.c.)'),
+    (2, 2, 2, 1, 2, '2.4 AT Diesel (150 l.c.)'),
+    (2, 2, 2, 2, 1, '2.5 AT Diesel (170 l.c.)'),
+    (2, 2, 2, 2, 2, '2.7 AT Diesel (175 l.c.)'),
+    (3, 1, 3, 1, 1, '2.0 CVT Electric (120 l.c.)'),
+    (3, 1, 3, 1, 2, '2.5 CVT Electric (140 l.c.)'),
+    (3, 1, 3, 2, 1, '3.0 CVT Electric (160 l.c.)'),
+    (3, 1, 3, 2, 2, '3.2 CVT Electric (180 l.c.)'),
+    (3, 2, 3, 1, 1, '2.0 CVT Electric (110 l.c.)'),
+    (3, 2, 3, 1, 2, '2.4 CVT Electric (130 l.c.)'),
+    (3, 2, 3, 2, 1, '2.5 CVT Electric (150 l.c.)'),
+    (3, 2, 3, 2, 2, '2.7 CVT Electric (170 l.c.)'),
+    (1, 1, 4, 1, 1, '2.5 MT Hybrid (160 l.c.)'),
+    (1, 1, 4, 1, 2, '2.8 MT Hybrid (180 l.c.)'),
+    (1, 1, 4, 2, 1, '3.0 MT Hybrid (200 l.c.)'),
+    (1, 1, 4, 2, 2, '3.2 MT Hybrid (220 l.c.)'),
+    (2, 2, 4, 1, 1, '2.0 AT Hybrid (140 l.c.)'),
+    (2, 2, 4, 1, 2, '2.4 AT Hybrid (160 l.c.)'),
+    (2, 2, 4, 2, 1, '2.5 AT Hybrid (180 l.c.)');
+
 
 create table ownership_types (
     "id" serial primary key,
@@ -457,6 +541,7 @@ create table vehicles (
     "exchange" boolean not null default false,
     "credit" boolean not null default false,
     "right_hand_drive" boolean not null default false,
+    "modification_id" int,
     "odometer" int,
     "vin_code" varchar(255),
     "door_count" int,
@@ -541,6 +626,11 @@ create table vehicles (
         foreign key (city_id)
             references cities(id)
                 on delete cascade
+                on update cascade,
+    constraint vehicles_modification_id_fk
+        foreign key (modification_id)
+            references generation_modifications(id)
+                on delete cascade 
                 on update cascade
 );
 
