@@ -27,10 +27,10 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "User login",
+                "summary": "User email confirmation",
                 "parameters": [
                     {
-                        "description": "User login credentials",
+                        "description": "User email confirmation credentials",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -91,10 +91,10 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "User login",
+                "summary": "User login email",
                 "parameters": [
                     {
-                        "description": "User login credentials",
+                        "description": "User login email credentials",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -158,7 +158,7 @@ const docTemplate = `{
                 "summary": "User login",
                 "parameters": [
                     {
-                        "description": "User login credentials",
+                        "description": "User login phone credentials",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -219,10 +219,10 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "User login",
+                "summary": "User phone confirmation",
                 "parameters": [
                     {
-                        "description": "User login credentials",
+                        "description": "User phone confirmation credentials",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -702,7 +702,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Uploads images for a car (max 10 files)",
@@ -984,11 +984,98 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/users/modifications": {
+            "get": {
+                "description": "Returns a list of generation modifications",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get generation modifications",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Get modification's generation_id'",
+                        "name": "generation_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Get modification's body_type_id'",
+                        "name": "body_type_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Get modification's fuel_type_id'",
+                        "name": "fuel_type_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Get modification's drivetrain_id'",
+                        "name": "drivetrain_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Get modification's transmission_id'",
+                        "name": "transmission_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/profile/cars": {
             "get": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Returns the cars associated with the authenticated user's profile",
@@ -1203,6 +1290,9 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "transmission_id": {
+                    "type": "integer"
+                },
+                "user_id": {
                     "type": "integer"
                 },
                 "vin_code": {
@@ -1514,7 +1604,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "95.85.126.220",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Project name",

@@ -9,6 +9,11 @@ type GetBrandsResponse struct {
 	CarCount int64  `json:"car_count"`
 }
 
+type GetModificationsResponse struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 type Model struct {
 	ID   int64  `json:"id"`
 	Name string `json:"name"`

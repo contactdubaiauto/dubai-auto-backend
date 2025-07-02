@@ -105,7 +105,7 @@ func (r *UserRepository) GetBrands(ctx *context.Context, text string) ([]*model.
 	}
 
 	defer rows.Close()
-	var brands []*model.GetBrandsResponse
+	var brands = make([]*model.GetBrandsResponse, 0)
 
 	for rows.Next() {
 		var brand model.GetBrandsResponse
@@ -115,6 +115,31 @@ func (r *UserRepository) GetBrands(ctx *context.Context, text string) ([]*model.
 		brands = append(brands, &brand)
 	}
 	return brands, err
+}
+
+func (r *UserRepository) GetModifications(ctx *context.Context, generationID, bodyTypeID, fuelTypeID, drivetrainID, transmissionID int) ([]*model.GetModificationsResponse, error) {
+	q := `
+		SELECT id, name FROM generation_modifications 
+		WHERE 
+			generation_id = $1 and body_type_id = $2 and fuel_type_id = $3 and drivetrain_id = $4 and transmission_id = $5
+	`
+	rows, err := r.db.Query(*ctx, q, generationID, bodyTypeID, fuelTypeID, drivetrainID, transmissionID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	var modifications = make([]*model.GetModificationsResponse, 0)
+
+	for rows.Next() {
+		var modification model.GetModificationsResponse
+		if err := rows.Scan(&modification.ID, &modification.Name); err != nil {
+			return nil, err
+		}
+		modifications = append(modifications, &modification)
+	}
+	return modifications, err
 }
 
 func (r *UserRepository) GetModelsByBrandID(ctx *context.Context, brandID int64, text string) ([]model.Model, error) {

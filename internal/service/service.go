@@ -26,8 +26,32 @@ func (s *UserService) GetProfileCars(ctx *context.Context, userID *int) *model.R
 	return &model.Response{Data: cars}
 }
 
-func (s *UserService) GetBrands(ctx *context.Context, text string) ([]*model.GetBrandsResponse, error) {
-	return s.UserRepository.GetBrands(ctx, text)
+func (s *UserService) GetBrands(ctx *context.Context, text string) *model.Response {
+	brands, err := s.UserRepository.GetBrands(ctx, text)
+
+	if err != nil {
+		return &model.Response{
+			Error:  err,
+			Status: http.StatusBadRequest,
+		}
+	}
+	return &model.Response{
+		Data: brands,
+	}
+}
+
+func (s *UserService) GetModifications(ctx *context.Context, generationID, bodyTypeID, fuelTypeID, drivetrainID, transmissionID int) *model.Response {
+	modifications, err := s.UserRepository.GetModifications(ctx, generationID, bodyTypeID, fuelTypeID, drivetrainID, transmissionID)
+
+	if err != nil {
+		return &model.Response{
+			Error:  err,
+			Status: http.StatusBadRequest,
+		}
+	}
+	return &model.Response{
+		Data: modifications,
+	}
 }
 
 func (s *UserService) GetModelsByBrandID(ctx *context.Context, brandID int64, text string) *model.Response {

@@ -66,6 +66,8 @@ definitions:
         type: boolean
       transmission_id:
         type: integer
+      user_id:
+        type: integer
       vin_code:
         type: string
       year:
@@ -265,7 +267,7 @@ definitions:
         example: Invalid param ID
         type: string
     type: object
-host: localhost:8080
+host: 95.85.126.220
 info:
   contact: {}
   description: Project Description
@@ -278,7 +280,7 @@ paths:
       - application/json
       description: Authenticates a user and returns a JWT token
       parameters:
-      - description: User login credentials
+      - description: User email confirmation credentials
         in: body
         name: user
         required: true
@@ -311,7 +313,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
-      summary: User login
+      summary: User email confirmation
       tags:
       - auth
   /api/v1/auth/user-login-email:
@@ -320,7 +322,7 @@ paths:
       - application/json
       description: Authenticates a user and returns a JWT token
       parameters:
-      - description: User login credentials
+      - description: User login email credentials
         in: body
         name: user
         required: true
@@ -353,7 +355,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
-      summary: User login
+      summary: User login email
       tags:
       - auth
   /api/v1/auth/user-login-phone:
@@ -362,7 +364,7 @@ paths:
       - application/json
       description: Authenticates a user and returns a JWT token
       parameters:
-      - description: User login credentials
+      - description: User login phone credentials
         in: body
         name: user
         required: true
@@ -404,7 +406,7 @@ paths:
       - application/json
       description: Authenticates a user and returns a JWT token
       parameters:
-      - description: User login credentials
+      - description: User phone confirmation credentials
         in: body
         name: user
         required: true
@@ -437,7 +439,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
-      summary: User login
+      summary: User phone confirmation
       tags:
       - auth
   /api/v1/users/body-types:
@@ -766,7 +768,7 @@ paths:
           schema:
             $ref: '#/definitions/model.ResultMessage'
       security:
-      - ApiKeyAuth: []
+      - BearerAuth: []
       summary: Upload car images
       tags:
       - users
@@ -910,6 +912,65 @@ paths:
       summary: Get fuel types
       tags:
       - users
+  /api/v1/users/modifications:
+    get:
+      description: Returns a list of generation modifications
+      parameters:
+      - description: Get modification's generation_id'
+        in: query
+        name: generation_id
+        required: true
+        type: string
+      - description: Get modification's body_type_id'
+        in: query
+        name: body_type_id
+        required: true
+        type: string
+      - description: Get modification's fuel_type_id'
+        in: query
+        name: fuel_type_id
+        required: true
+        type: string
+      - description: Get modification's drivetrain_id'
+        in: query
+        name: drivetrain_id
+        required: true
+        type: string
+      - description: Get modification's transmission_id'
+        in: query
+        name: transmission_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get generation modifications
+      tags:
+      - users
   /api/v1/users/profile/cars:
     get:
       description: Returns the cars associated with the authenticated user's profile
@@ -943,7 +1004,7 @@ paths:
           schema:
             $ref: '#/definitions/model.ResultMessage'
       security:
-      - ApiKeyAuth: []
+      - BearerAuth: []
       summary: Get user's profile cars
       tags:
       - users

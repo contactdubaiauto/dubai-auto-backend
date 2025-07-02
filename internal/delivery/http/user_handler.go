@@ -26,7 +26,7 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 // @Summary      Get user's profile cars
 // @Description  Returns the cars associated with the authenticated user's profile
 // @Tags         users
-// @Security     ApiKeyAuth
+// @Security     BearerAuth
 // @Produce      json
 // @Success      200  {array}  model.GetCarsResponse
 // @Failure      400  {object} model.ResultMessage
@@ -63,17 +63,83 @@ func (h *UserHandler) GetProfileCars(c *gin.Context) {
 func (h *UserHandler) GetBrands(c *gin.Context) {
 	text := c.Query("text")
 	ctx := c.Request.Context()
-	brands, err := h.UserService.GetBrands(&ctx, text)
+	data := h.UserService.GetBrands(&ctx, text)
+	utils.GinResponse(c, data)
+}
+
+// GetModifications godoc
+// @Summary      Get generation modifications
+// @Description  Returns a list of generation modifications
+// @Tags         users
+// @Produce      json
+// @Param        generation_id  query     string  true  "Get modification's generation_id'"
+// @Param        body_type_id  query     string  true  "Get modification's body_type_id'"
+// @Param        fuel_type_id  query     string  true  "Get modification's fuel_type_id'"
+// @Param        drivetrain_id  query     string  true  "Get modification's drivetrain_id'"
+// @Param        transmission_id  query     string  true  "Get modification's transmission_id'"
+// @Success      200   {object}  model.ResultMessage
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/users/modifications [get]
+func (h *UserHandler) GetModifications(c *gin.Context) {
+	generation_id := c.Query("generation_id")
+	generationID, err := strconv.Atoi(generation_id)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("generation id must be integer"),
+		})
 		return
 	}
+	body_type_id := c.Query("body_type_id")
+	bodyTypeID, err := strconv.Atoi(body_type_id)
 
-	utils.GinResponse(c, &model.Response{
-		Status: 200,
-		Data:   brands,
-	})
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("body type id must be integer"),
+		})
+		return
+	}
+	fuel_type_id := c.Query("fuel_type_id")
+	fuelTypeID, err := strconv.Atoi(fuel_type_id)
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("fuel type id must be integer"),
+		})
+		return
+	}
+	drivetrain_id := c.Query("drivetrain_id")
+	drivetrainID, err := strconv.Atoi(drivetrain_id)
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("drivetrain_id id must be integer"),
+		})
+		return
+	}
+	transmission_id := c.Query("transmission_id")
+	transmissionID, err := strconv.Atoi(transmission_id)
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("transmission_id id must be integer"),
+		})
+		return
+	}
+	ctx := c.Request.Context()
+	data := h.UserService.GetModifications(
+		&ctx, generationID, bodyTypeID, fuelTypeID, drivetrainID, transmissionID)
+
+	utils.GinResponse(c, data)
 }
 
 // GetModelsByBrandID godoc
@@ -337,7 +403,7 @@ func (h *UserHandler) CreateCar(c *gin.Context) {
 // @Summary      Upload car images
 // @Description  Uploads images for a car (max 10 files)
 // @Tags         users
-// @Security     ApiKeyAuth
+// @Security     BearerAuth
 // @Accept       multipart/form-data
 // @Produce      json
 // @Param        id      path      int     true   "Car ID"

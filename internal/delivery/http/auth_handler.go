@@ -17,13 +17,13 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 	return &AuthHandler{service}
 }
 
-// UserLogin godoc
-// @Summary      User login
+// UserEmail confirmation godoc
+// @Summary      User email confirmation
 // @Description  Authenticates a user and returns a JWT token
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        user  body      model.UserEmailConfirmationRequest  true  "User login credentials"
+// @Param        user  body      model.UserEmailConfirmationRequest  true  "User email confirmation credentials"
 // @Success      200   {object}  model.LoginResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
@@ -44,13 +44,13 @@ func (h *AuthHandler) UserEmailConfirmation(c *gin.Context) {
 	utils.GinResponse(c, &data)
 }
 
-// UserLogin godoc
-// @Summary      User login
+// UserPhone confirmation godoc
+// @Summary      User phone confirmation
 // @Description  Authenticates a user and returns a JWT token
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        user  body      model.UserPhoneConfirmationRequest  true  "User login credentials"
+// @Param        user  body      model.UserPhoneConfirmationRequest  true  "User phone confirmation credentials"
 // @Success      200   {object}  model.LoginResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
@@ -71,13 +71,13 @@ func (h *AuthHandler) UserPhoneConfirmation(c *gin.Context) {
 	utils.GinResponse(c, &data)
 }
 
-// UserLogin godoc
-// @Summary      User login
+// UserLoginEmail godoc
+// @Summary      User login email
 // @Description  Authenticates a user and returns a JWT token
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        user  body      model.UserLoginEmail  true  "User login credentials"
+// @Param        user  body      model.UserLoginEmail  true  "User login email credentials"
 // @Success      200   {object}  model.Success
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
@@ -97,13 +97,13 @@ func (h *AuthHandler) UserLoginEmail(c *gin.Context) {
 	utils.GinResponse(c, &data)
 }
 
-// UserLogin godoc
+// UserLoginPhone godoc
 // @Summary      User login
 // @Description  Authenticates a user and returns a JWT token
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        user  body      model.UserLoginPhone  true  "User login credentials"
+// @Param        user  body      model.UserLoginPhone  true  "User login phone credentials"
 // @Success      200   {object}  model.Success
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse

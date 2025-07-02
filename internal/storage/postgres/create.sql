@@ -9,6 +9,7 @@ alter default privileges in schema public grant all on sequences to da;
 
 drop table if exists images;
 drop table if exists vehicles;
+drop table if exists profiles;
 drop table if exists generation_modifications;
 drop table if exists generation_body_types;
 drop table if exists generation_transmissions;
@@ -56,7 +57,7 @@ create table profiles (
     "created_at" timestamp default now(),
     constraint profiles_user_id_fk 
     foreign key (user_id) references users(id) on delete cascade on update cascade
-)
+);
 
 create table admins (
     "id" serial primary key,
@@ -429,7 +430,7 @@ create table generation_modifications (
     "fuel_type_id" int not null, 
     "drivetrain_id" int not null,
     "transmission_id" int not null, 
-    "title" character varying(100) not null,
+    "name" character varying(100) not null,
     constraint generation_modifications_generation_id_fk
         foreign key (generation_id)
             references generations(id)
@@ -457,7 +458,7 @@ create table generation_modifications (
                 on update cascade
 );
 
-insert into generation_modifications (generation_id, body_type_id, fuel_type_id, drivetrain_id, transmission_id, title) 
+insert into generation_modifications (generation_id, body_type_id, fuel_type_id, drivetrain_id, transmission_id, name) 
 values 
     (1, 1, 1, 1, 1, '2.8 MT Gas (170 l.c.)'),    
     (1, 1, 1, 1, 1, '2.5 MT Gas (150 l.c.)'),
@@ -684,6 +685,16 @@ insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-
 insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
 insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
 insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+
+insert into images (vehicle_id, image) values (2, '/images/cars/2/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+insert into images (vehicle_id, image) values (2, '/images/cars/2/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+insert into images (vehicle_id, image) values (2, '/images/cars/2/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+insert into images (vehicle_id, image) values (2, '/images/cars/2/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+
+insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
 
 -- steps for add vehicle
 -- 1. vin code, 2. marka, 3. model, 4. year, 5. generations, 6. body types, 7. engine, 8. driveride, 
