@@ -178,12 +178,11 @@ func (s *UserService) GetColors(ctx *context.Context) *model.Response {
 }
 
 func (s *UserService) GetCars(ctx *context.Context, userID int, brands, models, regions, cities,
-	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types,
-	announcement_types []string, year_from, year_to, exchange, credit, right_hand_drive, price_from, price_to string) *model.Response {
+	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types []string, year_from, year_to, exchange, credit, right_hand_drive, price_from, price_to string) *model.Response {
 
 	cars, err := s.UserRepository.GetCars(ctx, userID, brands, models, regions, cities,
 		generations, transmissions, engines, drivetrains, body_types, fuel_types,
-		ownership_types, announcement_types, year_from, year_to, exchange, credit,
+		ownership_types, year_from, year_to, exchange, credit,
 		right_hand_drive, price_from, price_to)
 
 	if err != nil {

@@ -35,6 +35,6 @@ type CreateCarRequest struct {
 	CreditPrice     int    `json:"credit_price"`
 	RightHandDrive  bool   `json:"right_hand_drive"`
 	ModificationID  int    `json:"modification_id"`
-	MileageKM       int    `json:"mileage_km"`
-	GenerationID    int    `json:"generation_id"`
+	// MileageKM       int    `json:"mileage_km"`
+	GenerationID int `json:"generation_id" binding:"required"`
 }

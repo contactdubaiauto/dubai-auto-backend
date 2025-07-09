@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"dubai-auto/internal/model"
@@ -560,89 +561,107 @@ func (r *UserRepository) GetColors(ctx *context.Context) ([]model.Color, error) 
 
 func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 	brands, models, regions, cities, generations, transmissions,
-	engines, drivetrains, body_types, fuel_types, ownership_types,
-	announcement_types []string, year_from, year_to, exchange, credit,
+	engines, drivetrains, body_types, fuel_types, ownership_types []string, year_from, year_to, exchange, credit,
 	right_hand_drive, price_from, price_to string) ([]model.GetCarsResponse, error) {
 	var qWhere string
 	var qValues []interface{}
 	qValues = append(qValues, userID)
+	var i = 1
+
 	if len(brands) > 0 {
-		qWhere += " AND bs.id = ANY($1)"
+		i += 1
+		qWhere += fmt.Sprintf(" AND bs.id = ANY($%d)", i)
 		qValues = append(qValues, brands)
 	}
 	if len(models) > 0 {
-		qWhere += " AND ms.id = ANY($2)"
+		i += 1
+		qWhere += fmt.Sprintf(" AND ms.id = ANY($%d)", i)
 		qValues = append(qValues, models)
 	}
 	if len(regions) > 0 {
-		qWhere += " AND rs.id = ANY($3)"
+		i += 1
+		qWhere += fmt.Sprintf(" AND rs.id = ANY($%d)", i)
 		qValues = append(qValues, regions)
 	}
 	if len(cities) > 0 {
-		qWhere += " AND cs.id = ANY($4)"
+		i += 1
+		qWhere += fmt.Sprintf(" AND cs.id = ANY($%d)", i)
 		qValues = append(qValues, cities)
 	}
 	if len(generations) > 0 {
-		qWhere += " AND gs.id = ANY($5)"
+		i += 1
+		qWhere += fmt.Sprintf(" AND gs.id = ANY($%d)", i)
 		qValues = append(qValues, generations)
 	}
 	if len(transmissions) > 0 {
-		qWhere += " AND ts.id = ANY($6)"
+		i += 1
+		qWhere += fmt.Sprintf(" AND ts.id = ANY($%d)", i)
 		qValues = append(qValues, transmissions)
 	}
 	if len(engines) > 0 {
-		qWhere += " AND es.id = ANY($7)"
+		i += 1
+		qWhere += fmt.Sprintf(" AND es.id = ANY($%d)", i)
 		qValues = append(qValues, engines)
 	}
 	if len(drivetrains) > 0 {
-		qWhere += " AND ds.id = ANY($8)"
+		i += 1
+		qWhere += fmt.Sprintf(" AND ds.id = ANY($%d)", i)
 		qValues = append(qValues, drivetrains)
 	}
 	if len(body_types) > 0 {
-		qWhere += " AND bts.id = ANY($9)"
+		i += 1
+		qWhere += fmt.Sprintf(" AND bts.id = ANY($%d)", i)
 		qValues = append(qValues, body_types)
 	}
 	if len(fuel_types) > 0 {
-		qWhere += " AND fts.id = ANY($10)"
+		i += 1
+		qWhere += fmt.Sprintf(" AND fts.id = ANY($%d)", i)
 		qValues = append(qValues, fuel_types)
 	}
 	if len(ownership_types) > 0 {
-		qWhere += " AND vs.ownership_type_id = ANY($11) AND vs.ownership_type_id != 0"
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.ownership_type_id = ANY($%d) ", i)
 		qValues = append(qValues, ownership_types)
 	}
-	if len(announcement_types) > 0 {
-		qWhere += " AND vs.announcement_type_id = ANY($12) AND vs.announcement_type_id != 0"
-		qValues = append(qValues, announcement_types)
-	}
 	if year_from != "" {
-		qWhere += " AND vs.year >= $13"
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.year >= $%d", i)
 		qValues = append(qValues, year_from)
 	}
 	if year_to != "" {
-		qWhere += " AND vs.year <= $14"
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.year <= $%d", i)
 		qValues = append(qValues, year_to)
 	}
 	if exchange != "" {
-		qWhere += " AND vs.exchange = $15"
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.exchange = $%d", i)
 		qValues = append(qValues, true)
 	}
 	if credit != "" {
-		qWhere += " AND vs.credit = $16"
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.credit = $%d", i)
 		qValues = append(qValues, true)
 	}
 	if right_hand_drive != "" {
-		qWhere += " AND vs.right_hand_drive = $17"
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.right_hand_drive = $%d", i)
 		qValues = append(qValues, true)
 	}
 	if price_from != "" {
-		qWhere += " AND vs.price >= $18"
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.price >= $%d", i)
 		qValues = append(qValues, price_from)
 	}
 	if price_to != "" {
-		qWhere += " AND vs.price <= $19"
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.price <= $%d", i)
 		qValues = append(qValues, price_to)
 	}
 
+	fmt.Println("qWhere")
+	fmt.Println(qWhere)
+	fmt.Println(qValues...)
 	cars := make([]model.GetCarsResponse, 0)
 	q := `
 		select 
@@ -687,6 +706,7 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 		left join drivetrains ds on vs.drivetrain_id = ds.id
 		left join body_types bts on vs.body_type_id = bts.id
 		left join fuel_types fts on vs.fuel_type_id = fts.id
+		left join generations gs on gs.id = vs.generation_id
 		left join lateral (
 			select 
 				json_agg(image) as images

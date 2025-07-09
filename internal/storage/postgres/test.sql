@@ -564,3 +564,4 @@ select
     ab.all_models
 from popular as pp
 left join all_models as ab on true;
+

@@ -470,7 +470,6 @@ func (h *UserHandler) GetColors(c *gin.Context) {
 // @Param   body_types        query   []string  false  "Filter by body type IDs"
 // @Param   fuel_types        query   []string  false  "Filter by fuel type IDs"
 // @Param   ownership_types   query   []string  false  "Filter by ownership type IDs"
-// @Param   announcement_types query  []string  false  "Filter by announcement type IDs"
 // @Param   year_from         query   string    false  "Filter by year from"
 // @Param   year_to           query   string    false  "Filter by year to"
 // @Param   exchange          query   string    false  "Filter by exchange"
@@ -499,7 +498,6 @@ func (h *UserHandler) GetCars(c *gin.Context) {
 	body_types := pkg.QueryParamToArray(c.Query("body_types"))
 	fuel_types := pkg.QueryParamToArray(c.Query("fuel_types"))
 	ownership_types := pkg.QueryParamToArray(c.Query("ownership_types"))
-	announcement_types := pkg.QueryParamToArray(c.Query("announcement_types"))
 	year_from := c.Query("year_from")
 	year_to := c.Query("year_to")
 	exchange := c.Query("exchange")
@@ -510,7 +508,7 @@ func (h *UserHandler) GetCars(c *gin.Context) {
 
 	data := h.UserService.GetCars(&ctx, userID, brands, models,
 		regions, cities, generations, transmissions, engines, drivetrains,
-		body_types, fuel_types, ownership_types, announcement_types,
+		body_types, fuel_types, ownership_types,
 		year_from, year_to, exchange, credit, right_hand_drive, price_from, price_to)
 
 	utils.GinResponse(c, data)

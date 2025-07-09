@@ -845,52 +845,52 @@ create table vehicles (
 insert into vehicles (
     user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year, exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new,
     credit_price, status, crash, negotiable, drivetrain_id, mileage_km, 
-    interior_color_id, color_id, view_count 
+    interior_color_id, color_id, view_count, region_id, transmission_id, engine_id, generation_id
 )  values 
 (
-    1, 1, 1, 1, 1, 1, 1, 2020, false, false, false, 74839782, '238748927', 4, '23487827397', 39999, true, 
+    1, 1, 1, 1, 1, 1, 1, 2020, false, true, false, 74839782, '238748927', 4, '23487827397', 39999, true, 
     388292, 3, false, true, 2, 16611888, 
-    2, 1, 392
+    2, 1, 392, 1, 1, 1, 1
 ),
 (
-    1, 2, 1, 2, 2, 2, 1, 2019, false, false, false, 273854, '26873900987', 4, '23748798273942', 7828973, true,
+    1, 1, 1, 2, 2, 2, 1, 2019, true, false, true, 273854, '26873900987', 4, '23748798273942', 7828973, true,
     237848, 3, false, true, 3, 2772719,
-    3, 2, 234
+    3, 2, 234, 2, 2, 2, 2
 ),
 (
-    2, 2, 1, 2, 2, 2, 1, 2010, false, false, false, 8373, '98987987987', 4, '89877683783', 982739488, true,
+    2, 1, 1, 3, 2, 2, 1, 2010, false, false, false, 8373, '98987987987', 4, '89877683783', 982739488, true,
     87487, 3, false, true, 3, 7388,
-    3, 2, 487
+    3, 2, 487, 3, 3, 3, 3
 ),
 (
-    1, 2, 1, 2, 2, 2, 1, 2006, false, false, false, 2784, '98987987987', 4, '89877683783', 982739488, true,
+    1, 1, 1, 4, 2, 2, 1, 2006, true, false, false, 2784, '98987987987', 4, '89877683783', 982739488, true,
     84883, 3, false, true, 3, 92222,
-    3, 2, 438
+    3, 2, 438, 4, 1, 4, 4
 ),
 (
-    2, 2, 1, 2, 2, 2, 1, 2022, false, false, false, 2739, '98987987987', 4, '89877683783', 982739488, true,
+    2, 2, 1, 5, 2, 2, 1, 2022, false, true, false, 2739, '98987987987', 4, '89877683783', 982739488, true,
     388948, 3, false, true, 3, 272727,
-    3, 2, 3
+    3, 2, 3, 5, 2, 5, 5
 ),
 (
-    1, 2, 1, 2, 2, 2, 1, 2021, true, false, false, 283847, '0987654321', 4, '01234567890', 38742973, true,
+    1, 2, 1, 6, 2, 2, 1, 2021, true, false, true, 283847, '0987654321', 4, '01234567890', 38742973, true,
     15900, 3, false, true, 3, 262662,
-    3, 2, 45
+    3, 2, 45, 6, 3, 6, 6
 ),
 (
-    1, 3, 1, 3, 3, 3, 1, 2022, false, false, false, 2837959, '1122334455', 4, '01234567890', 3485, true,
+    1, 3, 1, 8, 3, 3, 1, 2022, true, false, false, 2837959, '1122334455', 4, '01234567890', 3485, true,
     2387478, 2, false, true, 1, 773737,
-    2, 1, 12
+    2, 1, 12, 7, 1, 7, 7
 ),
 (
-    2, 3, 1, 3, 3, 3, 1, 2022, false, false, false, 2348859, '1122334455', 4, '01234567890', 1289397, true,
+    2, 3, 1, 9, 3, 3, 1, 2022, false, false, false, 2348859, '1122334455', 4, '01234567890', 1289397, true,
     2377485, 2, false, true, 1, 327478,
-    3, 3, 8
+    3, 3, 8, 8, 2, 8, 8
 ),
 (
-    2, 3, 1, 3, 3, 3, 1, 2022, false, false, false, 234788, '1122334455', 4, '01234567890', 23487, true,
+    2, 4, 1, 12, 3, 3, 1, 2022, false, true, false, 234788, '1122334455', 4, '01234567890', 23487, true,
     27272722, 3, false, true, 1, 2348782,
-    1, 3, 97
+    1, 3, 97, 9, 3, 9, 9
 );
 -- 1-pending, 2-not sale (my cars), 3-on sale,
 
