@@ -1,7 +1,6 @@
 package pkg
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -19,7 +18,7 @@ type ErrorResponse struct {
 
 func TokenGuard(c *gin.Context) {
 	authorization := c.Request.Header["Authorization"]
-	fmt.Println("hh")
+
 	if len(authorization) == 0 {
 		c.JSON(http.StatusUnauthorized, ErrorResponse{Message: "not found any token there!"})
 		return
@@ -45,6 +44,47 @@ func TokenGuard(c *gin.Context) {
 	if err != nil {
 		log.Println("Error:", err.Error())
 		c.JSON(http.StatusForbidden, ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	c.Set("id", int(claims["id"].(float64)))
+	c.Set("role_id", claims["role_id"].(float64))
+	c.Next()
+}
+
+func UserGuardOrDefault(c *gin.Context) {
+	authorization := c.Request.Header["Authorization"]
+
+	if len(authorization) == 0 {
+		c.Set("id", 0)
+		c.Set("role_id", 0)
+		c.Next()
+		return
+	}
+
+	bearer := strings.Split(authorization[0], "Bearer ")
+
+	if len(bearer) < 2 {
+		c.Set("id", 0)
+		c.Set("role_id", 0)
+		c.Next()
+		return
+	}
+
+	token := bearer[1]
+	var claims jwt.MapClaims
+
+	_, err := jwt.ParseWithClaims(
+		token, &claims, // Pass claims as a pointer
+		func(t *jwt.Token) (interface{}, error) {
+			return []byte(ENV.ACCESS_KEY), nil
+		},
+	)
+
+	if err != nil {
+		c.Set("id", 0)
+		c.Set("role_id", 0)
+		c.Next()
 		return
 	}
 

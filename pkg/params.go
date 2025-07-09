@@ -3,6 +3,7 @@ package pkg
 import (
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 func BuildParams(v interface{}) (keys []string, values []string, args []interface{}) {
@@ -51,4 +52,35 @@ func BuildParams(v interface{}) (keys []string, values []string, args []interfac
 		args = append(args, value)
 	}
 	return keys, values, args
+}
+
+func QueryParamToArray(param string) []string {
+	if param == "" {
+		return nil
+	}
+	parts := strings.Split(param, ",")
+	for i := range parts {
+		parts[i] = strings.TrimSpace(parts[i])
+	}
+	return parts
+}
+
+func QueryParamToIntArray(param string) ([]int, error) {
+	if param == "" {
+		return nil, nil
+	}
+	parts := strings.Split(param, ",")
+	result := make([]int, 0, len(parts))
+	for _, p := range parts {
+		p = strings.TrimSpace(p)
+		if p == "" {
+			continue
+		}
+		n, err := strconv.Atoi(p)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, n)
+	}
+	return result, nil
 }

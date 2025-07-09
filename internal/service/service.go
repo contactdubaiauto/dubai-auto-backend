@@ -16,14 +16,64 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 	return &UserService{repo}
 }
 
-func (s *UserService) GetProfileCars(ctx *context.Context, userID *int) *model.Response {
-	cars, err := s.UserRepository.GetProfileCars(ctx, userID)
+func (s *UserService) GetMyCars(ctx *context.Context, userID *int) *model.Response {
+	cars, err := s.UserRepository.GetMyCars(ctx, userID)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
 	return &model.Response{Data: cars}
+}
+
+func (s *UserService) OnSale(ctx *context.Context, userID *int) *model.Response {
+	cars, err := s.UserRepository.OnSale(ctx, userID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: cars}
+}
+
+func (s *UserService) Cancel(ctx *context.Context, carID *int) *model.Response {
+	err := s.UserRepository.Cancel(ctx, carID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.Success{Message: "succesfully cancelled"}}
+}
+
+func (s *UserService) Delete(ctx *context.Context, carID *int) *model.Response {
+	err := s.UserRepository.Delete(ctx, carID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.Success{Message: "succesfully cancelled"}}
+}
+
+func (s *UserService) DontSell(ctx *context.Context, carID, userID *int) *model.Response {
+	err := s.UserRepository.DontSell(ctx, carID, userID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.Success{Message: "succesfully cancelled"}}
+}
+
+func (s *UserService) Sell(ctx *context.Context, carID, userID *int) *model.Response {
+	err := s.UserRepository.Sell(ctx, carID, userID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.Success{Message: "succesfully cancelled"}}
 }
 
 func (s *UserService) GetBrands(ctx *context.Context, text string) *model.Response {
@@ -127,8 +177,14 @@ func (s *UserService) GetColors(ctx *context.Context) *model.Response {
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetCars(ctx *context.Context) *model.Response {
-	cars, err := s.UserRepository.GetCars(ctx)
+func (s *UserService) GetCars(ctx *context.Context, userID int, brands, models, regions, cities,
+	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types,
+	announcement_types []string, year_from, year_to, exchange, credit, right_hand_drive, price_from, price_to string) *model.Response {
+
+	cars, err := s.UserRepository.GetCars(ctx, userID, brands, models, regions, cities,
+		generations, transmissions, engines, drivetrains, body_types, fuel_types,
+		ownership_types, announcement_types, year_from, year_to, exchange, credit,
+		right_hand_drive, price_from, price_to)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -137,14 +193,24 @@ func (s *UserService) GetCars(ctx *context.Context) *model.Response {
 	return &model.Response{Data: cars}
 }
 
-func (s *UserService) GetCarByID(ctx *context.Context, carID int) *model.Response {
-	car, err := s.UserRepository.GetCarByID(ctx, carID)
+func (s *UserService) GetCarByID(ctx *context.Context, carID, userID int) *model.Response {
+	car, err := s.UserRepository.GetCarByID(ctx, carID, userID)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusNotFound}
 	}
 
 	return &model.Response{Data: car}
+}
+
+func (s *UserService) BuyCar(ctx *context.Context, carID, userID int) *model.Response {
+	err := s.UserRepository.BuyCar(ctx, carID, userID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusNotFound}
+	}
+
+	return &model.Response{Data: model.Success{Message: "successfully buy a car"}}
 }
 
 func (s *UserService) CreateCar(ctx *context.Context, car *model.CreateCarRequest) *model.Response {

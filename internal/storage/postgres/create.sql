@@ -49,6 +49,9 @@ create table users (
 insert into users (username, email, password, phone, created_at) 
     values ('user', 'user@gmail.com', '$2a$10$Cya9x0xSJSnRknBmJpW.Bu8ukZpVTqzwgrQgAYNPXdrX2HYGRk33W', '01234567890', now()); -- password: 12345678
 
+insert into users (username, email, password, phone, created_at) 
+    values ('user2', 'user2@gmail.com', '$2a$10$Cya9x0xSJSnRknBmJpW.Bu8ukZpVTqzwgrQgAYNPXdrX2HYGRk33W', '0111222222', now()); -- password: 12345678
+
 create table profiles (
     "id" serial primary key, 
     "user_id" int not null,
@@ -76,16 +79,17 @@ create table brands (
     "name" varchar(255) not null,
     "logo" varchar(255) not null,
     "car_count" int not null default 0,
+    "popular" boolean default false,
     "updated_at" timestamp default now()
 );
 
-insert into brands (name, logo, car_count) values ('Toyota', '/images/logo/toyota.png', 0);
-insert into brands (name, logo, car_count) values ('Honda', '/images/logo/honda.png', 0);
-insert into brands (name, logo, car_count) values ('Ford', '/images/logo/ford.png', 0);
-insert into brands (name, logo, car_count) values ('Chevrolet', '/images/logo/chevrolet.png', 0);
-insert into brands (name, logo, car_count) values ('Nissan', '/images/logo/nissan.png', 0);
-insert into brands (name, logo, car_count) values ('Hyundai', '/images/logo/hyundai.png', 0);
-insert into brands (name, logo, car_count) values ('Kia', '/images/logo/kia.png', 0);
+insert into brands (name, logo, car_count, popular) values ('Toyota', '/images/logo/toyota.png', 12, true);
+insert into brands (name, logo, car_count, popular) values ('Honda', '/images/logo/honda.png', 8, false);
+insert into brands (name, logo, car_count, popular) values ('Ford', '/images/logo/ford.png', 38, false);
+insert into brands (name, logo, car_count, popular) values ('Chevrolet', '/images/logo/chevrolet.png', 5, false);
+insert into brands (name, logo, car_count, popular) values ('Nissan', '/images/logo/nissan.png', 22, true);
+insert into brands (name, logo, car_count, popular) values ('Hyundai', '/images/logo/hyundai.png', 74, false);
+insert into brands (name, logo, car_count, popular) values ('Kia', '/images/logo/kia.png', 33, true);
 
 
 
@@ -93,6 +97,8 @@ create table models (
     "id" serial primary key,
     "name" varchar(255) not null,
     "brand_id" int not null,
+    "popular" boolean default false,
+    "car_count" int not null default 0,
     "updated_at" timestamp default now(),
     constraint models_brand_id_fk 
         foreign key (brand_id) 
@@ -102,42 +108,42 @@ create table models (
 );
 
 -- toyota
-insert into models (name, brand_id) values ('Camry', 1);
-insert into models (name, brand_id) values ('Corolla', 1);
-insert into models (name, brand_id) values ('Rav4', 1);
-insert into models (name, brand_id) values ('Land Cruiser', 1);
+insert into models (name, brand_id, popular, car_count) values ('Camry', 1, true, 7);
+insert into models (name, brand_id, popular, car_count) values ('Corolla', 1, true, 41);
+insert into models (name, brand_id, popular, car_count) values ('Rav4', 1, false, 73);
+insert into models (name, brand_id, popular, car_count) values ('Land Cruiser', 1, false, 1);
 
 -- honda
-insert into models (name, brand_id) values ('Civic', 2);
-insert into models (name, brand_id) values ('Accord', 2);
-insert into models (name, brand_id) values ('CR-V', 2);
+insert into models (name, brand_id, popular, car_count) values ('Civic', 2, true, 34);
+insert into models (name, brand_id, popular, car_count) values ('Accord', 2, false, 23);
+insert into models (name, brand_id, popular, car_count) values ('CR-V', 2, false, 65);
 
 -- ford
-insert into models (name, brand_id) values ('F-150', 3);
-insert into models (name, brand_id) values ('Mustang', 3);
-insert into models (name, brand_id) values ('Explorer', 3);
-insert into models (name, brand_id) values ('Bronco', 3);
+insert into models (name, brand_id, popular, car_count) values ('F-150', 3, true, 56);
+insert into models (name, brand_id, popular, car_count) values ('Mustang', 3, true, 29);
+insert into models (name, brand_id, popular, car_count) values ('Explorer', 3, false, 664);
+insert into models (name, brand_id, popular, car_count) values ('Bronco', 3, false, 34);
 
 -- chevrolet
-insert into models (name, brand_id) values ('Camaro', 4);
-insert into models (name, brand_id) values ('Corvette', 4);
-insert into models (name, brand_id) values ('Equinox', 4);
-insert into models (name, brand_id) values ('Silverado', 4);
+insert into models (name, brand_id, popular, car_count) values ('Camaro', 4, true, 23);
+insert into models (name, brand_id, popular, car_count) values ('Corvette', 4, true, 645);
+insert into models (name, brand_id, popular, car_count) values ('Equinox', 4, false, 23);
+insert into models (name, brand_id, popular, car_count) values ('Silverado', 4, false, 55);
 
 -- nissan
-insert into models (name, brand_id) values ('Altima', 5);
-insert into models (name, brand_id) values ('Pathfinder', 5);
-insert into models (name, brand_id) values ('Rogue', 5);
-insert into models (name, brand_id) values ('Sentra', 5);
+insert into models (name, brand_id, popular, car_count) values ('Altima', 5, true, 23);
+insert into models (name, brand_id, popular, car_count) values ('Pathfinder', 5, true, 56);
+insert into models (name, brand_id, popular, car_count) values ('Rogue', 5, false, 22);
+insert into models (name, brand_id, popular, car_count) values ('Sentra', 5, false, 53);
 
 -- hyundai
-insert into models (name, brand_id) values ('Elantra', 6);
-insert into models (name, brand_id) values ('Sonata', 6);
-insert into models (name, brand_id) values ('Kona', 6);
+insert into models (name, brand_id, popular, car_count) values ('Elantra', 6, true, 54);
+insert into models (name, brand_id, popular, car_count) values ('Sonata', 6, false, 12);
+insert into models (name, brand_id, popular, car_count) values ('Kona', 6, false, 45);
 
 -- kia
-insert into models (name, brand_id) values ('K5', 7);
-insert into models (name, brand_id) values ('K7', 7);
+insert into models (name, brand_id, popular, car_count) values ('K5', 7, true, 50);
+insert into models (name, brand_id, popular, car_count) values ('K7', 7, false, 98);
 
 
 
@@ -319,9 +325,45 @@ create table generations (
     unique(model_id, start_year, end_year)
 );
 
-insert into generations (name, model_id, start_year, end_year, image) values ('First Generation', 1, 2020, 2022, '/images/gens/1.jpg');
-insert into generations (name, model_id, start_year, end_year, image) values ('Second Generation', 1, 2023, 2025, '/images/gens/2.jpg');
-insert into generations (name, model_id, start_year, end_year, image) values ('First Generation', 3, 2020, 2022, '/images/gens/3.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('First Generation (model 1)', 1, 2020, 2022, '/images/gens/1.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Second Generation (model 1)', 1, 2023, 2025, '/images/gens/2.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Third Generation (model 1)', 1, 2012, 2022, '/images/gens/3.jpg');
+
+insert into generations (name, model_id, start_year, end_year, image) values ('First Generation (model 2)', 2, 2010, 2022, '/images/gens/1.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Second Generation (model 2)', 2, 2007, 2025, '/images/gens/2.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Third Generation (model 2)', 2, 2001, 2022, '/images/gens/3.jpg');
+
+insert into generations (name, model_id, start_year, end_year, image) values ('First Generation (model 3)', 3, 2000, 2022, '/images/gens/1.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Second Generation (model 3)', 3, 2004, 2025, '/images/gens/2.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Third Generation (model 3)', 3, 2003, 2022, '/images/gens/3.jpg');
+
+insert into generations (name, model_id, start_year, end_year, image) values ('First Generation (model 4)', 4, 2000, 2022, '/images/gens/1.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Second Generation (model 4)', 4, 2004, 2025, '/images/gens/2.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Third Generation (model 4)', 4, 2003, 2022, '/images/gens/3.jpg');
+
+insert into generations (name, model_id, start_year, end_year, image) values ('First Generation (model 5)', 5, 2000, 2022, '/images/gens/1.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Second Generation (model 5)', 5, 2004, 2025, '/images/gens/2.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Third Generation (model 5)', 5, 2003, 2022, '/images/gens/3.jpg');
+
+insert into generations (name, model_id, start_year, end_year, image) values ('First Generation (model 6)', 6, 2000, 2022, '/images/gens/1.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Second Generation (model 6)', 6, 2004, 2025, '/images/gens/2.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Third Generation (model 6)', 6, 2003, 2022, '/images/gens/3.jpg');
+
+insert into generations (name, model_id, start_year, end_year, image) values ('First Generation (model 7)', 7, 2000, 2022, '/images/gens/1.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Second Generation (model 7)', 7, 2004, 2025, '/images/gens/2.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Third Generation (model 7)', 7, 2003, 2022, '/images/gens/3.jpg');
+
+insert into generations (name, model_id, start_year, end_year, image) values ('First Generation (model 8)', 8, 2000, 2022, '/images/gens/1.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Second Generation (model 8)', 8, 2004, 2025, '/images/gens/2.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Third Generation (model 8)', 8, 2003, 2022, '/images/gens/3.jpg');
+
+insert into generations (name, model_id, start_year, end_year, image) values ('First Generation (model 9)', 9, 2000, 2022, '/images/gens/1.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Second Generation (model 9)', 9, 2004, 2025, '/images/gens/2.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Third Generation (model 9)', 9, 2003, 2022, '/images/gens/3.jpg');
+
+insert into generations (name, model_id, start_year, end_year, image) values ('First Generation (model 10)', 10, 2000, 2022, '/images/gens/1.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Second Generation (model 10)', 10, 2004, 2025, '/images/gens/2.jpg');
+insert into generations (name, model_id, start_year, end_year, image) values ('Third Generation (model 10)', 10, 2003, 2022, '/images/gens/3.jpg');
 
 create table generation_body_types (
     "id" serial primary key,
@@ -341,12 +383,54 @@ create table generation_body_types (
     unique(generation_id, body_type_id)
 );
 
-insert into generation_body_types (generation_id, body_type_id) values (1, 1); -- First Generation Camry - Sedan
-insert into generation_body_types (generation_id, body_type_id) values (1, 2); -- First Generation Camry - Hatchback
-insert into generation_body_types (generation_id, body_type_id) values (2, 1); -- Second Generation Camry - Sedan
-insert into generation_body_types (generation_id, body_type_id) values (2, 2); -- Second Generation Camry - Hatchback
-insert into generation_body_types (generation_id, body_type_id) values (3, 1); -- First Generation Rav4 - Sedan
-insert into generation_body_types (generation_id, body_type_id) values (3, 2); -- First Generation Rav4 - Hatchback
+insert into generation_body_types (generation_id, body_type_id) values (1, 1);
+insert into generation_body_types (generation_id, body_type_id) values (1, 2);
+insert into generation_body_types (generation_id, body_type_id) values (2, 3);
+insert into generation_body_types (generation_id, body_type_id) values (2, 4);
+insert into generation_body_types (generation_id, body_type_id) values (3, 5);
+insert into generation_body_types (generation_id, body_type_id) values (3, 6);
+
+insert into generation_body_types (generation_id, body_type_id) values (4, 1);
+insert into generation_body_types (generation_id, body_type_id) values (4, 2);
+insert into generation_body_types (generation_id, body_type_id) values (5, 3);
+insert into generation_body_types (generation_id, body_type_id) values (5, 4);
+insert into generation_body_types (generation_id, body_type_id) values (6, 5);
+insert into generation_body_types (generation_id, body_type_id) values (6, 6);
+
+insert into generation_body_types (generation_id, body_type_id) values (7, 1);
+insert into generation_body_types (generation_id, body_type_id) values (7, 2);
+insert into generation_body_types (generation_id, body_type_id) values (8, 3);
+insert into generation_body_types (generation_id, body_type_id) values (8, 4);
+insert into generation_body_types (generation_id, body_type_id) values (9, 5);
+insert into generation_body_types (generation_id, body_type_id) values (9, 6);
+
+insert into generation_body_types (generation_id, body_type_id) values (10, 1);
+insert into generation_body_types (generation_id, body_type_id) values (10, 2);
+insert into generation_body_types (generation_id, body_type_id) values (11, 3);
+insert into generation_body_types (generation_id, body_type_id) values (11, 4);
+insert into generation_body_types (generation_id, body_type_id) values (12, 5);
+insert into generation_body_types (generation_id, body_type_id) values (12, 6);
+
+insert into generation_body_types (generation_id, body_type_id) values (13, 1);
+insert into generation_body_types (generation_id, body_type_id) values (13, 2);
+insert into generation_body_types (generation_id, body_type_id) values (14, 3);
+insert into generation_body_types (generation_id, body_type_id) values (14, 4);
+insert into generation_body_types (generation_id, body_type_id) values (15, 5);
+insert into generation_body_types (generation_id, body_type_id) values (15, 6);
+
+insert into generation_body_types (generation_id, body_type_id) values (16, 1);
+insert into generation_body_types (generation_id, body_type_id) values (16, 2);
+insert into generation_body_types (generation_id, body_type_id) values (17, 3);
+insert into generation_body_types (generation_id, body_type_id) values (17, 4);
+insert into generation_body_types (generation_id, body_type_id) values (18, 5);
+insert into generation_body_types (generation_id, body_type_id) values (18, 6);
+
+insert into generation_body_types (generation_id, body_type_id) values (19, 1);
+insert into generation_body_types (generation_id, body_type_id) values (19, 2);
+insert into generation_body_types (generation_id, body_type_id) values (20, 3);
+insert into generation_body_types (generation_id, body_type_id) values (20, 4);
+insert into generation_body_types (generation_id, body_type_id) values (21, 5);
+insert into generation_body_types (generation_id, body_type_id) values (21, 6);
 
 create table generation_fuel_types (
     "id" serial primary key,
@@ -366,12 +450,41 @@ create table generation_fuel_types (
     unique(generation_id, fuel_type_id)
 );
 
-insert into generation_fuel_types (generation_id, fuel_type_id) values (1, 1); -- First Generation Camry - Gasoline
-insert into generation_fuel_types (generation_id, fuel_type_id) values (1, 2); -- First Generation Camry - Diesel
-insert into generation_fuel_types (generation_id, fuel_type_id) values (2, 1); -- Second Generation Camry - Gasoline
-insert into generation_fuel_types (generation_id, fuel_type_id) values (2, 2); -- Second Generation Camry - Diesel
-insert into generation_fuel_types (generation_id, fuel_type_id) values (3, 1); -- First Generation Rav4 - Gasoline
-insert into generation_fuel_types (generation_id, fuel_type_id) values (3, 2); -- First Generation Rav4 - Diesel
+insert into generation_fuel_types (generation_id, fuel_type_id) values (1, 1);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (1, 2);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (2, 3);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (2, 4);
+
+insert into generation_fuel_types (generation_id, fuel_type_id) values (3, 1);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (3, 2);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (4, 3);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (4, 4);
+
+insert into generation_fuel_types (generation_id, fuel_type_id) values (5, 1);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (5, 2);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (6, 3);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (6, 4);
+
+insert into generation_fuel_types (generation_id, fuel_type_id) values (7, 1);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (7, 2);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (8, 3);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (8, 4);
+
+insert into generation_fuel_types (generation_id, fuel_type_id) values (9, 1);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (9, 2);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (10, 3);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (10, 4);
+
+insert into generation_fuel_types (generation_id, fuel_type_id) values (11, 1);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (11, 2);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (12, 3);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (12, 4);
+
+insert into generation_fuel_types (generation_id, fuel_type_id) values (13, 1);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (13, 2);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (14, 3);
+insert into generation_fuel_types (generation_id, fuel_type_id) values (14, 4);
+
 
 create table generation_drivetrains (
     "id" serial primary key,
@@ -391,12 +504,54 @@ create table generation_drivetrains (
     unique(generation_id, drivetrain_id)
 );
 
-insert into generation_drivetrains (generation_id, drivetrain_id) values (1, 1); -- First Generation Camry - Front-Wheel Drive
-insert into generation_drivetrains (generation_id, drivetrain_id) values (1, 2); -- First Generation Camry - Rear-Wheel Drive
-insert into generation_drivetrains (generation_id, drivetrain_id) values (2, 1); -- Second Generation Camry - Front-Wheel Drive
-insert into generation_drivetrains (generation_id, drivetrain_id) values (2, 2); -- Second Generation Camry - Rear-Wheel Drive
-insert into generation_drivetrains (generation_id, drivetrain_id) values (3, 1); -- First Generation Rav4 - Front-Wheel Drive
-insert into generation_drivetrains (generation_id, drivetrain_id) values (3, 2); -- First Generation Rav4 - Rear-Wheel Drive
+insert into generation_drivetrains (generation_id, drivetrain_id) values (1, 1);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (1, 2);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (2, 3);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (2, 1);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (3, 2);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (3, 3);
+
+insert into generation_drivetrains (generation_id, drivetrain_id) values (4, 1);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (4, 2);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (5, 3);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (5, 1);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (6, 2);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (6, 3);
+
+insert into generation_drivetrains (generation_id, drivetrain_id) values (7, 1);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (7, 2);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (8, 3);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (8, 1);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (9, 2);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (9, 3);
+
+insert into generation_drivetrains (generation_id, drivetrain_id) values (10, 1);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (10, 2);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (11, 3);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (11, 1);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (12, 2);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (12, 3);
+
+insert into generation_drivetrains (generation_id, drivetrain_id) values (13, 1);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (13, 2);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (14, 3);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (14, 1);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (15, 2);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (15, 3);
+
+insert into generation_drivetrains (generation_id, drivetrain_id) values (16, 1);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (16, 2);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (17, 3);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (17, 1);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (18, 2);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (18, 3);
+
+insert into generation_drivetrains (generation_id, drivetrain_id) values (19, 1);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (19, 2);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (20, 3);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (20, 1);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (21, 2);
+insert into generation_drivetrains (generation_id, drivetrain_id) values (21, 3);
 
 create table generation_transmissions (
     "id" serial primary key,
@@ -416,12 +571,56 @@ create table generation_transmissions (
     unique(generation_id, transmission_id)
 );
 
-insert into generation_transmissions (generation_id, transmission_id) values (1, 1); -- First Generation Camry - Automatic
-insert into generation_transmissions (generation_id, transmission_id) values (1, 2); -- First Generation Camry - Manual
-insert into generation_transmissions (generation_id, transmission_id) values (2, 1); -- Second Generation Camry - Automatic
-insert into generation_transmissions (generation_id, transmission_id) values (2, 2); -- Second Generation Camry - Manual
-insert into generation_transmissions (generation_id, transmission_id) values (3, 1); -- First Generation Rav4 - Automatic
-insert into generation_transmissions (generation_id, transmission_id) values (3, 2); -- First Generation Rav4 - Manual
+
+insert into generation_transmissions (generation_id, transmission_id) values (1, 1);
+insert into generation_transmissions (generation_id, transmission_id) values (1, 2);
+insert into generation_transmissions (generation_id, transmission_id) values (2, 3);
+insert into generation_transmissions (generation_id, transmission_id) values (2, 1);
+insert into generation_transmissions (generation_id, transmission_id) values (3, 2);
+insert into generation_transmissions (generation_id, transmission_id) values (3, 3);
+
+insert into generation_transmissions (generation_id, transmission_id) values (4, 1);
+insert into generation_transmissions (generation_id, transmission_id) values (4, 2);
+insert into generation_transmissions (generation_id, transmission_id) values (5, 3);
+insert into generation_transmissions (generation_id, transmission_id) values (5, 1);
+insert into generation_transmissions (generation_id, transmission_id) values (6, 2);
+insert into generation_transmissions (generation_id, transmission_id) values (6, 3);
+
+insert into generation_transmissions (generation_id, transmission_id) values (7, 1);
+insert into generation_transmissions (generation_id, transmission_id) values (7, 2);
+insert into generation_transmissions (generation_id, transmission_id) values (8, 3);
+insert into generation_transmissions (generation_id, transmission_id) values (8, 1);
+insert into generation_transmissions (generation_id, transmission_id) values (9, 2);
+insert into generation_transmissions (generation_id, transmission_id) values (9, 3);
+
+insert into generation_transmissions (generation_id, transmission_id) values (10, 1);
+insert into generation_transmissions (generation_id, transmission_id) values (10, 2);
+insert into generation_transmissions (generation_id, transmission_id) values (11, 3);
+insert into generation_transmissions (generation_id, transmission_id) values (11, 1);
+insert into generation_transmissions (generation_id, transmission_id) values (12, 2);
+insert into generation_transmissions (generation_id, transmission_id) values (12, 3);
+
+insert into generation_transmissions (generation_id, transmission_id) values (13, 1);
+insert into generation_transmissions (generation_id, transmission_id) values (13, 2);
+insert into generation_transmissions (generation_id, transmission_id) values (14, 3);
+insert into generation_transmissions (generation_id, transmission_id) values (14, 1);
+insert into generation_transmissions (generation_id, transmission_id) values (15, 2);
+insert into generation_transmissions (generation_id, transmission_id) values (15, 3);
+
+insert into generation_transmissions (generation_id, transmission_id) values (16, 1);
+insert into generation_transmissions (generation_id, transmission_id) values (16, 2);
+insert into generation_transmissions (generation_id, transmission_id) values (17, 3);
+insert into generation_transmissions (generation_id, transmission_id) values (17, 1);
+insert into generation_transmissions (generation_id, transmission_id) values (18, 2);
+insert into generation_transmissions (generation_id, transmission_id) values (18, 3);
+
+insert into generation_transmissions (generation_id, transmission_id) values (19, 1);
+insert into generation_transmissions (generation_id, transmission_id) values (19, 2);
+insert into generation_transmissions (generation_id, transmission_id) values (20, 3);
+insert into generation_transmissions (generation_id, transmission_id) values (20, 1);
+insert into generation_transmissions (generation_id, transmission_id) values (21, 2);
+insert into generation_transmissions (generation_id, transmission_id) values (21, 3);
+
 
 create table generation_modifications (
     "id" serial primary key,
@@ -535,7 +734,7 @@ create table vehicles (
     "user_id" int,
     "brand_id" int,
     "region_id" int,
-    "city_id" int,
+    "city_id" int default 1,
     "model_id" int,
     "generation_id" int,
     "transmission_id" int,
@@ -563,7 +762,7 @@ create table vehicles (
     "crash" boolean not null default false,
     "negotiable" boolean not null default false,
     "credit_price" int,
-    "status" int not null default 1,
+    "status" int not null default 2, -- 1-pending, 2-not sale (my cars), 3-on sale,
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
     constraint vehicles_generation_id_fk
@@ -644,31 +843,56 @@ create table vehicles (
 );
 
 insert into vehicles (
-    user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year, 
-    exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new,
-    credit_price, status, crash, negotiable, drivetrain_id, mileage_km, interior_color_id, color_id
-)  values (
-    1, 1, 1, 1, 1, 1, 1, 2020, false, false, false, 100000, '1234567890', 4, '01234567890', 100000, true, 100000, 1, false, true, 2, 200000, 
-    2, 1
+    user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year, exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new,
+    credit_price, status, crash, negotiable, drivetrain_id, mileage_km, 
+    interior_color_id, color_id, view_count 
+)  values 
+(
+    1, 1, 1, 1, 1, 1, 1, 2020, false, false, false, 74839782, '238748927', 4, '23487827397', 39999, true, 
+    388292, 3, false, true, 2, 16611888, 
+    2, 1, 392
+),
+(
+    1, 2, 1, 2, 2, 2, 1, 2019, false, false, false, 273854, '26873900987', 4, '23748798273942', 7828973, true,
+    237848, 3, false, true, 3, 2772719,
+    3, 2, 234
+),
+(
+    2, 2, 1, 2, 2, 2, 1, 2010, false, false, false, 8373, '98987987987', 4, '89877683783', 982739488, true,
+    87487, 3, false, true, 3, 7388,
+    3, 2, 487
+),
+(
+    1, 2, 1, 2, 2, 2, 1, 2006, false, false, false, 2784, '98987987987', 4, '89877683783', 982739488, true,
+    84883, 3, false, true, 3, 92222,
+    3, 2, 438
+),
+(
+    2, 2, 1, 2, 2, 2, 1, 2022, false, false, false, 2739, '98987987987', 4, '89877683783', 982739488, true,
+    388948, 3, false, true, 3, 272727,
+    3, 2, 3
+),
+(
+    1, 2, 1, 2, 2, 2, 1, 2021, true, false, false, 283847, '0987654321', 4, '01234567890', 38742973, true,
+    15900, 3, false, true, 3, 262662,
+    3, 2, 45
+),
+(
+    1, 3, 1, 3, 3, 3, 1, 2022, false, false, false, 2837959, '1122334455', 4, '01234567890', 3485, true,
+    2387478, 2, false, true, 1, 773737,
+    2, 1, 12
+),
+(
+    2, 3, 1, 3, 3, 3, 1, 2022, false, false, false, 2348859, '1122334455', 4, '01234567890', 1289397, true,
+    2377485, 2, false, true, 1, 327478,
+    3, 3, 8
+),
+(
+    2, 3, 1, 3, 3, 3, 1, 2022, false, false, false, 234788, '1122334455', 4, '01234567890', 23487, true,
+    27272722, 3, false, true, 1, 2348782,
+    1, 3, 97
 );
-insert into vehicles (
-    user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year, 
-    exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new,
-    credit_price, status, crash, negotiable, drivetrain_id, mileage_km, interior_color_id, color_id
-)  values (
-    1, 2, 1, 2, 2, 2, 1, 2021, false, false, false, 50000, '0987654321', 4, '01234567890', 150000, true,
-    150000, 1, false, true, 3, 100000,
-    3, 2
-);
-insert into vehicles (
-    user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, year,
-    exchange, credit, right_hand_drive, odometer, vin_code, door_count, phone_number, price, new,
-    credit_price, status, crash, negotiable, drivetrain_id, mileage_km, interior_color_id, color_id
-)  values (
-    1, 3, 1, 3, 3, 3, 1, 2022, false, false, false, 30000, '1122334455', 4, '01234567890', 200000, true,
-    200000, 1, false, true, 1, 50000,
-    5, 3
-);
+-- 1-pending, 2-not sale (my cars), 3-on sale,
 
 
 create table images (
@@ -695,6 +919,36 @@ insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-
 insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
 insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
 insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+
+insert into images (vehicle_id, image) values (4, '/images/cars/4/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+insert into images (vehicle_id, image) values (4, '/images/cars/4/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+insert into images (vehicle_id, image) values (4, '/images/cars/4/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+insert into images (vehicle_id, image) values (4, '/images/cars/4/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+
+insert into images (vehicle_id, image) values (5, '/images/cars/5/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+insert into images (vehicle_id, image) values (5, '/images/cars/5/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');    
+insert into images (vehicle_id, image) values (5, '/images/cars/5/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+insert into images (vehicle_id, image) values (5, '/images/cars/5/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+
+insert into images (vehicle_id, image) values (6, '/images/cars/6/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+insert into images (vehicle_id, image) values (6, '/images/cars/6/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+insert into images (vehicle_id, image) values (6, '/images/cars/6/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+insert into images (vehicle_id, image) values (6, '/images/cars/6/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+
+insert into images (vehicle_id, image) values (7, '/images/cars/7/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+insert into images (vehicle_id, image) values (7, '/images/cars/7/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+insert into images (vehicle_id, image) values (7, '/images/cars/7/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+insert into images (vehicle_id, image) values (7, '/images/cars/7/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+
+insert into images (vehicle_id, image) values (8, '/images/cars/8/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+insert into images (vehicle_id, image) values (8, '/images/cars/8/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+insert into images (vehicle_id, image) values (8, '/images/cars/8/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+insert into images (vehicle_id, image) values (8, '/images/cars/8/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+
+insert into images (vehicle_id, image) values (9, '/images/cars/9/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+insert into images (vehicle_id, image) values (9, '/images/cars/9/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+insert into images (vehicle_id, image) values (9, '/images/cars/9/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+insert into images (vehicle_id, image) values (9, '/images/cars/9/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
 
 -- steps for add vehicle
 -- 1. vin code, 2. marka, 3. model, 4. year, 5. generations, 6. body types, 7. engine, 8. driveride, 

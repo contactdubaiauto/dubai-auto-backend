@@ -478,3 +478,89 @@ LEFT JOIN generation_drivetrains gd ON gs.id = gd.generation_id
 LEFT JOIN drivetrains d ON gd.drivetrain_id = d.id
 WHERE gs.model_id = 1
 GROUP BY gs.id, gs.name, gs.image, gs.start_year, gs.end_year;
+
+
+
+
+
+		select 
+			vs.id,
+			bs.name as brand,
+			rs.name as region,
+			cs.name as city,
+			cls.name as color,
+			icls.name as interior_color,
+			ms.name as model,
+			ts.name as transmission,
+			es.value as engine,
+			ds.name as drive,
+			bts.name as body_type,
+			fts.name as fuel_type,
+			vs.year,
+			vs.price,
+			vs.mileage_km,
+			vs.vin_code,
+			vs.exchange,
+			vs.credit,
+			vs.new,
+			vs.credit_price,
+			vs.status,
+			vs.created_at,
+			vs.updated_at,
+			images,
+			vs.phone_number
+		from vehicles vs
+		left join colors icls on icls.id = vs.interior_color_id
+		left join colors cls on vs.color_id = cls.id
+		left join brands bs on vs.brand_id = bs.id
+		left join regions rs on vs.region_id = rs.id
+		left join cities cs on vs.city_id = cs.id
+		left join models ms on vs.model_id = ms.id
+		left join transmissions ts on vs.transmission_id = ts.id
+		left join engines es on vs.engine_id = es.id
+		left join drivetrains ds on vs.drivetrain_id = ds.id
+		left join body_types bts on vs.body_type_id = bts.id
+		left join fuel_types fts on vs.fuel_type_id = fts.id
+		left join lateral (
+			select 
+				json_agg(image) as images
+			from images 
+			where vehicle_id = vs.id
+		) images on true
+		where vs.user_id = $1
+
+
+        update vehicles 
+			set status = 2, 
+                user_id = 1
+		where id = 1;
+
+
+with popular as (
+    SELECT 
+        json_agg(
+            json_build_object(
+                'id', id, 
+                'name', name, 
+                'car_count', car_count 
+            )
+        ) as popular_models
+    FROM models 
+    models WHERE brand_id = $1 AND name ILIKE '%' || $2 || '%' and popular = true
+), all_models as (
+    SELECT 
+        json_agg(
+            json_build_object(
+                'id', id, 
+                'name', name, 
+                'car_count', car_count 
+            )
+        ) as all_models
+    FROM models 
+    models WHERE brand_id = $1 AND name ILIKE '%' || $2 || '%'
+)
+select 
+    pp.popular_models,
+    ab.all_models
+from popular as pp
+left join all_models as ab on true;

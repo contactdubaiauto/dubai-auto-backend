@@ -2,11 +2,16 @@ package model
 
 import "time"
 
-type GetBrandsResponse struct {
-	ID       int64  `json:"id"`
+type Brands struct {
+	ID       int    `json:"id"`
 	Name     string `json:"name"`
 	Logo     string `json:"logo"`
-	CarCount int64  `json:"car_count"`
+	CarCount int    `json:"car_count"`
+}
+
+type GetBrandsResponse struct {
+	PopularBrands []Brands `json:"popular_brands"`
+	AllBrands     []Brands `json:"all_brands"`
 }
 
 type GetModificationsResponse struct {
@@ -15,12 +20,18 @@ type GetModificationsResponse struct {
 }
 
 type Model struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	CarCount int    `json:"car_count"`
+}
+
+type GetModelsResponse struct {
+	PopularModels []Model `json:"popular_models"`
+	AllModels     []Model `json:"all_models"`
 }
 
 type Generation struct {
-	ID            int64           `json:"id"`
+	ID            int             `json:"id"`
 	Name          string          `json:"name"`
 	Image         string          `json:"image"`
 	StartYear     int             `json:"start_year"`
@@ -32,33 +43,33 @@ type Generation struct {
 }
 
 type BodyType struct {
-	ID    int64  `json:"id"`
+	ID    int    `json:"id"`
 	Name  string `json:"name"`
 	Image string `json:"image"`
 }
 
 type Transmission struct {
-	ID   int64  `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
 type Engine struct {
-	ID    int64  `json:"id"`
+	ID    int    `json:"id"`
 	Value string `json:"value"`
 }
 
 type Drivetrain struct {
-	ID   int64  `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
 type FuelType struct {
-	ID   int64  `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
 type Color struct {
-	ID      *int64  `json:"id"`
+	ID      *int    `json:"id"`
 	Name    *string `json:"name"`
 	HexCode *string `json:"hex_code"`
 }
@@ -89,4 +100,6 @@ type GetCarsResponse struct {
 	UpdatedAt     *time.Time `json:"updated_at"`
 	Images        *[]string  `json:"images"`
 	PhoneNumber   *string    `json:"phone_number"`
+	ViewCount     int        `json:"view_count"`
+	MyCar         *bool      `json:"my_car"`
 }

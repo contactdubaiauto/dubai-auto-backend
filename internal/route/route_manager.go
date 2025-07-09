@@ -27,7 +27,8 @@ func SetupUserRoutes(r *gin.RouterGroup, db *pgxpool.Pool) {
 	userHandler := http.NewUserHandler(userService)
 
 	{
-		r.GET("/profile/cars", pkg.TokenGuard, userHandler.GetProfileCars)
+		r.GET("/profile/my-cars", pkg.TokenGuard, userHandler.GetMyCars)
+		r.GET("/profile/on-sale", pkg.TokenGuard, userHandler.OnSale)
 
 		r.GET("/brands", userHandler.GetBrands)
 		r.GET("/modifications", userHandler.GetModifications)
@@ -39,10 +40,16 @@ func SetupUserRoutes(r *gin.RouterGroup, db *pgxpool.Pool) {
 		r.GET("/drivetrains", userHandler.GetDrivetrains)
 		r.GET("/fuel-types", userHandler.GetFuelTypes)
 		r.GET("/colors", userHandler.GetColors)
-		r.GET("/cars", userHandler.GetCars)
-		r.GET("/cars/:id", userHandler.GetCarByID)
+		r.GET("/cars", pkg.UserGuardOrDefault, userHandler.GetCars)
+		r.GET("/cars/:id", pkg.UserGuardOrDefault, userHandler.GetCarByID)
+
+		r.POST("/cars/:id/buy", pkg.TokenGuard, userHandler.BuyCar)
 		r.POST("/cars", pkg.TokenGuard, userHandler.CreateCar)
 		r.POST("/cars/:id/images", pkg.TokenGuard, userHandler.CreateCarImages)
+		r.POST("/cars/:id/cancel", pkg.TokenGuard, userHandler.Cancel)
+		r.POST("/cars/:id/delete", pkg.TokenGuard, userHandler.Delete)
+		r.POST("/cars/:id/dont-sell", pkg.TokenGuard, userHandler.DontSell)
+		r.POST("/cars/:id/sell", pkg.TokenGuard, userHandler.Sell)
 
 	}
 }

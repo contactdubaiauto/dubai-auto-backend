@@ -44,17 +44,21 @@ definitions:
         type: boolean
       fuel_type_id:
         type: integer
+      generation_id:
+        type: integer
       interior_color_id:
         type: integer
+      mileage_km:
+        type: integer
       model_id:
+        type: integer
+      modification_id:
         type: integer
       negotiable:
         type: boolean
       new:
         type: boolean
       odometer:
-        type: integer
-      ownership_type_id:
         type: integer
       phone_number:
         type: string
@@ -66,11 +70,10 @@ definitions:
         type: boolean
       transmission_id:
         type: integer
-      user_id:
-        type: integer
       vin_code:
         type: string
       year:
+        description: OwnershipTypeId int    `json:"ownership_type_id"`
         type: integer
     required:
     - body_type_id
@@ -130,6 +133,17 @@ definitions:
           $ref: '#/definitions/model.Transmission'
         type: array
     type: object
+  model.GetBrandsResponse:
+    properties:
+      car_count:
+        type: integer
+      id:
+        type: integer
+      logo:
+        type: string
+      name:
+        type: string
+    type: object
   model.GetCarsResponse:
     properties:
       body_type:
@@ -166,6 +180,8 @@ definitions:
         type: integer
       model:
         type: string
+      my_car:
+        type: boolean
       new:
         type: boolean
       phone_number:
@@ -180,10 +196,19 @@ definitions:
         type: string
       updated_at:
         type: string
+      view_count:
+        type: integer
       vin_code:
         type: string
       year:
         type: integer
+    type: object
+  model.GetModificationsResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
     type: object
   model.LoginResponse:
     properties:
@@ -491,7 +516,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.ResultMessage'
+            items:
+              $ref: '#/definitions/model.GetBrandsResponse'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -685,13 +712,13 @@ paths:
       summary: Create a car
       tags:
       - users
-  /api/v1/users/cars/{id}:
+  /api/v1/users/cars/{car_id}:
     get:
       description: Returns a car by its ID
       parameters:
       - description: Car ID
         in: path
-        name: id
+        name: car_id
         required: true
         type: integer
       produces:
@@ -724,15 +751,179 @@ paths:
       summary: Get car by ID
       tags:
       - users
-  /api/v1/users/cars/{id}/images:
+  /api/v1/users/cars/{car_id}/buy:
+    post:
+      description: Returns a status response message
+      parameters:
+      - description: Car ID
+        in: path
+        name: car_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Buy car
+      tags:
+      - users
+  /api/v1/users/cars/{car_id}/cancel:
+    post:
+      description: Returns the cars associated with the authenticated user's
+      parameters:
+      - description: Car ID
+        in: path
+        name: car_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get user's cars
+      tags:
+      - users
+  /api/v1/users/cars/{car_id}/delete:
+    post:
+      description: Returns the cars associated with the authenticated user's
+      parameters:
+      - description: Car ID
+        in: path
+        name: car_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get user's cars
+      tags:
+      - users
+  /api/v1/users/cars/{car_id}/dont-sell:
+    post:
+      description: Returns the cars associated with the authenticated user's
+      parameters:
+      - description: Car ID
+        in: path
+        name: car_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Dont sell cars
+      tags:
+      - users
+  /api/v1/users/cars/{car_id}/images:
     post:
       consumes:
       - multipart/form-data
       description: Uploads images for a car (max 10 files)
       parameters:
-      - description: Car ID
+      - description: Car CAR_ID
         in: path
-        name: id
+        name: car_id
         required: true
         type: integer
       - description: Car images (max 10)
@@ -770,6 +961,47 @@ paths:
       security:
       - BearerAuth: []
       summary: Upload car images
+      tags:
+      - users
+  /api/v1/users/cars/{car_id}/sell:
+    post:
+      description: Returns the cars associated with the authenticated user's
+      parameters:
+      - description: Car ID
+        in: path
+        name: car_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Sell cars
       tags:
       - users
   /api/v1/users/colors:
@@ -947,7 +1179,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.ResultMessage'
+            items:
+              $ref: '#/definitions/model.GetModificationsResponse'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -971,7 +1205,44 @@ paths:
       summary: Get generation modifications
       tags:
       - users
-  /api/v1/users/profile/cars:
+  /api/v1/users/profile/my-cars:
+    get:
+      description: Returns the cars associated with the authenticated user's profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetCarsResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get user's profile cars
+      tags:
+      - users
+  /api/v1/users/profile/on-sale:
     get:
       description: Returns the cars associated with the authenticated user's profile
       produces:

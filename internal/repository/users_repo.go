@@ -18,9 +18,8 @@ func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 	return &UserRepository{db}
 }
 
-func (r *UserRepository) GetProfileCars(ctx *context.Context, userID *int) ([]model.GetCarsResponse, error) {
+func (r *UserRepository) GetMyCars(ctx *context.Context, userID *int) ([]model.GetCarsResponse, error) {
 	cars := make([]model.GetCarsResponse, 0)
-
 	q := `
 		select 
 			vs.id,
@@ -47,7 +46,8 @@ func (r *UserRepository) GetProfileCars(ctx *context.Context, userID *int) ([]mo
 			vs.created_at,
 			vs.updated_at,
 			images,
-			vs.phone_number
+			vs.phone_number, 
+			vs.view_count
 		from vehicles vs
 		left join colors icls on icls.id = vs.interior_color_id
 		left join colors cls on vs.color_id = cls.id
@@ -66,16 +66,14 @@ func (r *UserRepository) GetProfileCars(ctx *context.Context, userID *int) ([]mo
 			from images 
 			where vehicle_id = vs.id
 		) images on true
-		where vs.user_id = $1
-
+		where vs.user_id = $1 and status = 2
+		order by vs.id desc
 	`
-
 	rows, err := r.db.Query(*ctx, q, *userID)
 
 	if err != nil {
 		return cars, err
 	}
-
 	defer rows.Close()
 
 	for rows.Next() {
@@ -84,37 +82,175 @@ func (r *UserRepository) GetProfileCars(ctx *context.Context, userID *int) ([]mo
 			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.InteriorColor, &car.Model, &car.Transmission, &car.Engine,
 			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
 			&car.Exchange, &car.Credit, &car.New, &car.CreditPrice, &car.Status, &car.CreatedAt,
-			&car.UpdatedAt, &car.Images, &car.PhoneNumber,
+			&car.UpdatedAt, &car.Images, &car.PhoneNumber, &car.ViewCount,
 		); err != nil {
 			return cars, err
 		}
 		cars = append(cars, car)
 	}
-
 	return cars, err
 }
 
-func (r *UserRepository) GetBrands(ctx *context.Context, text string) ([]*model.GetBrandsResponse, error) {
+func (r *UserRepository) OnSale(ctx *context.Context, userID *int) ([]model.GetCarsResponse, error) {
+	cars := make([]model.GetCarsResponse, 0)
 	q := `
-		SELECT id, name, logo, car_count FROM brands WHERE name ILIKE '%' || $1 || '%'
+		select 
+			vs.id,
+			bs.name as brand,
+			rs.name as region,
+			cs.name as city,
+			cls.name as color,
+			icls.name as interior_color,
+			ms.name as model,
+			ts.name as transmission,
+			es.value as engine,
+			ds.name as drive,
+			bts.name as body_type,
+			fts.name as fuel_type,
+			vs.year,
+			vs.price,
+			vs.mileage_km,
+			vs.vin_code,
+			vs.exchange,
+			vs.credit,
+			vs.new,
+			vs.credit_price,
+			vs.status,
+			vs.created_at,
+			vs.updated_at,
+			images,
+			vs.phone_number, 
+			vs.view_count, 
+			true as my_car
+		from vehicles vs
+		left join colors icls on icls.id = vs.interior_color_id
+		left join colors cls on vs.color_id = cls.id
+		left join brands bs on vs.brand_id = bs.id
+		left join regions rs on vs.region_id = rs.id
+		left join cities cs on vs.city_id = cs.id
+		left join models ms on vs.model_id = ms.id
+		left join transmissions ts on vs.transmission_id = ts.id
+		left join engines es on vs.engine_id = es.id
+		left join drivetrains ds on vs.drivetrain_id = ds.id
+		left join body_types bts on vs.body_type_id = bts.id
+		left join fuel_types fts on vs.fuel_type_id = fts.id
+		left join lateral (
+			select 
+				json_agg(image) as images
+			from images 
+			where vehicle_id = vs.id
+		) images on true
+		where vs.user_id = $1 and status = 3
+		order by vs.id desc
+	`
+	rows, err := r.db.Query(*ctx, q, *userID)
+
+	if err != nil {
+		return cars, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var car model.GetCarsResponse
+		if err := rows.Scan(
+			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.InteriorColor, &car.Model, &car.Transmission, &car.Engine,
+			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
+			&car.Exchange, &car.Credit, &car.New, &car.CreditPrice, &car.Status, &car.CreatedAt,
+			&car.UpdatedAt, &car.Images, &car.PhoneNumber, &car.ViewCount, &car.MyCar,
+		); err != nil {
+			return cars, err
+		}
+		cars = append(cars, car)
+	}
+	return cars, err
+}
+
+func (r *UserRepository) Cancel(ctx *context.Context, carID *int) error {
+	q := `
+		delete from vehicles where id = $1
+	`
+	_, err := r.db.Exec(*ctx, q, *carID)
+	return err
+}
+
+func (r *UserRepository) Delete(ctx *context.Context, carID *int) error {
+	q := `
+		delete from vehicles where id = $1
+	`
+	_, err := r.db.Exec(*ctx, q, *carID)
+	return err
+}
+
+func (r *UserRepository) DontSell(ctx *context.Context, carID, userID *int) error {
+	q := `
+		update vehicles 
+			set status = 2 -- 2 is not sale
+		where id = $1 and status = 3 -- 3 is on sale
+			and user_id = $2
+	`
+
+	_, err := r.db.Exec(*ctx, q, *carID, *userID)
+	return err
+}
+
+func (r *UserRepository) Sell(ctx *context.Context, carID, userID *int) error {
+	q := `
+		update vehicles 
+			set status = 3 -- 3 is on sale
+		where id = $1 and status = 2 -- 2 is not sale 
+			and user_id = $2
+	`
+	_, err := r.db.Exec(*ctx, q, *carID, *userID)
+	return err
+}
+
+func (r *UserRepository) GetBrands(ctx *context.Context, text string) (model.GetBrandsResponse, error) {
+	var brand model.GetBrandsResponse
+	q := `
+		with popular as (
+			SELECT 
+				json_agg(
+					json_build_object(
+						'id', id, 
+						'name', name, 
+						'logo', logo, 
+						'car_count', car_count 
+					)
+				) as popular_brands
+			FROM brands 
+			WHERE name ILIKE '%' || $1 || '%' and popular = true
+		), all_brands as (
+			SELECT 
+				json_agg(
+					json_build_object(
+						'id', id, 
+						'name', name, 
+						'logo', logo, 
+						'car_count', car_count 
+					)
+				) as all_brands
+			FROM brands 
+			WHERE name ILIKE '%' || $1 || '%'
+		)
+		select 
+			pp.popular_brands,
+			ab.all_brands
+		from popular as pp
+		left join all_brands as ab on true;
+
 	`
 	rows, err := r.db.Query(*ctx, q, text)
 
 	if err != nil {
-		return nil, err
+		return brand, err
 	}
 
 	defer rows.Close()
-	var brands = make([]*model.GetBrandsResponse, 0)
 
-	for rows.Next() {
-		var brand model.GetBrandsResponse
-		if err := rows.Scan(&brand.ID, &brand.Name, &brand.Logo, &brand.CarCount); err != nil {
-			return nil, err
-		}
-		brands = append(brands, &brand)
+	if err := rows.Scan(&brand.PopularBrands, &brand.AllBrands); err != nil {
+		return brand, err
 	}
-	return brands, err
+	return brand, err
 }
 
 func (r *UserRepository) GetModifications(ctx *context.Context, generationID, bodyTypeID, fuelTypeID, drivetrainID, transmissionID int) ([]*model.GetModificationsResponse, error) {
@@ -142,29 +278,45 @@ func (r *UserRepository) GetModifications(ctx *context.Context, generationID, bo
 	return modifications, err
 }
 
-func (r *UserRepository) GetModelsByBrandID(ctx *context.Context, brandID int64, text string) ([]model.Model, error) {
+func (r *UserRepository) GetModelsByBrandID(ctx *context.Context, brandID int64, text string) (model.GetModelsResponse, error) {
+	responseModel := model.GetModelsResponse{}
 	q := `
-			SELECT id, name FROM models WHERE brand_id = $1 AND name ILIKE '%' || $2 || '%'
+		with popular as (
+			SELECT 
+				json_agg(
+					json_build_object(
+						'id', id, 
+						'name', name, 
+						'car_count', car_count 
+					)
+				) as popular_models
+			FROM models 
+			models WHERE brand_id = $1 AND name ILIKE '%' || $2 || '%' and popular = true
+		), all_models as (
+			SELECT 
+				json_agg(
+					json_build_object(
+						'id', id, 
+						'name', name, 
+						'car_count', car_count 
+					)
+				) as all_models
+			FROM models 
+			models WHERE brand_id = $1 AND name ILIKE '%' || $2 || '%'
+		)
+		select 
+			pp.popular_models,
+			ms.all_models
+		from popular as pp
+		left join all_models as ms on true;
 		`
-	rows, err := r.db.Query(*ctx, q, brandID, text)
+	err := r.db.QueryRow(*ctx, q, brandID, text).Scan(&responseModel.PopularModels, &responseModel.AllModels)
 
 	if err != nil {
-		return nil, err
+		return responseModel, err
 	}
 
-	defer rows.Close()
-	models := make([]model.Model, 0)
-
-	for rows.Next() {
-		var model model.Model
-
-		if err := rows.Scan(&model.ID, &model.Name); err != nil {
-			return nil, err
-		}
-		models = append(models, model)
-	}
-
-	return models, err
+	return responseModel, err
 }
 
 func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID int64) ([]model.Generation, error) {
@@ -406,11 +558,93 @@ func (r *UserRepository) GetColors(ctx *context.Context) ([]model.Color, error) 
 	return colors, err
 }
 
-func (r *UserRepository) GetCars(ctx *context.Context) ([]model.GetCarsResponse, error) {
-	cars := make([]model.GetCarsResponse, 0)
+func (r *UserRepository) GetCars(ctx *context.Context, userID int,
+	brands, models, regions, cities, generations, transmissions,
+	engines, drivetrains, body_types, fuel_types, ownership_types,
+	announcement_types []string, year_from, year_to, exchange, credit,
+	right_hand_drive, price_from, price_to string) ([]model.GetCarsResponse, error) {
+	var qWhere string
+	var qValues []interface{}
+	qValues = append(qValues, userID)
+	if len(brands) > 0 {
+		qWhere += " AND bs.id = ANY($1)"
+		qValues = append(qValues, brands)
+	}
+	if len(models) > 0 {
+		qWhere += " AND ms.id = ANY($2)"
+		qValues = append(qValues, models)
+	}
+	if len(regions) > 0 {
+		qWhere += " AND rs.id = ANY($3)"
+		qValues = append(qValues, regions)
+	}
+	if len(cities) > 0 {
+		qWhere += " AND cs.id = ANY($4)"
+		qValues = append(qValues, cities)
+	}
+	if len(generations) > 0 {
+		qWhere += " AND gs.id = ANY($5)"
+		qValues = append(qValues, generations)
+	}
+	if len(transmissions) > 0 {
+		qWhere += " AND ts.id = ANY($6)"
+		qValues = append(qValues, transmissions)
+	}
+	if len(engines) > 0 {
+		qWhere += " AND es.id = ANY($7)"
+		qValues = append(qValues, engines)
+	}
+	if len(drivetrains) > 0 {
+		qWhere += " AND ds.id = ANY($8)"
+		qValues = append(qValues, drivetrains)
+	}
+	if len(body_types) > 0 {
+		qWhere += " AND bts.id = ANY($9)"
+		qValues = append(qValues, body_types)
+	}
+	if len(fuel_types) > 0 {
+		qWhere += " AND fts.id = ANY($10)"
+		qValues = append(qValues, fuel_types)
+	}
+	if len(ownership_types) > 0 {
+		qWhere += " AND vs.ownership_type_id = ANY($11) AND vs.ownership_type_id != 0"
+		qValues = append(qValues, ownership_types)
+	}
+	if len(announcement_types) > 0 {
+		qWhere += " AND vs.announcement_type_id = ANY($12) AND vs.announcement_type_id != 0"
+		qValues = append(qValues, announcement_types)
+	}
+	if year_from != "" {
+		qWhere += " AND vs.year >= $13"
+		qValues = append(qValues, year_from)
+	}
+	if year_to != "" {
+		qWhere += " AND vs.year <= $14"
+		qValues = append(qValues, year_to)
+	}
+	if exchange != "" {
+		qWhere += " AND vs.exchange = $15"
+		qValues = append(qValues, true)
+	}
+	if credit != "" {
+		qWhere += " AND vs.credit = $16"
+		qValues = append(qValues, true)
+	}
+	if right_hand_drive != "" {
+		qWhere += " AND vs.right_hand_drive = $17"
+		qValues = append(qValues, true)
+	}
+	if price_from != "" {
+		qWhere += " AND vs.price >= $18"
+		qValues = append(qValues, price_from)
+	}
+	if price_to != "" {
+		qWhere += " AND vs.price <= $19"
+		qValues = append(qValues, price_to)
+	}
 
+	cars := make([]model.GetCarsResponse, 0)
 	q := `
-		
 		select 
 			vs.id,
 			bs.name as brand,
@@ -436,7 +670,11 @@ func (r *UserRepository) GetCars(ctx *context.Context) ([]model.GetCarsResponse,
 			vs.created_at,
 			vs.updated_at,
 			images,
-			vs.phone_number
+			vs.phone_number,
+			CASE
+				WHEN vs.user_id = $1 THEN TRUE
+				ELSE FALSE
+			END AS my_car
 		from vehicles vs
 		left join colors icls on icls.id = vs.interior_color_id
 		left join colors cls on vs.color_id = cls.id
@@ -455,10 +693,12 @@ func (r *UserRepository) GetCars(ctx *context.Context) ([]model.GetCarsResponse,
 			from images 
 			where vehicle_id = vs.id
 		) images on true
-
+		where vs.status = 3
+		` + qWhere + `
+		order by vs.id desc
 	`
 
-	rows, err := r.db.Query(*ctx, q)
+	rows, err := r.db.Query(*ctx, q, qValues...)
 
 	if err != nil {
 		return cars, err
@@ -472,7 +712,7 @@ func (r *UserRepository) GetCars(ctx *context.Context) ([]model.GetCarsResponse,
 			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.InteriorColor, &car.Model, &car.Transmission, &car.Engine,
 			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
 			&car.Exchange, &car.Credit, &car.New, &car.CreditPrice, &car.Status, &car.CreatedAt,
-			&car.UpdatedAt, &car.Images, &car.PhoneNumber,
+			&car.UpdatedAt, &car.Images, &car.PhoneNumber, &car.MyCar,
 		); err != nil {
 			return cars, err
 		}
@@ -482,7 +722,7 @@ func (r *UserRepository) GetCars(ctx *context.Context) ([]model.GetCarsResponse,
 	return cars, err
 }
 
-func (r *UserRepository) GetCarByID(ctx *context.Context, carID int) (model.GetCarsResponse, error) {
+func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (model.GetCarsResponse, error) {
 	car := model.GetCarsResponse{}
 
 	q := `
@@ -511,7 +751,11 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID int) (model.GetC
 			vs.created_at,
 			vs.updated_at,
 			images,
-			vs.phone_number
+			vs.phone_number,
+			CASE
+				WHEN vs.user_id = $2 THEN TRUE
+				ELSE FALSE
+			END AS my_car
 		from vehicles vs
 		left join colors icls on icls.id = vs.interior_color_id
 		left join colors cls on vs.color_id = cls.id
@@ -530,18 +774,32 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID int) (model.GetC
 			from images 
 			where vehicle_id = vs.id
 		) images on true
-		where vs.id = $1;
+		where vs.id = $1
 
 	`
 
-	err := r.db.QueryRow(*ctx, q, carID).Scan(
+	err := r.db.QueryRow(*ctx, q, carID, userID).Scan(
 		&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.InteriorColor, &car.Model, &car.Transmission, &car.Engine,
 		&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
 		&car.Exchange, &car.Credit, &car.New, &car.CreditPrice, &car.Status, &car.CreatedAt,
-		&car.UpdatedAt, &car.Images, &car.PhoneNumber,
+		&car.UpdatedAt, &car.Images, &car.PhoneNumber, &car.MyCar,
 	)
 
 	return car, err
+}
+
+func (r *UserRepository) BuyCar(ctx *context.Context, carID, userID int) error {
+
+	q := `
+		update vehicles 
+			set status = 2,
+				user_id = $1
+		where id = $2 and status = 3 -- 3 is on sale
+	`
+
+	_, err := r.db.Exec(*ctx, q, userID, carID)
+
+	return err
 }
 
 func (r *UserRepository) CreateCar(ctx *context.Context, car *model.CreateCarRequest) (int, error) {
@@ -563,6 +821,7 @@ func (r *UserRepository) CreateCar(ctx *context.Context, car *model.CreateCarReq
 }
 
 func (r *UserRepository) CreateCarImages(ctx *context.Context, carID int, images []string) error {
+
 	if len(images) == 0 {
 		return nil
 	}
@@ -570,6 +829,7 @@ func (r *UserRepository) CreateCarImages(ctx *context.Context, carID int, images
 	q := `
 		INSERT INTO images (vehicle_id, image) VALUES ($1, $2)
 	`
+
 	for i := range images {
 		_, err := r.db.Exec(*ctx, q, carID, images[i])
 		if err != nil {

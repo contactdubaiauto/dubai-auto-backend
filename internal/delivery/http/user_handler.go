@@ -34,16 +34,158 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 // @Failure		 403  {object} pkg.ErrorResponse
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
-// @Router       /api/v1/users/profile/cars [get]
-func (h *UserHandler) GetProfileCars(c *gin.Context) {
+// @Router       /api/v1/users/profile/my-cars [get]
+func (h *UserHandler) GetMyCars(c *gin.Context) {
 	ctx := c.Request.Context()
 	userID := c.MustGet("id").(int)
-	data := h.UserService.GetProfileCars(&ctx, &userID)
-	// brands := c.Query("brands")
-	// models := c.Query("models")
-	// cities := c.Query("cities")
-	// regions := c.Query("regions")
+	data := h.UserService.GetMyCars(&ctx, &userID)
 
+	utils.GinResponse(c, data)
+}
+
+// GetProfileCars godoc
+// @Summary      Get user's profile cars
+// @Description  Returns the cars associated with the authenticated user's profile
+// @Tags         users
+// @Security     BearerAuth
+// @Produce      json
+// @Success      200  {array}  model.GetCarsResponse
+// @Failure      400  {object} model.ResultMessage
+// @Failure      401  {object} pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404  {object} model.ResultMessage
+// @Failure      500  {object} model.ResultMessage
+// @Router       /api/v1/users/profile/on-sale [get]
+func (h *UserHandler) OnSale(c *gin.Context) {
+	ctx := c.Request.Context()
+	userID := c.MustGet("id").(int)
+	data := h.UserService.OnSale(&ctx, &userID)
+
+	utils.GinResponse(c, data)
+}
+
+// Cancel cars godoc
+// @Summary      Get user's cars
+// @Description  Returns the cars associated with the authenticated user's
+// @Tags         users
+// @Security     BearerAuth
+// @Produce      json
+// @Param        car_id   path      int  true  "Car ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object} model.ResultMessage
+// @Failure      401  {object} pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404  {object} model.ResultMessage
+// @Failure      500  {object} model.ResultMessage
+// @Router       /api/v1/users/cars/{car_id}/cancel [post]
+func (h *UserHandler) Cancel(c *gin.Context) {
+	// todo: delete images if exist
+	ctx := c.Request.Context()
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("car id must be integer"),
+		})
+		return
+	}
+	data := h.UserService.Cancel(&ctx, &id)
+	utils.GinResponse(c, data)
+}
+
+// Cancel cars godoc
+// @Summary      Get user's cars
+// @Description  Returns the cars associated with the authenticated user's
+// @Tags         users
+// @Security     BearerAuth
+// @Produce      json
+// @Param        car_id   path      int  true  "Car ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object} model.ResultMessage
+// @Failure      401  {object} pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404  {object} model.ResultMessage
+// @Failure      500  {object} model.ResultMessage
+// @Router       /api/v1/users/cars/{car_id}/delete [post]
+func (h *UserHandler) Delete(c *gin.Context) {
+	// todo: delete images if exists
+	ctx := c.Request.Context()
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("car id must be integer"),
+		})
+		return
+	}
+	data := h.UserService.Delete(&ctx, &id)
+	utils.GinResponse(c, data)
+}
+
+// Dont sell godoc
+// @Summary      Dont sell cars
+// @Description  Returns the cars associated with the authenticated user's
+// @Tags         users
+// @Security     BearerAuth
+// @Produce      json
+// @Param        car_id   path      int  true  "Car ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object} model.ResultMessage
+// @Failure      401  {object} pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404  {object} model.ResultMessage
+// @Failure      500  {object} model.ResultMessage
+// @Router       /api/v1/users/cars/{car_id}/dont-sell [post]
+func (h *UserHandler) DontSell(c *gin.Context) {
+	ctx := c.Request.Context()
+	idStr := c.Param("id")
+	userID := c.MustGet("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("car id must be integer"),
+		})
+		return
+	}
+	data := h.UserService.DontSell(&ctx, &id, &userID)
+	utils.GinResponse(c, data)
+}
+
+//	Sell godoc
+//
+// @Summary       Sell cars
+// @Description  Returns the cars associated with the authenticated user's
+// @Tags         users
+// @Security     BearerAuth
+// @Produce      json
+// @Param        car_id   path      int  true  "Car ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object} model.ResultMessage
+// @Failure      401  {object} pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404  {object} model.ResultMessage
+// @Failure      500  {object} model.ResultMessage
+// @Router       /api/v1/users/cars/{car_id}/sell [post]
+func (h *UserHandler) Sell(c *gin.Context) {
+	ctx := c.Request.Context()
+	idStr := c.Param("id")
+	userID := c.MustGet("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("car id must be integer"),
+		})
+		return
+	}
+	data := h.UserService.Sell(&ctx, &id, &userID)
 	utils.GinResponse(c, data)
 }
 
@@ -53,7 +195,7 @@ func (h *UserHandler) GetProfileCars(c *gin.Context) {
 // @Tags         users
 // @Produce      json
 // @Param        text  query     string  false  "Filter brands by text"
-// @Success      200   {object}  model.ResultMessage
+// @Success      200   {object}  model.GetBrandsResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
 // @Failure		 403  {object} pkg.ErrorResponse
@@ -77,7 +219,7 @@ func (h *UserHandler) GetBrands(c *gin.Context) {
 // @Param        fuel_type_id  query     string  true  "Get modification's fuel_type_id'"
 // @Param        drivetrain_id  query     string  true  "Get modification's drivetrain_id'"
 // @Param        transmission_id  query     string  true  "Get modification's transmission_id'"
-// @Success      200   {object}  model.ResultMessage
+// @Success      200   {array}  model.GetModificationsResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
 // @Failure		 403  {object} pkg.ErrorResponse
@@ -149,7 +291,7 @@ func (h *UserHandler) GetModifications(c *gin.Context) {
 // @Produce      json
 // @Param        id    path      int     true   "Brand ID"
 // @Param        text  query     string  false  "coroll"
-// @Success      200   {array}  model.Model
+// @Success      200   {object}  model.GetModelsResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
 // @Failure		 403  {object} pkg.ErrorResponse
@@ -317,6 +459,25 @@ func (h *UserHandler) GetColors(c *gin.Context) {
 // @Description  Returns a list of cars
 // @Tags         users
 // @Produce      json
+// @Param   brands            query   []string  false  "Filter by brand IDs"
+// @Param   models            query   []string  false  "Filter by model IDs"
+// @Param   regions           query   []string  false  "Filter by region IDs"
+// @Param   cities            query   []string  false  "Filter by city IDs"
+// @Param   generations       query   []string  false  "Filter by generation IDs"
+// @Param   transmissions     query   []string  false  "Filter by transmission IDs"
+// @Param   engines           query   []string  false  "Filter by engine IDs"
+// @Param   drivetrains       query   []string  false  "Filter by drivetrain IDs"
+// @Param   body_types        query   []string  false  "Filter by body type IDs"
+// @Param   fuel_types        query   []string  false  "Filter by fuel type IDs"
+// @Param   ownership_types   query   []string  false  "Filter by ownership type IDs"
+// @Param   announcement_types query  []string  false  "Filter by announcement type IDs"
+// @Param   year_from         query   string    false  "Filter by year from"
+// @Param   year_to           query   string    false  "Filter by year to"
+// @Param   exchange          query   string    false  "Filter by exchange"
+// @Param   credit            query   string    false  "Filter by credit"
+// @Param   right_hand_drive  query   string    false  "Filter by right hand drive"
+// @Param   price_from        query   string    false  "Filter by price from"
+// @Param   price_to          query   string    false  "Filter by price to"
 // @Success      200  {array}  model.GetCarsResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  pkg.ErrorResponse
@@ -326,11 +487,31 @@ func (h *UserHandler) GetColors(c *gin.Context) {
 // @Router       /api/v1/users/cars [get]
 func (h *UserHandler) GetCars(c *gin.Context) {
 	ctx := c.Request.Context()
-	data := h.UserService.GetCars(&ctx)
-	// brands := c.Query("brands")
-	// models := c.Query("models")
-	// cities := c.Query("cities")
-	// regions := c.Query("regions")
+	userID := c.MustGet("id").(int)
+	brands := pkg.QueryParamToArray(c.Query("brands"))
+	models := pkg.QueryParamToArray(c.Query("models"))
+	regions := pkg.QueryParamToArray(c.Query("regions"))
+	cities := pkg.QueryParamToArray(c.Query("cities"))
+	generations := pkg.QueryParamToArray(c.Query("generations"))
+	transmissions := pkg.QueryParamToArray(c.Query("transmissions"))
+	engines := pkg.QueryParamToArray(c.Query("engines"))
+	drivetrains := pkg.QueryParamToArray(c.Query("drivetrains"))
+	body_types := pkg.QueryParamToArray(c.Query("body_types"))
+	fuel_types := pkg.QueryParamToArray(c.Query("fuel_types"))
+	ownership_types := pkg.QueryParamToArray(c.Query("ownership_types"))
+	announcement_types := pkg.QueryParamToArray(c.Query("announcement_types"))
+	year_from := c.Query("year_from")
+	year_to := c.Query("year_to")
+	exchange := c.Query("exchange")
+	credit := c.Query("credit")
+	right_hand_drive := c.Query("right_hand_drive")
+	price_from := c.Query("price_from")
+	price_to := c.Query("price_to")
+
+	data := h.UserService.GetCars(&ctx, userID, brands, models,
+		regions, cities, generations, transmissions, engines, drivetrains,
+		body_types, fuel_types, ownership_types, announcement_types,
+		year_from, year_to, exchange, credit, right_hand_drive, price_from, price_to)
 
 	utils.GinResponse(c, data)
 }
@@ -340,16 +521,17 @@ func (h *UserHandler) GetCars(c *gin.Context) {
 // @Description  Returns a car by its ID
 // @Tags         users
 // @Produce      json
-// @Param        id   path      int  true  "Car ID"
+// @Param        car_id   path      int  true  "Car ID"
 // @Success      200  {object}  model.GetCarsResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  pkg.ErrorResponse
 // @Failure		 403  {object} pkg.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/users/cars/{id} [get]
+// @Router       /api/v1/users/cars/{car_id} [get]
 func (h *UserHandler) GetCarByID(c *gin.Context) {
 	idStr := c.Param("id")
+	userID := c.MustGet("id").(int)
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
@@ -361,8 +543,40 @@ func (h *UserHandler) GetCarByID(c *gin.Context) {
 	}
 
 	ctx := c.Request.Context()
-	data := h.UserService.GetCarByID(&ctx, id)
+	data := h.UserService.GetCarByID(&ctx, id, userID)
 
+	utils.GinResponse(c, data)
+}
+
+// BuyCar godoc
+// @Summary      Buy car
+// @Description  Returns a status response message
+// @Tags         users
+// @Produce      json
+// @Security 	 BearerAuth
+// @Param        car_id   path      int  true  "Car ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/cars/{car_id}/buy [post]
+func (h *UserHandler) BuyCar(c *gin.Context) {
+	idStr := c.Param("id")
+	userID := c.MustGet("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("car id must be integer"),
+		})
+		return
+	}
+
+	ctx := c.Request.Context()
+	data := h.UserService.BuyCar(&ctx, id, userID)
 	utils.GinResponse(c, data)
 }
 
@@ -377,14 +591,13 @@ func (h *UserHandler) GetCarByID(c *gin.Context) {
 // @Success      200  {object}  model.SuccessWithId
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  pkg.ErrorResponse
-// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure		 403  {object}  pkg.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/cars [post]
 func (h *UserHandler) CreateCar(c *gin.Context) {
 	var car model.CreateCarRequest
-	userID := c.MustGet("id").(int)
-	car.UserID = int64(userID)
+	car.UserID = c.MustGet("id").(int)
 	ctx := c.Request.Context()
 
 	if err := c.ShouldBindJSON(&car); err != nil {
@@ -406,15 +619,15 @@ func (h *UserHandler) CreateCar(c *gin.Context) {
 // @Security     BearerAuth
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        id      path      int     true   "Car ID"
+// @Param        car_id      path      int     true   "Car CAR_ID"
 // @Param        images  formData  file    true   "Car images (max 10)"
 // @Success      200     {object}  model.Success
 // @Failure      400     {object}  model.ResultMessage
 // @Failure      401     {object}  pkg.ErrorResponse
-// @Failure	 	 403  {object} pkg.ErrorResponse
+// @Failure	 	 403  	 {object}  pkg.ErrorResponse
 // @Failure      404     {object}  model.ResultMessage
 // @Failure      500     {object}  model.ResultMessage
-// @Router       /api/v1/users/cars/{id}/images [post]
+// @Router       /api/v1/users/cars/{car_id}/images [post]
 func (h *UserHandler) CreateCarImages(c *gin.Context) {
 	ctx := c.Request.Context()
 	idStr := c.Param("id")
@@ -437,6 +650,7 @@ func (h *UserHandler) CreateCarImages(c *gin.Context) {
 		})
 		return
 	}
+
 	images := form.File["images"]
 
 	if len(images) > 10 {
