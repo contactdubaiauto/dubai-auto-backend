@@ -295,21 +295,34 @@ create table generations (
 );
 
 insert into generations (
-    name, model_id, start_year, end_year, image, body_type_id
+    name, model_id, start_year, end_year, image, body_type_id, wheel
 ) values (
-    '1 generation', 1, 2010, 2020, '/images/gens/1.jpg', 1
+    '1 generation', 1, 2010, 2020, '/images/gens/1.jpg', 1, true
 );
 
 insert into generations (
-    name, model_id, start_year, end_year, image, body_type_id
+    name, model_id, start_year, end_year, image, body_type_id, wheel
 ) values (
-    '2 generation', 1, 2005, 2025, '/images/gens/2.jpg', 2
+    '2 generation', 1, 2005, 2025, '/images/gens/2.jpg', 2, true
+);
+
+
+insert into generations (
+    name, model_id, start_year, end_year, image, body_type_id, wheel
+) values (
+    '2 generation', 1, 2005, 2025, '/images/gens/2.jpg', 2, false
 );
 
 insert into generations (
-    name, model_id, start_year, end_year, image, body_type_id
+    name, model_id, start_year, end_year, image, body_type_id, wheel
 ) values (
-    '3 generation', 2, 2020, 2025, '/images/gens/3.jpg', 2
+    '3 generation', 2, 2020, 2025, '/images/gens/3.jpg', 2, true
+);
+
+insert into generations (
+    name, model_id, start_year, end_year, image, body_type_id, wheel
+) values (
+    '3 generation', 2, 2020, 2025, '/images/gens/3.jpg', 2, false
 );
 
 

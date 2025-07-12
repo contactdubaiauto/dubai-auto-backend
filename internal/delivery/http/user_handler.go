@@ -428,8 +428,9 @@ func (h *UserHandler) GetGenerationsByModelID(c *gin.Context) {
 // @Description  Returns a list of years for a given model ID
 // @Tags         users
 // @Produce      json
+// @Param        id  path  int  true  "Brand ID"
 // @Param        model_id  path  int  true  "Model ID"
-// @Param        wheel  path  int  true  "the wheel true or false"
+// @Param        wheel  query  string  true  "the wheel true or false"
 // @Success      200   {array}  model.GetYearsResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse

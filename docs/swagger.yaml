@@ -815,16 +815,21 @@ paths:
     get:
       description: Returns a list of years for a given model ID
       parameters:
+      - description: Brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: Model ID
         in: path
         name: model_id
         required: true
         type: integer
       - description: the wheel true or false
-        in: path
+        in: query
         name: wheel
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:

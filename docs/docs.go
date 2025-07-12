@@ -701,16 +701,23 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "description": "Brand ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
                         "description": "Model ID",
                         "name": "model_id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "the wheel true or false",
                         "name": "wheel",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     }
                 ],
