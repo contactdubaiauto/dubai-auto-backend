@@ -37,7 +37,6 @@ type CreateCarRequest struct {
 	// DoorCount       int    `json:"door_count"`
 	// InteriorColorID int `json:"interior_color_id"`
 	// Negotiable      bool `json:"negotiable"`
-	// CreditPrice     int  `json:"credit_price"`
 	// ModificationID  int  `json:"modification_id"`
 	// MileageKM       int    `json:"mileage_km"`
 	// GenerationID int `json:"generation_id" binding:"required"`

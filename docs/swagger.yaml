@@ -22,10 +22,10 @@ definitions:
     type: object
   model.Color:
     properties:
-      hex_code:
-        type: string
       id:
         type: integer
+      image:
+        type: string
       name:
         type: string
     type: object
@@ -57,8 +57,10 @@ definitions:
         type: integer
       owners:
         type: integer
-      phone_number:
-        type: string
+      phone_numbers:
+        items:
+          type: string
+        type: array
       price:
         type: integer
       trade_in:
@@ -83,7 +85,7 @@ definitions:
     - model_id
     - odometer
     - owners
-    - phone_number
+    - phone_numbers
     - price
     - trade_in
     - transmission_id
@@ -154,8 +156,6 @@ definitions:
         type: string
       credit:
         type: boolean
-      credit_price:
-        type: integer
       drivetrain:
         type: string
       engine:
@@ -170,8 +170,6 @@ definitions:
         items:
           type: string
         type: array
-      interior_color:
-        type: string
       mileage:
         type: integer
       model:
@@ -180,8 +178,10 @@ definitions:
         type: boolean
       new:
         type: boolean
-      phone_number:
-        type: string
+      phone_numbers:
+        items:
+          type: string
+        type: array
       price:
         type: integer
       region:

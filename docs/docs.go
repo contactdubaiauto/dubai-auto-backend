@@ -2117,11 +2117,11 @@ const docTemplate = `{
         "model.Color": {
             "type": "object",
             "properties": {
-                "hex_code": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
+                },
+                "image": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
@@ -2141,7 +2141,7 @@ const docTemplate = `{
                 "model_id",
                 "odometer",
                 "owners",
-                "phone_number",
+                "phone_numbers",
                 "price",
                 "trade_in",
                 "transmission_id",
@@ -2189,8 +2189,11 @@ const docTemplate = `{
                 "owners": {
                     "type": "integer"
                 },
-                "phone_number": {
-                    "type": "string"
+                "phone_numbers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "price": {
                     "type": "integer"
@@ -2310,9 +2313,6 @@ const docTemplate = `{
                 "credit": {
                     "type": "boolean"
                 },
-                "credit_price": {
-                    "type": "integer"
-                },
                 "drivetrain": {
                     "type": "string"
                 },
@@ -2334,9 +2334,6 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "interior_color": {
-                    "type": "string"
-                },
                 "mileage": {
                     "type": "integer"
                 },
@@ -2349,8 +2346,11 @@ const docTemplate = `{
                 "new": {
                     "type": "boolean"
                 },
-                "phone_number": {
-                    "type": "string"
+                "phone_numbers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "price": {
                     "type": "integer"

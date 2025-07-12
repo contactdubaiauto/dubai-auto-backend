@@ -383,20 +383,17 @@ insert into ownership_types (name) values ('Private Owner');
 create table colors (
     "id" serial primary key,
     "name" varchar(255) not null,
-    "hex_code" varchar(7) not null,
+    "image" varchar(255) not null,
     "created_at" timestamp default now()
 );
 
-insert into colors (name, hex_code) values ('Black', '#000000');
-insert into colors (name, hex_code) values ('White', '#FFFFFF');
-insert into colors (name, hex_code) values ('Red', '#FF0000');
-insert into colors (name, hex_code) values ('Blue', '#0000FF');
-insert into colors (name, hex_code) values ('Green', '#008000');
-insert into colors (name, hex_code) values ('Yellow', '#FFFF00');
-insert into colors (name, hex_code) values ('Silver', '#C0C0C0');
-insert into colors (name, hex_code) values ('Gray', '#808080');
-insert into colors (name, hex_code) values ('Orange', '#FFA500');
-insert into colors (name, hex_code) values ('Purple', '#800080');
+insert into colors (name, image) values ('White', '/images/colors/white.jpg');
+insert into colors (name, image) values ('Red', '/images/colors/red.jpg');
+insert into colors (name, image) values ('Blue', '/images/colors/blue.jpg');
+insert into colors (name, image) values ('Green', '/images/colors/green.jpg');
+insert into colors (name, image) values ('Yellow', '/images/colors/yellow.jpg');
+insert into colors (name, image) values ('Orange', '/images/colors/orange.jpg');
+insert into colors (name, image) values ('Purple', '/images/colors/purple.jpg');
 
 
 create table vehicles (
@@ -434,7 +431,6 @@ create table vehicles (
     -- "interior_color_id" int,
     -- "mileage_km" int,
     -- "negotiable" boolean not null default false,
-    -- "credit_price" int,
     "status" int not null default 2, -- 1-pending, 2-not sale (my cars), 3-on sale,
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),

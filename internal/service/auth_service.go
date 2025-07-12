@@ -80,7 +80,6 @@ func (s *AuthService) UserPhoneConfirmation(ctx context.Context, user *model.Use
 func (s *AuthService) UserLoginEmail(ctx context.Context, user *model.UserLoginEmail) model.Response {
 	otp := pkg.RandomOTP()
 	// todo: send otp to the mail
-	fmt.Println(otp)
 	otp = 123456
 	username := pkg.RandomUsername()
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%d", otp)), bcrypt.DefaultCost)
@@ -108,7 +107,6 @@ func (s *AuthService) UserLoginEmail(ctx context.Context, user *model.UserLoginE
 func (s *AuthService) UserLoginPhone(ctx context.Context, user *model.UserLoginPhone) model.Response {
 	otp := pkg.RandomOTP()
 	// todo: send otp to the mail
-	fmt.Println(otp)
 	otp = 123456
 	username := pkg.RandomUsername()
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%d", otp)), bcrypt.DefaultCost)

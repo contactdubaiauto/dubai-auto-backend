@@ -28,7 +28,6 @@ func (r *UserRepository) GetMyCars(ctx *context.Context, userID *int) ([]model.G
 			rs.name as region,
 			cs.name as city,
 			cls.name as color,
-			icls.name as interior_color,
 			ms.name as model,
 			ts.name as transmission,
 			es.value as engine,
@@ -37,20 +36,19 @@ func (r *UserRepository) GetMyCars(ctx *context.Context, userID *int) ([]model.G
 			fts.name as fuel_type,
 			vs.year,
 			vs.price,
-			vs.mileage_km,
+			vs.odometer,
 			vs.vin_code,
 			vs.exchange,
 			vs.credit,
 			vs.new,
-			vs.credit_price,
 			vs.status,
 			vs.created_at,
 			vs.updated_at,
 			images,
 			vs.phone_numbers, 
-			vs.view_count
+			vs.view_count,
+			true as my_car
 		from vehicles vs
-		left join colors icls on icls.id = vs.interior_color_id
 		left join colors cls on vs.color_id = cls.id
 		left join brands bs on vs.brand_id = bs.id
 		left join regions rs on vs.region_id = rs.id
@@ -80,10 +78,10 @@ func (r *UserRepository) GetMyCars(ctx *context.Context, userID *int) ([]model.G
 	for rows.Next() {
 		var car model.GetCarsResponse
 		if err := rows.Scan(
-			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.InteriorColor, &car.Model, &car.Transmission, &car.Engine,
+			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
 			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
-			&car.Exchange, &car.Credit, &car.New, &car.CreditPrice, &car.Status, &car.CreatedAt,
-			&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.ViewCount,
+			&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt,
+			&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
 		); err != nil {
 			return cars, err
 		}
@@ -101,7 +99,6 @@ func (r *UserRepository) OnSale(ctx *context.Context, userID *int) ([]model.GetC
 			rs.name as region,
 			cs.name as city,
 			cls.name as color,
-			icls.name as interior_color,
 			ms.name as model,
 			ts.name as transmission,
 			es.value as engine,
@@ -110,12 +107,11 @@ func (r *UserRepository) OnSale(ctx *context.Context, userID *int) ([]model.GetC
 			fts.name as fuel_type,
 			vs.year,
 			vs.price,
-			vs.mileage_km,
+			vs.odometer,
 			vs.vin_code,
 			vs.exchange,
 			vs.credit,
 			vs.new,
-			vs.credit_price,
 			vs.status,
 			vs.created_at,
 			vs.updated_at,
@@ -124,7 +120,6 @@ func (r *UserRepository) OnSale(ctx *context.Context, userID *int) ([]model.GetC
 			vs.view_count, 
 			true as my_car
 		from vehicles vs
-		left join colors icls on icls.id = vs.interior_color_id
 		left join colors cls on vs.color_id = cls.id
 		left join brands bs on vs.brand_id = bs.id
 		left join regions rs on vs.region_id = rs.id
@@ -154,9 +149,9 @@ func (r *UserRepository) OnSale(ctx *context.Context, userID *int) ([]model.GetC
 	for rows.Next() {
 		var car model.GetCarsResponse
 		if err := rows.Scan(
-			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.InteriorColor, &car.Model, &car.Transmission, &car.Engine,
+			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
 			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
-			&car.Exchange, &car.Credit, &car.New, &car.CreditPrice, &car.Status, &car.CreatedAt,
+			&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt,
 			&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
 		); err != nil {
 			return cars, err
@@ -440,7 +435,6 @@ func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID i
 	rows, err := r.db.Query(*ctx, q, modelID, year, bodyTypeID, wheel)
 
 	if err != nil {
-		fmt.Println("88888: ", err)
 		return nil, err
 	}
 
@@ -453,7 +447,6 @@ func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID i
 			&generation.Image, &generation.StartYear, &generation.EndYear,
 			&generation.Modifications,
 		); err != nil {
-			fmt.Println("s98dfh: ", err)
 			return nil, err
 		}
 		generations = append(generations, generation)
@@ -636,7 +629,7 @@ func (r *UserRepository) GetFuelTypes(ctx *context.Context) ([]model.FuelType, e
 
 func (r *UserRepository) GetColors(ctx *context.Context) ([]model.Color, error) {
 	q := `
-		SELECT id, name, hex_code FROM colors
+		SELECT id, name, image FROM colors
 	`
 
 	rows, err := r.db.Query(*ctx, q)
@@ -651,7 +644,7 @@ func (r *UserRepository) GetColors(ctx *context.Context) ([]model.Color, error) 
 	for rows.Next() {
 		var color model.Color
 
-		if err := rows.Scan(&color.ID, &color.Name, &color.HexCode); err != nil {
+		if err := rows.Scan(&color.ID, &color.Name, &color.Image); err != nil {
 			return nil, err
 		}
 		colors = append(colors, color)
@@ -687,11 +680,6 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 		i += 1
 		qWhere += fmt.Sprintf(" AND cs.id = ANY($%d)", i)
 		qValues = append(qValues, cities)
-	}
-	if len(generations) > 0 {
-		i += 1
-		qWhere += fmt.Sprintf(" AND gs.id = ANY($%d)", i)
-		qValues = append(qValues, generations)
 	}
 	if len(transmissions) > 0 {
 		i += 1
@@ -745,7 +733,7 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 	}
 	if right_hand_drive != "" {
 		i += 1
-		qWhere += fmt.Sprintf(" AND vs.right_hand_drive = $%d", i)
+		qWhere += fmt.Sprintf(" AND vs.wheel = $%d", i)
 		qValues = append(qValues, true)
 	}
 	if price_from != "" {
@@ -759,9 +747,6 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 		qValues = append(qValues, price_to)
 	}
 
-	fmt.Println("qWhere")
-	fmt.Println(qWhere)
-	fmt.Println(qValues...)
 	cars := make([]model.GetCarsResponse, 0)
 	q := `
 		select 
@@ -770,7 +755,6 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 			rs.name as region,
 			cs.name as city,
 			cls.name as color,
-			icls.name as interior_color,
 			ms.name as model,
 			ts.name as transmission,
 			es.value as engine,
@@ -779,23 +763,22 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 			fts.name as fuel_type,
 			vs.year,
 			vs.price,
-			vs.mileage_km,
+			vs.odometer,
 			vs.vin_code,
 			vs.exchange,
 			vs.credit,
 			vs.new,
-			vs.credit_price,
 			vs.status,
 			vs.created_at,
 			vs.updated_at,
 			images,
 			vs.phone_numbers,
+			vs.view_count,
 			CASE
 				WHEN vs.user_id = $1 THEN TRUE
 				ELSE FALSE
 			END AS my_car
 		from vehicles vs
-		left join colors icls on icls.id = vs.interior_color_id
 		left join colors cls on vs.color_id = cls.id
 		left join brands bs on vs.brand_id = bs.id
 		left join regions rs on vs.region_id = rs.id
@@ -806,7 +789,6 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 		left join drivetrains ds on vs.drivetrain_id = ds.id
 		left join body_types bts on vs.body_type_id = bts.id
 		left join fuel_types fts on vs.fuel_type_id = fts.id
-		left join generations gs on gs.id = vs.generation_id
 		left join lateral (
 			select 
 				json_agg(image) as images
@@ -829,10 +811,10 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 	for rows.Next() {
 		var car model.GetCarsResponse
 		if err := rows.Scan(
-			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.InteriorColor, &car.Model, &car.Transmission, &car.Engine,
+			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
 			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
-			&car.Exchange, &car.Credit, &car.New, &car.CreditPrice, &car.Status, &car.CreatedAt,
-			&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.MyCar,
+			&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt,
+			&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
 		); err != nil {
 			return cars, err
 		}
@@ -852,7 +834,6 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (mo
 			rs.name as region,
 			cs.name as city,
 			cls.name as color,
-			icls.name as interior_color,
 			ms.name as model,
 			ts.name as transmission,
 			es.value as engine,
@@ -861,23 +842,22 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (mo
 			fts.name as fuel_type,
 			vs.year,
 			vs.price,
-			vs.mileage_km,
+			vs.odometer,
 			vs.vin_code,
 			vs.exchange,
 			vs.credit,
 			vs.new,
-			vs.credit_price,
 			vs.status,
 			vs.created_at,
 			vs.updated_at,
 			images,
 			vs.phone_numbers,
+			vs.view_count,
 			CASE
 				WHEN vs.user_id = $2 THEN TRUE
 				ELSE FALSE
 			END AS my_car
 		from vehicles vs
-		left join colors icls on icls.id = vs.interior_color_id
 		left join colors cls on vs.color_id = cls.id
 		left join brands bs on vs.brand_id = bs.id
 		left join regions rs on vs.region_id = rs.id
@@ -899,10 +879,10 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (mo
 	`
 
 	err := r.db.QueryRow(*ctx, q, carID, userID).Scan(
-		&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.InteriorColor, &car.Model, &car.Transmission, &car.Engine,
+		&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
 		&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
-		&car.Exchange, &car.Credit, &car.New, &car.CreditPrice, &car.Status, &car.CreatedAt,
-		&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.MyCar,
+		&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt,
+		&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
 	)
 
 	return car, err
