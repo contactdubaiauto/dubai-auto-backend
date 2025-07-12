@@ -546,7 +546,7 @@ with popular as (
             )
         ) as popular_models
     FROM models 
-    models WHERE brand_id = $1 AND name ILIKE '%' || $2 || '%' and popular = true
+    models WHERE brand_id = 1 and popular = true
 ), all_models as (
     SELECT 
         json_agg(
@@ -557,11 +557,74 @@ with popular as (
             )
         ) as all_models
     FROM models 
-    models WHERE brand_id = $1 AND name ILIKE '%' || $2 || '%'
+    models WHERE brand_id = 1 
 )
 select 
     pp.popular_models,
     ab.all_models
 from popular as pp
 left join all_models as ab on true;
+
+
+
+select 
+    c.id, 
+    c.name,
+    json_agg(
+        json_build_object(
+            'id', r.id,
+            'name', r.name
+        )
+    ) as regions
+from cities c
+left join regions r on r.city_id = c.id
+group by c.id, c.name;
+
+select 
+    bts.id,
+    bts.name
+from generations gs
+left join body_types bts on bts.id = gs.body_type_id
+where gs.start_year <= 2020 and gs.end_year >= 2020;
+
+
+with gms as (
+    select 
+        json_agg(
+            json_build_object(
+                'engine_id', es.id, 
+                'engine', es.value, 
+                'fuel_type_id', fts.id, 
+                'fuel_type', fts.name, 
+                'drivetrain_id', ds.id, 
+                'drivetrain', ds.name, 
+                'transmission_id', ts.id, 
+                'transmission', ts.name
+            )
+        ) as modifications,
+        gms.generation_id
+    from generation_modifications gms
+    left join engines es on es.id = gms.engine_id
+    left join fuel_types fts on fts.id = gms.fuel_type_id
+    left join drivetrains ds on ds.id = gms.drivetrain_id
+    left join transmissions ts on ts.id = gms.transmission_id
+    where gms.generation_id = any (
+        select 
+            id 
+        from generations 
+        where 
+            model_id = 1 and start_year <= 2020 and end_year >= 2020
+            and body_type_id = 1
+    )
+    group by gms.generation_id 
+)
+select
+    gs.id,
+    gs.name,
+    gs.image,
+    gs.start_year,
+    gs.end_year,
+    gms.modifications
+from gms
+left join generations gs on gs.id = gms.generation_id;
 

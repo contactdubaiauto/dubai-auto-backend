@@ -9,6 +9,17 @@ definitions:
       name:
         type: string
     type: object
+  model.Brands:
+    properties:
+      car_count:
+        type: integer
+      id:
+        type: integer
+      logo:
+        type: string
+      name:
+        type: string
+    type: object
   model.Color:
     properties:
       hex_code:
@@ -30,12 +41,6 @@ definitions:
         type: integer
       crash:
         type: boolean
-      credit:
-        type: boolean
-      credit_price:
-        type: integer
-      door_count:
-        type: integer
       drivetrain_id:
         type: integer
       engine_id:
@@ -44,43 +49,46 @@ definitions:
         type: boolean
       fuel_type_id:
         type: integer
-      generation_id:
-        type: integer
-      interior_color_id:
-        type: integer
-      mileage_km:
-        type: integer
       model_id:
         type: integer
-      modification_id:
-        type: integer
-      negotiable:
-        type: boolean
       new:
         type: boolean
       odometer:
+        type: integer
+      owners:
         type: integer
       phone_number:
         type: string
       price:
         type: integer
-      region_id:
+      trade_in:
         type: integer
-      right_hand_drive:
-        type: boolean
       transmission_id:
         type: integer
       vin_code:
         type: string
+      wheel:
+        description: left true, right false
+        type: boolean
       year:
-        description: OwnershipTypeId int    `json:"ownership_type_id"`
         type: integer
     required:
     - body_type_id
     - brand_id
+    - city_id
+    - color_id
+    - drivetrain_id
+    - engine_id
+    - fuel_type_id
     - model_id
+    - odometer
+    - owners
     - phone_number
     - price
+    - trade_in
+    - transmission_id
+    - vin_code
+    - wheel
     - year
     type: object
   model.Drivetrain:
@@ -106,32 +114,20 @@ definitions:
     type: object
   model.Generation:
     properties:
-      body_types:
-        items:
-          $ref: '#/definitions/model.BodyType'
-        type: array
-      drivetrains:
-        items:
-          $ref: '#/definitions/model.Drivetrain'
-        type: array
       end_year:
         type: integer
-      fuel_types:
-        items:
-          $ref: '#/definitions/model.FuelType'
-        type: array
       id:
         type: integer
       image:
         type: string
+      modifications:
+        items:
+          $ref: '#/definitions/model.Modifications'
+        type: array
       name:
         type: string
       start_year:
         type: integer
-      transmissions:
-        items:
-          $ref: '#/definitions/model.Transmission'
-        type: array
     type: object
   model.GetBrandsResponse:
     properties:
@@ -203,12 +199,52 @@ definitions:
       year:
         type: integer
     type: object
+  model.GetCitiesResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      regions:
+        items:
+          $ref: '#/definitions/model.Region'
+        type: array
+    type: object
+  model.GetFilterBrandsResponse:
+    properties:
+      all_brands:
+        items:
+          $ref: '#/definitions/model.Brands'
+        type: array
+      popular_brands:
+        items:
+          $ref: '#/definitions/model.Brands'
+        type: array
+    type: object
+  model.GetFilterModelsResponse:
+    properties:
+      all_models:
+        items:
+          $ref: '#/definitions/model.Model'
+        type: array
+      popular_models:
+        items:
+          $ref: '#/definitions/model.Model'
+        type: array
+    type: object
   model.GetModificationsResponse:
     properties:
       id:
         type: integer
       name:
         type: string
+    type: object
+  model.GetYearsResponse:
+    properties:
+      end_year:
+        type: integer
+      start_year:
+        type: integer
     type: object
   model.LoginResponse:
     properties:
@@ -218,6 +254,34 @@ definitions:
         type: string
     type: object
   model.Model:
+    properties:
+      car_count:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.Modifications:
+    properties:
+      drivetrain:
+        type: string
+      drivetrain_id:
+        type: integer
+      engine:
+        type: string
+      engine_id:
+        type: integer
+      fuel_type:
+        type: string
+      fuel_type_id:
+        type: integer
+      transmission:
+        type: string
+      transmission_id:
+        type: integer
+    type: object
+  model.Region:
     properties:
       id:
         type: integer
@@ -516,9 +580,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/model.GetBrandsResponse'
-            type: array
+            $ref: '#/definitions/model.GetFilterBrandsResponse'
         "400":
           description: Bad Request
           schema:
@@ -540,6 +602,50 @@ paths:
           schema:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get car brands
+      tags:
+      - users
+  /api/v1/users/brands/{id}/filter-models:
+    get:
+      description: Returns a list of car models for a given brand ID, optionally filtered
+        by text
+      parameters:
+      - description: Brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: coroll
+        in: query
+        name: text
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetFilterModelsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get filter models by brand ID
       tags:
       - users
   /api/v1/users/brands/{id}/models:
@@ -585,23 +691,94 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
-      summary: Get models by brand ID
+      summary: Get models by brand ID for create cars
+      tags:
+      - users
+  /api/v1/users/brands/{id}/models/{model_id}/body-types:
+    get:
+      description: Returns a list of bodys for a given model ID
+      parameters:
+      - description: Brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Model ID
+        in: path
+        name: model_id
+        required: true
+        type: integer
+      - description: Selected year
+        in: query
+        name: year
+        required: true
+        type: string
+      - description: true or false wheel
+        in: query
+        name: wheel
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.BodyType'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get bodys by model ID
       tags:
       - users
   /api/v1/users/brands/{id}/models/{model_id}/generations:
     get:
       description: Returns a list of generations for a given model ID
       parameters:
-      - description: Model ID
-        in: path
-        name: model_id
-        required: true
-        type: integer
       - description: brand id ID
         in: path
         name: id
         required: true
         type: integer
+      - description: Model ID
+        in: path
+        name: model_id
+        required: true
+        type: integer
+      - description: Selected year
+        in: query
+        name: year
+        required: true
+        type: string
+      - description: true or false wheel
+        in: query
+        name: wheel
+        required: true
+        type: string
+      - description: the selected body type's ID
+        in: query
+        name: body_type_id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -634,9 +811,161 @@ paths:
       summary: Get generations by model ID
       tags:
       - users
+  /api/v1/users/brands/{id}/models/{model_id}/years:
+    get:
+      description: Returns a list of years for a given model ID
+      parameters:
+      - description: Model ID
+        in: path
+        name: model_id
+        required: true
+        type: integer
+      - description: the wheel true or false
+        in: path
+        name: wheel
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetYearsResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get years by model ID
+      tags:
+      - users
   /api/v1/users/cars:
     get:
       description: Returns a list of cars
+      parameters:
+      - collectionFormat: csv
+        description: Filter by brand IDs
+        in: query
+        items:
+          type: string
+        name: brands
+        type: array
+      - collectionFormat: csv
+        description: Filter by model IDs
+        in: query
+        items:
+          type: string
+        name: models
+        type: array
+      - collectionFormat: csv
+        description: Filter by region IDs
+        in: query
+        items:
+          type: string
+        name: regions
+        type: array
+      - collectionFormat: csv
+        description: Filter by city IDs
+        in: query
+        items:
+          type: string
+        name: cities
+        type: array
+      - collectionFormat: csv
+        description: Filter by generation IDs
+        in: query
+        items:
+          type: string
+        name: generations
+        type: array
+      - collectionFormat: csv
+        description: Filter by transmission IDs
+        in: query
+        items:
+          type: string
+        name: transmissions
+        type: array
+      - collectionFormat: csv
+        description: Filter by engine IDs
+        in: query
+        items:
+          type: string
+        name: engines
+        type: array
+      - collectionFormat: csv
+        description: Filter by drivetrain IDs
+        in: query
+        items:
+          type: string
+        name: drivetrains
+        type: array
+      - collectionFormat: csv
+        description: Filter by body type IDs
+        in: query
+        items:
+          type: string
+        name: body_types
+        type: array
+      - collectionFormat: csv
+        description: Filter by fuel type IDs
+        in: query
+        items:
+          type: string
+        name: fuel_types
+        type: array
+      - collectionFormat: csv
+        description: Filter by ownership type IDs
+        in: query
+        items:
+          type: string
+        name: ownership_types
+        type: array
+      - description: Filter by year from
+        in: query
+        name: year_from
+        type: string
+      - description: Filter by year to
+        in: query
+        name: year_to
+        type: string
+      - description: Filter by exchange
+        in: query
+        name: exchange
+        type: string
+      - description: Filter by credit
+        in: query
+        name: credit
+        type: string
+      - description: Filter by right hand drive
+        in: query
+        name: right_hand_drive
+        type: string
+      - description: Filter by price from
+        in: query
+        name: price_from
+        type: string
+      - description: Filter by price to
+        in: query
+        name: price_to
+        type: string
       produces:
       - application/json
       responses:
@@ -1004,6 +1333,46 @@ paths:
       summary: Sell cars
       tags:
       - users
+  /api/v1/users/cities:
+    get:
+      description: Returns a list of car cities, optionally filtered by text
+      parameters:
+      - description: Filter cities by text
+        in: query
+        name: text
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetCitiesResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get car cities
+      tags:
+      - users
   /api/v1/users/colors:
     get:
       description: Returns a list of car colors
@@ -1107,6 +1476,44 @@ paths:
           schema:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get engines
+      tags:
+      - users
+  /api/v1/users/filter-brands:
+    get:
+      description: Returns a list of car brands, optionally filtered by text
+      parameters:
+      - description: Filter brands by text
+        in: query
+        name: text
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetBrandsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get car brands
       tags:
       - users
   /api/v1/users/fuel-types:

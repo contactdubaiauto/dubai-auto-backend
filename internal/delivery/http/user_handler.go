@@ -201,11 +201,51 @@ func (h *UserHandler) Sell(c *gin.Context) {
 // @Failure		 403  {object} pkg.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
-// @Router       /api/v1/users/brands [get]
+// @Router       /api/v1/users/filter-brands [get]
 func (h *UserHandler) GetBrands(c *gin.Context) {
 	text := c.Query("text")
 	ctx := c.Request.Context()
 	data := h.UserService.GetBrands(&ctx, text)
+	utils.GinResponse(c, data)
+}
+
+// GetFilterBrands godoc
+// @Summary      Get car brands
+// @Description  Returns a list of car brands, optionally filtered by text
+// @Tags         users
+// @Produce      json
+// @Param        text  query     string  false  "Filter brands by text"
+// @Success      200   {object}  model.GetFilterBrandsResponse
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/users/brands [get]
+func (h *UserHandler) GetFilterBrands(c *gin.Context) {
+	text := c.Query("text")
+	ctx := c.Request.Context()
+	data := h.UserService.GetFilterBrands(&ctx, text)
+	utils.GinResponse(c, data)
+}
+
+// GetBrands godoc
+// @Summary      Get car cities
+// @Description  Returns a list of car cities, optionally filtered by text
+// @Tags         users
+// @Produce      json
+// @Param        text  query     string  false  "Filter cities by text"
+// @Success      200   {array}  model.GetCitiesResponse
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/users/cities [get]
+func (h *UserHandler) GetCities(c *gin.Context) {
+	text := c.Query("text")
+	ctx := c.Request.Context()
+	data := h.UserService.GetCities(&ctx, text)
 	utils.GinResponse(c, data)
 }
 
@@ -285,13 +325,13 @@ func (h *UserHandler) GetModifications(c *gin.Context) {
 }
 
 // GetModelsByBrandID godoc
-// @Summary      Get models by brand ID
+// @Summary      Get models by brand ID for create cars
 // @Description  Returns a list of car models for a given brand ID, optionally filtered by text
 // @Tags         users
 // @Produce      json
 // @Param        id    path      int     true   "Brand ID"
 // @Param        text  query     string  false  "coroll"
-// @Success      200   {object}  model.GetModelsResponse
+// @Success      200   {array}  model.Model
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
 // @Failure		 403  {object} pkg.ErrorResponse
@@ -314,13 +354,46 @@ func (h *UserHandler) GetModelsByBrandID(c *gin.Context) {
 	utils.GinResponse(c, data)
 }
 
+// GetFilterModelsByBrandID godoc
+// @Summary      Get filter models by brand ID
+// @Description  Returns a list of car models for a given brand ID, optionally filtered by text
+// @Tags         users
+// @Produce      json
+// @Param        id    path      int     true   "Brand ID"
+// @Param        text  query     string  false  "coroll"
+// @Success      200   {object}  model.GetFilterModelsResponse
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/users/brands/{id}/filter-models [get]
+func (h *UserHandler) GetFilterModelsByBrandID(c *gin.Context) {
+	brandID := c.Param("id")
+	text := c.Query("text")
+	brandIDInt, err := strconv.ParseInt(brandID, 10, 64)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error: ": err.Error()})
+		return
+	}
+
+	ctx := c.Request.Context()
+	data := h.UserService.GetFilterModelsByBrandID(&ctx, brandIDInt, text)
+
+	utils.GinResponse(c, data)
+}
+
 // GetGenerationsByModelID godoc
 // @Summary      Get generations by model ID
 // @Description  Returns a list of generations for a given model ID
 // @Tags         users
 // @Produce      json
-// @Param        model_id  path  int  true  "Model ID"
 // @Param        id  path  int  true  "brand id ID"
+// @Param        model_id  path  int  true  "Model ID"
+// @Param   	 year   		query   string    	true  "Selected year"
+// @Param   	 wheel   		query   string    	true  "true or false wheel"
+// @Param   	 body_type_id   query   string    	true  "the selected body type's ID"
 // @Success      200   {array}  model.Generation
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
@@ -330,6 +403,46 @@ func (h *UserHandler) GetModelsByBrandID(c *gin.Context) {
 // @Router       /api/v1/users/brands/{id}/models/{model_id}/generations [get]
 func (h *UserHandler) GetGenerationsByModelID(c *gin.Context) {
 	modelID := c.Param("model_id")
+	year := c.Query("year")
+	bodyTypeID := c.Query("body_type_id")
+	wheel := true
+
+	if c.DefaultQuery("wheel", "false") == "false" {
+		wheel = false
+	}
+	modelIDInt, err := strconv.Atoi(modelID)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error: ": err.Error()})
+		return
+	}
+
+	ctx := c.Request.Context()
+	data := h.UserService.GetGenerationsByModelID(&ctx, modelIDInt, wheel, year, bodyTypeID)
+
+	utils.GinResponse(c, data)
+}
+
+// GetYearsByModelID godoc
+// @Summary      Get years by model ID
+// @Description  Returns a list of years for a given model ID
+// @Tags         users
+// @Produce      json
+// @Param        model_id  path  int  true  "Model ID"
+// @Param        wheel  path  int  true  "the wheel true or false"
+// @Success      200   {array}  model.GetYearsResponse
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/users/brands/{id}/models/{model_id}/years [get]
+func (h *UserHandler) GetYearsByModelID(c *gin.Context) {
+	modelID := c.Param("model_id")
+	wheel := true
+	if c.DefaultQuery("wheel", "false") == "false" {
+		wheel = false
+	}
 	modelIDInt, err := strconv.ParseInt(modelID, 10, 64)
 
 	if err != nil {
@@ -338,7 +451,44 @@ func (h *UserHandler) GetGenerationsByModelID(c *gin.Context) {
 	}
 
 	ctx := c.Request.Context()
-	data := h.UserService.GetGenerationsByModelID(&ctx, modelIDInt)
+	data := h.UserService.GetYearsByModelID(&ctx, modelIDInt, wheel)
+
+	utils.GinResponse(c, data)
+}
+
+// GetBodysByModelID godoc
+// @Summary      Get bodys by model ID
+// @Description  Returns a list of bodys for a given model ID
+// @Tags         users
+// @Produce      json
+// @Param        id        	path    int  		true  "Brand ID"
+// @Param        model_id  	path    int  		true  "Model ID"
+// @Param   	 year   	query   string    	true  "Selected year"
+// @Param   	 wheel   	query   string    	true  "true or false wheel"
+// @Success      200   {array}  model.BodyType
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/users/brands/{id}/models/{model_id}/body-types [get]
+func (h *UserHandler) GetBodyTypesByModelID(c *gin.Context) {
+	modelID := c.Param("model_id")
+	year := c.Query("year")
+	wheel := true
+
+	if c.DefaultQuery("wheel", "false") == "false" {
+		wheel = false
+	}
+	modelIDInt, err := strconv.Atoi(modelID)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error: ": err.Error()})
+		return
+	}
+
+	ctx := c.Request.Context()
+	data := h.UserService.GetBodysByModelID(&ctx, modelIDInt, wheel, year)
 
 	utils.GinResponse(c, data)
 }

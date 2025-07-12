@@ -90,6 +90,34 @@ func (s *UserService) GetBrands(ctx *context.Context, text string) *model.Respon
 	}
 }
 
+func (s *UserService) GetFilterBrands(ctx *context.Context, text string) *model.Response {
+	brands, err := s.UserRepository.GetFilterBrands(ctx, text)
+
+	if err != nil {
+		return &model.Response{
+			Error:  err,
+			Status: http.StatusBadRequest,
+		}
+	}
+	return &model.Response{
+		Data: brands,
+	}
+}
+
+func (s *UserService) GetCities(ctx *context.Context, text string) *model.Response {
+	cities, err := s.UserRepository.GetCities(ctx, text)
+
+	if err != nil {
+		return &model.Response{
+			Error:  err,
+			Status: http.StatusBadRequest,
+		}
+	}
+	return &model.Response{
+		Data: cities,
+	}
+}
+
 func (s *UserService) GetModifications(ctx *context.Context, generationID, bodyTypeID, fuelTypeID, drivetrainID, transmissionID int) *model.Response {
 	modifications, err := s.UserRepository.GetModifications(ctx, generationID, bodyTypeID, fuelTypeID, drivetrainID, transmissionID)
 
@@ -113,8 +141,35 @@ func (s *UserService) GetModelsByBrandID(ctx *context.Context, brandID int64, te
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetGenerationsByModelID(ctx *context.Context, modelID int64) *model.Response {
-	data, err := s.UserRepository.GetGenerationsByModelID(ctx, modelID)
+func (s *UserService) GetFilterModelsByBrandID(ctx *context.Context, brandID int64, text string) *model.Response {
+	data, err := s.UserRepository.GetFilterModelsByBrandID(ctx, brandID, text)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: 400}
+	}
+	return &model.Response{Data: data}
+}
+
+func (s *UserService) GetGenerationsByModelID(ctx *context.Context, modelID int, wheel bool, year, bodyTypeID string) *model.Response {
+	data, err := s.UserRepository.GetGenerationsByModelID(ctx, modelID, wheel, year, bodyTypeID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: 400}
+	}
+	return &model.Response{Data: data}
+}
+
+func (s *UserService) GetYearsByModelID(ctx *context.Context, modelID int64, wheel bool) *model.Response {
+	data, err := s.UserRepository.GetYearsByModelID(ctx, modelID, wheel)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: 400}
+	}
+	return &model.Response{Data: data}
+}
+
+func (s *UserService) GetBodysByModelID(ctx *context.Context, modelID int, wheel bool, year string) *model.Response {
+	data, err := s.UserRepository.GetBodysByModelID(ctx, modelID, wheel, year)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: 400}

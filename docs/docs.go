@@ -346,10 +346,72 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.GetBrandsResponse"
-                            }
+                            "$ref": "#/definitions/model.GetFilterBrandsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/brands/{id}/filter-models": {
+            "get": {
+                "description": "Returns a list of car models for a given brand ID, optionally filtered by text",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get filter models by brand ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Brand ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "coroll",
+                        "name": "text",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.GetFilterModelsResponse"
                         }
                     },
                     "400": {
@@ -394,7 +456,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Get models by brand ID",
+                "summary": "Get models by brand ID for create cars",
                 "parameters": [
                     {
                         "type": "integer",
@@ -453,6 +515,89 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/users/brands/{id}/models/{model_id}/body-types": {
+            "get": {
+                "description": "Returns a list of bodys for a given model ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get bodys by model ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Brand ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Model ID",
+                        "name": "model_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Selected year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "true or false wheel",
+                        "name": "wheel",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.BodyType"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/brands/{id}/models/{model_id}/generations": {
             "get": {
                 "description": "Returns a list of generations for a given model ID",
@@ -466,16 +611,37 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "description": "brand id ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
                         "description": "Model ID",
                         "name": "model_id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
-                        "description": "brand id ID",
-                        "name": "id",
-                        "in": "path",
+                        "type": "string",
+                        "description": "Selected year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "true or false wheel",
+                        "name": "wheel",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the selected body type's ID",
+                        "name": "body_type_id",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -522,6 +688,75 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/users/brands/{id}/models/{model_id}/years": {
+            "get": {
+                "description": "Returns a list of years for a given model ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get years by model ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Model ID",
+                        "name": "model_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "the wheel true or false",
+                        "name": "wheel",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.GetYearsResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/cars": {
             "get": {
                 "description": "Returns a list of cars",
@@ -532,6 +767,160 @@ const docTemplate = `{
                     "users"
                 ],
                 "summary": "Get cars",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filter by brand IDs",
+                        "name": "brands",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filter by model IDs",
+                        "name": "models",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filter by region IDs",
+                        "name": "regions",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filter by city IDs",
+                        "name": "cities",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filter by generation IDs",
+                        "name": "generations",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filter by transmission IDs",
+                        "name": "transmissions",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filter by engine IDs",
+                        "name": "engines",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filter by drivetrain IDs",
+                        "name": "drivetrains",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filter by body type IDs",
+                        "name": "body_types",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filter by fuel type IDs",
+                        "name": "fuel_types",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filter by ownership type IDs",
+                        "name": "ownership_types",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by year from",
+                        "name": "year_from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by year to",
+                        "name": "year_to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by exchange",
+                        "name": "exchange",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by credit",
+                        "name": "credit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by right hand drive",
+                        "name": "right_hand_drive",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by price from",
+                        "name": "price_from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by price to",
+                        "name": "price_to",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1095,6 +1484,67 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/users/cities": {
+            "get": {
+                "description": "Returns a list of car cities, optionally filtered by text",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get car cities",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter cities by text",
+                        "name": "text",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.GetCitiesResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/colors": {
             "get": {
                 "description": "Returns a list of car colors",
@@ -1219,6 +1669,64 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/model.Engine"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/filter-brands": {
+            "get": {
+                "description": "Returns a list of car brands, optionally filtered by text",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get car brands",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter brands by text",
+                        "name": "text",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.GetBrandsResponse"
                         }
                     },
                     "400": {
@@ -1582,6 +2090,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Brands": {
+            "type": "object",
+            "properties": {
+                "car_count": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Color": {
             "type": "object",
             "properties": {
@@ -1601,9 +2126,20 @@ const docTemplate = `{
             "required": [
                 "body_type_id",
                 "brand_id",
+                "city_id",
+                "color_id",
+                "drivetrain_id",
+                "engine_id",
+                "fuel_type_id",
                 "model_id",
+                "odometer",
+                "owners",
                 "phone_number",
                 "price",
+                "trade_in",
+                "transmission_id",
+                "vin_code",
+                "wheel",
                 "year"
             ],
             "properties": {
@@ -1622,15 +2158,6 @@ const docTemplate = `{
                 "crash": {
                     "type": "boolean"
                 },
-                "credit": {
-                    "type": "boolean"
-                },
-                "credit_price": {
-                    "type": "integer"
-                },
-                "door_count": {
-                    "type": "integer"
-                },
                 "drivetrain_id": {
                     "type": "integer"
                 },
@@ -1643,28 +2170,16 @@ const docTemplate = `{
                 "fuel_type_id": {
                     "type": "integer"
                 },
-                "generation_id": {
-                    "type": "integer"
-                },
-                "interior_color_id": {
-                    "type": "integer"
-                },
-                "mileage_km": {
-                    "type": "integer"
-                },
                 "model_id": {
                     "type": "integer"
-                },
-                "modification_id": {
-                    "type": "integer"
-                },
-                "negotiable": {
-                    "type": "boolean"
                 },
                 "new": {
                     "type": "boolean"
                 },
                 "odometer": {
+                    "type": "integer"
+                },
+                "owners": {
                     "type": "integer"
                 },
                 "phone_number": {
@@ -1673,11 +2188,8 @@ const docTemplate = `{
                 "price": {
                     "type": "integer"
                 },
-                "region_id": {
+                "trade_in": {
                     "type": "integer"
-                },
-                "right_hand_drive": {
-                    "type": "boolean"
                 },
                 "transmission_id": {
                     "type": "integer"
@@ -1685,8 +2197,11 @@ const docTemplate = `{
                 "vin_code": {
                     "type": "string"
                 },
+                "wheel": {
+                    "description": "left true, right false",
+                    "type": "boolean"
+                },
                 "year": {
-                    "description": "OwnershipTypeId int    ` + "`" + `json:\"ownership_type_id\"` + "`" + `",
                     "type": "integer"
                 }
             }
@@ -1727,26 +2242,8 @@ const docTemplate = `{
         "model.Generation": {
             "type": "object",
             "properties": {
-                "body_types": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.BodyType"
-                    }
-                },
-                "drivetrains": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Drivetrain"
-                    }
-                },
                 "end_year": {
                     "type": "integer"
-                },
-                "fuel_types": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.FuelType"
-                    }
                 },
                 "id": {
                     "type": "integer"
@@ -1754,17 +2251,17 @@ const docTemplate = `{
                 "image": {
                     "type": "string"
                 },
+                "modifications": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Modifications"
+                    }
+                },
                 "name": {
                     "type": "string"
                 },
                 "start_year": {
                     "type": "integer"
-                },
-                "transmissions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Transmission"
-                    }
                 }
             }
         },
@@ -1874,6 +2371,57 @@ const docTemplate = `{
                 }
             }
         },
+        "model.GetCitiesResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "regions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Region"
+                    }
+                }
+            }
+        },
+        "model.GetFilterBrandsResponse": {
+            "type": "object",
+            "properties": {
+                "all_brands": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Brands"
+                    }
+                },
+                "popular_brands": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Brands"
+                    }
+                }
+            }
+        },
+        "model.GetFilterModelsResponse": {
+            "type": "object",
+            "properties": {
+                "all_models": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Model"
+                    }
+                },
+                "popular_models": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Model"
+                    }
+                }
+            }
+        },
         "model.GetModificationsResponse": {
             "type": "object",
             "properties": {
@@ -1882,6 +2430,17 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "model.GetYearsResponse": {
+            "type": "object",
+            "properties": {
+                "end_year": {
+                    "type": "integer"
+                },
+                "start_year": {
+                    "type": "integer"
                 }
             }
         },
@@ -1897,6 +2456,49 @@ const docTemplate = `{
             }
         },
         "model.Model": {
+            "type": "object",
+            "properties": {
+                "car_count": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Modifications": {
+            "type": "object",
+            "properties": {
+                "drivetrain": {
+                    "type": "string"
+                },
+                "drivetrain_id": {
+                    "type": "integer"
+                },
+                "engine": {
+                    "type": "string"
+                },
+                "engine_id": {
+                    "type": "integer"
+                },
+                "fuel_type": {
+                    "type": "string"
+                },
+                "fuel_type_id": {
+                    "type": "integer"
+                },
+                "transmission": {
+                    "type": "string"
+                },
+                "transmission_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.Region": {
             "type": "object",
             "properties": {
                 "id": {

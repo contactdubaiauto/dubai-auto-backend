@@ -1,0 +1,720 @@
+{
+    "tech_info_main": {
+        "id": "NO_GROUP",
+        "entity": [
+            {
+                "id": "displacement",
+                "name": "Объем",
+                "units": "л",
+                "value": "2.0 л"
+            },
+            {
+                "id": "power",
+                "name": "Мощность",
+                "units": "л.с.",
+                "value": "150 л.с."
+            },
+            {
+                "id": "transmission",
+                "name": "Коробка",
+                "value": "Робот"
+            },
+            {
+                "id": "engine_type",
+                "name": "Тип двигателя",
+                "value": "бензиновый"
+            },
+            {
+                "id": "petrol_type",
+                "name": "Топливо",
+                "value": "АИ-95"
+            },
+            {
+                "id": "gear_type",
+                "name": "Привод",
+                "value": "передний"
+            },
+            {
+                "id": "acceleration",
+                "name": "Разгон",
+                "units": "с",
+                "value": "9.2 с"
+            },
+            {
+                "id": "consumption_mixed",
+                "name": "Расход",
+                "units": "л",
+                "value": "6.0 л"
+            }
+        ]
+    },
+    "common_tech_info": {
+        "width": 1847,
+        "height": 1435,
+        "length": 4762,
+        "body_type": "WAGON_5_DOORS",
+        "max_clearance": 140,
+        "min_clearance": 140
+    },
+    "tech_info_additional": [
+        {
+            "id": "GENERAL",
+            "name": "Общая информация",
+            "entity": [
+                {
+                    "id": "country",
+                    "name": "Страна марки",
+                    "value": "Германия"
+                },
+                {
+                    "id": "auto_class",
+                    "name": "Класс автомобиля",
+                    "value": "D"
+                },
+                {
+                    "id": "doors_count",
+                    "name": "Количество дверей",
+                    "value": "5"
+                },
+                {
+                    "id": "seats",
+                    "name": "Количество мест",
+                    "value": "5"
+                }
+            ]
+        },
+        {
+            "id": "SIZES",
+            "name": "Размеры",
+            "entity": [
+                {
+                    "id": "body_size",
+                    "name": "Длина",
+                    "units": "мм",
+                    "value": "4762"
+                },
+                {
+                    "id": "width",
+                    "name": "Ширина",
+                    "units": "мм",
+                    "value": "1847"
+                },
+                {
+                    "id": "height",
+                    "name": "Высота",
+                    "units": "мм",
+                    "value": "1435"
+                },
+                {
+                    "id": "wheel_base",
+                    "name": "Колёсная база",
+                    "units": "мм",
+                    "value": "2820"
+                },
+                {
+                    "id": "clearance",
+                    "name": "Клиренс",
+                    "units": "мм",
+                    "value": "140"
+                },
+                {
+                    "id": "front_wheel_base",
+                    "name": "Ширина передней колеи",
+                    "units": "мм",
+                    "value": "1572"
+                },
+                {
+                    "id": "back_wheel_base",
+                    "name": "Ширина задней колеи",
+                    "units": "мм",
+                    "value": "1555"
+                },
+                {
+                    "id": "wheel_size",
+                    "name": "Размер колёс",
+                    "value": "205/60/R16"
+                }
+            ],
+            "dimension": "мм"
+        },
+        {
+            "id": "VOLUME_AND_MASS",
+            "name": "Объём и масса",
+            "entity": [
+                {
+                    "id": "boot_volume",
+                    "name": "Объем багажника мин/макс, л",
+                    "units": "л",
+                    "value": "495/1495"
+                },
+                {
+                    "id": "tank_volume",
+                    "name": "Объём топливного бака, л",
+                    "units": "л",
+                    "value": "54"
+                },
+                {
+                    "id": "weight",
+                    "name": "Снаряженная масса, кг",
+                    "units": "кг",
+                    "value": "1500"
+                },
+                {
+                    "id": "full_weight",
+                    "name": "Полная масса, кг",
+                    "units": "кг",
+                    "value": "2100"
+                }
+            ]
+        },
+        {
+            "id": "TRANSMISSION",
+            "name": "Трансмиссия",
+            "entity": [
+                {
+                    "id": "transmission",
+                    "name": "Коробка передач",
+                    "value": "Робот"
+                },
+                {
+                    "id": "gear_value",
+                    "name": "Количество передач",
+                    "value": "7"
+                },
+                {
+                    "id": "gear_type",
+                    "name": "Тип привода",
+                    "value": "передний"
+                }
+            ]
+        },
+        {
+            "id": "SUSPENSION_AND_BRAKES",
+            "name": "Подвеска и тормоза",
+            "entity": [
+                {
+                    "id": "front_suspension",
+                    "name": "Тип передней подвески",
+                    "value": "независимая, пружинная"
+                },
+                {
+                    "id": "back_suspension",
+                    "name": "Тип задней подвески",
+                    "value": "независимая, пружинная"
+                },
+                {
+                    "id": "front_brake",
+                    "name": "Передние тормоза",
+                    "value": "дисковые вентилируемые"
+                },
+                {
+                    "id": "back_brake",
+                    "name": "Задние тормоза",
+                    "value": "дисковые"
+                }
+            ]
+        },
+        {
+            "id": "PERFORMANCE_INDICATORS",
+            "name": "Эксплуатационные показатели",
+            "entity": [
+                {
+                    "id": "max_speed",
+                    "name": "Максимальная скорость, км/ч",
+                    "units": "км/ч",
+                    "value": "220"
+                },
+                {
+                    "id": "acceleration",
+                    "name": "Разгон до 100 км/ч, с",
+                    "units": "с",
+                    "value": "9.2"
+                },
+                {
+                    "id": "consumption",
+                    "name": "Расход топлива, л город/трасса/смешанный",
+                    "value": "7.5/5.2/6.0"
+                },
+                {
+                    "id": "petrol_type",
+                    "name": "Марка топлива",
+                    "value": "АИ-95"
+                },
+                {
+                    "id": "emission_euro_class",
+                    "name": "Экологический класс",
+                    "value": "Euro 6"
+                },
+                {
+                    "id": "fuel_emission",
+                    "name": "Выбросы CO2, г/км",
+                    "units": "г/км",
+                    "value": "138"
+                }
+            ]
+        },
+        {
+            "id": "ENGINE",
+            "name": "Двигатель",
+            "entity": [
+                {
+                    "id": "engine_type",
+                    "name": "Тип двигателя",
+                    "value": "бензиновый"
+                },
+                {
+                    "id": "engine_order",
+                    "name": "Расположение двигателя",
+                    "value": "переднее, продольное"
+                },
+                {
+                    "id": "displacement",
+                    "name": "Объем двигателя, см³",
+                    "units": "см³",
+                    "value": "1984"
+                },
+                {
+                    "id": "feeding",
+                    "name": "Тип наддува",
+                    "value": "турбонаддув"
+                },
+                {
+                    "id": "max_power",
+                    "name": "Максимальная мощность, л.с./кВт при об/мин",
+                    "units": "л.с./кВт при об/мин",
+                    "value": "150/110 при 6000"
+                },
+                {
+                    "id": "moment",
+                    "name": "Максимальный крутящий момент, Н*м при об/мин",
+                    "units": "Н*м при об/мин",
+                    "value": "270 при 3900"
+                },
+                {
+                    "id": "cylinders_order",
+                    "name": "Расположение цилиндров",
+                    "value": "рядное"
+                },
+                {
+                    "id": "cylinders_value",
+                    "name": "Количество цилиндров",
+                    "value": "4"
+                },
+                {
+                    "id": "valves",
+                    "name": "Число клапанов на цилиндр",
+                    "value": "4"
+                },
+                {
+                    "id": "engine_feeding",
+                    "name": "Система питания двигателя",
+                    "value": "непосредственный впрыск (прямой)"
+                },
+                {
+                    "id": "compression",
+                    "name": "Степень сжатия",
+                    "value": "11.7"
+                },
+                {
+                    "id": "diameter",
+                    "name": "Диаметр цилиндра и ход поршня, мм",
+                    "units": "мм",
+                    "value": "82.5x92.8"
+                }
+            ]
+        }
+    ]
+}
+
+{
+    "specifications": {
+        "drive": "FORWARD_CONTROL",
+        "seats": [
+            "5"
+        ],
+        "width": 1847,
+        "height": 1435,
+        "length": 4762,
+        "moment": 270,
+        "valves": 4,
+        "volume": 1984,
+        "weight": 1500,
+        "diametr": 82.5,
+        "feeding": "Turbocharger",
+        "clearance": [
+            140
+        ],
+        "kvt-power": 110,
+        "max-speed": 220,
+        "rpm-power": [
+            3900,
+            6000
+        ],
+        "back-brake": "Disc",
+        "gear-value": 7,
+        "moment-rpm": [
+            1350,
+            3900
+        ],
+        "wheel-base": 2820,
+        "wheel-size": [
+            "205/60/R16"
+        ],
+        "compression": 11.7,
+        "doors-count": 5,
+        "engine-type": "GASOLINE",
+        "front-brake": "Ventilated disc",
+        "full-weight": 2100,
+        "horse-power": 150,
+        "petrol-type": "95 RON",
+        "time-to-100": 9.2,
+        "engine-order": "Front Longitudinal engine",
+        "transmission": "ROBOT",
+        "fuel-emission": 138,
+        "piston-stroke": 92.8,
+        "volume-litres": 2,
+        "engine-feeding": "Direct fuel injection",
+        "range-distance": 900,
+        "back-suspension": "Independent, coil suspension",
+        "back-wheel-base": 1555,
+        "cylinders-order": "IN-LINE",
+        "cylinders-value": 4,
+        "consumption-city": 7.5,
+        "front-suspension": "Independent, coil suspension",
+        "front-wheel-base": 1572,
+        "consumption-hiway": 5.2,
+        "consumption-mixed": 6,
+        "fuel-tank-capacity": 54,
+        "emission-euro-class": "Euro 6",
+        "trunks-max-capacity": 1495,
+        "trunks-min-capacity": 495
+    }
+}
+
+{
+    "tech_info_main": {
+        "id": "NO_GROUP",
+        "entity": [
+            {
+                "id": "displacement",
+                "name": "Объем",
+                "units": "л",
+                "value": "2.0 л"
+            },
+            {
+                "id": "power",
+                "name": "Мощность",
+                "units": "л.с.",
+                "value": "150 л.с."
+            },
+            {
+                "id": "transmission",
+                "name": "Коробка",
+                "value": "Робот"
+            },
+            {
+                "id": "engine_type",
+                "name": "Тип двигателя",
+                "value": "бензиновый"
+            },
+            {
+                "id": "petrol_type",
+                "name": "Топливо",
+                "value": "АИ-95"
+            },
+            {
+                "id": "gear_type",
+                "name": "Привод",
+                "value": "передний"
+            },
+            {
+                "id": "acceleration",
+                "name": "Разгон",
+                "units": "с",
+                "value": "9.2 с"
+            },
+            {
+                "id": "consumption_mixed",
+                "name": "Расход",
+                "units": "л",
+                "value": "6.0 л"
+            }
+        ]
+    },
+    "common_tech_info": {
+        "width": 1847,
+        "height": 1435,
+        "length": 4762,
+        "body_type": "WAGON_5_DOORS",
+        "max_clearance": 140,
+        "min_clearance": 140
+    },
+    "tech_info_additional": [
+        {
+            "id": "GENERAL",
+            "name": "Общая информация",
+            "entity": [
+                {
+                    "id": "country",
+                    "name": "Страна марки",
+                    "value": "Германия"
+                },
+                {
+                    "id": "auto_class",
+                    "name": "Класс автомобиля",
+                    "value": "D"
+                },
+                {
+                    "id": "doors_count",
+                    "name": "Количество дверей",
+                    "value": "5"
+                },
+                {
+                    "id": "seats",
+                    "name": "Количество мест",
+                    "value": "5"
+                }
+            ]
+        },
+        {
+            "id": "SIZES",
+            "name": "Размеры",
+            "entity": [
+                {
+                    "id": "body_size",
+                    "name": "Длина",
+                    "units": "мм",
+                    "value": "4762"
+                },
+                {
+                    "id": "width",
+                    "name": "Ширина",
+                    "units": "мм",
+                    "value": "1847"
+                },
+                {
+                    "id": "height",
+                    "name": "Высота",
+                    "units": "мм",
+                    "value": "1435"
+                },
+                {
+                    "id": "wheel_base",
+                    "name": "Колёсная база",
+                    "units": "мм",
+                    "value": "2820"
+                },
+                {
+                    "id": "clearance",
+                    "name": "Клиренс",
+                    "units": "мм",
+                    "value": "140"
+                },
+                {
+                    "id": "front_wheel_base",
+                    "name": "Ширина передней колеи",
+                    "units": "мм",
+                    "value": "1572"
+                },
+                {
+                    "id": "back_wheel_base",
+                    "name": "Ширина задней колеи",
+                    "units": "мм",
+                    "value": "1555"
+                },
+                {
+                    "id": "wheel_size",
+                    "name": "Размер колёс",
+                    "value": "205/60/R16"
+                }
+            ],
+            "dimension": "мм"
+        },
+        {
+            "id": "VOLUME_AND_MASS",
+            "name": "Объём и масса",
+            "entity": [
+                {
+                    "id": "boot_volume",
+                    "name": "Объем багажника мин/макс, л",
+                    "units": "л",
+                    "value": "495/1495"
+                },
+                {
+                    "id": "tank_volume",
+                    "name": "Объём топливного бака, л",
+                    "units": "л",
+                    "value": "54"
+                },
+                {
+                    "id": "weight",
+                    "name": "Снаряженная масса, кг",
+                    "units": "кг",
+                    "value": "1500"
+                },
+                {
+                    "id": "full_weight",
+                    "name": "Полная масса, кг",
+                    "units": "кг",
+                    "value": "2100"
+                }
+            ]
+        },
+        {
+            "id": "TRANSMISSION",
+            "name": "Трансмиссия",
+            "entity": [
+                {
+                    "id": "transmission",
+                    "name": "Коробка передач",
+                    "value": "Робот"
+                },
+                {
+                    "id": "gear_value",
+                    "name": "Количество передач",
+                    "value": "7"
+                },
+                {
+                    "id": "gear_type",
+                    "name": "Тип привода",
+                    "value": "передний"
+                }
+            ]
+        },
+        {
+            "id": "SUSPENSION_AND_BRAKES",
+            "name": "Подвеска и тормоза",
+            "entity": [
+                {
+                    "id": "front_suspension",
+                    "name": "Тип передней подвески",
+                    "value": "независимая, пружинная"
+                },
+                {
+                    "id": "back_suspension",
+                    "name": "Тип задней подвески",
+                    "value": "независимая, пружинная"
+                },
+                {
+                    "id": "front_brake",
+                    "name": "Передние тормоза",
+                    "value": "дисковые вентилируемые"
+                },
+                {
+                    "id": "back_brake",
+                    "name": "Задние тормоза",
+                    "value": "дисковые"
+                }
+            ]
+        },
+        {
+            "id": "PERFORMANCE_INDICATORS",
+            "name": "Эксплуатационные показатели",
+            "entity": [
+                {
+                    "id": "max_speed",
+                    "name": "Максимальная скорость, км/ч",
+                    "units": "км/ч",
+                    "value": "220"
+                },
+                {
+                    "id": "acceleration",
+                    "name": "Разгон до 100 км/ч, с",
+                    "units": "с",
+                    "value": "9.2"
+                },
+                {
+                    "id": "consumption",
+                    "name": "Расход топлива, л город/трасса/смешанный",
+                    "value": "7.5/5.2/6.0"
+                },
+                {
+                    "id": "petrol_type",
+                    "name": "Марка топлива",
+                    "value": "АИ-95"
+                },
+                {
+                    "id": "emission_euro_class",
+                    "name": "Экологический класс",
+                    "value": "Euro 6"
+                },
+                {
+                    "id": "fuel_emission",
+                    "name": "Выбросы CO2, г/км",
+                    "units": "г/км",
+                    "value": "138"
+                }
+            ]
+        },
+        {
+            "id": "ENGINE",
+            "name": "Двигатель",
+            "entity": [
+                {
+                    "id": "engine_type",
+                    "name": "Тип двигателя",
+                    "value": "бензиновый"
+                },
+                {
+                    "id": "engine_order",
+                    "name": "Расположение двигателя",
+                    "value": "переднее, продольное"
+                },
+                {
+                    "id": "displacement",
+                    "name": "Объем двигателя, см³",
+                    "units": "см³",
+                    "value": "1984"
+                },
+                {
+                    "id": "feeding",
+                    "name": "Тип наддува",
+                    "value": "турбонаддув"
+                },
+                {
+                    "id": "max_power",
+                    "name": "Максимальная мощность, л.с./кВт при об/мин",
+                    "units": "л.с./кВт при об/мин",
+                    "value": "150/110 при 6000"
+                },
+                {
+                    "id": "moment",
+                    "name": "Максимальный крутящий момент, Н*м при об/мин",
+                    "units": "Н*м при об/мин",
+                    "value": "270 при 3900"
+                },
+                {
+                    "id": "cylinders_order",
+                    "name": "Расположение цилиндров",
+                    "value": "рядное"
+                },
+                {
+                    "id": "cylinders_value",
+                    "name": "Количество цилиндров",
+                    "value": "4"
+                },
+                {
+                    "id": "valves",
+                    "name": "Число клапанов на цилиндр",
+                    "value": "4"
+                },
+                {
+                    "id": "engine_feeding",
+                    "name": "Система питания двигателя",
+                    "value": "непосредственный впрыск (прямой)"
+                },
+                {
+                    "id": "compression",
+                    "name": "Степень сжатия",
+                    "value": "11.7"
+                },
+                {
+                    "id": "diameter",
+                    "name": "Диаметр цилиндра и ход поршня, мм",
+                    "units": "мм",
+                    "value": "82.5x92.8"
+                }
+            ]
+        }
+    ]
+}

@@ -5,6 +5,7 @@ import (
 	app "dubai-auto/internal"
 	"dubai-auto/internal/config"
 	"dubai-auto/internal/storage/postgres"
+	"dubai-auto/internal/utils"
 	"dubai-auto/pkg"
 	"net/http"
 	"os"
@@ -37,7 +38,7 @@ func main() {
 	db := postgres.Init()
 	server := app.InitApp(db, conf)
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
+	utils.ExcelMigrate(db)
 	// utils.InitCron(logger)
 
 	srv := &http.Server{

@@ -10,8 +10,26 @@ type Brands struct {
 }
 
 type GetBrandsResponse struct {
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Logo     string `json:"logo"`
+	CarCount int    `json:"car_count"`
+}
+
+type GetFilterBrandsResponse struct {
 	PopularBrands []Brands `json:"popular_brands"`
 	AllBrands     []Brands `json:"all_brands"`
+}
+
+type Region struct {
+	ID   int     `json:"id"`
+	Name *string `json:"name"`
+}
+
+type GetCitiesResponse struct {
+	ID      int      `json:"id"`
+	Name    *string  `json:"name"`
+	Regions []Region `json:"regions"`
 }
 
 type GetModificationsResponse struct {
@@ -25,9 +43,25 @@ type Model struct {
 	CarCount int    `json:"car_count"`
 }
 
-type GetModelsResponse struct {
+type GetFilterModelsResponse struct {
 	PopularModels []Model `json:"popular_models"`
 	AllModels     []Model `json:"all_models"`
+}
+
+type GetYearsResponse struct {
+	StartYear *int `json:"start_year"`
+	EndYear   *int `json:"end_year"`
+}
+
+type Modifications struct {
+	EngineID       *int    `json:"engine_id"`
+	Engine         *string `json:"engine"`
+	FuelTypeID     *int    `json:"fuel_type_id"`
+	FuelType       *string `json:"fuel_type"`
+	DrivetrainID   *int    `json:"drivetrain_id"`
+	Drivetrain     *string `json:"drivetrain"`
+	TransmissionID *int    `json:"transmission_id"`
+	Transmission   *string `json:"transmission"`
 }
 
 type Generation struct {
@@ -36,10 +70,7 @@ type Generation struct {
 	Image         string          `json:"image"`
 	StartYear     int             `json:"start_year"`
 	EndYear       int             `json:"end_year"`
-	FuelTypes     []*FuelType     `json:"fuel_types"`
-	BodyTypes     []*BodyType     `json:"body_types"`
-	Drivetrains   []*Drivetrain   `json:"drivetrains"`
-	Transmissions []*Transmission `json:"transmissions"`
+	Modifications []Modifications `json:"modifications"`
 }
 
 type BodyType struct {

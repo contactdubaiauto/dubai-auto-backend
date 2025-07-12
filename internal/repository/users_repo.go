@@ -205,8 +205,31 @@ func (r *UserRepository) Sell(ctx *context.Context, carID, userID *int) error {
 	return err
 }
 
-func (r *UserRepository) GetBrands(ctx *context.Context, text string) (model.GetBrandsResponse, error) {
-	var brand model.GetBrandsResponse
+func (r *UserRepository) GetBrands(ctx *context.Context, text string) ([]*model.GetBrandsResponse, error) {
+	q := `
+		SELECT id, name, logo, car_count FROM brands WHERE name ILIKE '%' || $1 || '%'
+	`
+	rows, err := r.db.Query(*ctx, q, text)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	var brands = make([]*model.GetBrandsResponse, 0)
+
+	for rows.Next() {
+		var brand model.GetBrandsResponse
+		if err := rows.Scan(&brand.ID, &brand.Name, &brand.Logo, &brand.CarCount); err != nil {
+			return nil, err
+		}
+		brands = append(brands, &brand)
+	}
+	return brands, err
+}
+
+func (r *UserRepository) GetFilterBrands(ctx *context.Context, text string) (model.GetFilterBrandsResponse, error) {
+	var brand model.GetFilterBrandsResponse
 	q := `
 		with popular as (
 			SELECT 
@@ -240,18 +263,45 @@ func (r *UserRepository) GetBrands(ctx *context.Context, text string) (model.Get
 		left join all_brands as ab on true;
 
 	`
+	err := r.db.QueryRow(*ctx, q, text).Scan(&brand.PopularBrands, &brand.AllBrands)
+
+	return brand, err
+}
+
+func (r *UserRepository) GetCities(ctx *context.Context, text string) ([]model.GetCitiesResponse, error) {
+	var cities = make([]model.GetCitiesResponse, 0)
+	var city model.GetCitiesResponse
+	q := `
+		select 
+			c.id, 
+			c.name,
+			json_agg(
+				json_build_object(
+					'id', r.id,
+					'name', r.name
+				)
+			) as regions
+		from cities c
+		left join regions r on r.city_id = c.id
+		where c.name ILIKE '%' || $1 || '%'
+		group by c.id, c.name;
+	`
 	rows, err := r.db.Query(*ctx, q, text)
 
 	if err != nil {
-		return brand, err
+		return cities, err
 	}
-
 	defer rows.Close()
 
-	if err := rows.Scan(&brand.PopularBrands, &brand.AllBrands); err != nil {
-		return brand, err
+	for rows.Next() {
+		err := rows.Scan(&city.ID, &city.Name, &city.Regions)
+
+		if err != nil {
+			return cities, err
+		}
+		cities = append(cities, city)
 	}
-	return brand, err
+	return cities, err
 }
 
 func (r *UserRepository) GetModifications(ctx *context.Context, generationID, bodyTypeID, fuelTypeID, drivetrainID, transmissionID int) ([]*model.GetModificationsResponse, error) {
@@ -279,8 +329,33 @@ func (r *UserRepository) GetModifications(ctx *context.Context, generationID, bo
 	return modifications, err
 }
 
-func (r *UserRepository) GetModelsByBrandID(ctx *context.Context, brandID int64, text string) (model.GetModelsResponse, error) {
-	responseModel := model.GetModelsResponse{}
+func (r *UserRepository) GetModelsByBrandID(ctx *context.Context, brandID int64, text string) ([]model.Model, error) {
+	q := `
+			SELECT id, name FROM models WHERE brand_id = $1 AND name ILIKE '%' || $2 || '%'
+		`
+	rows, err := r.db.Query(*ctx, q, brandID, text)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	models := make([]model.Model, 0)
+
+	for rows.Next() {
+		var model model.Model
+
+		if err := rows.Scan(&model.ID, &model.Name); err != nil {
+			return nil, err
+		}
+		models = append(models, model)
+	}
+
+	return models, err
+}
+
+func (r *UserRepository) GetFilterModelsByBrandID(ctx *context.Context, brandID int64, text string) (model.GetFilterModelsResponse, error) {
+	responseModel := model.GetFilterModelsResponse{}
 	q := `
 		with popular as (
 			SELECT 
@@ -320,79 +395,52 @@ func (r *UserRepository) GetModelsByBrandID(ctx *context.Context, brandID int64,
 	return responseModel, err
 }
 
-func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID int64) ([]model.Generation, error) {
+func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID int, wheel bool, year, bodyTypeID string) ([]model.Generation, error) {
 	q := `
-		with fts as (
-			select
-				gft.generation_id,
+		with gms as (
+			select 
 				json_agg(
 					json_build_object(
-						'id', ft.id,
-						'name', ft.name
+						'engine_id', es.id, 
+						'engine', es.value, 
+						'fuel_type_id', fts.id, 
+						'fuel_type', fts.name, 
+						'drivetrain_id', ds.id, 
+						'drivetrain', ds.name, 
+						'transmission_id', ts.id, 
+						'transmission', ts.name
 					)
-				) as fuel_types
-			from generation_fuel_types gft
-			left join fuel_types ft on gft.fuel_type_id = ft.id
-			group by gft.generation_id
-		), bts as (
-			select
-				gbts.generation_id,
-				json_agg(
-					json_build_object(
-						'id', bts.id,
-						'name', bts.name,
-						'image', bts.image
-					)
-				) as body_types
-			from generation_body_types gbts 
-			left join body_types bts on gbts.body_type_id = bts.id
-			group by gbts.generation_id
-		), dts as (
-			select
-				gds.generation_id,
-				json_agg(
-					json_build_object(
-						'id', ds.id,
-						'name', ds.name
-					)
-				) as drivetrains
-			from generation_drivetrains gds
-			left join drivetrains ds on gds.drivetrain_id = ds.id
-			group by gds.generation_id
-		), ts as (
-			select
-				gts.generation_id,
-				json_agg(
-					json_build_object(
-						'id', t.id,
-						'name', t.name
-					)
-				) as transmissions
-			from generation_transmissions gts
-			left join transmissions t on gts.transmission_id = t.id
-			group by gts.generation_id
+				) as modifications,
+				gms.generation_id
+			from generation_modifications gms
+			left join engines es on es.id = gms.engine_id
+			left join fuel_types fts on fts.id = gms.fuel_type_id
+			left join drivetrains ds on ds.id = gms.drivetrain_id
+			left join transmissions ts on ts.id = gms.transmission_id
+			where gms.generation_id = any (
+				select 
+					id 
+				from generations 
+				where 
+					model_id = $1 and start_year <= $2 and end_year >= $2
+					and body_type_id = $3 and wheel = $4
+			)
+			group by gms.generation_id 
 		)
-
-		SELECT 
-			gs.id, 
-			gs.name, 
-			gs.image, 
-			gs.start_year, 
+		select
+			gs.id,
+			gs.name,
+			gs.image,
+			gs.start_year,
 			gs.end_year,
-			fts.fuel_types,
-			bts.body_types,
-			dts.drivetrains,
-			ts.transmissions
-		FROM generations gs
-		left join fts on gs.id = fts.generation_id
-		left join bts on gs.id = bts.generation_id
-		left join dts on gs.id = dts.generation_id
-		left join ts on gs.id = ts.generation_id
-		WHERE gs.model_id = $1;
+			gms.modifications
+		from gms
+		left join generations gs on gs.id = gms.generation_id;
 	`
-	rows, err := r.db.Query(*ctx, q, modelID)
+	rows, err := r.db.Query(*ctx, q, modelID, year, bodyTypeID, wheel)
 
 	if err != nil {
+		fmt.Println("88888: ", err)
 		return nil, err
 	}
 
@@ -401,15 +449,67 @@ func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID i
 
 	for rows.Next() {
 		var generation model.Generation
-		if err := rows.Scan(&generation.ID, &generation.Name,
+		if err = rows.Scan(&generation.ID, &generation.Name,
 			&generation.Image, &generation.StartYear, &generation.EndYear,
-			&generation.FuelTypes, &generation.BodyTypes, &generation.Drivetrains, &generation.Transmissions,
+			&generation.Modifications,
 		); err != nil {
+			fmt.Println("s98dfh: ", err)
 			return nil, err
 		}
 		generations = append(generations, generation)
 	}
 	return generations, err
+}
+
+func (r *UserRepository) GetYearsByModelID(ctx *context.Context, modelID int64, wheel bool) (model.GetYearsResponse, error) {
+	q := `
+		SELECT 
+			MIN(start_year) AS start_year,
+			MAX(end_year) AS end_year
+		FROM 
+			generations
+		WHERE 
+			model_id = $1 and wheel = $2
+	`
+	years := model.GetYearsResponse{}
+	err := r.db.QueryRow(*ctx, q, modelID, wheel).Scan(&years.StartYear, &years.EndYear)
+
+	return years, err
+}
+
+func (r *UserRepository) GetBodysByModelID(ctx *context.Context, modelID int, wheel bool, year string) ([]model.BodyType, error) {
+	q := `
+		SELECT DISTINCT ON (bts.id)
+			bts.id,
+			bts.name,
+			bts.image
+		FROM generations gs
+		LEFT JOIN body_types bts ON bts.id = gs.body_type_id
+		WHERE gs.start_year <= $1 AND gs.end_year >= $1 
+			and gs.model_id = $2 and gs.wheel = $3;
+
+	`
+
+	rows, err := r.db.Query(*ctx, q, year, modelID, wheel)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	bodyTypes := make([]model.BodyType, 0)
+
+	for rows.Next() {
+		var bodyType model.BodyType
+
+		if err := rows.Scan(&bodyType.ID, &bodyType.Name, &bodyType.Image); err != nil {
+			return nil, err
+		}
+
+		bodyTypes = append(bodyTypes, bodyType)
+	}
+
+	return bodyTypes, err
 }
 
 func (r *UserRepository) GetBodyTypes(ctx *context.Context) ([]model.BodyType, error) {
