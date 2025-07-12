@@ -47,7 +47,7 @@ func (r *UserRepository) GetMyCars(ctx *context.Context, userID *int) ([]model.G
 			vs.created_at,
 			vs.updated_at,
 			images,
-			vs.phone_number, 
+			vs.phone_numbers, 
 			vs.view_count
 		from vehicles vs
 		left join colors icls on icls.id = vs.interior_color_id
@@ -83,7 +83,7 @@ func (r *UserRepository) GetMyCars(ctx *context.Context, userID *int) ([]model.G
 			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.InteriorColor, &car.Model, &car.Transmission, &car.Engine,
 			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
 			&car.Exchange, &car.Credit, &car.New, &car.CreditPrice, &car.Status, &car.CreatedAt,
-			&car.UpdatedAt, &car.Images, &car.PhoneNumber, &car.ViewCount,
+			&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.ViewCount,
 		); err != nil {
 			return cars, err
 		}
@@ -120,7 +120,7 @@ func (r *UserRepository) OnSale(ctx *context.Context, userID *int) ([]model.GetC
 			vs.created_at,
 			vs.updated_at,
 			images,
-			vs.phone_number, 
+			vs.phone_numbers, 
 			vs.view_count, 
 			true as my_car
 		from vehicles vs
@@ -157,7 +157,7 @@ func (r *UserRepository) OnSale(ctx *context.Context, userID *int) ([]model.GetC
 			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.InteriorColor, &car.Model, &car.Transmission, &car.Engine,
 			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
 			&car.Exchange, &car.Credit, &car.New, &car.CreditPrice, &car.Status, &car.CreatedAt,
-			&car.UpdatedAt, &car.Images, &car.PhoneNumber, &car.ViewCount, &car.MyCar,
+			&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
 		); err != nil {
 			return cars, err
 		}
@@ -789,7 +789,7 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 			vs.created_at,
 			vs.updated_at,
 			images,
-			vs.phone_number,
+			vs.phone_numbers,
 			CASE
 				WHEN vs.user_id = $1 THEN TRUE
 				ELSE FALSE
@@ -832,7 +832,7 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.InteriorColor, &car.Model, &car.Transmission, &car.Engine,
 			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
 			&car.Exchange, &car.Credit, &car.New, &car.CreditPrice, &car.Status, &car.CreatedAt,
-			&car.UpdatedAt, &car.Images, &car.PhoneNumber, &car.MyCar,
+			&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.MyCar,
 		); err != nil {
 			return cars, err
 		}
@@ -871,7 +871,7 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (mo
 			vs.created_at,
 			vs.updated_at,
 			images,
-			vs.phone_number,
+			vs.phone_numbers,
 			CASE
 				WHEN vs.user_id = $2 THEN TRUE
 				ELSE FALSE
@@ -902,7 +902,7 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (mo
 		&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.InteriorColor, &car.Model, &car.Transmission, &car.Engine,
 		&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
 		&car.Exchange, &car.Credit, &car.New, &car.CreditPrice, &car.Status, &car.CreatedAt,
-		&car.UpdatedAt, &car.Images, &car.PhoneNumber, &car.MyCar,
+		&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.MyCar,
 	)
 
 	return car, err

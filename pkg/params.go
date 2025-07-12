@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -46,6 +47,15 @@ func BuildParams(v interface{}) (keys []string, values []string, args []interfac
 			return nil, nil, nil
 		}
 
+		// Handle arrays for PostgreSQL
+		if reflect.TypeOf(value).Kind() == reflect.Slice {
+			// Skip empty slices
+			sliceValue := reflect.ValueOf(value)
+			if sliceValue.Len() == 0 {
+				continue
+			}
+		}
+
 		keys = append(keys, jsonTag)
 		values = append(values, "$"+strconv.Itoa(placeHolder))
 		placeHolder++
@@ -83,4 +93,38 @@ func QueryParamToIntArray(param string) ([]int, error) {
 		result = append(result, n)
 	}
 	return result, nil
+}
+
+// ToPostgreSQLArray converts a Go slice to a format suitable for PostgreSQL array insertion
+// This is useful when you need to manually construct array values for SQL queries
+func ToPostgreSQLArray(slice interface{}) string {
+	if slice == nil {
+		return "NULL"
+	}
+
+	val := reflect.ValueOf(slice)
+	if val.Kind() != reflect.Slice {
+		return "NULL"
+	}
+
+	if val.Len() == 0 {
+		return "ARRAY[]"
+	}
+
+	var elements []string
+	for i := 0; i < val.Len(); i++ {
+		element := val.Index(i).Interface()
+		switch v := element.(type) {
+		case string:
+			elements = append(elements, "'"+strings.ReplaceAll(v, "'", "''")+"'")
+		case int, int32, int64:
+			elements = append(elements, strconv.FormatInt(reflect.ValueOf(v).Int(), 10))
+		case float32, float64:
+			elements = append(elements, strconv.FormatFloat(reflect.ValueOf(v).Float(), 'f', -1, 64))
+		default:
+			elements = append(elements, "'"+strings.ReplaceAll(fmt.Sprintf("%v", v), "'", "''")+"'")
+		}
+	}
+
+	return "ARRAY[" + strings.Join(elements, ", ") + "]"
 }

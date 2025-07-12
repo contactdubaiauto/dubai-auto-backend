@@ -508,7 +508,7 @@ GROUP BY gs.id, gs.name, gs.image, gs.start_year, gs.end_year;
 			vs.created_at,
 			vs.updated_at,
 			images,
-			vs.phone_number
+			vs.phone_numbers
 		from vehicles vs
 		left join colors icls on icls.id = vs.interior_color_id
 		left join colors cls on vs.color_id = cls.id

@@ -130,7 +130,7 @@ type GetCarsResponse struct {
 	CreatedAt     *time.Time `json:"created_at"`
 	UpdatedAt     *time.Time `json:"updated_at"`
 	Images        *[]string  `json:"images"`
-	PhoneNumber   *string    `json:"phone_number"`
+	PhoneNumbers  *[]string  `json:"phone_numbers"`
 	ViewCount     int        `json:"view_count"`
 	MyCar         *bool      `json:"my_car"`
 }

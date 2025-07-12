@@ -9,27 +9,27 @@ type User struct {
 
 type CreateCarRequest struct {
 	// new
-	UserID         int    `json:"user_id"`
-	CityID         int    `json:"city_id" binding:"required"`
-	BrandID        int    `json:"brand_id" binding:"required"`
-	ModelID        int    `json:"model_id" binding:"required"`
-	Wheel          bool   `json:"wheel" binding:"required"` // left true, right false
-	TransmissionID int    `json:"transmission_id" binding:"required"`
-	EngineID       int    `json:"engine_id" binding:"required"`
-	DrivetrainID   int    `json:"drivetrain_id" binding:"required"`
-	BodyTypeID     int    `json:"body_type_id" binding:"required"`
-	FuelTypeID     int    `json:"fuel_type_id" binding:"required"`
-	Year           int    `json:"year" binding:"required"`
-	Odometer       int    `json:"odometer" binding:"required"`
-	VinCode        string `json:"vin_code" binding:"required"`
-	PhoneNumber    string `json:"phone_number" binding:"required"`
-	Price          int    `json:"price" binding:"required"`
-	Exchange       bool   `json:"exchange"`
-	New            bool   `json:"new"`
-	Crash          bool   `json:"crash"`
-	ColorID        int    `json:"color_id" binding:"required"`
-	Owners         int    `json:"owners" binding:"required"`
-	TradeIn        int    `json:"trade_in" binding:"required"`
+	UserID         int      `json:"user_id"`
+	CityID         int      `json:"city_id" binding:"required"`
+	BrandID        int      `json:"brand_id" binding:"required"`
+	ModelID        int      `json:"model_id" binding:"required"`
+	Wheel          bool     `json:"wheel" binding:"required"` // left true, right false
+	TransmissionID int      `json:"transmission_id" binding:"required"`
+	EngineID       int      `json:"engine_id" binding:"required"`
+	DrivetrainID   int      `json:"drivetrain_id" binding:"required"`
+	BodyTypeID     int      `json:"body_type_id" binding:"required"`
+	FuelTypeID     int      `json:"fuel_type_id" binding:"required"`
+	Year           int      `json:"year" binding:"required"`
+	Odometer       int      `json:"odometer" binding:"required"`
+	VinCode        string   `json:"vin_code" binding:"required"`
+	PhoneNumbers   []string `json:"phone_numbers" binding:"required"`
+	Price          int      `json:"price" binding:"required"`
+	Exchange       bool     `json:"exchange"`
+	New            bool     `json:"new"`
+	Crash          bool     `json:"crash"`
+	ColorID        int      `json:"color_id" binding:"required"`
+	Owners         int      `json:"owners" binding:"required"`
+	TradeIn        int      `json:"trade_in" binding:"required"`
 
 	//
 	// OwnershipTypeId int    `json:"ownership_type_id"`

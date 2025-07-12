@@ -422,11 +422,11 @@ create table vehicles (
     "crash" boolean not null default false,
     "odometer" int not null default 0,
     "vin_code" varchar(255) not null,
-    "phone_number" varchar(255) not null,
+    "phone_numbers" varchar(255)[] not null,
     "price" int not null,
     "new" boolean not null default false,
     "color_id" int not null,
-    "trade_id" int not null default 1, -- 1-v nalichi, 2-v put, 3-pod zakaz
+    "trade_in" int not null default 1, -- 1-v nalichi, 2-v put, 3-pod zakaz
     -- "generation_id" int,
     -- "announcement_type" int not null default 0,
     -- "modification_id" int,
@@ -502,62 +502,62 @@ create table vehicles (
 
 insert into vehicles (
     user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, 
-    year, exchange, credit, wheel, odometer, vin_code, phone_number, price, new,
-    status, crash, drivetrain_id,
+    year, exchange, credit, wheel, odometer, vin_code, phone_numbers, price, new,
+    status, crash, drivetrain_id, trade_in,
     color_id, view_count, region_id, transmission_id, engine_id
 )  values 
 (
     1, 1, 1, 1, 1, 1, 1, 
-    2020, false, true, false, 74839782, '238748927', '23487827397', 39999, true, 
-    3, true, 2,
+    2020, false, true, false, 74839782, '238748927', ARRAY['23487827397'], 39999, true, 
+    3, true, 2, 2,
     1, 392, 1, 1, 1
 ),
 (
    1, 1, 1, 2, 2, 2, 1, 
-   2019, true, false, true, 273854, '26873900987', '23748798273942', 7828973, true,
-    3, true, 3,
+   2019, true, false, true, 273854, '26873900987', ARRAY['23748798273942'], 7828973, true,
+    3, true, 3, 1,
     2, 234, 2, 2, 2
 ),
 (
     2, 1, 1, 3, 2, 2, 1, 
-    2010, false, false, false, 8373, '98987987987', '89877683783', 982739488, true,
-    3, true, 3,
+    2010, false, false, false, 8373, '98987987987', ARRAY['89877683783'], 982739488, true,
+    3, true, 3, 2,
     2, 487, 3, 3, 3
 ),
 (
     1, 1, 1, 1, 2, 2, 1, 
-    2006, true, false, false, 2784, '98987987987', '89877683783', 982739488, true,
-    3, true, 3,
+    2006, true, false, false, 2784, '98987987987', ARRAY['89877683783'], 982739488, true,
+    3, true, 3, 1,
     2, 438, 4, 1, 4
 ),
 (
     2, 2, 1, 1, 2, 2, 1, 
-    2022, false, true, false, 2739, '98987987987', '89877683783', 982739488, true,
-    3, true, 3,
+    2022, false, true, false, 2739, '98987987987', ARRAY['89877683783'], 982739488, true,
+    3, true, 3, 1,
     2, 3, 5, 2, 5
 ),
 (
     1, 2, 1, 2, 2, 2, 1, 
-    2021, true, false, true, 283847, '0987654321', '01234567890', 38742973, true,
-    3, true, 3,
+    2021, true, false, true, 283847, '0987654321', ARRAY['01234567890'], 38742973, true,
+    3, true, 3, 1,
     2, 45, 6, 3, 6
 ),
 (
     1, 1, 1, 1, 3, 3, 1, 
-    2022, true, false, false, 2837959, '1122334455', '01234567890', 3485, true,
-    2, true, 1,
+    2022, true, false, false, 2837959, '1122334455', ARRAY['01234567890'], 3485, true,
+    2, true, 1, 1,
     1, 12, 7, 1, 7
 ),
 (
     2, 1, 1, 2, 3, 3, 1, 
-    2022, false, false, false, 2348859, '1122334455', '01234567890', 1289397, true,
-    2, true, 1,
+    2022, false, false, false, 2348859, '1122334455', ARRAY['01234567890'], 1289397, true,
+    2, true, 1, 2,
     3, 8, 8, 2, 8
 ),
 (
     2, 1, 1, 2, 3, 3, 1, 
-    2022, false, true, false, 234788, '1122334455', '01234567890', 23487, true,
-    3, true, 1,
+    2022, false, true, false, 234788, '1122334455', ARRAY['01234567890'], 23487, true,
+    3, true, 1, 2,
     3, 97, 9, 3, 9
 );
 -- 1-pending, 2-not sale (my cars), 3-on sale,
