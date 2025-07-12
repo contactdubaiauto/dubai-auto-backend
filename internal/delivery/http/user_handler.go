@@ -195,13 +195,13 @@ func (h *UserHandler) Sell(c *gin.Context) {
 // @Tags         users
 // @Produce      json
 // @Param        text  query     string  false  "Filter brands by text"
-// @Success      200   {object}  model.GetBrandsResponse
+// @Success      200   {array}  model.GetBrandsResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
 // @Failure		 403  {object} pkg.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
-// @Router       /api/v1/users/filter-brands [get]
+// @Router       /api/v1/users/brands [get]
 func (h *UserHandler) GetBrands(c *gin.Context) {
 	text := c.Query("text")
 	ctx := c.Request.Context()
@@ -221,7 +221,7 @@ func (h *UserHandler) GetBrands(c *gin.Context) {
 // @Failure		 403  {object} pkg.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
-// @Router       /api/v1/users/brands [get]
+// @Router       /api/v1/users/filter-brands [get]
 func (h *UserHandler) GetFilterBrands(c *gin.Context) {
 	text := c.Query("text")
 	ctx := c.Request.Context()
@@ -758,6 +758,38 @@ func (h *UserHandler) CreateCar(c *gin.Context) {
 	}
 
 	data := h.UserService.CreateCar(&ctx, &car)
+	utils.GinResponse(c, data)
+}
+
+// UpdateCar godoc
+// @Summary      Update a car
+// @Description  Updates an existing car for the authenticated user
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Security 	 BearerAuth
+// @Param        car  body      model.UpdateCarRequest  true  "Car data"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  pkg.ErrorResponse
+// @Failure		 403  {object}  pkg.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/cars [put]
+func (h *UserHandler) UpdateCar(c *gin.Context) {
+	var car model.UpdateCarRequest
+	userID := c.MustGet("id").(int)
+	ctx := c.Request.Context()
+
+	if err := c.ShouldBindJSON(&car); err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data" + err.Error()),
+		})
+		return
+	}
+
+	data := h.UserService.UpdateCar(&ctx, &car, userID)
 	utils.GinResponse(c, data)
 }
 

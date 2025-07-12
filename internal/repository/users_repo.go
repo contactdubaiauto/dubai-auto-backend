@@ -920,6 +920,48 @@ func (r *UserRepository) CreateCar(ctx *context.Context, car *model.CreateCarReq
 	return id, err
 }
 
+func (r *UserRepository) UpdateCar(ctx *context.Context, car *model.UpdateCarRequest, userID int) error {
+	// First check if the car belongs to the user
+	var exists bool
+	checkQuery := `SELECT EXISTS(SELECT 1 FROM vehicles WHERE id = $1 AND user_id = $2)`
+	err := r.db.QueryRow(*ctx, checkQuery, car.ID, userID).Scan(&exists)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return fmt.Errorf("car not found or access denied")
+	}
+
+	keys, _, args := pkg.BuildParams(car)
+
+	var updateFields []string
+	var updateArgs []interface{}
+	updateArgs = append(updateArgs, car.ID)
+
+	paramIndex := 2
+	for i, key := range keys {
+		if key != "id" && key != "user_id" {
+			updateFields = append(updateFields, fmt.Sprintf("%s = $%d", key, paramIndex))
+			updateArgs = append(updateArgs, args[i])
+			paramIndex++
+		}
+	}
+
+	if len(updateFields) == 0 {
+		return fmt.Errorf("no valid fields to update")
+	}
+
+	q := `
+		UPDATE vehicles 
+		SET ` + strings.Join(updateFields, ", ") + `, updated_at = NOW()
+		WHERE id = $1 AND user_id = $` + fmt.Sprintf("%d", paramIndex)
+
+	updateArgs = append(updateArgs, userID)
+
+	_, err = r.db.Exec(*ctx, q, updateArgs...)
+	return err
+}
+
 func (r *UserRepository) CreateCarImages(ctx *context.Context, carID int, images []string) error {
 
 	if len(images) == 0 {

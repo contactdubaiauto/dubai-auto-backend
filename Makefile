@@ -13,7 +13,7 @@ deploy:
 	@scp ./docs/swagger.json ubuntu@95.85.126.220:/var/www/docs/
 	@scp ./docs/swagger.yaml ubuntu@95.85.126.220:/var/www/docs/
 	
-	@scp -r ./images ubuntu@95.85.126.220:/var/www
+	# @scp -r ./images ubuntu@95.85.126.220:/var/www
 	# @scp ./.env ubuntu@95.85.126.220:/var/www/
 	
 	@echo "Starting remote service..."

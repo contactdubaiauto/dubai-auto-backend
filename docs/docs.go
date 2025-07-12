@@ -346,7 +346,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.GetFilterBrandsResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.GetBrandsResponse"
+                            }
                         }
                     },
                     "400": {
@@ -936,6 +939,73 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/model.GetCarsResponse"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Updates an existing car for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update a car",
+                "parameters": [
+                    {
+                        "description": "Car data",
+                        "name": "car",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UpdateCarRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Success"
                         }
                     },
                     "400": {
@@ -1733,7 +1803,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.GetBrandsResponse"
+                            "$ref": "#/definitions/model.GetFilterBrandsResponse"
                         }
                     },
                     "400": {
@@ -2204,6 +2274,10 @@ const docTemplate = `{
                 "transmission_id": {
                     "type": "integer"
                 },
+                "user_id": {
+                    "description": "new",
+                    "type": "integer"
+                },
                 "vin_code": {
                     "type": "string"
                 },
@@ -2557,6 +2631,98 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "model.UpdateCarRequest": {
+            "type": "object",
+            "required": [
+                "body_type_id",
+                "brand_id",
+                "city_id",
+                "color_id",
+                "drivetrain_id",
+                "engine_id",
+                "fuel_type_id",
+                "id",
+                "model_id",
+                "odometer",
+                "owners",
+                "phone_numbers",
+                "price",
+                "trade_in",
+                "transmission_id",
+                "vin_code",
+                "wheel",
+                "year"
+            ],
+            "properties": {
+                "body_type_id": {
+                    "type": "integer"
+                },
+                "brand_id": {
+                    "type": "integer"
+                },
+                "city_id": {
+                    "type": "integer"
+                },
+                "color_id": {
+                    "type": "integer"
+                },
+                "crash": {
+                    "type": "boolean"
+                },
+                "drivetrain_id": {
+                    "type": "integer"
+                },
+                "engine_id": {
+                    "type": "integer"
+                },
+                "exchange": {
+                    "type": "boolean"
+                },
+                "fuel_type_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "model_id": {
+                    "type": "integer"
+                },
+                "new": {
+                    "type": "boolean"
+                },
+                "odometer": {
+                    "type": "integer"
+                },
+                "owners": {
+                    "type": "integer"
+                },
+                "phone_numbers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "trade_in": {
+                    "type": "integer"
+                },
+                "transmission_id": {
+                    "type": "integer"
+                },
+                "vin_code": {
+                    "type": "string"
+                },
+                "wheel": {
+                    "description": "left true, right false",
+                    "type": "boolean"
+                },
+                "year": {
+                    "type": "integer"
                 }
             }
         },

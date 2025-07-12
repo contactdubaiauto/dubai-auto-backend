@@ -67,6 +67,9 @@ definitions:
         type: integer
       transmission_id:
         type: integer
+      user_id:
+        description: new
+        type: integer
       vin_code:
         type: string
       wheel:
@@ -315,6 +318,73 @@ definitions:
         type: integer
       name:
         type: string
+    type: object
+  model.UpdateCarRequest:
+    properties:
+      body_type_id:
+        type: integer
+      brand_id:
+        type: integer
+      city_id:
+        type: integer
+      color_id:
+        type: integer
+      crash:
+        type: boolean
+      drivetrain_id:
+        type: integer
+      engine_id:
+        type: integer
+      exchange:
+        type: boolean
+      fuel_type_id:
+        type: integer
+      id:
+        type: integer
+      model_id:
+        type: integer
+      new:
+        type: boolean
+      odometer:
+        type: integer
+      owners:
+        type: integer
+      phone_numbers:
+        items:
+          type: string
+        type: array
+      price:
+        type: integer
+      trade_in:
+        type: integer
+      transmission_id:
+        type: integer
+      vin_code:
+        type: string
+      wheel:
+        description: left true, right false
+        type: boolean
+      year:
+        type: integer
+    required:
+    - body_type_id
+    - brand_id
+    - city_id
+    - color_id
+    - drivetrain_id
+    - engine_id
+    - fuel_type_id
+    - id
+    - model_id
+    - odometer
+    - owners
+    - phone_numbers
+    - price
+    - trade_in
+    - transmission_id
+    - vin_code
+    - wheel
+    - year
     type: object
   model.UserEmailConfirmationRequest:
     properties:
@@ -580,7 +650,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.GetFilterBrandsResponse'
+            items:
+              $ref: '#/definitions/model.GetBrandsResponse'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -1046,6 +1118,49 @@ paths:
       summary: Create a car
       tags:
       - users
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing car for the authenticated user
+      parameters:
+      - description: Car data
+        in: body
+        name: car
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateCarRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a car
+      tags:
+      - users
   /api/v1/users/cars/{car_id}:
     get:
       description: Returns a car by its ID
@@ -1497,7 +1612,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.GetBrandsResponse'
+            $ref: '#/definitions/model.GetFilterBrandsResponse'
         "400":
           description: Bad Request
           schema:

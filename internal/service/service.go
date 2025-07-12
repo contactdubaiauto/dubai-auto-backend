@@ -283,6 +283,21 @@ func (s *UserService) CreateCar(ctx *context.Context, car *model.CreateCarReques
 	}
 }
 
+func (s *UserService) UpdateCar(ctx *context.Context, car *model.UpdateCarRequest, userID int) *model.Response {
+	err := s.UserRepository.UpdateCar(ctx, car, userID)
+
+	if err != nil {
+		return &model.Response{
+			Status: 400,
+			Error:  err,
+		}
+	}
+
+	return &model.Response{
+		Data: model.Success{Message: "Car updated successfully"},
+	}
+}
+
 func (s *UserService) CreateCarImages(ctx *context.Context, carID int, images []string) *model.Response {
 	err := s.UserRepository.CreateCarImages(ctx, carID, images)
 
