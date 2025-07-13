@@ -30,6 +30,8 @@ func SetupUserRoutes(r *gin.RouterGroup, db *pgxpool.Pool) {
 		r.GET("/profile/my-cars", pkg.TokenGuard, userHandler.GetMyCars)
 		r.GET("/profile/on-sale", pkg.TokenGuard, userHandler.OnSale)
 
+		r.GET("/profile", pkg.TokenGuard, userHandler.GetProfile)
+		r.PUT("/profile", pkg.TokenGuard, userHandler.UpdateProfile)
 		r.GET("/brands", userHandler.GetBrands)
 		r.GET("/filter-brands", userHandler.GetFilterBrands)
 		r.GET("/cities", userHandler.GetCities)

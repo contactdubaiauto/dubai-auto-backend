@@ -209,6 +209,59 @@ func (h *UserHandler) GetBrands(c *gin.Context) {
 	utils.GinResponse(c, data)
 }
 
+// GetProfile godoc
+// @Summary      Get user profile
+// @Description  Returns a list of user profile
+// @Tags         users
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200   {object}  model.GetProfileResponse
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/users/profile [get]
+func (h *UserHandler) GetProfile(c *gin.Context) {
+	ctx := c.Request.Context()
+	userID := c.MustGet("id").(int)
+
+	data := h.UserService.GetProfile(&ctx, userID)
+	utils.GinResponse(c, data)
+}
+
+// UpdateProfile godoc
+// @Summary      Update user profile
+// @Description  Updates the authenticated user's profile information
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        profile  body      model.UpdateProfileRequest  true  "Profile data"
+// @Success      200      {object}  model.Success
+// @Failure      400      {object}  model.ResultMessage
+// @Failure      401      {object}  pkg.ErrorResponse
+// @Failure		 403      {object}  pkg.ErrorResponse
+// @Failure      404      {object}  model.ResultMessage
+// @Failure      500      {object}  model.ResultMessage
+// @Router       /api/v1/users/profile [put]
+func (h *UserHandler) UpdateProfile(c *gin.Context) {
+	var profile model.UpdateProfileRequest
+	userID := c.MustGet("id").(int)
+	ctx := c.Request.Context()
+
+	if err := c.ShouldBindJSON(&profile); err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+		return
+	}
+
+	data := h.UserService.UpdateProfile(&ctx, userID, &profile)
+	utils.GinResponse(c, data)
+}
+
 // GetFilterBrands godoc
 // @Summary      Get car brands
 // @Description  Returns a list of car brands, optionally filtered by text

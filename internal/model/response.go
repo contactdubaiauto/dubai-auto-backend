@@ -16,6 +16,18 @@ type GetBrandsResponse struct {
 	CarCount int    `json:"car_count"`
 }
 
+type GetProfileResponse struct {
+	ID                int        `json:"id"`
+	Email             *string    `json:"email"`
+	Phone             *string    `json:"phone"`
+	DrivingExperience *int       `json:"driving_experience"`
+	Notification      *bool      `json:"notification"`
+	Username          *string    `json:"username"`
+	Google            *string    `json:"google"`
+	Birthday          *time.Time `json:"birthday"`
+	AboutMe           *string    `json:"about_me"`
+}
+
 type GetFilterBrandsResponse struct {
 	PopularBrands []Brands `json:"popular_brands"`
 	AllBrands     []Brands `json:"all_brands"`

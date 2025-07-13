@@ -31,7 +31,6 @@ drop table if exists ownership_types;
 
 create table users (
     "id" serial primary key,
-    "username" varchar(100) not null,
     "email" varchar(100),
     "role_id" int not null default 1,
     "password" varchar(100) not null,
@@ -42,21 +41,34 @@ create table users (
     unique("phone")
 );
 
-insert into users (username, email, password, phone, created_at) 
-    values ('user', 'user@gmail.com', '$2a$10$Cya9x0xSJSnRknBmJpW.Bu8ukZpVTqzwgrQgAYNPXdrX2HYGRk33W', '01234567890', now()); -- password: 12345678
+insert into users (email, password, phone, created_at) 
+    values ('user@gmail.com', '$2a$10$Cya9x0xSJSnRknBmJpW.Bu8ukZpVTqzwgrQgAYNPXdrX2HYGRk33W', '01234567890', now()); -- password: 12345678
 
-insert into users (username, email, password, phone, created_at) 
-    values ('user2', 'user2@gmail.com', '$2a$10$Cya9x0xSJSnRknBmJpW.Bu8ukZpVTqzwgrQgAYNPXdrX2HYGRk33W', '0111222222', now()); -- password: 12345678
+insert into users (email, password, phone, created_at) 
+    values ('user2@gmail.com', '$2a$10$Cya9x0xSJSnRknBmJpW.Bu8ukZpVTqzwgrQgAYNPXdrX2HYGRk33W', '0111222222', now()); -- password: 12345678
 
 create table profiles (
     "id" serial primary key, 
     "user_id" int not null,
+    "driving_experience" int,
     "notification" boolean default false,
+    "username" varchar(100) not null,
+    "google" varchar(200),
+    "birthday" date,
+    "about_me" varchar(300),
     "last_active_date" timestamp default now(),
     "created_at" timestamp default now(),
     constraint profiles_user_id_fk 
-    foreign key (user_id) references users(id) on delete cascade on update cascade
+        foreign key (user_id) 
+            references users(id) 
+                on delete cascade 
+                on update cascade
 );
+insert into profiles(
+    user_id, username, driving_experience, notification, google, birthday, about_me
+)values
+( 1, 'user1', 3, false, 'user1@gmail.com', '2025-04-14', 'im a f1 driver with 3 years of experiences'),
+( 2, 'user2', 2, true, 'user2@gmail.com', '2025-04-14', 'im a truck driver with 2 years of experiences');
 
 create table admins (
     "id" serial primary key,

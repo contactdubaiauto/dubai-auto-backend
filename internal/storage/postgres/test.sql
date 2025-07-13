@@ -626,3 +626,17 @@ select
 from gms
 left join generations gs on gs.id = gms.generation_id;
 
+
+select 
+    us.id,
+    us.email,
+    us.phone,
+    ps.driving_experience,
+    ps.notification,
+    ps.username,
+    ps.google,
+    ps.birthday,
+    ps.about_me
+from users us
+left join profiles as ps on ps.user_id = us.id
+where us.id = 1;

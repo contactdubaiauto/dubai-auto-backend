@@ -223,6 +223,65 @@ func (r *UserRepository) GetBrands(ctx *context.Context, text string) ([]*model.
 	return brands, err
 }
 
+func (r *UserRepository) GetProfile(ctx *context.Context, userID int) (model.GetProfileResponse, error) {
+	q := `
+		select 
+			us.id,
+			us.email,
+			us.phone,
+			ps.driving_experience,
+			ps.notification,
+			ps.username,
+			ps.google,
+			ps.birthday,
+			ps.about_me
+		from users us
+		left join profiles as ps on ps.user_id = us.id
+		where us.id = $1;
+
+	`
+	var pf model.GetProfileResponse
+	err := r.db.QueryRow(*ctx, q, userID).Scan(&pf.ID, &pf.Email, &pf.Phone,
+		&pf.DrivingExperience, &pf.Notification, &pf.Username, &pf.Google, &pf.Birthday, &pf.AboutMe)
+
+	return pf, err
+}
+
+func (r *UserRepository) UpdateProfile(ctx *context.Context, userID int, profile *model.UpdateProfileRequest) error {
+	// Parse birthday string to time.Time if it's not empty
+	// var birthdayTime *time.Time
+	// if profile.Birthday != "" {
+	// 	parsedTime, err := time.Parse("2006-01-02", profile.Birthday)
+	// 	if err != nil {
+	// 		return fmt.Errorf("invalid birthday format: %v", err)
+	// 	}
+	// 	birthdayTime = &parsedTime
+	// }
+
+	q := `
+		UPDATE profiles 
+		SET 
+			driving_experience = $1,
+			notification = $2,
+			username = $3,
+			google = $4,
+			birthday = $5,
+			about_me = $6,
+			last_active_date = NOW()
+		WHERE user_id = $7
+	`
+	_, err := r.db.Exec(*ctx, q,
+		profile.DrivingExperience,
+		profile.Notification,
+		profile.Username,
+		profile.Google,
+		profile.Birthday,
+		profile.AboutMe,
+		userID)
+
+	return err
+}
+
 func (r *UserRepository) GetFilterBrands(ctx *context.Context, text string) (model.GetFilterBrandsResponse, error) {
 	var brand model.GetFilterBrandsResponse
 	q := `
@@ -454,7 +513,8 @@ func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID i
 	return generations, err
 }
 
-func (r *UserRepository) GetYearsByModelID(ctx *context.Context, modelID int64, wheel bool) (model.GetYearsResponse, error) {
+// todo: after remove the array response, return an object
+func (r *UserRepository) GetYearsByModelID(ctx *context.Context, modelID int64, wheel bool) ([]model.GetYearsResponse, error) {
 	q := `
 		SELECT 
 			MIN(start_year) AS start_year,
@@ -464,9 +524,10 @@ func (r *UserRepository) GetYearsByModelID(ctx *context.Context, modelID int64, 
 		WHERE 
 			model_id = $1 and wheel = $2
 	`
-	years := model.GetYearsResponse{}
-	err := r.db.QueryRow(*ctx, q, modelID, wheel).Scan(&years.StartYear, &years.EndYear)
-
+	year := model.GetYearsResponse{}
+	years := []model.GetYearsResponse{}
+	err := r.db.QueryRow(*ctx, q, modelID, wheel).Scan(&year.StartYear, &year.EndYear)
+	years = append(years, year)
 	return years, err
 }
 

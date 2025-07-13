@@ -40,29 +40,58 @@ func (r *AuthRepository) UserByPhone(ctx context.Context, phone *string) (model.
 }
 
 func (r *AuthRepository) UserEmailGetOrRegister(ctx context.Context, username, email, password string) error {
+	var userID int
 	q := `
-		insert into users (username, email, password)
-		values ($1, $2, $3)
+		insert into users (email, password)
+		values ($1, $2)
 		on conflict (email)
 		do update
 		set 
 			password = EXCLUDED.password
+		returning id
 	`
-	_, err := r.db.Exec(ctx, q, username, email, password)
+	err := r.db.QueryRow(ctx, q, email, password).Scan(&userID)
 
+	if err != nil {
+		return err
+	}
+
+	q = `
+		insert into profiles (
+			user_id, username
+		) values (
+			$1, $2
+		)
+	`
+	_, err = r.db.Exec(ctx, q, userID, username)
 	return err
 }
 
 func (r *AuthRepository) UserPhoneGetOrRegister(ctx context.Context, username, phone, password string) error {
+	var userID int
 	q := `
-		insert into users (username, phone, password)
-		values ($1, $2, $3)
+		insert into users (phone, password)
+		values ($1, $2)
 		on conflict (phone)
 		do update
 		set 
 			password = EXCLUDED.password
+		returning id
 	`
-	_, err := r.db.Exec(ctx, q, username, phone, password)
+	err := r.db.QueryRow(ctx, q, phone, password).Scan(&userID)
+
+	if err != nil {
+		return err
+	}
+
+	q = `
+		insert into profiles (
+			user_id, username
+		) values (
+			$1, $2
+		)
+	`
+	_, err = r.db.Exec(ctx, q, userID, username)
 
 	return err
 }

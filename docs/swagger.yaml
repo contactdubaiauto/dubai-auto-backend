@@ -242,6 +242,27 @@ definitions:
       name:
         type: string
     type: object
+  model.GetProfileResponse:
+    properties:
+      about_me:
+        type: string
+      birthday:
+        type: string
+      driving_experience:
+        type: integer
+      email:
+        type: string
+      google:
+        type: string
+      id:
+        type: integer
+      notification:
+        type: boolean
+      phone:
+        type: string
+      username:
+        type: string
+    type: object
   model.GetYearsResponse:
     properties:
       end_year:
@@ -385,6 +406,25 @@ definitions:
     - vin_code
     - wheel
     - year
+    type: object
+  model.UpdateProfileRequest:
+    properties:
+      about_me:
+        type: string
+      birthday:
+        type: string
+      driving_experience:
+        type: integer
+      google:
+        type: string
+      notification:
+        type: boolean
+      username:
+        maxLength: 20
+        minLength: 3
+        type: string
+    required:
+    - username
     type: object
   model.UserEmailConfirmationRequest:
     properties:
@@ -1730,6 +1770,84 @@ paths:
           schema:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get generation modifications
+      tags:
+      - users
+  /api/v1/users/profile:
+    get:
+      description: Returns a list of user profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Updates the authenticated user's profile information
+      parameters:
+      - description: Profile data
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update user profile
       tags:
       - users
   /api/v1/users/profile/my-cars:

@@ -100,7 +100,7 @@ func (s *AuthService) UserLoginEmail(ctx context.Context, user *model.UserLoginE
 		}
 	}
 	return model.Response{
-		Data: model.Success{Message: "Successfully sended mail confirmation code."},
+		Data: model.Success{Message: "Successfully created the user"},
 	}
 }
 
@@ -128,6 +128,6 @@ func (s *AuthService) UserLoginPhone(ctx context.Context, user *model.UserLoginP
 	}
 
 	return model.Response{
-		Data: model.Success{Message: "Successfully sended mail confirmation code."},
+		Data: model.Success{Message: "Successfully created the user."},
 	}
 }

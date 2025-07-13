@@ -90,6 +90,34 @@ func (s *UserService) GetBrands(ctx *context.Context, text string) *model.Respon
 	}
 }
 
+func (s *UserService) GetProfile(ctx *context.Context, userID int) *model.Response {
+	profile, err := s.UserRepository.GetProfile(ctx, userID)
+
+	if err != nil {
+		return &model.Response{
+			Error:  err,
+			Status: http.StatusBadRequest,
+		}
+	}
+	return &model.Response{
+		Data: profile,
+	}
+}
+
+func (s *UserService) UpdateProfile(ctx *context.Context, userID int, profile *model.UpdateProfileRequest) *model.Response {
+	err := s.UserRepository.UpdateProfile(ctx, userID, profile)
+
+	if err != nil {
+		return &model.Response{
+			Error:  err,
+			Status: http.StatusBadRequest,
+		}
+	}
+	return &model.Response{
+		Data: model.Success{Message: "Profile updated successfully"},
+	}
+}
+
 func (s *UserService) GetFilterBrands(ctx *context.Context, text string) *model.Response {
 	brands, err := s.UserRepository.GetFilterBrands(ctx, text)
 

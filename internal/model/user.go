@@ -65,3 +65,12 @@ type UpdateCarRequest struct {
 	Owners         int      `json:"owners" binding:"required"`
 	TradeIn        int      `json:"trade_in" binding:"required"`
 }
+
+type UpdateProfileRequest struct {
+	DrivingExperience int    `json:"driving_experience"`
+	Notification      bool   `json:"notification"`
+	Username          string `json:"username" binding:"required,min=3,max=20"`
+	Google            string `json:"google"`
+	Birthday          string `json:"birthday"`
+	AboutMe           string `json:"about_me"`
+}
