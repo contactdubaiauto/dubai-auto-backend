@@ -640,3 +640,44 @@ select
 from users us
 left join profiles as ps on ps.user_id = us.id
 where us.id = 1;
+
+
+
+select DISTINCT ON (bts.id)
+    bts.id,
+    bts.name,
+    bts.image
+from generation_modifications gms
+left join body_types bts on bts.id = gms.body_type_id
+where gms.generation_id in (
+    20637504,
+    21460328,
+    7754683
+);
+
+select DISTINCT ON (gms.generation_id)
+    gms.generation_id
+from generation_modifications;
+
+
+
+select DISTINCT ON (gs.model_id)
+    gs.model_id
+from generations;
+
+
+delete from models where id not in (
+     3232,
+     3233,
+     3234
+);
+
+
+
+SELECT 
+    MIN(start_year) AS start_year,
+    MAX(end_year) AS end_year
+FROM 
+    generations
+WHERE 
+    model_id = 3226;

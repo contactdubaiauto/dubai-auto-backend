@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 
@@ -10,21 +11,29 @@ import (
 )
 
 func ExcelMigrate(db *pgxpool.Pool) error {
-	// err := Marks("docs/1.marks.xlsx", db)
-	// fmt.Println(err)
-	// err = Models("docs/2.models.xlsx", db)
-	// fmt.Println(err)
-	// err = Generations("docs/3.generations.xlsx", db)
-	// fmt.Println(err)
-	// err = Configurations("docs/4.configurations.xlsx", db)
-	// fmt.Println(err)
-	// err = Complectations("docs/5.complectations.xlsx", db)
-	// fmt.Println(err)
+	err := Marks("docs/1.marks.xlsx", db)
+	fmt.Println(err)
+	err = Models("docs/2.models.xlsx", db)
+	fmt.Println(err)
+	err = Generations("docs/3.generations.xlsx", db)
+	fmt.Println(err)
+	err = Configurations("docs/4.configurations.xlsx", db)
+	fmt.Println(err)
+	err = Complectations("docs/5.complectations.xlsx", db)
+	fmt.Println(err)
+	db.Exec(context.Background(), `
+		delete from models where id not in (
+			3232,
+			3233,
+			3234
+		);
+	`)
 	return nil
 }
 
 func Marks(filePath string, db *pgxpool.Pool) error {
 	f, err := excelize.OpenFile(filePath)
+
 	if err != nil {
 		return fmt.Errorf("failed to open Excel file: %w", err)
 	}
@@ -43,28 +52,25 @@ func Marks(filePath string, db *pgxpool.Pool) error {
 	}
 
 	q := `
-		insert into marks_exel(
-			id, inner_id, name, cyrillic_name, numeric_id, logo, big_logo, year_from, year_to
-		) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		insert into brands(
+			id, name, logo, popular
+		) values ($1, $2, $3, true)
 	`
 
 	for i := range rows {
-		if i == 0 {
+		if i == 0 || rows[i][0] != "310" {
 			continue
 		}
+
 		id, _ := strconv.Atoi(rows[i][0])
-		numeric_id, _ := strconv.Atoi(rows[i][4])
-		year_from, _ := strconv.Atoi(rows[i][7])
-		year_to, _ := strconv.Atoi(rows[i][8])
-		_, err = db.Exec(context.Background(), q,
-			id, rows[i][1], rows[i][2], rows[i][3],
-			numeric_id, rows[i][5], rows[i][6], year_from, year_to)
+		_, err = db.Exec(context.Background(), q, id, rows[i][2], rows[i][5])
 
 		if err != nil {
-			fmt.Println(err)
+			// return err
+			continue
 		}
 	}
-	return nil
+	return err
 }
 
 func Models(filePath string, db *pgxpool.Pool) error {
@@ -87,31 +93,26 @@ func Models(filePath string, db *pgxpool.Pool) error {
 	}
 
 	q := `
-		insert into models_exel(
-			id, inner_id, name, cyrillic_name, year_from, year_to, autoru_mark_id, autoru_mark_inner_id
-		) values ($1, $2, $3, $4, $5, $6, $7, $8)
+		insert into models(
+			id, brand_id, name
+		) values ($1, $2, $3)
 	`
 
 	for i := range rows {
-
-		if i == 0 {
+		if i == 0 || rows[i][6] != "310" {
 			continue
 		}
-		id, _ := strconv.Atoi(rows[i][0])
-		autoru_mark_id, _ := strconv.Atoi(rows[i][6])
-		year_from, _ := strconv.Atoi(rows[i][4])
-		year_to, _ := strconv.Atoi(rows[i][5])
 
-		_, err = db.Exec(context.Background(), q,
-			id, rows[i][1], rows[i][2], rows[i][3],
-			year_from, year_to, autoru_mark_id, rows[i][7])
+		id, _ := strconv.Atoi(rows[i][0])
+		brand_id, _ := strconv.Atoi(rows[i][6])
+		_, err = db.Exec(context.Background(), q, id, brand_id, rows[i][2])
 
 		if err != nil {
-			fmt.Println(rows[i])
-			fmt.Println(err)
+			continue
+			// return err
 		}
 	}
-	return nil
+	return err
 }
 
 func Generations(filePath string, db *pgxpool.Pool) error {
@@ -135,40 +136,38 @@ func Generations(filePath string, db *pgxpool.Pool) error {
 	}
 
 	q := `
-		insert into generations_exel (
-			id, inner_id, name, year_from, year_to, photo_main, 
-			photo_main_minicard, photo_mobile, autoru_model_id, 
-			autoru_mark_id, autoru_mark_inner_id, autoru_model_inner_id
-		) values (
-		 	$1, $2, $3, $4, $5, $6, 
-		 	$7, $8, $9,
-			$10, $11, $12)
+		insert into generations (
+			id, name, start_year, end_year, image, model_id, wheel
+		) values 
+		(
+			$1, $2, $3, $4, $5, $6, $7
+		)
 	`
 
 	for i := range rows {
 
-		if i == 0 {
+		if i == 0 || rows[i][9] != "310" {
 			continue
 		}
+
 		if i == 479 {
 			break
 		}
-		id, _ := strconv.Atoi(rows[i][0])
-		inner_id, _ := strconv.Atoi(rows[i][1])
+		// inner_id, _ := strconv.Atoi(rows[i][1])
+		// autoru_mark_id, _ := strconv.Atoi(rows[i][9])
+		id, _ := strconv.Atoi(rows[i][1]) // inner_id
 		autoru_model_id, _ := strconv.Atoi(rows[i][8])
-		autoru_mark_id, _ := strconv.Atoi(rows[i][9])
 		year_from, _ := strconv.Atoi(rows[i][3])
 		year_to, _ := strconv.Atoi(rows[i][4])
-
+		wheel := true
+		if i%4 == 0 {
+			wheel = false
+		}
 		_, err = db.Exec(context.Background(), q,
-			id, inner_id, rows[i][2], year_from, year_to, rows[i][5],
-			rows[i][6], rows[i][7], autoru_model_id,
-			autoru_mark_id, rows[i][10], rows[i][11])
+			id, rows[i][2], year_from, year_to, rows[i][7], autoru_model_id, wheel)
 
 		if err != nil {
-			fmt.Println(rows[i][11])
-			fmt.Println(autoru_model_id)
-			fmt.Println(err)
+			continue
 		}
 	}
 	return nil
@@ -195,40 +194,60 @@ func Configurations(filePath string, db *pgxpool.Pool) error {
 	}
 
 	q := `
-		insert into configurations_exel (
-			id, inner_id, name, autoru_body_type, body_type, photo_main, 
-			photo_main_minicard, photo_mobile, autoru_generation_id, 
-			autoru_mark_id, autoru_mark_inner_id, autoru_generation_inner_id
+		insert into configurations (
+			id, generation_id, body_type_id
 		) values (
-		 	$1, $2, $3, $4, $5, $6, 
-		 	$7, $8, $9,
-			$10, $11, $12)
+		 	$1, $2, $3
+		)
+	`
+	qBodyType := `
+		select
+			id 
+		from body_types 
+		where 
+			name ilike $1;
+	`
+
+	qBodyTypeInsert := `
+		insert into body_types (name, image)
+		values ($1, 'empty')
 	`
 
 	for i := range rows {
 
-		if i == 0 {
+		if i == 0 || rows[i][9] != "310" {
 			continue
 		}
+		bodyTypeID := 0
+		db.QueryRow(context.Background(), qBodyType, rows[i][4]).Scan(&bodyTypeID)
 
-		id, _ := strconv.Atoi(rows[i][0])
-		inner_id, _ := strconv.Atoi(rows[i][1])
-		autoru_generation_id, _ := strconv.Atoi(rows[i][8])
+		if bodyTypeID == 0 {
+			db.QueryRow(context.Background(), qBodyTypeInsert, rows[i][4]).Scan(&bodyTypeID)
+		}
+
+		id, _ := strconv.Atoi(rows[i][1]) // inner_id
+		// autoru_generation_id, _ := strconv.Atoi(rows[i][8])
 		autoru_generation_inner_id, _ := strconv.Atoi(rows[i][11])
-		autoru_mark_id, _ := strconv.Atoi(rows[i][9])
+		// autoru_mark_id, _ := strconv.Atoi(rows[i][9])
 
 		_, err = db.Exec(context.Background(), q,
-			id, inner_id, rows[i][2], rows[i][3], rows[i][4], rows[i][5],
-			rows[i][6], rows[i][7], autoru_generation_id,
-			autoru_mark_id, rows[i][10], autoru_generation_inner_id)
+			id, autoru_generation_inner_id, bodyTypeID)
 
 		if err != nil {
-			fmt.Println("98s7fdyh8")
-			fmt.Println(rows[i])
-			fmt.Println(err)
+			continue
 		}
 	}
 	return nil
+}
+
+type TechInfoMain struct {
+	ID     string `json:"id"`
+	Entity []struct {
+		ID    string `json:"id"`
+		Name  string `json:"name"`
+		Units string `json:"units,omitempty"`
+		Value string `json:"value"`
+	} `json:"entity"`
 }
 
 func Complectations(filePath string, db *pgxpool.Pool) error {
@@ -251,38 +270,93 @@ func Complectations(filePath string, db *pgxpool.Pool) error {
 		return fmt.Errorf("failed to get rows: %w", err)
 	}
 
-	q := `
-		insert into complectations_exel (
-			id, inner_id, name, full_name, main_fields, packages, 
-			specifications, autoru_configuration_id, 
-			autoru_mark_id, autoru_mark_inner_id, autoru_configuration_inner_id
-		) values (
-		 	$1, $2, $3, $4, $5, $6, 
-		 	$7, $8, 
-			$9, $10, $11)
+	qGenerationID := `
+		select generation_id, body_type_id from configurations where id = $1
 	`
 
+	q := `
+		insert into generation_modifications (
+			generation_id, body_type_id, engine_id, 
+			fuel_type_id, drivetrain_id, transmission_id
+		) values (
+		 	$1, $2, $3, 
+			$4, $5, $6
+		)
+	`
 	for i := range rows {
 
 		if i == 0 {
 			continue
 		}
 
-		id, _ := strconv.Atoi(rows[i][0])
-		inner_id, _ := strconv.Atoi(rows[i][1])
-		autoru_configuration_id, _ := strconv.Atoi(rows[i][7])
-		autoru_configuration_inner_id, _ := strconv.Atoi(rows[i][10])
-		autoru_mark_id, _ := strconv.Atoi(rows[i][8])
+		var data struct {
+			TechInfoMain TechInfoMain `json:"tech_info_main"`
+		}
 
-		_, err = db.Exec(context.Background(), q,
-			id, inner_id, rows[i][2], rows[i][3], rows[i][4], rows[i][5],
-			rows[i][6], autoru_configuration_id,
-			autoru_mark_id, rows[i][9], autoru_configuration_inner_id)
+		// break
+
+		generationID := 0
+		bodyTypeID := 0
+		engineID := 0
+		fuelTypeID := 0
+		drivetrainID := 0
+		transmissionID := 0
+
+		id, _ := strconv.Atoi(rows[i][10])
+		db.QueryRow(context.Background(), qGenerationID, id).Scan(&generationID, &bodyTypeID)
+
+		if err := json.Unmarshal([]byte(rows[i][4]), &data); err != nil {
+			return err
+		}
+		// var cnt = 0
+		for i := range data.TechInfoMain.Entity {
+
+			if data.TechInfoMain.Entity[i].ID == "displacement" {
+				err = db.QueryRow(context.Background(), `
+					insert into engines (value) values ($1)
+					on conflict(value)
+					DO UPDATE SET value = EXCLUDED.value
+					returning id
+				`, data.TechInfoMain.Entity[i].Value).Scan(&engineID)
+			}
+
+			if data.TechInfoMain.Entity[i].ID == "engine_type" {
+				db.QueryRow(context.Background(), `
+					insert into fuel_types (name) values ($1)
+					on conflict(name)
+					DO UPDATE SET name = EXCLUDED.name
+					returning id
+				`, data.TechInfoMain.Entity[i].Value).Scan(&fuelTypeID)
+			}
+
+			if data.TechInfoMain.Entity[i].ID == "gear_type" {
+				db.QueryRow(context.Background(), `
+					insert into drivetrains (name) values ($1)
+					on conflict(name)
+					DO UPDATE SET name = EXCLUDED.name
+					returning id
+				`, data.TechInfoMain.Entity[i].Value).Scan(&drivetrainID)
+			}
+
+			if data.TechInfoMain.Entity[i].ID == "transmission" {
+				db.QueryRow(context.Background(), `
+					insert into transmissions (name) values ($1)
+					on conflict(name)
+					DO UPDATE SET name = EXCLUDED.name
+					returning id
+				`, data.TechInfoMain.Entity[i].Value).Scan(&transmissionID)
+			}
+		}
+
+		if generationID == 0 || transmissionID == 0 || engineID == 0 || drivetrainID == 0 || fuelTypeID == 0 || bodyTypeID == 0 {
+			continue
+		}
+
+		_, err = db.Exec(context.Background(), q, generationID, bodyTypeID,
+			engineID, fuelTypeID, drivetrainID, transmissionID)
 
 		if err != nil {
-			fmt.Println("74787y87")
-			fmt.Println(rows[i][8])
-			fmt.Println(err)
+			continue
 		}
 	}
 	return nil

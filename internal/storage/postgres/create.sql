@@ -1,12 +1,13 @@
-create user da with password '1234';
-grant all privileges on database da to da;
-grant all privileges on schema public to da;
-grant all privileges on all tables in schema public to da;
-grant all privileges on all sequences in schema public to da;
-alter default privileges in schema public grant all on tables to da;
-alter default privileges in schema public grant all on sequences to da;
+-- create user da with password '1234';
+-- grant all privileges on database da to da;
+-- grant all privileges on schema public to da;
+-- grant all privileges on all tables in schema public to da;
+-- grant all privileges on all sequences in schema public to da;
+-- alter default privileges in schema public grant all on tables to da;
+-- alter default privileges in schema public grant all on sequences to da;
 
 
+drop table if exists configurations;
 drop table if exists images;
 drop table if exists vehicles;
 drop table if exists profiles;
@@ -88,11 +89,12 @@ create table brands (
     "logo" varchar(255) not null,
     "car_count" int not null default 0,
     "popular" boolean default false,
-    "updated_at" timestamp default now()
+    "updated_at" timestamp default now(),
+    unique("name")
 );
 
-insert into brands (name, logo, car_count, popular) values ('Toyota', '/images/logo/toyota.png', 12, true);
-insert into brands (name, logo, car_count, popular) values ('Honda', '/images/logo/honda.png', 8, false);
+-- insert into brands (name, logo, car_count, popular) values ('Toyota', '/images/logo/toyota.png', 12, true);
+-- insert into brands (name, logo, car_count, popular) values ('Honda', '/images/logo/honda.png', 8, false);
 
 
 
@@ -111,15 +113,15 @@ create table models (
 );
 
 -- toyota
-insert into models (name, brand_id, popular, car_count) values ('Camry', 1, true, 7);
-insert into models (name, brand_id, popular, car_count) values ('Corolla', 1, true, 41);
-insert into models (name, brand_id, popular, car_count) values ('Rav4', 1, false, 73);
-insert into models (name, brand_id, popular, car_count) values ('Land Cruiser', 1, false, 1);
+-- insert into models (name, brand_id, popular, car_count) values ('Camry', 1, true, 7);
+-- insert into models (name, brand_id, popular, car_count) values ('Corolla', 1, true, 41);
+-- insert into models (name, brand_id, popular, car_count) values ('Rav4', 1, false, 73);
+-- insert into models (name, brand_id, popular, car_count) values ('Land Cruiser', 1, false, 1);
 
--- honda
-insert into models (name, brand_id, popular, car_count) values ('Civic', 2, true, 34);
-insert into models (name, brand_id, popular, car_count) values ('Accord', 2, false, 23);
-insert into models (name, brand_id, popular, car_count) values ('CR-V', 2, false, 65);
+-- -- honda
+-- insert into models (name, brand_id, popular, car_count) values ('Civic', 2, true, 34);
+-- insert into models (name, brand_id, popular, car_count) values ('Accord', 2, false, 23);
+-- insert into models (name, brand_id, popular, car_count) values ('CR-V', 2, false, 65);
 
 
 
@@ -145,6 +147,9 @@ insert into body_types (name, image) values ('Sports Car', '/images/body/sports_
 insert into body_types (name, image) values ('Off-Road', '/images/body/off_road.png');
 insert into body_types (name, image) values ('Limousine', '/images/body/limousine.png'); 
 insert into body_types (name, image) values ('Utility', '/images/body/utility.png');
+insert into body_types (name, image) values ('Universal', '/images/body/universal.png');
+insert into body_types (name, image) values ('Cabriolet', '/images/body/cabriolet.png');
+
 
 
 
@@ -152,7 +157,8 @@ insert into body_types (name, image) values ('Utility', '/images/body/utility.pn
 create table transmissions (
     "id" serial primary key,
     "name" varchar(255) not null,
-    "created_at" timestamp default now()
+    "created_at" timestamp default now(),
+    unique("name")
 );
 
 insert into transmissions (name) values ('Automatic');
@@ -163,7 +169,8 @@ insert into transmissions (name) values ('Semi-Automatic');
 create table engines (
     "id" serial primary key,
     "value" varchar(255) not null,
-    "created_at" timestamp default now()
+    "created_at" timestamp default now(),
+    unique("value")
 );
 
 insert into engines (value) values ('1.0L');
@@ -180,7 +187,8 @@ insert into engines (value) values ('7.0L');
 create table drivetrains (
     "id" serial primary key,
     "name" varchar(255) not null,
-    "created_at" timestamp default now()
+    "created_at" timestamp default now(),
+    unique("name")
 );
 
 insert into drivetrains (name) values ('Front-Wheel Drive');
@@ -191,7 +199,8 @@ insert into drivetrains (name) values ('All-Wheel Drive');
 create table fuel_types (
     "id" serial primary key,
     "name" varchar(255) not null,
-    "created_at" timestamp default now()
+    "created_at" timestamp default now(),
+    unique("name")
 );
 
 insert into fuel_types (name) values ('Gasoline');
@@ -294,57 +303,70 @@ create table generations (
     "end_year" int not null,
     "wheel" boolean not null default true,
     "image" varchar(255) not null,
-    "body_type_id" int not null,
     "created_at" timestamp default now(),
     constraint generations_model_id_fk
         foreign key (model_id)
             references models(id)
-                on delete cascade,
-    constraint generations_body_type_id_fk
-        foreign key (body_type_id)
-            references body_types(id)
                 on delete cascade
 );
 
-insert into generations (
-    name, model_id, start_year, end_year, image, body_type_id, wheel
-) values (
-    '1 generation', 1, 2010, 2020, '/images/gens/1.jpg', 1, true
-);
+-- insert into generations (
+--     name, model_id, start_year, end_year, image, wheel
+-- ) values (
+--     '1 generation', 1, 2010, 2020, '/images/gens/1.jpg', true
+-- );
 
-insert into generations (
-    name, model_id, start_year, end_year, image, body_type_id, wheel
-) values (
-    '2 generation', 1, 2005, 2025, '/images/gens/2.jpg', 2, true
-);
+-- insert into generations (
+--     name, model_id, start_year, end_year, image, wheel
+-- ) values (
+--     '2 generation', 1, 2005, 2025, '/images/gens/2.jpg', true
+-- );
 
 
-insert into generations (
-    name, model_id, start_year, end_year, image, body_type_id, wheel
-) values (
-    '2 generation', 1, 2005, 2025, '/images/gens/2.jpg', 2, false
-);
+-- insert into generations (
+--     name, model_id, start_year, end_year, image, wheel
+-- ) values (
+--     '2 generation', 1, 2005, 2025, '/images/gens/2.jpg', false
+-- );
 
-insert into generations (
-    name, model_id, start_year, end_year, image, body_type_id, wheel
-) values (
-    '3 generation', 2, 2020, 2025, '/images/gens/3.jpg', 2, true
-);
+-- insert into generations (
+--     name, model_id, start_year, end_year, image, wheel
+-- ) values (
+--     '3 generation', 2, 2020, 2025, '/images/gens/3.jpg', true
+-- );
 
-insert into generations (
-    name, model_id, start_year, end_year, image, body_type_id, wheel
-) values (
-    '3 generation', 2, 2020, 2025, '/images/gens/3.jpg', 2, false
+-- insert into generations (
+--     name, model_id, start_year, end_year, image, wheel
+-- ) values (
+--     '3 generation', 2, 2020, 2025, '/images/gens/3.jpg', false
+-- );
+
+create table configurations (
+    "id" serial primary key,
+    "body_type_id" int not null,
+    "generation_id" int not null,
+    constraint configurations_generation_id_fk
+        foreign key (generation_id)
+            references generations(id)
+                on delete cascade
+                on update cascade,
+    constraint configurations_body_type_id_fk
+        foreign key (body_type_id)
+            references body_types(id)
+                on delete cascade
+                on update cascade
 );
 
 
 create table generation_modifications (
     "id" serial primary key,
     "generation_id" int not null,
+    "body_type_id" int not null,
     "engine_id" int not null,
     "fuel_type_id" int not null, 
     "drivetrain_id" int not null,
     "transmission_id" int not null, 
+    unique(generation_id, body_type_id, engine_id, fuel_type_id, drivetrain_id, transmission_id),
     constraint generation_modifications_generation_id_fk
         foreign key (generation_id)
             references generations(id)
@@ -369,18 +391,23 @@ create table generation_modifications (
         foreign key (transmission_id)
             references transmissions(id)
                 on delete cascade
+                on update cascade,
+    constraint generation_modifications_body_type_id_fk
+        foreign key (body_type_id)
+            references body_types(id)
+                on delete cascade
                 on update cascade
 );
 
-insert into generation_modifications (
-    generation_id, engine_id, fuel_type_id, drivetrain_id, transmission_id
-) 
-values 
-    (1, 1, 1, 1, 1),
-    (1, 3, 2, 2, 2),
-    (2, 1, 1, 1, 1),
-    (2, 3, 2, 2, 2),
-    (1, 2, 2, 2, 2);
+-- insert into generation_modifications (
+--     generation_id, engine_id, fuel_type_id, drivetrain_id, transmission_id
+-- ) 
+-- values 
+--     (1, 1, 1, 1, 1),
+--     (1, 3, 2, 2, 2),
+--     (2, 1, 1, 1, 1),
+--     (2, 3, 2, 2, 2),
+--     (1, 2, 2, 2, 2);
 
 
 create table ownership_types (
@@ -508,67 +535,67 @@ create table vehicles (
                 on update cascade
 );
 
-insert into vehicles (
-    user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, 
-    year, exchange, credit, wheel, odometer, vin_code, phone_numbers, price, new,
-    status, crash, drivetrain_id, trade_in,
-    color_id, view_count, region_id, transmission_id, engine_id
-)  values 
-(
-    1, 1, 1, 1, 1, 1, 1, 
-    2020, false, true, false, 74839782, '238748927', ARRAY['23487827397'], 39999, true, 
-    3, true, 2, 2,
-    1, 392, 1, 1, 1
-),
-(
-   1, 1, 1, 2, 2, 2, 1, 
-   2019, true, false, true, 273854, '26873900987', ARRAY['23748798273942'], 7828973, true,
-    3, true, 3, 1,
-    2, 234, 2, 2, 2
-),
-(
-    2, 1, 1, 3, 2, 2, 1, 
-    2010, false, false, false, 8373, '98987987987', ARRAY['89877683783'], 982739488, true,
-    3, true, 3, 2,
-    2, 487, 3, 3, 3
-),
-(
-    1, 1, 1, 1, 2, 2, 1, 
-    2006, true, false, false, 2784, '98987987987', ARRAY['89877683783'], 982739488, true,
-    3, true, 3, 1,
-    2, 438, 4, 1, 4
-),
-(
-    2, 2, 1, 1, 2, 2, 1, 
-    2022, false, true, false, 2739, '98987987987', ARRAY['89877683783'], 982739488, true,
-    3, true, 3, 1,
-    2, 3, 5, 2, 5
-),
-(
-    1, 2, 1, 2, 2, 2, 1, 
-    2021, true, false, true, 283847, '0987654321', ARRAY['01234567890'], 38742973, true,
-    3, true, 3, 1,
-    2, 45, 6, 3, 6
-),
-(
-    1, 1, 1, 1, 3, 3, 1, 
-    2022, true, false, false, 2837959, '1122334455', ARRAY['01234567890'], 3485, true,
-    2, true, 1, 1,
-    1, 12, 7, 1, 7
-),
-(
-    2, 1, 1, 2, 3, 3, 1, 
-    2022, false, false, false, 2348859, '1122334455', ARRAY['01234567890'], 1289397, true,
-    2, true, 1, 2,
-    3, 8, 8, 2, 8
-),
-(
-    2, 1, 1, 2, 3, 3, 1, 
-    2022, false, true, false, 234788, '1122334455', ARRAY['01234567890'], 23487, true,
-    3, true, 1, 2,
-    3, 97, 9, 3, 9
-);
--- 1-pending, 2-not sale (my cars), 3-on sale,
+-- insert into vehicles (
+--     user_id, brand_id, city_id, model_id, body_type_id, fuel_type_id, ownership_type_id, 
+--     year, exchange, credit, wheel, odometer, vin_code, phone_numbers, price, new,
+--     status, crash, drivetrain_id, trade_in,
+--     color_id, view_count, region_id, transmission_id, engine_id
+-- )  values 
+-- (
+--     1, 1, 1, 1, 1, 1, 1, 
+--     2020, false, true, false, 74839782, '238748927', ARRAY['23487827397'], 39999, true, 
+--     3, true, 2, 2,
+--     1, 392, 1, 1, 1
+-- ),
+-- (
+--    1, 1, 1, 2, 2, 2, 1, 
+--    2019, true, false, true, 273854, '26873900987', ARRAY['23748798273942'], 7828973, true,
+--     3, true, 3, 1,
+--     2, 234, 2, 2, 2
+-- ),
+-- (
+--     2, 1, 1, 3, 2, 2, 1, 
+--     2010, false, false, false, 8373, '98987987987', ARRAY['89877683783'], 982739488, true,
+--     3, true, 3, 2,
+--     2, 487, 3, 3, 3
+-- ),
+-- (
+--     1, 1, 1, 1, 2, 2, 1, 
+--     2006, true, false, false, 2784, '98987987987', ARRAY['89877683783'], 982739488, true,
+--     3, true, 3, 1,
+--     2, 438, 4, 1, 4
+-- ),
+-- (
+--     2, 2, 1, 1, 2, 2, 1, 
+--     2022, false, true, false, 2739, '98987987987', ARRAY['89877683783'], 982739488, true,
+--     3, true, 3, 1,
+--     2, 3, 5, 2, 5
+-- ),
+-- (
+--     1, 2, 1, 2, 2, 2, 1, 
+--     2021, true, false, true, 283847, '0987654321', ARRAY['01234567890'], 38742973, true,
+--     3, true, 3, 1,
+--     2, 45, 6, 3, 6
+-- ),
+-- (
+--     1, 1, 1, 1, 3, 3, 1, 
+--     2022, true, false, false, 2837959, '1122334455', ARRAY['01234567890'], 3485, true,
+--     2, true, 1, 1,
+--     1, 12, 7, 1, 7
+-- ),
+-- (
+--     2, 1, 1, 2, 3, 3, 1, 
+--     2022, false, false, false, 2348859, '1122334455', ARRAY['01234567890'], 1289397, true,
+--     2, true, 1, 2,
+--     3, 8, 8, 2, 8
+-- ),
+-- (
+--     2, 1, 1, 2, 3, 3, 1, 
+--     2022, false, true, false, 234788, '1122334455', ARRAY['01234567890'], 23487, true,
+--     3, true, 1, 2,
+--     3, 97, 9, 3, 9
+-- );
+-- -- 1-pending, 2-not sale (my cars), 3-on sale,
 
 
 create table images (
@@ -581,47 +608,47 @@ create table images (
                 on update cascade
 );
 
-insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
-insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
-insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
-insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+-- insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+-- insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+-- insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+-- insert into images (vehicle_id, image) values (1, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
 
-insert into images (vehicle_id, image) values (2, '/images/cars/2/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
-insert into images (vehicle_id, image) values (2, '/images/cars/2/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
-insert into images (vehicle_id, image) values (2, '/images/cars/2/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
-insert into images (vehicle_id, image) values (2, '/images/cars/2/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+-- insert into images (vehicle_id, image) values (2, '/images/cars/2/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+-- insert into images (vehicle_id, image) values (2, '/images/cars/2/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+-- insert into images (vehicle_id, image) values (2, '/images/cars/2/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+-- insert into images (vehicle_id, image) values (2, '/images/cars/2/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
 
-insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
-insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
-insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
-insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+-- insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+-- insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+-- insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+-- insert into images (vehicle_id, image) values (3, '/images/cars/3/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
 
-insert into images (vehicle_id, image) values (4, '/images/cars/4/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
-insert into images (vehicle_id, image) values (4, '/images/cars/4/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
-insert into images (vehicle_id, image) values (4, '/images/cars/4/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
-insert into images (vehicle_id, image) values (4, '/images/cars/4/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+-- insert into images (vehicle_id, image) values (4, '/images/cars/4/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+-- insert into images (vehicle_id, image) values (4, '/images/cars/4/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+-- insert into images (vehicle_id, image) values (4, '/images/cars/4/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+-- insert into images (vehicle_id, image) values (4, '/images/cars/4/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
 
-insert into images (vehicle_id, image) values (5, '/images/cars/5/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
-insert into images (vehicle_id, image) values (5, '/images/cars/5/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');    
-insert into images (vehicle_id, image) values (5, '/images/cars/5/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
-insert into images (vehicle_id, image) values (5, '/images/cars/5/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+-- insert into images (vehicle_id, image) values (5, '/images/cars/5/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+-- insert into images (vehicle_id, image) values (5, '/images/cars/5/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');    
+-- insert into images (vehicle_id, image) values (5, '/images/cars/5/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+-- insert into images (vehicle_id, image) values (5, '/images/cars/5/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
 
-insert into images (vehicle_id, image) values (6, '/images/cars/6/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
-insert into images (vehicle_id, image) values (6, '/images/cars/6/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
-insert into images (vehicle_id, image) values (6, '/images/cars/6/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
-insert into images (vehicle_id, image) values (6, '/images/cars/6/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+-- insert into images (vehicle_id, image) values (6, '/images/cars/6/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+-- insert into images (vehicle_id, image) values (6, '/images/cars/6/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+-- insert into images (vehicle_id, image) values (6, '/images/cars/6/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+-- insert into images (vehicle_id, image) values (6, '/images/cars/6/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
 
-insert into images (vehicle_id, image) values (7, '/images/cars/7/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
-insert into images (vehicle_id, image) values (7, '/images/cars/7/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
-insert into images (vehicle_id, image) values (7, '/images/cars/7/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
-insert into images (vehicle_id, image) values (7, '/images/cars/7/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+-- insert into images (vehicle_id, image) values (7, '/images/cars/7/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+-- insert into images (vehicle_id, image) values (7, '/images/cars/7/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+-- insert into images (vehicle_id, image) values (7, '/images/cars/7/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+-- insert into images (vehicle_id, image) values (7, '/images/cars/7/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
 
-insert into images (vehicle_id, image) values (8, '/images/cars/8/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
-insert into images (vehicle_id, image) values (8, '/images/cars/8/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
-insert into images (vehicle_id, image) values (8, '/images/cars/8/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
-insert into images (vehicle_id, image) values (8, '/images/cars/8/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+-- insert into images (vehicle_id, image) values (8, '/images/cars/8/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+-- insert into images (vehicle_id, image) values (8, '/images/cars/8/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+-- insert into images (vehicle_id, image) values (8, '/images/cars/8/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+-- insert into images (vehicle_id, image) values (8, '/images/cars/8/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
 
-insert into images (vehicle_id, image) values (9, '/images/cars/9/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
-insert into images (vehicle_id, image) values (9, '/images/cars/9/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
-insert into images (vehicle_id, image) values (9, '/images/cars/9/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
-insert into images (vehicle_id, image) values (9, '/images/cars/9/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+-- insert into images (vehicle_id, image) values (9, '/images/cars/9/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+-- insert into images (vehicle_id, image) values (9, '/images/cars/9/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+-- insert into images (vehicle_id, image) values (9, '/images/cars/9/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+-- insert into images (vehicle_id, image) values (9, '/images/cars/9/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');

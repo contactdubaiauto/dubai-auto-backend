@@ -6,6 +6,7 @@ import (
 
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
+	"dubai-auto/pkg"
 )
 
 type UserService struct {
@@ -36,24 +37,26 @@ func (s *UserService) OnSale(ctx *context.Context, userID *int) *model.Response 
 	return &model.Response{Data: cars}
 }
 
-func (s *UserService) Cancel(ctx *context.Context, carID *int) *model.Response {
+func (s *UserService) Cancel(ctx *context.Context, carID *int, dir string) *model.Response {
 	err := s.UserRepository.Cancel(ctx, carID)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+	pkg.RemoveFolder(dir)
 
 	return &model.Response{Data: model.Success{Message: "succesfully cancelled"}}
 }
 
-func (s *UserService) Delete(ctx *context.Context, carID *int) *model.Response {
-	err := s.UserRepository.Delete(ctx, carID)
+func (s *UserService) DeleteCar(ctx *context.Context, carID *int, dir string) *model.Response {
+	err := s.UserRepository.DeleteCar(ctx, carID)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+	pkg.RemoveFolder(dir)
 
-	return &model.Response{Data: model.Success{Message: "succesfully cancelled"}}
+	return &model.Response{Data: model.Success{Message: "succesfully deleted"}}
 }
 
 func (s *UserService) DontSell(ctx *context.Context, carID, userID *int) *model.Response {
@@ -339,4 +342,13 @@ func (s *UserService) CreateCarImages(ctx *context.Context, carID int, images []
 	return &model.Response{
 		Data: model.Success{Message: "Car images created successfully"},
 	}
+}
+
+func (s *UserService) DeleteCarImage(ctx *context.Context, carID int, imagePath string) *model.Response {
+	err := s.UserRepository.DeleteCarImage(ctx, carID, imagePath)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: model.Success{Message: "Car image deleted successfully"}}
 }

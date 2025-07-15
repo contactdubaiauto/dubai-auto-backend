@@ -7,6 +7,10 @@ type User struct {
 	Password string
 }
 
+type DeleteCarImageRequest struct {
+	Image string `json:"image" binding:"required"`
+}
+
 type CreateCarRequest struct {
 	// new
 	UserID         int      `json:"user_id"`

@@ -169,7 +169,7 @@ func (r *UserRepository) Cancel(ctx *context.Context, carID *int) error {
 	return err
 }
 
-func (r *UserRepository) Delete(ctx *context.Context, carID *int) error {
+func (r *UserRepository) DeleteCar(ctx *context.Context, carID *int) error {
 	q := `
 		delete from vehicles where id = $1
 	`
@@ -526,6 +526,7 @@ func (r *UserRepository) GetYearsByModelID(ctx *context.Context, modelID int64, 
 	`
 	year := model.GetYearsResponse{}
 	years := []model.GetYearsResponse{}
+	fmt.Println(modelID)
 	err := r.db.QueryRow(*ctx, q, modelID, wheel).Scan(&year.StartYear, &year.EndYear)
 	years = append(years, year)
 	return years, err
@@ -533,15 +534,19 @@ func (r *UserRepository) GetYearsByModelID(ctx *context.Context, modelID int64, 
 
 func (r *UserRepository) GetBodysByModelID(ctx *context.Context, modelID int, wheel bool, year string) ([]model.BodyType, error) {
 	q := `
-		SELECT DISTINCT ON (bts.id)
+		select DISTINCT ON (bts.id)
 			bts.id,
 			bts.name,
 			bts.image
-		FROM generations gs
-		LEFT JOIN body_types bts ON bts.id = gs.body_type_id
-		WHERE gs.start_year <= $1 AND gs.end_year >= $1 
-			and gs.model_id = $2 and gs.wheel = $3;
-
+		from generation_modifications gms
+		left join body_types bts on bts.id = gms.body_type_id
+		where gms.generation_id in (
+			select 
+				gs.id 
+			from generations gs 
+			WHERE gs.start_year <= $1 AND gs.end_year >= $1 
+					and gs.model_id = $2 and gs.wheel = $3
+		)
 	`
 
 	rows, err := r.db.Query(*ctx, q, year, modelID, wheel)
@@ -986,9 +991,11 @@ func (r *UserRepository) UpdateCar(ctx *context.Context, car *model.UpdateCarReq
 	var exists bool
 	checkQuery := `SELECT EXISTS(SELECT 1 FROM vehicles WHERE id = $1 AND user_id = $2)`
 	err := r.db.QueryRow(*ctx, checkQuery, car.ID, userID).Scan(&exists)
+
 	if err != nil {
 		return err
 	}
+
 	if !exists {
 		return fmt.Errorf("car not found or access denied")
 	}
@@ -1014,7 +1021,7 @@ func (r *UserRepository) UpdateCar(ctx *context.Context, car *model.UpdateCarReq
 
 	q := `
 		UPDATE vehicles 
-		SET ` + strings.Join(updateFields, ", ") + `, updated_at = NOW()
+		SET ` + strings.Join(updateFields, ", ") + `, updated_at = NOW(), status = 2
 		WHERE id = $1 AND user_id = $` + fmt.Sprintf("%d", paramIndex)
 
 	updateArgs = append(updateArgs, userID)
@@ -1040,5 +1047,13 @@ func (r *UserRepository) CreateCarImages(ctx *context.Context, carID int, images
 		}
 	}
 
-	return nil
+	_, err := r.db.Exec(*ctx, `update vehicles set status = 2 where id = $1`, carID)
+
+	return err
+}
+
+func (r *UserRepository) DeleteCarImage(ctx *context.Context, carID int, imagePath string) error {
+	q := `DELETE FROM images WHERE vehicle_id = $1 AND image = $2`
+	_, err := r.db.Exec(*ctx, q, carID, imagePath)
+	return err
 }

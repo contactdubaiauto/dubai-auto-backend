@@ -194,11 +194,9 @@ func RemoveFile(path string) error {
 }
 
 func RemoveFolder(path string) error {
-	err := os.RemoveAll(path)
-	if err != nil {
-		return err
-	}
-	return nil
+	err := os.RemoveAll("." + path)
+
+	return err
 }
 
 func SaveVideos(file *multipart.FileHeader, folder string) (string, error) {

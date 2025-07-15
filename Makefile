@@ -8,10 +8,8 @@ deploy:
 	@ssh ubuntu@95.85.126.220 "sudo -S systemctl stop da.service"
 
 	@echo "Deploying..."
-	@scp ./bin/da ubuntu@95.85.126.220:/var/www/
-	@scp ./docs/docs.go ubuntu@95.85.126.220:/var/www/docs/
-	@scp ./docs/swagger.json ubuntu@95.85.126.220:/var/www/docs/
-	@scp ./docs/swagger.yaml ubuntu@95.85.126.220:/var/www/docs/
+	# @scp ./bin/da ubuntu@95.85.126.220:/var/www/
+	# @scp -r ./docs ubuntu@95.85.126.220:/var/www/
 	
 	# @scp -r ./images ubuntu@95.85.126.220:/var/www
 	# @scp ./.env ubuntu@95.85.126.220:/var/www/

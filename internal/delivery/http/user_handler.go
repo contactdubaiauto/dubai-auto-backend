@@ -91,7 +91,7 @@ func (h *UserHandler) Cancel(c *gin.Context) {
 		})
 		return
 	}
-	data := h.UserService.Cancel(&ctx, &id)
+	data := h.UserService.Cancel(&ctx, &id, "./images/cars/"+idStr)
 	utils.GinResponse(c, data)
 }
 
@@ -108,9 +108,8 @@ func (h *UserHandler) Cancel(c *gin.Context) {
 // @Failure		 403  {object} pkg.ErrorResponse
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
-// @Router       /api/v1/users/cars/{car_id}/delete [post]
-func (h *UserHandler) Delete(c *gin.Context) {
-	// todo: delete images if exists
+// @Router       /api/v1/users/cars/{car_id} [delete]
+func (h *UserHandler) DeleteCar(c *gin.Context) {
 	ctx := c.Request.Context()
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -122,7 +121,7 @@ func (h *UserHandler) Delete(c *gin.Context) {
 		})
 		return
 	}
-	data := h.UserService.Delete(&ctx, &id)
+	data := h.UserService.DeleteCar(&ctx, &id, "/images/cars/"+idStr)
 	utils.GinResponse(c, data)
 }
 
@@ -907,4 +906,52 @@ func (h *UserHandler) CreateCarImages(c *gin.Context) {
 
 	data := h.UserService.CreateCarImages(&ctx, id, paths)
 	utils.GinResponse(c, data)
+}
+
+// DeleteCarImage godoc
+// @Summary      Delete car image
+// @Description  Deletes a car image by car ID and image path
+// @Tags         users
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id    path      int     true   "Car ID"
+// @Param        image body      model.DeleteCarImageRequest true "Image path"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  pkg.ErrorResponse
+// @Failure      403   {object}  pkg.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/users/cars/{id}/images [delete]
+func (h *UserHandler) DeleteCarImage(c *gin.Context) {
+	idStr := c.Param("id")
+	carID, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("car id must be integer"),
+		})
+		return
+	}
+	var req struct {
+		Image string `json:"image"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil || req.Image == "" {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid image path in request body"),
+		})
+		return
+	}
+	ctx := c.Request.Context()
+	// Remove from DB
+	resp := h.UserService.DeleteCarImage(&ctx, carID, req.Image)
+
+	if resp.Error == nil {
+		// Remove from disk (ignore error, as file may not exist)
+		_ = pkg.RemoveFile(req.Image)
+	}
+	utils.GinResponse(c, resp)
 }

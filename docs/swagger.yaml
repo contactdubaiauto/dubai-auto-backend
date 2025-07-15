@@ -67,9 +67,6 @@ definitions:
         type: integer
       transmission_id:
         type: integer
-      user_id:
-        description: new
-        type: integer
       vin_code:
         type: string
       wheel:
@@ -95,6 +92,13 @@ definitions:
     - vin_code
     - wheel
     - year
+    type: object
+  model.DeleteCarImageRequest:
+    properties:
+      image:
+        type: string
+    required:
+    - image
     type: object
   model.Drivetrain:
     properties:
@@ -1202,6 +1206,46 @@ paths:
       tags:
       - users
   /api/v1/users/cars/{car_id}:
+    delete:
+      description: Returns the cars associated with the authenticated user's
+      parameters:
+      - description: Car ID
+        in: path
+        name: car_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get user's cars
+      tags:
+      - users
     get:
       description: Returns a car by its ID
       parameters:
@@ -1282,47 +1326,6 @@ paths:
       tags:
       - users
   /api/v1/users/cars/{car_id}/cancel:
-    post:
-      description: Returns the cars associated with the authenticated user's
-      parameters:
-      - description: Car ID
-        in: path
-        name: car_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get user's cars
-      tags:
-      - users
-  /api/v1/users/cars/{car_id}/delete:
     post:
       description: Returns the cars associated with the authenticated user's
       parameters:
@@ -1491,6 +1494,55 @@ paths:
       security:
       - BearerAuth: []
       summary: Sell cars
+      tags:
+      - users
+  /api/v1/users/cars/{id}/images:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a car image by car ID and image path
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Image path
+        in: body
+        name: image
+        required: true
+        schema:
+          $ref: '#/definitions/model.DeleteCarImageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete car image
       tags:
       - users
   /api/v1/users/cities:

@@ -1165,6 +1165,68 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns the cars associated with the authenticated user's",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get user's cars",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Car ID",
+                        "name": "car_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
             }
         },
         "/api/v1/users/cars/{car_id}/buy": {
@@ -1232,70 +1294,6 @@ const docTemplate = `{
             }
         },
         "/api/v1/users/cars/{car_id}/cancel": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Returns the cars associated with the authenticated user's",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get user's cars",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Car ID",
-                        "name": "car_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Success"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/pkg.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/pkg.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/users/cars/{car_id}/delete": {
             "post": {
                 "security": [
                     {
@@ -1519,6 +1517,82 @@ const docTemplate = `{
                         "name": "car_id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/cars/{id}/images": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Deletes a car image by car ID and image path",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete car image",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Car ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Image path",
+                        "name": "image",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.DeleteCarImageRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -2396,10 +2470,6 @@ const docTemplate = `{
                 "transmission_id": {
                     "type": "integer"
                 },
-                "user_id": {
-                    "description": "new",
-                    "type": "integer"
-                },
                 "vin_code": {
                     "type": "string"
                 },
@@ -2409,6 +2479,17 @@ const docTemplate = `{
                 },
                 "year": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.DeleteCarImageRequest": {
+            "type": "object",
+            "required": [
+                "image"
+            ],
+            "properties": {
+                "image": {
+                    "type": "string"
                 }
             }
         },
