@@ -61,8 +61,7 @@ type GetFilterModelsResponse struct {
 }
 
 type GetYearsResponse struct {
-	StartYear *int `json:"start_year"`
-	EndYear   *int `json:"end_year"`
+	Years []*int `json:"years"`
 }
 
 type Modifications struct {

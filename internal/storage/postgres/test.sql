@@ -681,3 +681,12 @@ FROM
     generations
 WHERE 
     model_id = 3226;
+
+
+SELECT 
+    array_agg(y ORDER BY y) AS years
+FROM (
+    SELECT generate_series(start_year, end_year) AS y
+    FROM generations
+    WHERE model_id = 3233 AND wheel = true
+) AS years_series;

@@ -730,7 +730,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.GetYearsResponse"
+                                "type": "integer"
                             }
                         }
                     },
@@ -2746,17 +2746,6 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
-                }
-            }
-        },
-        "model.GetYearsResponse": {
-            "type": "object",
-            "properties": {
-                "end_year": {
-                    "type": "integer"
-                },
-                "start_year": {
-                    "type": "integer"
                 }
             }
         },

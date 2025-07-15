@@ -267,13 +267,6 @@ definitions:
       username:
         type: string
     type: object
-  model.GetYearsResponse:
-    properties:
-      end_year:
-        type: integer
-      start_year:
-        type: integer
-    type: object
   model.LoginResponse:
     properties:
       access_token:
@@ -953,7 +946,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.GetYearsResponse'
+              type: integer
             type: array
         "400":
           description: Bad Request

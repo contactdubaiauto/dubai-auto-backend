@@ -483,7 +483,7 @@ func (h *UserHandler) GetGenerationsByModelID(c *gin.Context) {
 // @Param        id  path  int  true  "Brand ID"
 // @Param        model_id  path  int  true  "Model ID"
 // @Param        wheel  query  string  true  "the wheel true or false"
-// @Success      200   {array}  model.GetYearsResponse
+// @Success      200   {array}  int
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
 // @Failure		 403  {object} pkg.ErrorResponse

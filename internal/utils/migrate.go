@@ -11,23 +11,23 @@ import (
 )
 
 func ExcelMigrate(db *pgxpool.Pool) error {
-	err := Marks("docs/1.marks.xlsx", db)
-	fmt.Println(err)
-	err = Models("docs/2.models.xlsx", db)
-	fmt.Println(err)
-	err = Generations("docs/3.generations.xlsx", db)
-	fmt.Println(err)
-	err = Configurations("docs/4.configurations.xlsx", db)
-	fmt.Println(err)
-	err = Complectations("docs/5.complectations.xlsx", db)
-	fmt.Println(err)
-	db.Exec(context.Background(), `
-		delete from models where id not in (
-			3232,
-			3233,
-			3234
-		);
-	`)
+	// err := Marks("docs/1.marks.xlsx", db)
+	// fmt.Println(err)
+	// err = Models("docs/2.models.xlsx", db)
+	// fmt.Println(err)
+	// err = Generations("docs/3.generations.xlsx", db)
+	// fmt.Println(err)
+	// err = Configurations("docs/4.configurations.xlsx", db)
+	// fmt.Println(err)
+	// err = Complectations("docs/5.complectations.xlsx", db)
+	// fmt.Println(err)
+	// db.Exec(context.Background(), `
+	// 	delete from models where id not in (
+	// 		3232,
+	// 		3233,
+	// 		3234
+	// 	);
+	// `)
 	return nil
 }
 
@@ -63,7 +63,7 @@ func Marks(filePath string, db *pgxpool.Pool) error {
 		}
 
 		id, _ := strconv.Atoi(rows[i][0])
-		_, err = db.Exec(context.Background(), q, id, rows[i][2], rows[i][5])
+		_, err = db.Exec(context.Background(), q, id, rows[i][2], "/images/logo/audi.png")
 
 		if err != nil {
 			// return err

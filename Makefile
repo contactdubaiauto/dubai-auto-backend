@@ -8,7 +8,7 @@ deploy:
 	@ssh ubuntu@95.85.126.220 "sudo -S systemctl stop da.service"
 
 	@echo "Deploying..."
-	# @scp ./bin/da ubuntu@95.85.126.220:/var/www/
+	@scp ./bin/da ubuntu@95.85.126.220:/var/www/
 	# @scp -r ./docs ubuntu@95.85.126.220:/var/www/
 	
 	# @scp -r ./images ubuntu@95.85.126.220:/var/www

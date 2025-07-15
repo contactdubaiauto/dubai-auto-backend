@@ -17,7 +17,7 @@ type CreateCarRequest struct {
 	CityID         int      `json:"city_id" binding:"required"`
 	BrandID        int      `json:"brand_id" binding:"required"`
 	ModelID        int      `json:"model_id" binding:"required"`
-	Wheel          bool     `json:"wheel" binding:"required"` // left true, right false
+	Wheel          *bool    `json:"wheel" binding:"required"` // left true, right false
 	TransmissionID int      `json:"transmission_id" binding:"required"`
 	EngineID       int      `json:"engine_id" binding:"required"`
 	DrivetrainID   int      `json:"drivetrain_id" binding:"required"`
@@ -51,7 +51,7 @@ type UpdateCarRequest struct {
 	CityID         int      `json:"city_id" binding:"required"`
 	BrandID        int      `json:"brand_id" binding:"required"`
 	ModelID        int      `json:"model_id" binding:"required"`
-	Wheel          bool     `json:"wheel" binding:"required"` // left true, right false
+	Wheel          *bool    `json:"wheel" binding:"required"` // left true, right false
 	TransmissionID int      `json:"transmission_id" binding:"required"`
 	EngineID       int      `json:"engine_id" binding:"required"`
 	DrivetrainID   int      `json:"drivetrain_id" binding:"required"`

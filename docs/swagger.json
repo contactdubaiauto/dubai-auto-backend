@@ -724,7 +724,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.GetYearsResponse"
+                                "type": "integer"
                             }
                         }
                     },
@@ -2740,17 +2740,6 @@
                 },
                 "username": {
                     "type": "string"
-                }
-            }
-        },
-        "model.GetYearsResponse": {
-            "type": "object",
-            "properties": {
-                "end_year": {
-                    "type": "integer"
-                },
-                "start_year": {
-                    "type": "integer"
                 }
             }
         },

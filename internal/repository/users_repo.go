@@ -514,21 +514,19 @@ func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID i
 }
 
 // todo: after remove the array response, return an object
-func (r *UserRepository) GetYearsByModelID(ctx *context.Context, modelID int64, wheel bool) ([]model.GetYearsResponse, error) {
+func (r *UserRepository) GetYearsByModelID(ctx *context.Context, modelID int64, wheel bool) ([]*int, error) {
 	q := `
 		SELECT 
-			MIN(start_year) AS start_year,
-			MAX(end_year) AS end_year
-		FROM 
-			generations
-		WHERE 
-			model_id = $1 and wheel = $2
+			array_agg(y ORDER BY y) AS years
+		FROM (
+			SELECT generate_series(start_year, end_year) AS y
+			FROM generations
+			WHERE model_id = $1 AND wheel = $2
+		) AS years_series;
 	`
-	year := model.GetYearsResponse{}
-	years := []model.GetYearsResponse{}
-	fmt.Println(modelID)
-	err := r.db.QueryRow(*ctx, q, modelID, wheel).Scan(&year.StartYear, &year.EndYear)
-	years = append(years, year)
+	var years []*int
+	err := r.db.QueryRow(*ctx, q, modelID, wheel).Scan(&years)
+
 	return years, err
 }
 
