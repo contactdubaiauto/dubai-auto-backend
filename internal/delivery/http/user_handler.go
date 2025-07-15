@@ -301,81 +301,6 @@ func (h *UserHandler) GetCities(c *gin.Context) {
 	utils.GinResponse(c, data)
 }
 
-// GetModifications godoc
-// @Summary      Get generation modifications
-// @Description  Returns a list of generation modifications
-// @Tags         users
-// @Produce      json
-// @Param        generation_id  query     string  true  "Get modification's generation_id'"
-// @Param        body_type_id  query     string  true  "Get modification's body_type_id'"
-// @Param        fuel_type_id  query     string  true  "Get modification's fuel_type_id'"
-// @Param        drivetrain_id  query     string  true  "Get modification's drivetrain_id'"
-// @Param        transmission_id  query     string  true  "Get modification's transmission_id'"
-// @Success      200   {array}  model.GetModificationsResponse
-// @Failure      400   {object}  model.ResultMessage
-// @Failure      401   {object}  pkg.ErrorResponse
-// @Failure		 403  {object} pkg.ErrorResponse
-// @Failure      404   {object}  model.ResultMessage
-// @Failure      500   {object}  model.ResultMessage
-// @Router       /api/v1/users/modifications [get]
-func (h *UserHandler) GetModifications(c *gin.Context) {
-	generation_id := c.Query("generation_id")
-	generationID, err := strconv.Atoi(generation_id)
-
-	if err != nil {
-		utils.GinResponse(c, &model.Response{
-			Status: 400,
-			Error:  errors.New("generation id must be integer"),
-		})
-		return
-	}
-	body_type_id := c.Query("body_type_id")
-	bodyTypeID, err := strconv.Atoi(body_type_id)
-
-	if err != nil {
-		utils.GinResponse(c, &model.Response{
-			Status: 400,
-			Error:  errors.New("body type id must be integer"),
-		})
-		return
-	}
-	fuel_type_id := c.Query("fuel_type_id")
-	fuelTypeID, err := strconv.Atoi(fuel_type_id)
-
-	if err != nil {
-		utils.GinResponse(c, &model.Response{
-			Status: 400,
-			Error:  errors.New("fuel type id must be integer"),
-		})
-		return
-	}
-	drivetrain_id := c.Query("drivetrain_id")
-	drivetrainID, err := strconv.Atoi(drivetrain_id)
-
-	if err != nil {
-		utils.GinResponse(c, &model.Response{
-			Status: 400,
-			Error:  errors.New("drivetrain_id id must be integer"),
-		})
-		return
-	}
-	transmission_id := c.Query("transmission_id")
-	transmissionID, err := strconv.Atoi(transmission_id)
-
-	if err != nil {
-		utils.GinResponse(c, &model.Response{
-			Status: 400,
-			Error:  errors.New("transmission_id id must be integer"),
-		})
-		return
-	}
-	ctx := c.Request.Context()
-	data := h.UserService.GetModifications(
-		&ctx, generationID, bodyTypeID, fuelTypeID, drivetrainID, transmissionID)
-
-	utils.GinResponse(c, data)
-}
-
 // GetModelsByBrandID godoc
 // @Summary      Get models by brand ID for create cars
 // @Description  Returns a list of car models for a given brand ID, optionally filtered by text
@@ -745,6 +670,38 @@ func (h *UserHandler) GetCarByID(c *gin.Context) {
 
 	ctx := c.Request.Context()
 	data := h.UserService.GetCarByID(&ctx, id, userID)
+
+	utils.GinResponse(c, data)
+}
+
+// GetEditCarByID godoc
+// @Summary      Get Edit car by ID
+// @Description  Returns a car by its ID
+// @Tags         users
+// @Produce      json
+// @Param        car_id   path      int  true  "Car ID"
+// @Success      200  {object}  model.GetEditCarsResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/cars/{car_id}/edit [get]
+func (h *UserHandler) GetEditCarByID(c *gin.Context) {
+	idStr := c.Param("id")
+	userID := c.MustGet("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("car id must be integer"),
+		})
+		return
+	}
+
+	ctx := c.Request.Context()
+	data := h.UserService.GetEditCarByID(&ctx, id, userID)
 
 	utils.GinResponse(c, data)
 }

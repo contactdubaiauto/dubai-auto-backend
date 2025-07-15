@@ -87,7 +87,7 @@ create table brands (
     "id" serial primary key,
     "name" varchar(255) not null,
     "logo" varchar(255) not null,
-    "car_count" int not null default 0,
+    "model_count" int not null default 0,
     "popular" boolean default false,
     "updated_at" timestamp default now(),
     unique("name")
@@ -103,7 +103,6 @@ create table models (
     "name" varchar(255) not null,
     "brand_id" int not null,
     "popular" boolean default false,
-    "car_count" int not null default 0,
     "updated_at" timestamp default now(),
     constraint models_brand_id_fk 
         foreign key (brand_id) 
@@ -149,9 +148,6 @@ insert into body_types (name, image) values ('Limousine', '/images/body/limousin
 insert into body_types (name, image) values ('Utility', '/images/body/utility.png');
 insert into body_types (name, image) values ('Universal', '/images/body/universal.png');
 insert into body_types (name, image) values ('Cabriolet', '/images/body/cabriolet.png');
-
-
-
 
 
 create table transmissions (
@@ -438,15 +434,11 @@ insert into colors (name, image) values ('Purple', '/images/colors/purple.jpg');
 create table vehicles (
     "id" serial primary key,
     "user_id" int,
+    "modification_id" int not null,
     "brand_id" int,
     "region_id" int,
     "city_id" int default 1,
     "model_id" int,
-    "transmission_id" int,
-    "engine_id" int,
-    "drivetrain_id" int,
-    "body_type_id" int,
-    "fuel_type_id" int,
     "ownership_type_id" int not null default 1,
     "owners" int not null default 1,
     "view_count" int not null default 0,
@@ -463,13 +455,6 @@ create table vehicles (
     "new" boolean not null default false,
     "color_id" int not null,
     "trade_in" int not null default 1, -- 1-v nalichi, 2-v put, 3-pod zakaz
-    -- "generation_id" int,
-    -- "announcement_type" int not null default 0,
-    -- "modification_id" int,
-    -- "door_count" int,
-    -- "interior_color_id" int,
-    -- "mileage_km" int,
-    -- "negotiable" boolean not null default false,
     "status" int not null default 2, -- 1-pending, 2-not sale (my cars), 3-on sale,
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
@@ -498,29 +483,9 @@ create table vehicles (
             references models(id)
                 on delete cascade
                 on update cascade,
-    constraint vehicles_transmission_id_fk
-        foreign key (transmission_id)
-            references transmissions(id)
-                on delete cascade
-                on update cascade,
-    constraint vehicles_engine_id_fk
-        foreign key (engine_id)
-            references engines(id)
-                on delete cascade
-                on update cascade,
-    constraint vehicles_drivetrain_id_fk
-        foreign key (drivetrain_id)
-            references drivetrains(id)
-                on delete cascade
-                on update cascade,
-    constraint vehicles_body_type_id_fk
-        foreign key (body_type_id)
-            references body_types(id)
-                on delete cascade
-                on update cascade,
-    constraint vehicles_fuel_type_id_fk
-        foreign key (fuel_type_id)
-            references fuel_types(id)
+    constraint vehicles_modification_id_fk
+        foreign key (modification_id)
+            references generation_modifications(id)
                 on delete cascade
                 on update cascade,
     constraint vehicles_region_id_fk

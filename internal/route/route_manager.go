@@ -27,6 +27,7 @@ func SetupUserRoutes(r *gin.RouterGroup, db *pgxpool.Pool) {
 	userHandler := http.NewUserHandler(userService)
 
 	{
+		r.GET("/profile/my-cars/:id", pkg.TokenGuard, userHandler.GetMyCars)
 		r.GET("/profile/my-cars", pkg.TokenGuard, userHandler.GetMyCars)
 		r.GET("/profile/on-sale", pkg.TokenGuard, userHandler.OnSale)
 
@@ -35,7 +36,6 @@ func SetupUserRoutes(r *gin.RouterGroup, db *pgxpool.Pool) {
 		r.GET("/brands", userHandler.GetBrands)
 		r.GET("/filter-brands", userHandler.GetFilterBrands)
 		r.GET("/cities", userHandler.GetCities)
-		r.GET("/modifications", userHandler.GetModifications)
 		r.GET("/brands/:id/models", userHandler.GetModelsByBrandID)
 		r.GET("/brands/:id/filter-models", userHandler.GetFilterModelsByBrandID)
 		r.GET("/brands/:id/models/:model_id/years", userHandler.GetYearsByModelID)
@@ -49,6 +49,7 @@ func SetupUserRoutes(r *gin.RouterGroup, db *pgxpool.Pool) {
 		r.GET("/colors", userHandler.GetColors)
 		r.GET("/cars", pkg.UserGuardOrDefault, userHandler.GetCars)
 		r.GET("/cars/:id", pkg.UserGuardOrDefault, userHandler.GetCarByID)
+		r.GET("/cars/:id/edit", pkg.UserGuardOrDefault, userHandler.GetEditCarByID)
 
 		r.POST("/cars/:id/buy", pkg.TokenGuard, userHandler.BuyCar)
 		r.POST("/cars", pkg.TokenGuard, userHandler.CreateCar)

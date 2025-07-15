@@ -358,31 +358,6 @@ func (r *UserRepository) GetCities(ctx *context.Context, text string) ([]model.G
 	return cities, err
 }
 
-func (r *UserRepository) GetModifications(ctx *context.Context, generationID, bodyTypeID, fuelTypeID, drivetrainID, transmissionID int) ([]*model.GetModificationsResponse, error) {
-	q := `
-		SELECT id, name FROM generation_modifications 
-		WHERE 
-			generation_id = $1 and body_type_id = $2 and fuel_type_id = $3 and drivetrain_id = $4 and transmission_id = $5
-	`
-	rows, err := r.db.Query(*ctx, q, generationID, bodyTypeID, fuelTypeID, drivetrainID, transmissionID)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-	var modifications = make([]*model.GetModificationsResponse, 0)
-
-	for rows.Next() {
-		var modification model.GetModificationsResponse
-		if err := rows.Scan(&modification.ID, &modification.Name); err != nil {
-			return nil, err
-		}
-		modifications = append(modifications, &modification)
-	}
-	return modifications, err
-}
-
 func (r *UserRepository) GetModelsByBrandID(ctx *context.Context, brandID int64, text string) ([]model.Model, error) {
 	q := `
 			SELECT id, name FROM models WHERE brand_id = $1 AND name ILIKE '%' || $2 || '%'
@@ -455,13 +430,10 @@ func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID i
 			select 
 				json_agg(
 					json_build_object(
-						'engine_id', es.id, 
+						'id', gms.id,
 						'engine', es.value, 
-						'fuel_type_id', fts.id, 
 						'fuel_type', fts.name, 
-						'drivetrain_id', ds.id, 
 						'drivetrain', ds.name, 
-						'transmission_id', ts.id, 
 						'transmission', ts.name
 					)
 				) as modifications,
@@ -947,6 +919,87 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (mo
 		&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
 		&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt,
 		&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
+	)
+
+	return car, err
+}
+
+func (r *UserRepository) GetEditCarByID(ctx *context.Context, carID, userID int) (model.GetEditCarsResponse, error) {
+	car := model.GetEditCarsResponse{}
+
+	q := `
+		select 
+			vs.id,
+			json_build_object(
+				'id', bs.id,
+				'name', bs.name,
+				'logo', bs.logo,
+				'model_count', bs.model_count
+			) as brand,
+			json_build_object(
+				'id', rs.id,
+				'name', rs.name
+			) as region,
+			json_build_object(
+				'id', cs.id,
+				'name', cs.name
+			) as city,
+			json_build_object(
+				'id', ms.id,
+				'name', ms.name
+			) as model,
+			json_build_object(
+				'id', mfs.id,
+				'engine', es.value,
+				'fuel_type', fts.name,
+				'drivetrain', ds.name,
+				'transmission', ts.name
+			) as modification,
+			json_build_object(
+				'id', cls.id,
+				'name', cls.name,
+				'image', cls.image
+			) as color,
+			vs.year,
+			vs.price,
+			vs.odometer,
+			vs.vin_code,
+			vs.exchange,
+			vs.credit,
+			vs.new,
+			vs.status,
+			vs.created_at,
+			images,
+			vs.phone_numbers,
+			vs.view_count,
+			CASE
+				WHEN vs.user_id = $2 THEN TRUE
+				ELSE FALSE
+			END AS my_car
+		from vehicles vs
+		left join colors cls on vs.color_id = cls.id
+		left join generation_modifications mfs on mfs.id = vs.modification_id
+		left join engines es on es.id = mfs.engine_id
+		left join transmissions ts on es.id = mfs.transmission_id
+		left join drivetrains ds on es.id = mfs.drivetrain_id
+		left join fuel_types fts on es.id = mfs.fuel_type_id
+		left join brands bs on vs.brand_id = bs.id
+		left join regions rs on vs.region_id = rs.id
+		left join cities cs on vs.city_id = cs.id
+		left join models ms on vs.model_id = ms.id
+		left join lateral (
+			select 
+				json_agg(image) as images
+			from images 
+			where vehicle_id = vs.id
+		) images on true
+		where vs.id = $1;
+	`
+	err := r.db.QueryRow(*ctx, q, carID, userID).Scan(
+		&car.ID, &car.Brand, &car.Region, &car.City, &car.Model, &car.Modification,
+		&car.Color, &car.Year, &car.Price, &car.Odometer, &car.VinCode, &car.Exchange,
+		&car.Credit, &car.New, &car.Status, &car.CreatedAt, &car.Images, &car.PhoneNumbers,
+		&car.ViewCount, &car.MyCar,
 	)
 
 	return car, err

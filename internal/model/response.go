@@ -2,11 +2,11 @@ package model
 
 import "time"
 
-type Brands struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Logo     string `json:"logo"`
-	CarCount int    `json:"car_count"`
+type Brand struct {
+	ID         *int    `json:"id"`
+	Name       *string `json:"name"`
+	Logo       *string `json:"logo"`
+	ModelCount *int    `json:"model_count"`
 }
 
 type GetBrandsResponse struct {
@@ -29,12 +29,12 @@ type GetProfileResponse struct {
 }
 
 type GetFilterBrandsResponse struct {
-	PopularBrands []Brands `json:"popular_brands"`
-	AllBrands     []Brands `json:"all_brands"`
+	PopularBrands []Brand `json:"popular_brands"`
+	AllBrands     []Brand `json:"all_brands"`
 }
 
 type Region struct {
-	ID   int     `json:"id"`
+	ID   *int    `json:"id"`
 	Name *string `json:"name"`
 }
 
@@ -50,9 +50,8 @@ type GetModificationsResponse struct {
 }
 
 type Model struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	CarCount int    `json:"car_count"`
+	ID   *int    `json:"id"`
+	Name *string `json:"name"`
 }
 
 type GetFilterModelsResponse struct {
@@ -64,24 +63,21 @@ type GetYearsResponse struct {
 	Years []*int `json:"years"`
 }
 
-type Modifications struct {
-	EngineID       *int    `json:"engine_id"`
-	Engine         *string `json:"engine"`
-	FuelTypeID     *int    `json:"fuel_type_id"`
-	FuelType       *string `json:"fuel_type"`
-	DrivetrainID   *int    `json:"drivetrain_id"`
-	Drivetrain     *string `json:"drivetrain"`
-	TransmissionID *int    `json:"transmission_id"`
-	Transmission   *string `json:"transmission"`
+type Modification struct {
+	ID           *int    `json:"id"`
+	Engine       *string `json:"engine"`
+	FuelType     *string `json:"fuel_type"`
+	Drivetrain   *string `json:"drivetrain"`
+	Transmission *string `json:"transmission"`
 }
 
 type Generation struct {
-	ID            int             `json:"id"`
-	Name          string          `json:"name"`
-	Image         string          `json:"image"`
-	StartYear     int             `json:"start_year"`
-	EndYear       int             `json:"end_year"`
-	Modifications []Modifications `json:"modifications"`
+	ID            int            `json:"id"`
+	Name          string         `json:"name"`
+	Image         string         `json:"image"`
+	StartYear     int            `json:"start_year"`
+	EndYear       int            `json:"end_year"`
+	Modifications []Modification `json:"modifications"`
 }
 
 type BodyType struct {
@@ -142,4 +138,33 @@ type GetCarsResponse struct {
 	PhoneNumbers *[]string  `json:"phone_numbers"`
 	ViewCount    int        `json:"view_count"`
 	MyCar        *bool      `json:"my_car"`
+}
+
+type City struct {
+	ID   *int    `json:"id"`
+	Name *string `json:"name"`
+}
+
+type GetEditCarsResponse struct {
+	ID           int           `json:"id"`
+	Brand        *Brand        `json:"brand"`
+	Region       *Region       `json:"region"`
+	City         *City         `json:"city"`
+	Model        *Model        `json:"model"`
+	Modification *Modification `json:"modification"`
+	Year         int           `json:"year"`
+	Price        int           `json:"price"`
+	Odometer     *int          `json:"odometer"`
+	VinCode      *string       `json:"vin_code"`
+	Exchange     *bool         `json:"exchange"`
+	Credit       *bool         `json:"credit"`
+	New          *bool         `json:"new"`
+	Color        *Color        `json:"color"`
+	Status       *int          `json:"status"`
+	CreatedAt    *time.Time    `json:"created_at"`
+	UpdatedAt    *time.Time    `json:"updated_at"`
+	Images       *[]string     `json:"images"`
+	PhoneNumbers *[]string     `json:"phone_numbers"`
+	ViewCount    int           `json:"view_count"`
+	MyCar        *bool         `json:"my_car"`
 }

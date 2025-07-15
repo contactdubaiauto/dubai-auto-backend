@@ -690,3 +690,73 @@ FROM (
     FROM generations
     WHERE model_id = 3233 AND wheel = true
 ) AS years_series;
+
+
+
+select 
+    vs.id,
+    json_build_object(
+        'id', bs.id,
+        'name', bs.name,
+        'logo', bs.logo,
+        'model_count', bs.model_count
+    ) as brand,
+    json_build_object(
+        'id', rs.id,
+        'name', rs.name
+    ) as region,
+    json_build_object(
+        'id', cs.id,
+        'name', cs.name
+    ) as city,
+    json_build_object(
+        'id', ms.id,
+        'name', ms.name
+    ) as model,
+    json_build_object(
+        'id', mfs.id,
+        'engine', es.value,
+        'fuel_type', fts.name,
+        'drivetrain', ds.name,
+        'transmission', ts.name
+    ) as modification,
+    json_build_object(
+        'id', ms.id,
+        'name', ms.name,
+        'image', cls.image
+    ) as color,
+    vs.year,
+    vs.price,
+    vs.odometer,
+    vs.vin_code,
+    vs.exchange,
+    vs.credit,
+    vs.new,
+    vs.status,
+    vs.created_at,
+    images,
+    vs.phone_numbers,
+    vs.view_count,
+    CASE
+        WHEN vs.user_id = 3 THEN TRUE
+        ELSE FALSE
+    END AS my_car
+from vehicles vs
+left join colors cls on vs.color_id = cls.id
+left join generation_modifications mfs on mfs.id = vs.modification_id
+left join engines es on es.id = mfs.engine_id
+left join transmissions ts on es.id = mfs.transmission_id
+left join drivetrains ds on es.id = mfs.drivetrain_id
+left join fuel_types fts on es.id = mfs.fuel_type_id
+left join brands bs on vs.brand_id = bs.id
+left join regions rs on vs.region_id = rs.id
+left join cities cs on vs.city_id = cs.id
+left join models ms on vs.model_id = ms.id
+left join lateral (
+    select 
+        json_agg(image) as images
+    from images 
+    where vehicle_id = vs.id
+) images on true
+where vs.id = 2;
+

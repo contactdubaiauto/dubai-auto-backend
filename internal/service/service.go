@@ -149,20 +149,6 @@ func (s *UserService) GetCities(ctx *context.Context, text string) *model.Respon
 	}
 }
 
-func (s *UserService) GetModifications(ctx *context.Context, generationID, bodyTypeID, fuelTypeID, drivetrainID, transmissionID int) *model.Response {
-	modifications, err := s.UserRepository.GetModifications(ctx, generationID, bodyTypeID, fuelTypeID, drivetrainID, transmissionID)
-
-	if err != nil {
-		return &model.Response{
-			Error:  err,
-			Status: http.StatusBadRequest,
-		}
-	}
-	return &model.Response{
-		Data: modifications,
-	}
-}
-
 func (s *UserService) GetModelsByBrandID(ctx *context.Context, brandID int64, text string) *model.Response {
 	data, err := s.UserRepository.GetModelsByBrandID(ctx, brandID, text)
 
@@ -280,6 +266,16 @@ func (s *UserService) GetCars(ctx *context.Context, userID int, brands, models, 
 
 func (s *UserService) GetCarByID(ctx *context.Context, carID, userID int) *model.Response {
 	car, err := s.UserRepository.GetCarByID(ctx, carID, userID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusNotFound}
+	}
+
+	return &model.Response{Data: car}
+}
+
+func (s *UserService) GetEditCarByID(ctx *context.Context, carID, userID int) *model.Response {
+	car, err := s.UserRepository.GetEditCarByID(ctx, carID, userID)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusNotFound}
