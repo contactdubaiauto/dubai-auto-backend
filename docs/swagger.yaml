@@ -9,14 +9,21 @@ definitions:
       name:
         type: string
     type: object
-  model.Brands:
+  model.Brand:
     properties:
-      car_count:
-        type: integer
       id:
         type: integer
       logo:
         type: string
+      model_count:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.City:
+    properties:
+      id:
+        type: integer
       name:
         type: string
     type: object
@@ -31,8 +38,6 @@ definitions:
     type: object
   model.CreateCarRequest:
     properties:
-      body_type_id:
-        type: integer
       brand_id:
         type: integer
       city_id:
@@ -41,15 +46,11 @@ definitions:
         type: integer
       crash:
         type: boolean
-      drivetrain_id:
-        type: integer
-      engine_id:
-        type: integer
       exchange:
         type: boolean
-      fuel_type_id:
-        type: integer
       model_id:
+        type: integer
+      modification_id:
         type: integer
       new:
         type: boolean
@@ -64,31 +65,25 @@ definitions:
       price:
         type: integer
       trade_in:
-        type: integer
-      transmission_id:
-        type: integer
+        type: integer=
       vin_code:
         type: string
       wheel:
-        description: left true, right false
+        description: BodyTypeID     int      `json:"body_type_id" binding:"required"`
         type: boolean
       year:
         type: integer
     required:
-    - body_type_id
     - brand_id
     - city_id
     - color_id
-    - drivetrain_id
-    - engine_id
-    - fuel_type_id
     - model_id
+    - modification_id
     - odometer
     - owners
     - phone_numbers
     - price
     - trade_in
-    - transmission_id
     - vin_code
     - wheel
     - year
@@ -106,6 +101,19 @@ definitions:
         type: integer
       name:
         type: string
+    type: object
+  model.EditCarGeneration:
+    properties:
+      end_year:
+        type: integer
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+      start_year:
+        type: integer
     type: object
   model.Engine:
     properties:
@@ -131,7 +139,7 @@ definitions:
         type: string
       modifications:
         items:
-          $ref: '#/definitions/model.Modifications'
+          $ref: '#/definitions/model.Modification'
         type: array
       name:
         type: string
@@ -140,12 +148,12 @@ definitions:
     type: object
   model.GetBrandsResponse:
     properties:
-      car_count:
-        type: integer
       id:
         type: integer
       logo:
         type: string
+      model_count:
+        type: integer
       name:
         type: string
     type: object
@@ -217,15 +225,74 @@ definitions:
           $ref: '#/definitions/model.Region'
         type: array
     type: object
+  model.GetEditCarsResponse:
+    properties:
+      body_type:
+        $ref: '#/definitions/model.BodyType'
+      brand:
+        $ref: '#/definitions/model.Brand'
+      city:
+        $ref: '#/definitions/model.City'
+      color:
+        $ref: '#/definitions/model.Color'
+      crash:
+        type: boolean
+      created_at:
+        type: string
+      credit:
+        type: boolean
+      exchange:
+        type: boolean
+      generation:
+        $ref: '#/definitions/model.EditCarGeneration'
+      id:
+        type: integer
+      images:
+        items:
+          type: string
+        type: array
+      model:
+        $ref: '#/definitions/model.Model'
+      modification:
+        $ref: '#/definitions/model.Modification'
+      my_car:
+        type: boolean
+      new:
+        type: boolean
+      odometer:
+        type: integer
+      phone_numbers:
+        items:
+          type: string
+        type: array
+      price:
+        type: integer
+      region:
+        $ref: '#/definitions/model.Region'
+      status:
+        type: integer
+      trade_id:
+        type: integer
+      updated_at:
+        type: string
+      view_count:
+        type: integer
+      vin_code:
+        type: string
+      wheel:
+        type: boolean
+      year:
+        type: integer
+    type: object
   model.GetFilterBrandsResponse:
     properties:
       all_brands:
         items:
-          $ref: '#/definitions/model.Brands'
+          $ref: '#/definitions/model.Brand'
         type: array
       popular_brands:
         items:
-          $ref: '#/definitions/model.Brands'
+          $ref: '#/definitions/model.Brand'
         type: array
     type: object
   model.GetFilterModelsResponse:
@@ -238,13 +305,6 @@ definitions:
         items:
           $ref: '#/definitions/model.Model'
         type: array
-    type: object
-  model.GetModificationsResponse:
-    properties:
-      id:
-        type: integer
-      name:
-        type: string
     type: object
   model.GetProfileResponse:
     properties:
@@ -267,6 +327,13 @@ definitions:
       username:
         type: string
     type: object
+  model.Home:
+    properties:
+      popular:
+        items:
+          $ref: '#/definitions/model.GetCarsResponse'
+        type: array
+    type: object
   model.LoginResponse:
     properties:
       access_token:
@@ -276,31 +343,23 @@ definitions:
     type: object
   model.Model:
     properties:
-      car_count:
-        type: integer
       id:
         type: integer
       name:
         type: string
     type: object
-  model.Modifications:
+  model.Modification:
     properties:
       drivetrain:
         type: string
-      drivetrain_id:
-        type: integer
       engine:
         type: string
-      engine_id:
-        type: integer
       fuel_type:
         type: string
-      fuel_type_id:
+      id:
         type: integer
       transmission:
         type: string
-      transmission_id:
-        type: integer
     type: object
   model.Region:
     properties:
@@ -339,8 +398,6 @@ definitions:
     type: object
   model.UpdateCarRequest:
     properties:
-      body_type_id:
-        type: integer
       brand_id:
         type: integer
       city_id:
@@ -349,17 +406,13 @@ definitions:
         type: integer
       crash:
         type: boolean
-      drivetrain_id:
-        type: integer
-      engine_id:
-        type: integer
       exchange:
         type: boolean
-      fuel_type_id:
-        type: integer
       id:
         type: integer
       model_id:
+        type: integer
+      modification_id:
         type: integer
       new:
         type: boolean
@@ -375,8 +428,6 @@ definitions:
         type: integer
       trade_in:
         type: integer
-      transmission_id:
-        type: integer
       vin_code:
         type: string
       wheel:
@@ -385,21 +436,17 @@ definitions:
       year:
         type: integer
     required:
-    - body_type_id
     - brand_id
     - city_id
     - color_id
-    - drivetrain_id
-    - engine_id
-    - fuel_type_id
     - id
     - model_id
+    - modification_id
     - odometer
     - owners
     - phone_numbers
     - price
     - trade_in
-    - transmission_id
     - vin_code
     - wheel
     - year
@@ -1068,10 +1115,6 @@ paths:
         in: query
         name: credit
         type: string
-      - description: Filter by right hand drive
-        in: query
-        name: right_hand_drive
-        type: string
       - description: Filter by price from
         in: query
         name: price_from
@@ -1398,6 +1441,45 @@ paths:
       security:
       - BearerAuth: []
       summary: Dont sell cars
+      tags:
+      - users
+  /api/v1/users/cars/{car_id}/edit:
+    get:
+      description: Returns a car by its ID
+      parameters:
+      - description: Car ID
+        in: path
+        name: car_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetEditCarsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get Edit car by ID
       tags:
       - users
   /api/v1/users/cars/{car_id}/images:
@@ -1756,35 +1838,9 @@ paths:
       summary: Get fuel types
       tags:
       - users
-  /api/v1/users/modifications:
+  /api/v1/users/home:
     get:
-      description: Returns a list of generation modifications
-      parameters:
-      - description: Get modification's generation_id'
-        in: query
-        name: generation_id
-        required: true
-        type: string
-      - description: Get modification's body_type_id'
-        in: query
-        name: body_type_id
-        required: true
-        type: string
-      - description: Get modification's fuel_type_id'
-        in: query
-        name: fuel_type_id
-        required: true
-        type: string
-      - description: Get modification's drivetrain_id'
-        in: query
-        name: drivetrain_id
-        required: true
-        type: string
-      - description: Get modification's transmission_id'
-        in: query
-        name: transmission_id
-        required: true
-        type: string
+      description: Returns a list of car home
       produces:
       - application/json
       responses:
@@ -1792,7 +1848,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.GetModificationsResponse'
+              $ref: '#/definitions/model.Home'
             type: array
         "400":
           description: Bad Request
@@ -1814,7 +1870,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
-      summary: Get generation modifications
+      summary: Get home
       tags:
       - users
   /api/v1/users/profile:

@@ -914,12 +914,6 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Filter by right hand drive",
-                        "name": "right_hand_drive",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
                         "description": "Filter by price from",
                         "name": "price_from",
                         "in": "query"
@@ -1386,6 +1380,65 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/cars/{car_id}/edit": {
+            "get": {
+                "description": "Returns a car by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get Edit car by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Car ID",
+                        "name": "car_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.GetEditCarsResponse"
                         }
                     },
                     "400": {
@@ -1966,60 +2019,23 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/users/modifications": {
+        "/api/v1/users/home": {
             "get": {
-                "description": "Returns a list of generation modifications",
+                "description": "Returns a list of car home",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "users"
                 ],
-                "summary": "Get generation modifications",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Get modification's generation_id'",
-                        "name": "generation_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Get modification's body_type_id'",
-                        "name": "body_type_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Get modification's fuel_type_id'",
-                        "name": "fuel_type_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Get modification's drivetrain_id'",
-                        "name": "drivetrain_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Get modification's transmission_id'",
-                        "name": "transmission_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
+                "summary": "Get home",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.GetModificationsResponse"
+                                "$ref": "#/definitions/model.Home"
                             }
                         }
                     },
@@ -2363,17 +2379,28 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Brands": {
+        "model.Brand": {
             "type": "object",
             "properties": {
-                "car_count": {
-                    "type": "integer"
-                },
                 "id": {
                     "type": "integer"
                 },
                 "logo": {
                     "type": "string"
+                },
+                "model_count": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.City": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
@@ -2397,28 +2424,21 @@ const docTemplate = `{
         "model.CreateCarRequest": {
             "type": "object",
             "required": [
-                "body_type_id",
                 "brand_id",
                 "city_id",
                 "color_id",
-                "drivetrain_id",
-                "engine_id",
-                "fuel_type_id",
                 "model_id",
+                "modification_id",
                 "odometer",
                 "owners",
                 "phone_numbers",
                 "price",
                 "trade_in",
-                "transmission_id",
                 "vin_code",
                 "wheel",
                 "year"
             ],
             "properties": {
-                "body_type_id": {
-                    "type": "integer"
-                },
                 "brand_id": {
                     "type": "integer"
                 },
@@ -2431,19 +2451,13 @@ const docTemplate = `{
                 "crash": {
                     "type": "boolean"
                 },
-                "drivetrain_id": {
-                    "type": "integer"
-                },
-                "engine_id": {
-                    "type": "integer"
-                },
                 "exchange": {
                     "type": "boolean"
                 },
-                "fuel_type_id": {
+                "model_id": {
                     "type": "integer"
                 },
-                "model_id": {
+                "modification_id": {
                     "type": "integer"
                 },
                 "new": {
@@ -2467,14 +2481,11 @@ const docTemplate = `{
                 "trade_in": {
                     "type": "integer"
                 },
-                "transmission_id": {
-                    "type": "integer"
-                },
                 "vin_code": {
                     "type": "string"
                 },
                 "wheel": {
-                    "description": "left true, right false",
+                    "description": "BodyTypeID     int      ` + "`" + `json:\"body_type_id\" binding:\"required\"` + "`" + `",
                     "type": "boolean"
                 },
                 "year": {
@@ -2501,6 +2512,26 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "model.EditCarGeneration": {
+            "type": "object",
+            "properties": {
+                "end_year": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "start_year": {
+                    "type": "integer"
                 }
             }
         },
@@ -2541,7 +2572,7 @@ const docTemplate = `{
                 "modifications": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Modifications"
+                        "$ref": "#/definitions/model.Modification"
                     }
                 },
                 "name": {
@@ -2555,14 +2586,14 @@ const docTemplate = `{
         "model.GetBrandsResponse": {
             "type": "object",
             "properties": {
-                "car_count": {
-                    "type": "integer"
-                },
                 "id": {
                     "type": "integer"
                 },
                 "logo": {
                     "type": "string"
+                },
+                "model_count": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
@@ -2672,19 +2703,108 @@ const docTemplate = `{
                 }
             }
         },
+        "model.GetEditCarsResponse": {
+            "type": "object",
+            "properties": {
+                "body_type": {
+                    "$ref": "#/definitions/model.BodyType"
+                },
+                "brand": {
+                    "$ref": "#/definitions/model.Brand"
+                },
+                "city": {
+                    "$ref": "#/definitions/model.City"
+                },
+                "color": {
+                    "$ref": "#/definitions/model.Color"
+                },
+                "crash": {
+                    "type": "boolean"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "credit": {
+                    "type": "boolean"
+                },
+                "exchange": {
+                    "type": "boolean"
+                },
+                "generation": {
+                    "$ref": "#/definitions/model.EditCarGeneration"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "model": {
+                    "$ref": "#/definitions/model.Model"
+                },
+                "modification": {
+                    "$ref": "#/definitions/model.Modification"
+                },
+                "my_car": {
+                    "type": "boolean"
+                },
+                "new": {
+                    "type": "boolean"
+                },
+                "odometer": {
+                    "type": "integer"
+                },
+                "phone_numbers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "region": {
+                    "$ref": "#/definitions/model.Region"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "trade_id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "view_count": {
+                    "type": "integer"
+                },
+                "vin_code": {
+                    "type": "string"
+                },
+                "wheel": {
+                    "type": "boolean"
+                },
+                "year": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.GetFilterBrandsResponse": {
             "type": "object",
             "properties": {
                 "all_brands": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Brands"
+                        "$ref": "#/definitions/model.Brand"
                     }
                 },
                 "popular_brands": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Brands"
+                        "$ref": "#/definitions/model.Brand"
                     }
                 }
             }
@@ -2703,17 +2823,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.Model"
                     }
-                }
-            }
-        },
-        "model.GetModificationsResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
                 }
             }
         },
@@ -2749,6 +2858,17 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Home": {
+            "type": "object",
+            "properties": {
+                "popular": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GetCarsResponse"
+                    }
+                }
+            }
+        },
         "model.LoginResponse": {
             "type": "object",
             "properties": {
@@ -2763,9 +2883,6 @@ const docTemplate = `{
         "model.Model": {
             "type": "object",
             "properties": {
-                "car_count": {
-                    "type": "integer"
-                },
                 "id": {
                     "type": "integer"
                 },
@@ -2774,32 +2891,23 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Modifications": {
+        "model.Modification": {
             "type": "object",
             "properties": {
                 "drivetrain": {
                     "type": "string"
                 },
-                "drivetrain_id": {
-                    "type": "integer"
-                },
                 "engine": {
                     "type": "string"
-                },
-                "engine_id": {
-                    "type": "integer"
                 },
                 "fuel_type": {
                     "type": "string"
                 },
-                "fuel_type_id": {
+                "id": {
                     "type": "integer"
                 },
                 "transmission": {
                     "type": "string"
-                },
-                "transmission_id": {
-                    "type": "integer"
                 }
             }
         },
@@ -2861,29 +2969,22 @@ const docTemplate = `{
         "model.UpdateCarRequest": {
             "type": "object",
             "required": [
-                "body_type_id",
                 "brand_id",
                 "city_id",
                 "color_id",
-                "drivetrain_id",
-                "engine_id",
-                "fuel_type_id",
                 "id",
                 "model_id",
+                "modification_id",
                 "odometer",
                 "owners",
                 "phone_numbers",
                 "price",
                 "trade_in",
-                "transmission_id",
                 "vin_code",
                 "wheel",
                 "year"
             ],
             "properties": {
-                "body_type_id": {
-                    "type": "integer"
-                },
                 "brand_id": {
                     "type": "integer"
                 },
@@ -2896,22 +2997,16 @@ const docTemplate = `{
                 "crash": {
                     "type": "boolean"
                 },
-                "drivetrain_id": {
-                    "type": "integer"
-                },
-                "engine_id": {
-                    "type": "integer"
-                },
                 "exchange": {
                     "type": "boolean"
-                },
-                "fuel_type_id": {
-                    "type": "integer"
                 },
                 "id": {
                     "type": "integer"
                 },
                 "model_id": {
+                    "type": "integer"
+                },
+                "modification_id": {
                     "type": "integer"
                 },
                 "new": {
@@ -2933,9 +3028,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "trade_in": {
-                    "type": "integer"
-                },
-                "transmission_id": {
                     "type": "integer"
                 },
                 "vin_code": {

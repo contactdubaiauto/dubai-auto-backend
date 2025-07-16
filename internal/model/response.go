@@ -10,10 +10,10 @@ type Brand struct {
 }
 
 type GetBrandsResponse struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Logo     string `json:"logo"`
-	CarCount int    `json:"car_count"`
+	ID         int    `json:"id"`
+	Name       string `json:"name"`
+	Logo       string `json:"logo"`
+	ModelCount int    `json:"model_count"`
 }
 
 type GetProfileResponse struct {
@@ -81,9 +81,9 @@ type Generation struct {
 }
 
 type BodyType struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Image string `json:"image"`
+	ID    *int    `json:"id"`
+	Name  *string `json:"name"`
+	Image *string `json:"image"`
 }
 
 type Transmission struct {
@@ -110,6 +110,10 @@ type Color struct {
 	ID    *int    `json:"id"`
 	Name  *string `json:"name"`
 	Image *string `json:"image"`
+}
+
+type Home struct {
+	Popular []GetCarsResponse `json:"popular"`
 }
 
 type GetCarsResponse struct {
@@ -145,26 +149,39 @@ type City struct {
 	Name *string `json:"name"`
 }
 
+type EditCarGeneration struct {
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Image     string `json:"image"`
+	StartYear int    `json:"start_year"`
+	EndYear   int    `json:"end_year"`
+}
+
 type GetEditCarsResponse struct {
-	ID           int           `json:"id"`
-	Brand        *Brand        `json:"brand"`
-	Region       *Region       `json:"region"`
-	City         *City         `json:"city"`
-	Model        *Model        `json:"model"`
-	Modification *Modification `json:"modification"`
-	Year         int           `json:"year"`
-	Price        int           `json:"price"`
-	Odometer     *int          `json:"odometer"`
-	VinCode      *string       `json:"vin_code"`
-	Exchange     *bool         `json:"exchange"`
-	Credit       *bool         `json:"credit"`
-	New          *bool         `json:"new"`
-	Color        *Color        `json:"color"`
-	Status       *int          `json:"status"`
-	CreatedAt    *time.Time    `json:"created_at"`
-	UpdatedAt    *time.Time    `json:"updated_at"`
-	Images       *[]string     `json:"images"`
-	PhoneNumbers *[]string     `json:"phone_numbers"`
-	ViewCount    int           `json:"view_count"`
-	MyCar        *bool         `json:"my_car"`
+	ID           int                `json:"id"`
+	Brand        *Brand             `json:"brand"`
+	Region       *Region            `json:"region"`
+	City         *City              `json:"city"`
+	Model        *Model             `json:"model"`
+	Modification *Modification      `json:"modification"`
+	BodyType     *BodyType          `json:"body_type"`
+	Generation   *EditCarGeneration `json:"generation"`
+	Year         int                `json:"year"`
+	Price        int                `json:"price"`
+	Odometer     *int               `json:"odometer"`
+	VinCode      *string            `json:"vin_code"`
+	Exchange     *bool              `json:"exchange"`
+	Credit       *bool              `json:"credit"`
+	New          *bool              `json:"new"`
+	Color        *Color             `json:"color"`
+	Status       *int               `json:"status"`
+	CreatedAt    *time.Time         `json:"created_at"`
+	UpdatedAt    *time.Time         `json:"updated_at"`
+	Images       *[]string          `json:"images"`
+	PhoneNumbers *[]string          `json:"phone_numbers"`
+	ViewCount    int                `json:"view_count"`
+	MyCar        *bool              `json:"my_car"`
+	Wheel        *bool              `json:"wheel"`
+	TradeIN      *int               `json:"trade_id"`
+	Crash        *bool              `json:"crash"`
 }

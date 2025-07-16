@@ -13,10 +13,11 @@ type DeleteCarImageRequest struct {
 
 type CreateCarRequest struct {
 	// new
-	UserID         int      `json:"user_id"`
-	CityID         int      `json:"city_id" binding:"required"`
-	BrandID        int      `json:"brand_id" binding:"required"`
-	ModelID        int      `json:"model_id" binding:"required"`
+	UserID  int `json:"user_id"`
+	CityID  int `json:"city_id" binding:"required"`
+	BrandID int `json:"brand_id" binding:"required"`
+	ModelID int `json:"model_id" binding:"required"`
+	// BodyTypeID     int      `json:"body_type_id" binding:"required"`
 	Wheel          *bool    `json:"wheel" binding:"required"` // left true, right false
 	ModificationID int      `json:"modification_id" binding:"required"`
 	Year           int      `json:"year" binding:"required"`
@@ -46,13 +47,9 @@ type UpdateCarRequest struct {
 	ID             int      `json:"id" binding:"required"`
 	CityID         int      `json:"city_id" binding:"required"`
 	BrandID        int      `json:"brand_id" binding:"required"`
+	ModificationID int      `json:"modification_id" binding:"required"`
 	ModelID        int      `json:"model_id" binding:"required"`
 	Wheel          *bool    `json:"wheel" binding:"required"` // left true, right false
-	TransmissionID int      `json:"transmission_id" binding:"required"`
-	EngineID       int      `json:"engine_id" binding:"required"`
-	DrivetrainID   int      `json:"drivetrain_id" binding:"required"`
-	BodyTypeID     int      `json:"body_type_id" binding:"required"`
-	FuelTypeID     int      `json:"fuel_type_id" binding:"required"`
 	Year           int      `json:"year" binding:"required"`
 	Odometer       int      `json:"odometer" binding:"required"`
 	VinCode        string   `json:"vin_code" binding:"required"`

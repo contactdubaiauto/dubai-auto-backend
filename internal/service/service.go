@@ -249,13 +249,23 @@ func (s *UserService) GetColors(ctx *context.Context) *model.Response {
 	return &model.Response{Data: data}
 }
 
+func (s *UserService) GetHome(ctx *context.Context, userID int) *model.Response {
+	data, err := s.UserRepository.GetHome(ctx, userID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: data}
+}
+
 func (s *UserService) GetCars(ctx *context.Context, userID int, brands, models, regions, cities,
-	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types []string, year_from, year_to, exchange, credit, right_hand_drive, price_from, price_to string) *model.Response {
+	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types []string,
+	year_from, year_to, exchange, credit, price_from, price_to string) *model.Response {
 
 	cars, err := s.UserRepository.GetCars(ctx, userID, brands, models, regions, cities,
 		generations, transmissions, engines, drivetrains, body_types, fuel_types,
 		ownership_types, year_from, year_to, exchange, credit,
-		right_hand_drive, price_from, price_to)
+		price_from, price_to)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}

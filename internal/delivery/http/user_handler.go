@@ -582,6 +582,26 @@ func (h *UserHandler) GetColors(c *gin.Context) {
 	utils.GinResponse(c, data)
 }
 
+// GetHome godoc
+// @Summary      Get home
+// @Description  Returns a list of car home
+// @Tags         users
+// @Produce      json
+// @Success      200  {array}  model.Home
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/home [get]
+func (h *UserHandler) GetHome(c *gin.Context) {
+	ctx := c.Request.Context()
+	userID := c.MustGet("id").(int)
+
+	data := h.UserService.GetHome(&ctx, userID)
+	utils.GinResponse(c, data)
+}
+
 // GetCars godoc
 // @Summary      Get cars
 // @Description  Returns a list of cars
@@ -602,7 +622,6 @@ func (h *UserHandler) GetColors(c *gin.Context) {
 // @Param   year_to           query   string    false  "Filter by year to"
 // @Param   exchange          query   string    false  "Filter by exchange"
 // @Param   credit            query   string    false  "Filter by credit"
-// @Param   right_hand_drive  query   string    false  "Filter by right hand drive"
 // @Param   price_from        query   string    false  "Filter by price from"
 // @Param   price_to          query   string    false  "Filter by price to"
 // @Success      200  {array}  model.GetCarsResponse
@@ -630,14 +649,13 @@ func (h *UserHandler) GetCars(c *gin.Context) {
 	year_to := c.Query("year_to")
 	exchange := c.Query("exchange")
 	credit := c.Query("credit")
-	right_hand_drive := c.Query("right_hand_drive")
 	price_from := c.Query("price_from")
 	price_to := c.Query("price_to")
 
 	data := h.UserService.GetCars(&ctx, userID, brands, models,
 		regions, cities, generations, transmissions, engines, drivetrains,
 		body_types, fuel_types, ownership_types,
-		year_from, year_to, exchange, credit, right_hand_drive, price_from, price_to)
+		year_from, year_to, exchange, credit, price_from, price_to)
 
 	utils.GinResponse(c, data)
 }

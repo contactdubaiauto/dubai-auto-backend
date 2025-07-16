@@ -47,6 +47,7 @@ func SetupUserRoutes(r *gin.RouterGroup, db *pgxpool.Pool) {
 		r.GET("/drivetrains", userHandler.GetDrivetrains)
 		r.GET("/fuel-types", userHandler.GetFuelTypes)
 		r.GET("/colors", userHandler.GetColors)
+		r.GET("/home", pkg.UserGuardOrDefault, userHandler.GetHome)
 		r.GET("/cars", pkg.UserGuardOrDefault, userHandler.GetCars)
 		r.GET("/cars/:id", pkg.UserGuardOrDefault, userHandler.GetCarByID)
 		r.GET("/cars/:id/edit", pkg.UserGuardOrDefault, userHandler.GetEditCarByID)

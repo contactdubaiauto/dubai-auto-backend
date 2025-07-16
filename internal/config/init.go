@@ -17,6 +17,7 @@ func loadEnvVariable(key string) string {
 }
 
 type Config struct {
+	MIGRATE              string
 	DB_HOST              string
 	DB_PORT              string
 	DB_USER              string
@@ -63,6 +64,7 @@ func Init() *Config {
 
 	ENV.APP_VERSION = loadEnvVariable("APP_VERSION")
 	ENV.STATIC_PATH = loadEnvVariable("STATIC_PATH")
+	ENV.MIGRATE = loadEnvVariable("MIGRATE")
 	ENV.DEFAULT_IMAGE_WIDTHS = []uint{320, 640} // if change these sizes, u must change in pkg/files.go too (line: 147)
 	return &ENV
 }

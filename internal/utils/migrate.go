@@ -66,7 +66,6 @@ func Marks(filePath string, db *pgxpool.Pool) error {
 		_, err = db.Exec(context.Background(), q, id, rows[i][2], "/images/logo/audi.png")
 
 		if err != nil {
-			// return err
 			continue
 		}
 	}
@@ -164,7 +163,7 @@ func Generations(filePath string, db *pgxpool.Pool) error {
 			wheel = false
 		}
 		_, err = db.Exec(context.Background(), q,
-			id, rows[i][2], year_from, year_to, rows[i][7], autoru_model_id, wheel)
+			id, rows[i][2], year_from, year_to, rows[i][7][2:], autoru_model_id, wheel)
 
 		if err != nil {
 			continue

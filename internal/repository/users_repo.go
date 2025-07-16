@@ -49,16 +49,17 @@ func (r *UserRepository) GetMyCars(ctx *context.Context, userID *int) ([]model.G
 			vs.view_count,
 			true as my_car
 		from vehicles vs
+		left join generation_modifications gms on gms.id = vs.modification_id
 		left join colors cls on vs.color_id = cls.id
 		left join brands bs on vs.brand_id = bs.id
 		left join regions rs on vs.region_id = rs.id
 		left join cities cs on vs.city_id = cs.id
 		left join models ms on vs.model_id = ms.id
-		left join transmissions ts on vs.transmission_id = ts.id
-		left join engines es on vs.engine_id = es.id
-		left join drivetrains ds on vs.drivetrain_id = ds.id
-		left join body_types bts on vs.body_type_id = bts.id
-		left join fuel_types fts on vs.fuel_type_id = fts.id
+		left join transmissions ts on gms.transmission_id = ts.id
+		left join engines es on gms.engine_id = es.id
+		left join drivetrains ds on gms.drivetrain_id = ds.id
+		left join body_types bts on gms.body_type_id = bts.id
+		left join fuel_types fts on gms.fuel_type_id = fts.id
 		left join lateral (
 			select 
 				json_agg(image) as images
@@ -120,16 +121,17 @@ func (r *UserRepository) OnSale(ctx *context.Context, userID *int) ([]model.GetC
 			vs.view_count, 
 			true as my_car
 		from vehicles vs
+		left join generation_modifications gms on gms.id = vs.modification_id
 		left join colors cls on vs.color_id = cls.id
 		left join brands bs on vs.brand_id = bs.id
 		left join regions rs on vs.region_id = rs.id
 		left join cities cs on vs.city_id = cs.id
 		left join models ms on vs.model_id = ms.id
-		left join transmissions ts on vs.transmission_id = ts.id
-		left join engines es on vs.engine_id = es.id
-		left join drivetrains ds on vs.drivetrain_id = ds.id
-		left join body_types bts on vs.body_type_id = bts.id
-		left join fuel_types fts on vs.fuel_type_id = fts.id
+		left join transmissions ts on gms.transmission_id = ts.id
+		left join engines es on gms.engine_id = es.id
+		left join drivetrains ds on gms.drivetrain_id = ds.id
+		left join body_types bts on gms.body_type_id = bts.id
+		left join fuel_types fts on gms.fuel_type_id = fts.id
 		left join lateral (
 			select 
 				json_agg(image) as images
@@ -202,7 +204,7 @@ func (r *UserRepository) Sell(ctx *context.Context, carID, userID *int) error {
 
 func (r *UserRepository) GetBrands(ctx *context.Context, text string) ([]*model.GetBrandsResponse, error) {
 	q := `
-		SELECT id, name, logo, car_count FROM brands WHERE name ILIKE '%' || $1 || '%'
+		SELECT id, name, logo, model_count FROM brands WHERE name ILIKE '%' || $1 || '%'
 	`
 	rows, err := r.db.Query(*ctx, q, text)
 
@@ -215,7 +217,7 @@ func (r *UserRepository) GetBrands(ctx *context.Context, text string) ([]*model.
 
 	for rows.Next() {
 		var brand model.GetBrandsResponse
-		if err := rows.Scan(&brand.ID, &brand.Name, &brand.Logo, &brand.CarCount); err != nil {
+		if err := rows.Scan(&brand.ID, &brand.Name, &brand.Logo, &brand.ModelCount); err != nil {
 			return nil, err
 		}
 		brands = append(brands, &brand)
@@ -292,7 +294,7 @@ func (r *UserRepository) GetFilterBrands(ctx *context.Context, text string) (mod
 						'id', id, 
 						'name', name, 
 						'logo', logo, 
-						'car_count', car_count 
+						'model_count', model_count 
 					)
 				) as popular_brands
 			FROM brands 
@@ -304,7 +306,7 @@ func (r *UserRepository) GetFilterBrands(ctx *context.Context, text string) (mod
 						'id', id, 
 						'name', name, 
 						'logo', logo, 
-						'car_count', car_count 
+						'model_count', model_count 
 					)
 				) as all_brands
 			FROM brands 
@@ -392,7 +394,7 @@ func (r *UserRepository) GetFilterModelsByBrandID(ctx *context.Context, brandID 
 					json_build_object(
 						'id', id, 
 						'name', name, 
-						'car_count', car_count 
+						'model_count', model_count 
 					)
 				) as popular_models
 			FROM models 
@@ -403,7 +405,7 @@ func (r *UserRepository) GetFilterModelsByBrandID(ctx *context.Context, brandID 
 					json_build_object(
 						'id', id, 
 						'name', name, 
-						'car_count', car_count 
+						'model_count', model_count 
 					)
 				) as all_models
 			FROM models 
@@ -688,10 +690,90 @@ func (r *UserRepository) GetColors(ctx *context.Context) ([]model.Color, error) 
 	return colors, err
 }
 
+func (r *UserRepository) GetHome(ctx *context.Context, userID int) (model.Home, error) {
+	home := model.Home{}
+	cars := make([]model.GetCarsResponse, 0)
+
+	q := `
+		select 
+			vs.id,
+			bs.name as brand,
+			rs.name as region,
+			cs.name as city,
+			cls.name as color,
+			ms.name as model,
+			ts.name as transmission,
+			es.value as engine,
+			ds.name as drive,
+			bts.name as body_type,
+			fts.name as fuel_type,
+			vs.year,
+			vs.price,
+			vs.odometer,
+			vs.vin_code,
+			vs.exchange,
+			vs.credit,
+			vs.new,
+			vs.status,
+			vs.created_at,
+			vs.updated_at,
+			images,
+			vs.phone_numbers,
+			vs.view_count,
+			CASE
+				WHEN vs.user_id = $1 THEN TRUE
+				ELSE FALSE
+			END AS my_car
+		from vehicles vs
+		left join generation_modifications gms on gms.id = vs.modification_id
+		left join colors cls on vs.color_id = cls.id
+		left join brands bs on vs.brand_id = bs.id
+		left join regions rs on vs.region_id = rs.id
+		left join cities cs on vs.city_id = cs.id
+		left join models ms on vs.model_id = ms.id
+		left join transmissions ts on gms.transmission_id = ts.id
+		left join engines es on gms.engine_id = es.id
+		left join drivetrains ds on gms.drivetrain_id = ds.id
+		left join body_types bts on gms.body_type_id = bts.id
+		left join fuel_types fts on gms.fuel_type_id = fts.id
+		left join lateral (
+			select 
+				json_agg(image) as images
+			from images 
+			where vehicle_id = vs.id
+		) images on true
+		where vs.status = 3
+		order by vs.id desc limit 4
+	`
+
+	rows, err := r.db.Query(*ctx, q, userID)
+
+	if err != nil {
+		return home, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var car model.GetCarsResponse
+		if err := rows.Scan(
+			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
+			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
+			&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt,
+			&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
+		); err != nil {
+			return home, err
+		}
+		cars = append(cars, car)
+	}
+	home.Popular = cars
+	return home, nil
+}
+
 func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 	brands, models, regions, cities, generations, transmissions,
 	engines, drivetrains, body_types, fuel_types, ownership_types []string, year_from, year_to, exchange, credit,
-	right_hand_drive, price_from, price_to string) ([]model.GetCarsResponse, error) {
+	price_from, price_to string) ([]model.GetCarsResponse, error) {
 	var qWhere string
 	var qValues []interface{}
 	qValues = append(qValues, userID)
@@ -767,11 +849,6 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 		qWhere += fmt.Sprintf(" AND vs.credit = $%d", i)
 		qValues = append(qValues, true)
 	}
-	if right_hand_drive != "" {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.wheel = $%d", i)
-		qValues = append(qValues, true)
-	}
 	if price_from != "" {
 		i += 1
 		qWhere += fmt.Sprintf(" AND vs.price >= $%d", i)
@@ -815,16 +892,17 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 				ELSE FALSE
 			END AS my_car
 		from vehicles vs
+		left join generation_modifications gms on gms.id = vs.modification_id
 		left join colors cls on vs.color_id = cls.id
 		left join brands bs on vs.brand_id = bs.id
 		left join regions rs on vs.region_id = rs.id
 		left join cities cs on vs.city_id = cs.id
 		left join models ms on vs.model_id = ms.id
-		left join transmissions ts on vs.transmission_id = ts.id
-		left join engines es on vs.engine_id = es.id
-		left join drivetrains ds on vs.drivetrain_id = ds.id
-		left join body_types bts on vs.body_type_id = bts.id
-		left join fuel_types fts on vs.fuel_type_id = fts.id
+		left join transmissions ts on gms.transmission_id = ts.id
+		left join engines es on gms.engine_id = es.id
+		left join drivetrains ds on gms.drivetrain_id = ds.id
+		left join body_types bts on gms.body_type_id = bts.id
+		left join fuel_types fts on gms.fuel_type_id = fts.id
 		left join lateral (
 			select 
 				json_agg(image) as images
@@ -894,16 +972,17 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (mo
 				ELSE FALSE
 			END AS my_car
 		from vehicles vs
+		left join generation_modifications gms on gms.id = vs.modification_id
 		left join colors cls on vs.color_id = cls.id
 		left join brands bs on vs.brand_id = bs.id
 		left join regions rs on vs.region_id = rs.id
 		left join cities cs on vs.city_id = cs.id
 		left join models ms on vs.model_id = ms.id
-		left join transmissions ts on vs.transmission_id = ts.id
-		left join engines es on vs.engine_id = es.id
-		left join drivetrains ds on vs.drivetrain_id = ds.id
-		left join body_types bts on vs.body_type_id = bts.id
-		left join fuel_types fts on vs.fuel_type_id = fts.id
+		left join transmissions ts on gms.transmission_id = ts.id
+		left join engines es on gms.engine_id = es.id
+		left join drivetrains ds on gms.drivetrain_id = ds.id
+		left join body_types bts on gms.body_type_id = bts.id
+		left join fuel_types fts on gms.fuel_type_id = fts.id
 		left join lateral (
 			select 
 				json_agg(image) as images
@@ -960,11 +1039,26 @@ func (r *UserRepository) GetEditCarByID(ctx *context.Context, carID, userID int)
 				'name', cls.name,
 				'image', cls.image
 			) as color,
+			json_build_object(
+				'id', bts.id,
+				'name', bts.name,
+				'image', bts.image
+			) as body_type,
+			json_build_object(
+				'id', gs.id,
+				'name', gs.name,
+				'image', gs.image,
+				'start_year', gs.start_year,
+				'end_year', gs.end_year
+			) as generation,
 			vs.year,
 			vs.price,
 			vs.odometer,
 			vs.vin_code,
 			vs.exchange,
+			vs.wheel,
+			vs.trade_in,
+			vs.crash,
 			vs.credit,
 			vs.new,
 			vs.status,
@@ -979,10 +1073,12 @@ func (r *UserRepository) GetEditCarByID(ctx *context.Context, carID, userID int)
 		from vehicles vs
 		left join colors cls on vs.color_id = cls.id
 		left join generation_modifications mfs on mfs.id = vs.modification_id
+		left join generations gs on gs.id = mfs.generation_id
+		left join body_types bts on bts.id = mfs.body_type_id
 		left join engines es on es.id = mfs.engine_id
-		left join transmissions ts on es.id = mfs.transmission_id
-		left join drivetrains ds on es.id = mfs.drivetrain_id
-		left join fuel_types fts on es.id = mfs.fuel_type_id
+		left join transmissions ts on ts.id = mfs.transmission_id
+		left join drivetrains ds on ds.id = mfs.drivetrain_id
+		left join fuel_types fts on fts.id = mfs.fuel_type_id
 		left join brands bs on vs.brand_id = bs.id
 		left join regions rs on vs.region_id = rs.id
 		left join cities cs on vs.city_id = cs.id
@@ -997,7 +1093,8 @@ func (r *UserRepository) GetEditCarByID(ctx *context.Context, carID, userID int)
 	`
 	err := r.db.QueryRow(*ctx, q, carID, userID).Scan(
 		&car.ID, &car.Brand, &car.Region, &car.City, &car.Model, &car.Modification,
-		&car.Color, &car.Year, &car.Price, &car.Odometer, &car.VinCode, &car.Exchange,
+		&car.Color, &car.BodyType, &car.Generation, &car.Year, &car.Price, &car.Odometer, &car.VinCode,
+		&car.Exchange, &car.Wheel, &car.TradeIN, &car.Crash,
 		&car.Credit, &car.New, &car.Status, &car.CreatedAt, &car.Images, &car.PhoneNumbers,
 		&car.ViewCount, &car.MyCar,
 	)
