@@ -455,8 +455,8 @@ create table vehicles (
     "price" int not null,
     "new" boolean not null default false,
     "color_id" int not null,
-    "trade_in" int not null default 1, -- 1-v nalichi, 2-v put, 3-pod zakaz
-    "status" int not null default 2, -- 1-pending, 2-not sale (my cars), 3-on sale,
+    "trade_in" int not null default 1, -- 1. No exchange 2. Equal value 3. More expensive 4. Cheaper 5. Not a car
+    "status" int not null default 3, -- 1-pending, 2-not sale (my cars), 3-on sale,
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
     constraint vehicles_color_id_fk
@@ -506,6 +506,17 @@ create table images (
     "vehicle_id" int not null,
     "image" varchar(255) not null,
     constraint images_vehicle_id_fk
+        foreign key (vehicle_id)
+            references vehicles(id)
+                on delete cascade
+                on update cascade
+);
+
+
+create table videos (
+    "vehicle_id" int not null,
+    "video" varchar(255) not null,
+    constraint videos_vehicle_id_fk
         foreign key (vehicle_id)
             references vehicles(id)
                 on delete cascade

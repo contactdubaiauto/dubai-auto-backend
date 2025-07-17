@@ -43,6 +43,10 @@ type CreateCarRequest struct {
 	// GenerationID int `json:"generation_id" binding:"required"`
 }
 
+type DeleteCarVideoRequest struct {
+	Video string `json:"video" binding:"required"`
+}
+
 type UpdateCarRequest struct {
 	ID             int      `json:"id" binding:"required"`
 	CityID         int      `json:"city_id" binding:"required"`

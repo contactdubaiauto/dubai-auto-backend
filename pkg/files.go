@@ -199,13 +199,14 @@ func RemoveFolder(path string) error {
 	return err
 }
 
-func SaveVideos(file *multipart.FileHeader, folder string) (string, error) {
+func SaveVideosOriginal(file *multipart.FileHeader, folder string) (string, error) {
 	err := CreateFolderIfNotExists("." + folder)
-
+	fmt.Println("98sduf9s8hdf98h")
 	if err != nil {
 		return "", fmt.Errorf("failed to create output folder: %v", err)
 	}
 
+	fmt.Println("sdf87huij")
 	// Open the uploaded file
 	src, err := file.Open()
 	if err != nil {
@@ -213,6 +214,46 @@ func SaveVideos(file *multipart.FileHeader, folder string) (string, error) {
 	}
 	defer src.Close()
 
+	fmt.Println("sdu87fuhij")
+	// Generate a UUID for the output file name
+	outputID := uuid.New().String()
+
+	// Save the uploaded file temporarily
+	tempVideoPath := filepath.Join(folder, outputID+"_upload"+filepath.Ext(file.Filename))
+	dst, err := os.Create("." + tempVideoPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to create temp file: %v", err)
+	}
+	defer dst.Close()
+	fmt.Println("8s7ydfuu8h")
+
+	_, err = io.Copy(dst, src)
+	if err != nil {
+		return "", fmt.Errorf("failed to copy uploaded file: %v", err)
+	}
+
+	// Define output path for the HLS
+	// outputPath := filepath.Join(folder, outputID+".m3u8")
+	// go VideoToHLS(tempVideoPath, outputPath)
+	return tempVideoPath, nil
+}
+
+func SaveVideos(file *multipart.FileHeader, folder string) (string, error) {
+	err := CreateFolderIfNotExists("." + folder)
+	fmt.Println("98sduf9s8hdf98h")
+	if err != nil {
+		return "", fmt.Errorf("failed to create output folder: %v", err)
+	}
+
+	fmt.Println("sdf87huij")
+	// Open the uploaded file
+	src, err := file.Open()
+	if err != nil {
+		return "", fmt.Errorf("failed to open uploaded file: %v", err)
+	}
+	defer src.Close()
+
+	fmt.Println("sdu87fuhij")
 	// Generate a UUID for the output file name
 	outputID := uuid.New().String()
 
@@ -223,6 +264,7 @@ func SaveVideos(file *multipart.FileHeader, folder string) (string, error) {
 		return "", fmt.Errorf("failed to create temp file: %v", err)
 	}
 	defer dst.Close()
+	fmt.Println("8s7ydfuu8h")
 
 	_, err = io.Copy(dst, src)
 	if err != nil {

@@ -1612,6 +1612,80 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/users/cars/{car_id}/videos": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Uploads videos for a car (max 1 files)",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Upload car videos",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Car CAR_ID",
+                        "name": "car_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Car videos (max 10)",
+                        "name": "videos",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/cars/{id}/images": {
             "delete": {
                 "security": [
@@ -1645,6 +1719,82 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/model.DeleteCarImageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/cars/{id}/videos": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Deletes a car video by car ID and video path",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete car video",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Car ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Video path",
+                        "name": "video",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.DeleteCarVideoRequest"
                         }
                     }
                 ],
@@ -2504,6 +2654,17 @@ const docTemplate = `{
                 }
             }
         },
+        "model.DeleteCarVideoRequest": {
+            "type": "object",
+            "required": [
+                "video"
+            ],
+            "properties": {
+                "video": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Drivetrain": {
             "type": "object",
             "properties": {
@@ -2675,6 +2836,12 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
+                "videos": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "view_count": {
                     "type": "integer"
                 },
@@ -2757,6 +2924,9 @@ const docTemplate = `{
                 "odometer": {
                     "type": "integer"
                 },
+                "owners": {
+                    "type": "integer"
+                },
                 "phone_numbers": {
                     "type": "array",
                     "items": {
@@ -2777,6 +2947,12 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "videos": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "view_count": {
                     "type": "integer"

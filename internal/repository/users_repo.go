@@ -885,6 +885,7 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 			vs.created_at,
 			vs.updated_at,
 			images,
+			videos,
 			vs.phone_numbers,
 			vs.view_count,
 			CASE
@@ -909,6 +910,12 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 			from images 
 			where vehicle_id = vs.id
 		) images on true
+		left join lateral (
+			select 
+				json_agg(video) as videos
+			from videos 
+			where vehicle_id = vs.id
+		) videos on true
 		where vs.status = 3
 		` + qWhere + `
 		order by vs.id desc
@@ -928,7 +935,7 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
 			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
 			&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt,
-			&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
+			&car.UpdatedAt, &car.Images, &car.Videos, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
 		); err != nil {
 			return cars, err
 		}
@@ -942,7 +949,13 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (mo
 	car := model.GetCarsResponse{}
 
 	q := `
-		select 
+		WITH updated AS (
+			UPDATE vehicles
+			SET view_count = view_count + 1
+			WHERE id = $1
+			RETURNING *
+		)
+		SELECT 
 			vs.id,
 			bs.name as brand,
 			rs.name as region,
@@ -965,39 +978,43 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (mo
 			vs.created_at,
 			vs.updated_at,
 			images,
+			videos,
 			vs.phone_numbers,
 			vs.view_count,
 			CASE
 				WHEN vs.user_id = $2 THEN TRUE
 				ELSE FALSE
 			END AS my_car
-		from vehicles vs
-		left join generation_modifications gms on gms.id = vs.modification_id
-		left join colors cls on vs.color_id = cls.id
-		left join brands bs on vs.brand_id = bs.id
-		left join regions rs on vs.region_id = rs.id
-		left join cities cs on vs.city_id = cs.id
-		left join models ms on vs.model_id = ms.id
-		left join transmissions ts on gms.transmission_id = ts.id
-		left join engines es on gms.engine_id = es.id
-		left join drivetrains ds on gms.drivetrain_id = ds.id
-		left join body_types bts on gms.body_type_id = bts.id
-		left join fuel_types fts on gms.fuel_type_id = fts.id
-		left join lateral (
-			select 
-				json_agg(image) as images
-			from images 
-			where vehicle_id = vs.id
-		) images on true
-		where vs.id = $1
-
+		FROM updated vs
+		LEFT JOIN generation_modifications gms ON gms.id = vs.modification_id
+		LEFT JOIN colors cls ON vs.color_id = cls.id
+		LEFT JOIN brands bs ON vs.brand_id = bs.id
+		LEFT JOIN regions rs ON vs.region_id = rs.id
+		LEFT JOIN cities cs ON vs.city_id = cs.id
+		LEFT JOIN models ms ON vs.model_id = ms.id
+		LEFT JOIN transmissions ts ON gms.transmission_id = ts.id
+		LEFT JOIN engines es ON gms.engine_id = es.id
+		LEFT JOIN drivetrains ds ON gms.drivetrain_id = ds.id
+		LEFT JOIN body_types bts ON gms.body_type_id = bts.id
+		LEFT JOIN fuel_types fts ON gms.fuel_type_id = fts.id
+		LEFT JOIN LATERAL (
+			SELECT json_agg(image) AS images
+			FROM images
+			WHERE vehicle_id = vs.id
+		) images ON true
+		LEFT JOIN LATERAL (
+			SELECT json_agg(video) AS videos
+			FROM videos
+			WHERE vehicle_id = vs.id
+		) videos ON true
+		WHERE vs.id = $1;
 	`
 
 	err := r.db.QueryRow(*ctx, q, carID, userID).Scan(
 		&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
 		&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
 		&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt,
-		&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
+		&car.UpdatedAt, &car.Images, &car.Videos, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
 	)
 
 	return car, err
@@ -1064,12 +1081,14 @@ func (r *UserRepository) GetEditCarByID(ctx *context.Context, carID, userID int)
 			vs.status,
 			vs.created_at,
 			images,
+			videos,
 			vs.phone_numbers,
 			vs.view_count,
 			CASE
 				WHEN vs.user_id = $2 THEN TRUE
 				ELSE FALSE
-			END AS my_car
+			END AS my_car,
+			vs.owners
 		from vehicles vs
 		left join colors cls on vs.color_id = cls.id
 		left join generation_modifications mfs on mfs.id = vs.modification_id
@@ -1089,14 +1108,20 @@ func (r *UserRepository) GetEditCarByID(ctx *context.Context, carID, userID int)
 			from images 
 			where vehicle_id = vs.id
 		) images on true
+		left join lateral (
+			select 
+				json_agg(video) as videos
+			from videos 
+			where vehicle_id = vs.id
+		) videos on true
 		where vs.id = $1;
 	`
 	err := r.db.QueryRow(*ctx, q, carID, userID).Scan(
 		&car.ID, &car.Brand, &car.Region, &car.City, &car.Model, &car.Modification,
 		&car.Color, &car.BodyType, &car.Generation, &car.Year, &car.Price, &car.Odometer, &car.VinCode,
 		&car.Exchange, &car.Wheel, &car.TradeIN, &car.Crash,
-		&car.Credit, &car.New, &car.Status, &car.CreatedAt, &car.Images, &car.PhoneNumbers,
-		&car.ViewCount, &car.MyCar,
+		&car.Credit, &car.New, &car.Status, &car.CreatedAt, &car.Images, &car.Videos, &car.PhoneNumbers,
+		&car.ViewCount, &car.MyCar, &car.Owners,
 	)
 
 	return car, err
@@ -1169,7 +1194,7 @@ func (r *UserRepository) UpdateCar(ctx *context.Context, car *model.UpdateCarReq
 
 	q := `
 		UPDATE vehicles 
-		SET ` + strings.Join(updateFields, ", ") + `, updated_at = NOW(), status = 2
+		SET ` + strings.Join(updateFields, ", ") + `, updated_at = NOW()
 		WHERE id = $1 AND user_id = $` + fmt.Sprintf("%d", paramIndex)
 
 	updateArgs = append(updateArgs, userID)
@@ -1195,7 +1220,19 @@ func (r *UserRepository) CreateCarImages(ctx *context.Context, carID int, images
 		}
 	}
 
-	_, err := r.db.Exec(*ctx, `update vehicles set status = 2 where id = $1`, carID)
+	return nil
+}
+
+func (r *UserRepository) CreateCarVideos(ctx *context.Context, carID int, video string) error {
+
+	q := `
+		INSERT INTO videos (vehicle_id, video) VALUES ($1, $2)
+	`
+
+	_, err := r.db.Exec(*ctx, q, carID, video)
+	if err != nil {
+		return err
+	}
 
 	return err
 }
@@ -1203,5 +1240,11 @@ func (r *UserRepository) CreateCarImages(ctx *context.Context, carID int, images
 func (r *UserRepository) DeleteCarImage(ctx *context.Context, carID int, imagePath string) error {
 	q := `DELETE FROM images WHERE vehicle_id = $1 AND image = $2`
 	_, err := r.db.Exec(*ctx, q, carID, imagePath)
+	return err
+}
+
+func (r *UserRepository) DeleteCarVideo(ctx *context.Context, carID int, videoPath string) error {
+	q := `DELETE FROM videos WHERE vehicle_id = $1 AND video = $2`
+	_, err := r.db.Exec(*ctx, q, carID, videoPath)
 	return err
 }

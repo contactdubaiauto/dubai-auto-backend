@@ -65,7 +65,7 @@ definitions:
       price:
         type: integer
       trade_in:
-        type: integer=
+        type: integer
       vin_code:
         type: string
       wheel:
@@ -94,6 +94,13 @@ definitions:
         type: string
     required:
     - image
+    type: object
+  model.DeleteCarVideoRequest:
+    properties:
+      video:
+        type: string
+    required:
+    - video
     type: object
   model.Drivetrain:
     properties:
@@ -207,6 +214,10 @@ definitions:
         type: string
       updated_at:
         type: string
+      videos:
+        items:
+          type: string
+        type: array
       view_count:
         type: integer
       vin_code:
@@ -261,6 +272,8 @@ definitions:
         type: boolean
       odometer:
         type: integer
+      owners:
+        type: integer
       phone_numbers:
         items:
           type: string
@@ -275,6 +288,10 @@ definitions:
         type: integer
       updated_at:
         type: string
+      videos:
+        items:
+          type: string
+        type: array
       view_count:
         type: integer
       vin_code:
@@ -1571,6 +1588,54 @@ paths:
       summary: Sell cars
       tags:
       - users
+  /api/v1/users/cars/{car_id}/videos:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads videos for a car (max 1 files)
+      parameters:
+      - description: Car CAR_ID
+        in: path
+        name: car_id
+        required: true
+        type: integer
+      - description: Car videos (max 10)
+        in: formData
+        name: videos
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload car videos
+      tags:
+      - users
   /api/v1/users/cars/{id}/images:
     delete:
       consumes:
@@ -1618,6 +1683,55 @@ paths:
       security:
       - BearerAuth: []
       summary: Delete car image
+      tags:
+      - users
+  /api/v1/users/cars/{id}/videos:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a car video by car ID and video path
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Video path
+        in: body
+        name: video
+        required: true
+        schema:
+          $ref: '#/definitions/model.DeleteCarVideoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete car video
       tags:
       - users
   /api/v1/users/cities:

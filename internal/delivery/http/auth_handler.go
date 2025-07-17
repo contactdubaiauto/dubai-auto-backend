@@ -4,7 +4,9 @@ import (
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
 	"dubai-auto/internal/utils"
+	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,6 +17,45 @@ type AuthHandler struct {
 
 func NewAuthHandler(service *service.AuthService) *AuthHandler {
 	return &AuthHandler{service}
+}
+
+// DeleteAccount godoc
+// @Summary      Delete user account
+// @Description  Deletes the authenticated user's account and related data
+// @Tags         auth
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  pkg.ErrorResponse
+// @Failure      403  {object}  pkg.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/auth/account/{id} [delete]
+func (h *AuthHandler) DeleteAccount(c *gin.Context) {
+	ctx := c.Request.Context()
+	idStr := c.Param("id")
+	userID, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("user id must be integer"),
+		})
+		return
+	}
+	// Optionally, you can check if the user is deleting their own account:
+	authUserID := c.MustGet("id").(int)
+	if userID != authUserID {
+		utils.GinResponse(c, &model.Response{
+			Status: 403,
+			Error:  errors.New("forbidden: cannot delete another user's account"),
+		})
+		return
+	}
+
+	data := h.service.DeleteAccount(&ctx, userID)
+	utils.GinResponse(c, data)
 }
 
 // UserEmail confirmation godoc

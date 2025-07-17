@@ -9,6 +9,7 @@ deploy:
 
 	@echo "Deploying..."
 	@scp ./bin/da2 ubuntu@95.85.126.220:/var/www/
+	# @scp ./images/logo/audi.png ubuntu@95.85.126.220:/var/www/images/logo
 	# @scp -r ./docs ubuntu@95.85.126.220:/var/www/
 	
 	# @scp -r ./images ubuntu@95.85.126.220:/var/www

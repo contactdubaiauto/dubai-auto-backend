@@ -139,6 +139,7 @@ type GetCarsResponse struct {
 	CreatedAt    *time.Time `json:"created_at"`
 	UpdatedAt    *time.Time `json:"updated_at"`
 	Images       *[]string  `json:"images"`
+	Videos       *[]string  `json:"videos"`
 	PhoneNumbers *[]string  `json:"phone_numbers"`
 	ViewCount    int        `json:"view_count"`
 	MyCar        *bool      `json:"my_car"`
@@ -166,8 +167,8 @@ type GetEditCarsResponse struct {
 	Modification *Modification      `json:"modification"`
 	BodyType     *BodyType          `json:"body_type"`
 	Generation   *EditCarGeneration `json:"generation"`
-	Year         int                `json:"year"`
-	Price        int                `json:"price"`
+	Year         *int               `json:"year"`
+	Price        *int               `json:"price"`
 	Odometer     *int               `json:"odometer"`
 	VinCode      *string            `json:"vin_code"`
 	Exchange     *bool              `json:"exchange"`
@@ -178,10 +179,12 @@ type GetEditCarsResponse struct {
 	CreatedAt    *time.Time         `json:"created_at"`
 	UpdatedAt    *time.Time         `json:"updated_at"`
 	Images       *[]string          `json:"images"`
+	Videos       *[]string          `json:"videos"`
 	PhoneNumbers *[]string          `json:"phone_numbers"`
-	ViewCount    int                `json:"view_count"`
+	ViewCount    *int               `json:"view_count"`
 	MyCar        *bool              `json:"my_car"`
 	Wheel        *bool              `json:"wheel"`
 	TradeIN      *int               `json:"trade_id"`
+	Owners       *int               `json:"owners"`
 	Crash        *bool              `json:"crash"`
 }

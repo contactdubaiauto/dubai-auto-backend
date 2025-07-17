@@ -19,6 +19,14 @@ func NewAuthService(repo *repository.AuthRepository) *AuthService {
 	return &AuthService{repo}
 }
 
+func (s *AuthService) DeleteAccount(ctx *context.Context, userID int) *model.Response {
+	err := s.repo.DeleteAccount(ctx, userID)
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: model.Success{Message: "Account deleted successfully"}}
+}
+
 func (s *AuthService) UserEmailConfirmation(ctx context.Context, user *model.UserEmailConfirmationRequest) model.Response {
 	userByEmail, err := s.repo.UserByEmail(ctx, &user.Email)
 

@@ -56,11 +56,13 @@ func SetupUserRoutes(r *gin.RouterGroup, db *pgxpool.Pool) {
 		r.POST("/cars", pkg.TokenGuard, userHandler.CreateCar)
 		r.PUT("/cars", pkg.TokenGuard, userHandler.UpdateCar)
 		r.POST("/cars/:id/images", pkg.TokenGuard, userHandler.CreateCarImages)
+		r.POST("/cars/:id/videos", pkg.TokenGuard, userHandler.CreateCarVideos)
 		r.POST("/cars/:id/cancel", pkg.TokenGuard, userHandler.Cancel)
 		r.POST("/cars/:id/dont-sell", pkg.TokenGuard, userHandler.DontSell)
 		r.POST("/cars/:id/sell", pkg.TokenGuard, userHandler.Sell)
 
 		r.DELETE("/cars/:id/images", pkg.TokenGuard, userHandler.DeleteCarImage)
+		r.DELETE("/cars/:id/videos", pkg.TokenGuard, userHandler.DeleteCarVideo)
 		r.DELETE("/cars/:id", pkg.TokenGuard, userHandler.DeleteCar)
 	}
 }
@@ -75,5 +77,6 @@ func SetupAuthRoutes(r *gin.RouterGroup, db *pgxpool.Pool) {
 		r.POST("/user-email-confirmation", authHandler.UserEmailConfirmation)
 		r.POST("/user-login-phone", authHandler.UserLoginPhone)
 		r.POST("/user-phone-confirmation", authHandler.UserPhoneConfirmation)
+		r.DELETE("/account/:id", pkg.TokenGuard, authHandler.DeleteAccount)
 	}
 }

@@ -66,7 +66,7 @@ func (s *UserService) DontSell(ctx *context.Context, carID, userID *int) *model.
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "succesfully cancelled"}}
+	return &model.Response{Data: model.Success{Message: "succesfully updated status"}}
 }
 
 func (s *UserService) Sell(ctx *context.Context, carID, userID *int) *model.Response {
@@ -76,7 +76,7 @@ func (s *UserService) Sell(ctx *context.Context, carID, userID *int) *model.Resp
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "succesfully cancelled"}}
+	return &model.Response{Data: model.Success{Message: "succesfully updated status"}}
 }
 
 func (s *UserService) GetBrands(ctx *context.Context, text string) *model.Response {
@@ -350,6 +350,21 @@ func (s *UserService) CreateCarImages(ctx *context.Context, carID int, images []
 	}
 }
 
+func (s *UserService) CreateCarVideos(ctx *context.Context, carID int, video string) *model.Response {
+	err := s.UserRepository.CreateCarVideos(ctx, carID, video)
+
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return &model.Response{
+		Data: model.Success{Message: "Car videos created successfully"},
+	}
+}
+
 func (s *UserService) DeleteCarImage(ctx *context.Context, carID int, imagePath string) *model.Response {
 	err := s.UserRepository.DeleteCarImage(ctx, carID, imagePath)
 
@@ -357,4 +372,13 @@ func (s *UserService) DeleteCarImage(ctx *context.Context, carID int, imagePath 
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 	return &model.Response{Data: model.Success{Message: "Car image deleted successfully"}}
+}
+
+func (s *UserService) DeleteCarVideo(ctx *context.Context, carID int, videoPath string) *model.Response {
+	err := s.UserRepository.DeleteCarVideo(ctx, carID, videoPath)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: model.Success{Message: "Car video deleted successfully"}}
 }

@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -883,6 +884,70 @@ func (h *UserHandler) CreateCarImages(c *gin.Context) {
 	utils.GinResponse(c, data)
 }
 
+// CreateCarVideos godoc
+// @Summary      Upload car videos
+// @Description  Uploads videos for a car (max 1 files)
+// @Tags         users
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        car_id      path      int     true   "Car CAR_ID"
+// @Param        videos  formData  file    true   "Car videos (max 10)"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  pkg.ErrorResponse
+// @Failure	 	 403  	 {object}  pkg.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/users/cars/{car_id}/videos [post]
+func (h *UserHandler) CreateCarVideos(c *gin.Context) {
+	ctx := c.Request.Context()
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid car ID"),
+		})
+		return
+	}
+
+	form, _ := c.MultipartForm()
+
+	if form == nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the files"),
+		})
+		return
+	}
+
+	videos := form.File["videos"]
+
+	if len(videos) > 1 {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 1 file(s)"),
+		})
+		return
+	}
+	fmt.Println(len(videos))
+	// path, err := pkg.SaveVideos(videos[0], config.ENV.STATIC_PATH+"cars/"+idStr+"/videos") // if have ffmpeg on server
+	path, err := pkg.SaveVideosOriginal(videos[0], config.ENV.STATIC_PATH+"cars/"+idStr+"/videos")
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  err,
+		})
+		return
+	}
+
+	data := h.UserService.CreateCarVideos(&ctx, id, path)
+	utils.GinResponse(c, data)
+}
+
 // DeleteCarImage godoc
 // @Summary      Delete car image
 // @Description  Deletes a car image by car ID and image path
@@ -910,9 +975,8 @@ func (h *UserHandler) DeleteCarImage(c *gin.Context) {
 		})
 		return
 	}
-	var req struct {
-		Image string `json:"image"`
-	}
+	var req model.DeleteCarImageRequest
+
 	if err := c.ShouldBindJSON(&req); err != nil || req.Image == "" {
 		utils.GinResponse(c, &model.Response{
 			Status: 400,
@@ -927,6 +991,55 @@ func (h *UserHandler) DeleteCarImage(c *gin.Context) {
 	if resp.Error == nil {
 		// Remove from disk (ignore error, as file may not exist)
 		_ = pkg.RemoveFile(req.Image)
+	}
+	utils.GinResponse(c, resp)
+}
+
+// DeleteCarVideo godoc
+// @Summary      Delete car video
+// @Description  Deletes a car video by car ID and video path
+// @Tags         users
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id    path      int     true   "Car ID"
+// @Param        video body      model.DeleteCarVideoRequest true "Video path"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  pkg.ErrorResponse
+// @Failure      403   {object}  pkg.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/users/cars/{id}/videos [delete]
+func (h *UserHandler) DeleteCarVideo(c *gin.Context) {
+	idStr := c.Param("id")
+	carID, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("car id must be integer"),
+		})
+		return
+	}
+
+	var video model.DeleteCarVideoRequest
+
+	if err := c.ShouldBindJSON(&video); err != nil || video.Video == "" {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid video path in request body"),
+		})
+		return
+	}
+	ctx := c.Request.Context()
+	// Remove from DB
+	resp := h.UserService.DeleteCarVideo(&ctx, carID, video.Video)
+
+	if resp.Error == nil {
+		// pkg.RemoveFile(req.Video[:5]) // use it if have car's multiple videos
+		pkg.RemoveFolder(config.ENV.STATIC_PATH + "cars/" + idStr + "/videos")
+
 	}
 	utils.GinResponse(c, resp)
 }

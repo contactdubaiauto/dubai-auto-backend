@@ -12,10 +12,6 @@ import (
 	"golang.org/x/time/rate"
 )
 
-type ErrorResponse struct {
-	Message string `json:"message" example:"Invalid param ID"`
-}
-
 func TokenGuard(c *gin.Context) {
 	authorization := c.Request.Header["Authorization"]
 

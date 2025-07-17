@@ -15,6 +15,13 @@ func NewAuthRepository(db *pgxpool.Pool) *AuthRepository {
 	return &AuthRepository{db}
 }
 
+func (r *AuthRepository) DeleteAccount(ctx *context.Context, userID int) error {
+
+	// Delete user
+	_, err := r.db.Exec(*ctx, `DELETE FROM users WHERE id = $1`, userID)
+	return err
+}
+
 func (r *AuthRepository) UserByEmail(ctx context.Context, email *string) (*model.UserByEmail, error) {
 	query := `
 		SELECT id, email, password FROM users WHERE email = $1

@@ -224,3 +224,6 @@ insert into images (vehicle_id, image) values (30, '/images/cars/30/c3fba494-ca3
 insert into images (vehicle_id, image) values (30, '/images/cars/30/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
 insert into images (vehicle_id, image) values (30, '/images/cars/30/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
 
+
+
+update brands set model_count = 3;
