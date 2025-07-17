@@ -25,10 +25,10 @@ import (
 // @host 95.85.126.220
 // @BasePath /
 
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
-// @description Type "Bearer" followed by a space and JWT token.
+// @securityDefinitions.securityScheme BearerAuth
+// @type http
+// @scheme bearer
+// @bearerFormat JWT
 
 func main() {
 	// TODO: all wrong info send 400 status, ingo log and error log must be seperately

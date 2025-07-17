@@ -9,9 +9,13 @@ deploy:
 
 	@echo "Deploying..."
 	@scp ./bin/da2 ubuntu@95.85.126.220:/var/www/
+	@ssh ubuntu@95.85.126.220 "rm -f /var/www/da && mv /var/www/da2 /var/www/da"
+	@echo "Restarting remote service..."
+	@ssh ubuntu@95.85.126.220 "sudo -S systemctl restart da.service"
+	@echo "Done"
+	
 	# @scp ./images/logo/audi.png ubuntu@95.85.126.220:/var/www/images/logo
 	# @scp -r ./docs ubuntu@95.85.126.220:/var/www/
-	
 	# @scp -r ./images ubuntu@95.85.126.220:/var/www
 	# @scp ./.env ubuntu@95.85.126.220:/var/www/
 	

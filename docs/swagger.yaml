@@ -534,6 +534,47 @@ info:
   title: Project name
   version: "1.0"
 paths:
+  /api/v1/auth/account/{id}:
+    delete:
+      description: Deletes the authenticated user's account and related data
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete user account
+      tags:
+      - auth
   /api/v1/auth/user-email-confirmation:
     post:
       consumes:
@@ -1169,6 +1210,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
       summary: Get cars
       tags:
       - users
@@ -1334,6 +1377,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
       summary: Get car by ID
       tags:
       - users
@@ -1496,6 +1541,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
       summary: Get Edit car by ID
       tags:
       - users
@@ -1984,6 +2031,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
       summary: Get home
       tags:
       - users
@@ -2174,10 +2223,4 @@ paths:
       summary: Get transmissions
       tags:
       - users
-securityDefinitions:
-  BearerAuth:
-    description: Type "Bearer" followed by a space and JWT token.
-    in: header
-    name: Authorization
-    type: apiKey
 swagger: "2.0"

@@ -74,4 +74,5 @@ type UpdateProfileRequest struct {
 	Google            string `json:"google"`
 	Birthday          string `json:"birthday"`
 	AboutMe           string `json:"about_me"`
+	// todo: add city
 }

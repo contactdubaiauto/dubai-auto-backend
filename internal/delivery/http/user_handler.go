@@ -246,6 +246,7 @@ func (h *UserHandler) GetProfile(c *gin.Context) {
 // @Failure      500      {object}  model.ResultMessage
 // @Router       /api/v1/users/profile [put]
 func (h *UserHandler) UpdateProfile(c *gin.Context) {
+	// todo: add city
 	var profile model.UpdateProfileRequest
 	userID := c.MustGet("id").(int)
 	ctx := c.Request.Context()
@@ -588,6 +589,7 @@ func (h *UserHandler) GetColors(c *gin.Context) {
 // @Description  Returns a list of car home
 // @Tags         users
 // @Produce      json
+// @Security 	 BearerAuth
 // @Success      200  {array}  model.Home
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  pkg.ErrorResponse
@@ -608,6 +610,7 @@ func (h *UserHandler) GetHome(c *gin.Context) {
 // @Description  Returns a list of cars
 // @Tags         users
 // @Produce      json
+// @Security 	 BearerAuth
 // @Param   brands            query   []string  false  "Filter by brand IDs"
 // @Param   models            query   []string  false  "Filter by model IDs"
 // @Param   regions           query   []string  false  "Filter by region IDs"
@@ -666,6 +669,7 @@ func (h *UserHandler) GetCars(c *gin.Context) {
 // @Description  Returns a car by its ID
 // @Tags         users
 // @Produce      json
+// @Security 	 BearerAuth
 // @Param        car_id   path      int  true  "Car ID"
 // @Success      200  {object}  model.GetCarsResponse
 // @Failure      400  {object}  model.ResultMessage
@@ -699,6 +703,7 @@ func (h *UserHandler) GetCarByID(c *gin.Context) {
 // @Tags         users
 // @Produce      json
 // @Param        car_id   path      int  true  "Car ID"
+// @Security 	 BearerAuth
 // @Success      200  {object}  model.GetEditCarsResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  pkg.ErrorResponse
