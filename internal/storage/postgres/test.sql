@@ -691,7 +691,10 @@ FROM (
     WHERE model_id = 3233 AND wheel = true
 ) AS years_series;
 
-
+ALTER TABLE profiles
+ADD CONSTRAINT profiles_city_id_fk
+FOREIGN KEY (city_id)
+REFERENCES cities(id)
 
 select 
     vs.id,
@@ -760,3 +763,11 @@ left join lateral (
 ) images on true
 where vs.id = 2;
 
+
+
+alter table profiles drop column avater;
+ALTER TABLE profiles ADD COLUMN avatar varchar(200);
+ALTER TABLE profiles
+ADD CONSTRAINT profiles_profiles_fk
+FOREIGN KEY (profiles)
+REFERENCES cities(id)

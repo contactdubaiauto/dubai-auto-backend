@@ -16,7 +16,7 @@ deploy:
 	
 	# @scp ./images/logo/audi.png ubuntu@95.85.126.220:/var/www/images/logo
 	# @scp -r ./docs ubuntu@95.85.126.220:/var/www/
-	# @scp -r ./images ubuntu@95.85.126.220:/var/www
+	# @scp -r ./images/body ubuntu@95.85.126.220:/var/www/images
 	# @scp ./.env ubuntu@95.85.126.220:/var/www/
 	
 	@echo "Starting remote service..."
@@ -26,6 +26,8 @@ folder:
 	@echo "deploying images..."
 	@scp -r ./images ubuntu@95.85.126.220:/var/www/images
 	@echo "done"
+swag:
+	@swag init -g cmd/http/main.go  
 
 # swag init -g ./cmd/http/main.go
 # todo: write swagger init command in this file

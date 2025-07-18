@@ -2685,6 +2685,9 @@ const docTemplate = `{
                 "crash": {
                     "type": "boolean"
                 },
+                "description": {
+                    "type": "string"
+                },
                 "exchange": {
                     "type": "boolean"
                 },
@@ -2866,6 +2869,9 @@ const docTemplate = `{
                 "credit": {
                     "type": "boolean"
                 },
+                "description": {
+                    "type": "string"
+                },
                 "drivetrain": {
                     "type": "string"
                 },
@@ -2898,6 +2904,9 @@ const docTemplate = `{
                 },
                 "new": {
                     "type": "boolean"
+                },
+                "owner": {
+                    "$ref": "#/definitions/model.Owner"
                 },
                 "phone_numbers": {
                     "type": "array",
@@ -2977,6 +2986,9 @@ const docTemplate = `{
                 },
                 "credit": {
                     "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
                 },
                 "exchange": {
                     "type": "boolean"
@@ -3171,6 +3183,20 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Owner": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Region": {
             "type": "object",
             "properties": {
@@ -3256,6 +3282,9 @@ const docTemplate = `{
                 },
                 "crash": {
                     "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
                 },
                 "exchange": {
                     "type": "boolean"
@@ -3390,6 +3419,14 @@ const docTemplate = `{
                     "example": "Invalid param ID"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

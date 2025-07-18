@@ -493,7 +493,7 @@ func (r *UserRepository) GetYearsByModelID(ctx *context.Context, modelID int64, 
 		SELECT 
 			array_agg(y ORDER BY y) AS years
 		FROM (
-			SELECT generate_series(start_year, end_year) AS y
+			SELECT DISTINCT generate_series(start_year, end_year) AS y
 			FROM generations
 			WHERE model_id = $1 AND wheel = $2
 		) AS years_series;
@@ -947,7 +947,7 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 
 func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (model.GetCarsResponse, error) {
 	car := model.GetCarsResponse{}
-
+	fmt.Println("sd8f9j98j")
 	q := `
 		WITH updated AS (
 			UPDATE vehicles
@@ -984,9 +984,16 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (mo
 			CASE
 				WHEN vs.user_id = $2 THEN TRUE
 				ELSE FALSE
-			END AS my_car
+			END AS my_car,
+			json_build_object(
+				'id', pf.user_id,
+				'username', pf.username,
+				'avatar', pf.avatar
+			) as owner,
+			 vs.description
 		FROM updated vs
 		LEFT JOIN generation_modifications gms ON gms.id = vs.modification_id
+		LEFT JOIN profiles pf on pf.user_id = vs.user_id
 		LEFT JOIN colors cls ON vs.color_id = cls.id
 		LEFT JOIN brands bs ON vs.brand_id = bs.id
 		LEFT JOIN regions rs ON vs.region_id = rs.id
@@ -1014,7 +1021,7 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (mo
 		&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
 		&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
 		&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt,
-		&car.UpdatedAt, &car.Images, &car.Videos, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
+		&car.UpdatedAt, &car.Images, &car.Videos, &car.PhoneNumbers, &car.ViewCount, &car.MyCar, &car.Owner, &car.Description,
 	)
 
 	return car, err
@@ -1084,6 +1091,7 @@ func (r *UserRepository) GetEditCarByID(ctx *context.Context, carID, userID int)
 			videos,
 			vs.phone_numbers,
 			vs.view_count,
+			vs.description,
 			CASE
 				WHEN vs.user_id = $2 THEN TRUE
 				ELSE FALSE
@@ -1121,7 +1129,7 @@ func (r *UserRepository) GetEditCarByID(ctx *context.Context, carID, userID int)
 		&car.Color, &car.BodyType, &car.Generation, &car.Year, &car.Price, &car.Odometer, &car.VinCode,
 		&car.Exchange, &car.Wheel, &car.TradeIN, &car.Crash,
 		&car.Credit, &car.New, &car.Status, &car.CreatedAt, &car.Images, &car.Videos, &car.PhoneNumbers,
-		&car.ViewCount, &car.MyCar, &car.Owners,
+		&car.ViewCount, &car.Description, &car.MyCar, &car.Owners,
 	)
 
 	return car, err

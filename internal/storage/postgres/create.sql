@@ -9,6 +9,8 @@
 
 drop table if exists configurations;
 drop table if exists images;
+drop table if exists videos;
+drop table if exists cities;
 drop table if exists vehicles;
 drop table if exists profiles;
 drop table if exists generation_modifications;
@@ -16,7 +18,6 @@ drop table if exists colors;
 drop table if exists services;
 drop table if exists service_types;
 drop table if exists regions;
-drop table if exists cities;
 drop table if exists fuel_types;
 drop table if exists drivetrains;
 drop table if exists engines;
@@ -48,13 +49,27 @@ insert into users (email, password, phone, created_at)
 insert into users (email, password, phone, created_at) 
     values ('user2@gmail.com', '$2a$10$Cya9x0xSJSnRknBmJpW.Bu8ukZpVTqzwgrQgAYNPXdrX2HYGRk33W', '0111222222', now()); -- password: 12345678
 
+
+create table cities (
+    "id" serial primary key,
+    "name" varchar(255) not null,
+    "created_at" timestamp default now()
+);
+
+insert into cities (name) values ('Dubai');
+insert into cities (name) values ('Abu Dhabi');
+insert into cities (name) values ('Sharjah');
+
+
 create table profiles (
     "id" serial primary key, 
     "user_id" int not null,
+    "city_id" int,
     "driving_experience" int,
     "notification" boolean default false,
     "username" varchar(100) not null,
     "google" varchar(200),
+    "avatar" varchar(200),
     "birthday" date,
     "about_me" varchar(300),
     "last_active_date" timestamp default now(),
@@ -63,8 +78,14 @@ create table profiles (
         foreign key (user_id) 
             references users(id) 
                 on delete cascade 
+                on update cascade,
+    constraint profiles_city_id_fk 
+        foreign key (city_id) 
+            references cities(id) 
+                on delete cascade 
                 on update cascade
 );
+
 insert into profiles(
     user_id, username, driving_experience, notification, google, birthday, about_me
 )values
@@ -203,16 +224,6 @@ insert into fuel_types (name) values ('Gasoline');
 insert into fuel_types (name) values ('Diesel');
 insert into fuel_types (name) values ('Electric');
 insert into fuel_types (name) values ('Hybrid');
-
-create table cities (
-    "id" serial primary key,
-    "name" varchar(255) not null,
-    "created_at" timestamp default now()
-);
-
-insert into cities (name) values ('Dubai');
-insert into cities (name) values ('Abu Dhabi');
-insert into cities (name) values ('Sharjah');
 
 create table regions (
     "id" serial primary key,
@@ -433,7 +444,7 @@ insert into colors (name, image) values ('Purple', '/images/colors/purple.jpg');
 
 create table vehicles (
     "id" serial primary key,
-    "user_id" int,
+    "user_id" int not null,
     "modification_id" int not null,
     "brand_id" int,
     "region_id" int,

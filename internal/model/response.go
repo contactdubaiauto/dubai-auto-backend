@@ -116,6 +116,12 @@ type Home struct {
 	Popular []GetCarsResponse `json:"popular"`
 }
 
+type Owner struct {
+	Id       *int    `json:"id"`
+	Avatar   *string `json:"avatar"`
+	Username *string `json:"username"`
+}
+
 type GetCarsResponse struct {
 	ID           int        `json:"id"`
 	Brand        *string    `json:"brand"`
@@ -143,6 +149,8 @@ type GetCarsResponse struct {
 	PhoneNumbers *[]string  `json:"phone_numbers"`
 	ViewCount    int        `json:"view_count"`
 	MyCar        *bool      `json:"my_car"`
+	Owner        *Owner     `json:"owner"`
+	Description  *string    `json:"description"`
 }
 
 type City struct {
@@ -186,5 +194,6 @@ type GetEditCarsResponse struct {
 	Wheel        *bool              `json:"wheel"`
 	TradeIN      *int               `json:"trade_id"`
 	Owners       *int               `json:"owners"`
+	Description  string             `json:"description"`
 	Crash        *bool              `json:"crash"`
 }

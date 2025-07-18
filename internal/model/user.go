@@ -28,6 +28,7 @@ type CreateCarRequest struct {
 	Exchange       bool     `json:"exchange"`
 	New            bool     `json:"new"`
 	Crash          bool     `json:"crash"`
+	Description    string   `json:"description"`
 	ColorID        int      `json:"color_id" binding:"required"`
 	Owners         int      `json:"owners" binding:"required"`
 	TradeIn        int      `json:"trade_in" binding:"required"`
@@ -64,6 +65,7 @@ type UpdateCarRequest struct {
 	Crash          bool     `json:"crash"`
 	ColorID        int      `json:"color_id" binding:"required"`
 	Owners         int      `json:"owners" binding:"required"`
+	Description    string   `json:"description"`
 	TradeIn        int      `json:"trade_in" binding:"required"`
 }
 

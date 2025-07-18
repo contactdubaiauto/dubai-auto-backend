@@ -2679,6 +2679,9 @@
                 "crash": {
                     "type": "boolean"
                 },
+                "description": {
+                    "type": "string"
+                },
                 "exchange": {
                     "type": "boolean"
                 },
@@ -2860,6 +2863,9 @@
                 "credit": {
                     "type": "boolean"
                 },
+                "description": {
+                    "type": "string"
+                },
                 "drivetrain": {
                     "type": "string"
                 },
@@ -2892,6 +2898,9 @@
                 },
                 "new": {
                     "type": "boolean"
+                },
+                "owner": {
+                    "$ref": "#/definitions/model.Owner"
                 },
                 "phone_numbers": {
                     "type": "array",
@@ -2971,6 +2980,9 @@
                 },
                 "credit": {
                     "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
                 },
                 "exchange": {
                     "type": "boolean"
@@ -3165,6 +3177,20 @@
                 }
             }
         },
+        "model.Owner": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Region": {
             "type": "object",
             "properties": {
@@ -3250,6 +3276,9 @@
                 },
                 "crash": {
                     "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
                 },
                 "exchange": {
                     "type": "boolean"
@@ -3384,6 +3413,14 @@
                     "example": "Invalid param ID"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

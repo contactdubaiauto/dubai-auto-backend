@@ -46,6 +46,8 @@ definitions:
         type: integer
       crash:
         type: boolean
+      description:
+        type: string
       exchange:
         type: boolean
       model_id:
@@ -178,6 +180,8 @@ definitions:
         type: string
       credit:
         type: boolean
+      description:
+        type: string
       drivetrain:
         type: string
       engine:
@@ -200,6 +204,8 @@ definitions:
         type: boolean
       new:
         type: boolean
+      owner:
+        $ref: '#/definitions/model.Owner'
       phone_numbers:
         items:
           type: string
@@ -252,6 +258,8 @@ definitions:
         type: string
       credit:
         type: boolean
+      description:
+        type: string
       exchange:
         type: boolean
       generation:
@@ -378,6 +386,15 @@ definitions:
       transmission:
         type: string
     type: object
+  model.Owner:
+    properties:
+      avatar:
+        type: string
+      id:
+        type: integer
+      username:
+        type: string
+    type: object
   model.Region:
     properties:
       id:
@@ -423,6 +440,8 @@ definitions:
         type: integer
       crash:
         type: boolean
+      description:
+        type: string
       exchange:
         type: boolean
       id:
@@ -2223,4 +2242,10 @@ paths:
       summary: Get transmissions
       tags:
       - users
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
