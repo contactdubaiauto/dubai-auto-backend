@@ -23,30 +23,63 @@ func (r *AuthRepository) DeleteAccount(ctx *context.Context, userID int) error {
 }
 
 func (r *AuthRepository) UserByEmail(ctx context.Context, email *string) (*model.UserByEmail, error) {
+
 	query := `
-		SELECT id, email, password FROM users WHERE email = $1
+		SELECT id, email, password, username FROM temp_users WHERE email = $1
 	`
 	row := r.db.QueryRow(ctx, query, email)
 
-	var userByEmail model.UserByEmail
-	err := row.Scan(&userByEmail.ID, &userByEmail.Email, &userByEmail.OTP)
+	var u model.UserByEmail
+	err := row.Scan(&u.ID, &u.Email, &u.OTP, &u.Username)
 
-	return &userByEmail, err
+	return &u, err
 }
 
 func (r *AuthRepository) UserByPhone(ctx context.Context, phone *string) (model.UserByPhone, error) {
 	query := `
-		SELECT id, phone, password FROM users WHERE phone = $1
+		SELECT id, phone, password, username FROM temp_users WHERE phone = $1
 	`
 	row := r.db.QueryRow(ctx, query, phone)
 
 	var userByPhone model.UserByPhone
-	err := row.Scan(&userByPhone.ID, &userByPhone.Phone, &userByPhone.OTP)
+	err := row.Scan(&userByPhone.ID, &userByPhone.Phone, &userByPhone.OTP, &userByPhone.Username)
 
 	return userByPhone, err
 }
 
-func (r *AuthRepository) UserEmailGetOrRegister(ctx context.Context, username, email, password string) error {
+func (r *AuthRepository) TempUserEmailGetOrRegister(ctx context.Context, username, email, password string) error {
+	var userID int
+	q := `
+		insert into temp_users (email, password, username)
+		values ($1, $2, $3)
+		on conflict (email)
+		do update
+		set 
+			password = EXCLUDED.password
+		returning id
+	`
+	err := r.db.QueryRow(ctx, q, email, password, username).Scan(&userID)
+
+	return err
+}
+
+func (r *AuthRepository) TempUserPhoneGetOrRegister(ctx context.Context, username, phone, password string) error {
+	var userID int
+	q := `
+		insert into temp_users (phone, password, username)
+		values ($1, $2, $3)
+		on conflict (phone)
+		do update
+		set 
+			password = EXCLUDED.password
+		returning id
+	`
+	err := r.db.QueryRow(ctx, q, phone, password, username).Scan(&userID)
+
+	return err
+}
+
+func (r *AuthRepository) UserEmailGetOrRegister(ctx context.Context, username, email, password string) (int, error) {
 	var userID int
 	q := `
 		insert into users (email, password)
@@ -60,21 +93,22 @@ func (r *AuthRepository) UserEmailGetOrRegister(ctx context.Context, username, e
 	err := r.db.QueryRow(ctx, q, email, password).Scan(&userID)
 
 	if err != nil {
-		return err
+		return userID, err
 	}
 
 	q = `
 		insert into profiles (
-			user_id, username
+			user_id, username, registered_by
 		) values (
-			$1, $2
+			$1, $2, $3
 		)
 	`
-	_, err = r.db.Exec(ctx, q, userID, username)
-	return err
+	_, err = r.db.Exec(ctx, q, userID, username, "email")
+	return userID, err
 }
 
-func (r *AuthRepository) UserPhoneGetOrRegister(ctx context.Context, username, phone, password string) error {
+func (r *AuthRepository) UserPhoneGetOrRegister(ctx context.Context, username, phone, password string) (int, error) {
+
 	var userID int
 	q := `
 		insert into users (phone, password)
@@ -88,17 +122,17 @@ func (r *AuthRepository) UserPhoneGetOrRegister(ctx context.Context, username, p
 	err := r.db.QueryRow(ctx, q, phone, password).Scan(&userID)
 
 	if err != nil {
-		return err
+		return userID, err
 	}
 
 	q = `
 		insert into profiles (
-			user_id, username
+			user_id, username, registered_by
 		) values (
-			$1, $2
+			$1, $2, $3
 		)
 	`
-	_, err = r.db.Exec(ctx, q, userID, username)
+	_, err = r.db.Exec(ctx, q, userID, username, "phone")
 
-	return err
+	return userID, err
 }

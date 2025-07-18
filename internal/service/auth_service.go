@@ -28,7 +28,7 @@ func (s *AuthService) DeleteAccount(ctx *context.Context, userID int) *model.Res
 }
 
 func (s *AuthService) UserEmailConfirmation(ctx context.Context, user *model.UserEmailConfirmationRequest) model.Response {
-	userByEmail, err := s.repo.UserByEmail(ctx, &user.Email)
+	u, err := s.repo.UserByEmail(ctx, &user.Email)
 
 	if err != nil {
 		return model.Response{
@@ -37,7 +37,7 @@ func (s *AuthService) UserEmailConfirmation(ctx context.Context, user *model.Use
 		}
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(userByEmail.OTP), []byte(user.OTP))
+	err = bcrypt.CompareHashAndPassword([]byte(u.OTP), []byte(user.OTP))
 
 	if err != nil {
 		return model.Response{
@@ -46,7 +46,13 @@ func (s *AuthService) UserEmailConfirmation(ctx context.Context, user *model.Use
 		}
 	}
 
-	accessToken, refreshToken := pkg.CreateRefreshAccsessToken(userByEmail.ID, 1)
+	u.ID, err = s.repo.UserEmailGetOrRegister(ctx, u.Username, user.Email, u.OTP)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	accessToken, refreshToken := pkg.CreateRefreshAccsessToken(u.ID, 1)
 
 	return model.Response{
 		Data: model.LoginResponse{
@@ -57,7 +63,7 @@ func (s *AuthService) UserEmailConfirmation(ctx context.Context, user *model.Use
 }
 
 func (s *AuthService) UserPhoneConfirmation(ctx context.Context, user *model.UserPhoneConfirmationRequest) model.Response {
-	userByPhone, err := s.repo.UserByPhone(ctx, &user.Phone)
+	u, err := s.repo.UserByPhone(ctx, &user.Phone)
 
 	if err != nil {
 		return model.Response{
@@ -66,7 +72,7 @@ func (s *AuthService) UserPhoneConfirmation(ctx context.Context, user *model.Use
 		}
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(userByPhone.OTP), []byte(user.OTP))
+	err = bcrypt.CompareHashAndPassword([]byte(u.OTP), []byte(user.OTP))
 
 	if err != nil {
 		return model.Response{
@@ -74,8 +80,12 @@ func (s *AuthService) UserPhoneConfirmation(ctx context.Context, user *model.Use
 			Status: http.StatusBadRequest,
 		}
 	}
+	u.ID, err = s.repo.UserPhoneGetOrRegister(ctx, u.Username, user.Phone, u.OTP)
 
-	accessToken, refreshToken := pkg.CreateRefreshAccsessToken(userByPhone.ID, 1)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	accessToken, refreshToken := pkg.CreateRefreshAccsessToken(u.ID, 1)
 
 	return model.Response{
 		Data: model.LoginResponse{
@@ -99,7 +109,7 @@ func (s *AuthService) UserLoginEmail(ctx context.Context, user *model.UserLoginE
 		}
 	}
 
-	err = s.repo.UserEmailGetOrRegister(ctx, username, user.Email, string(hashedPassword))
+	err = s.repo.TempUserEmailGetOrRegister(ctx, username, user.Email, string(hashedPassword))
 
 	if err != nil {
 		return model.Response{
@@ -126,7 +136,7 @@ func (s *AuthService) UserLoginPhone(ctx context.Context, user *model.UserLoginP
 		}
 	}
 
-	err = s.repo.UserPhoneGetOrRegister(ctx, username, user.Phone, string(hashedPassword))
+	err = s.repo.TempUserPhoneGetOrRegister(ctx, username, user.Phone, string(hashedPassword))
 
 	if err != nil {
 		return model.Response{

@@ -19,15 +19,17 @@ type UserLoginPhone struct {
 }
 
 type UserByEmail struct {
-	ID    int    `json:"id"`
-	Email string `json:"email"`
-	OTP   string `json:"otp"`
+	ID       int    `json:"id"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	OTP      string `json:"otp"`
 }
 
 type UserByPhone struct {
-	ID    int    `json:"id"`
-	Phone string `json:"phone"`
-	OTP   string `json:"otp"`
+	ID       int    `json:"id"`
+	Phone    string `json:"phone"`
+	Username string `json:"username"`
+	OTP      string `json:"otp"`
 }
 
 type LoginResponse struct {

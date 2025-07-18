@@ -24,6 +24,7 @@ type GetProfileResponse struct {
 	Notification      *bool      `json:"notification"`
 	Username          *string    `json:"username"`
 	Google            *string    `json:"google"`
+	RegisteredBy      *string    `json:"registered_by"`
 	Birthday          *time.Time `json:"birthday"`
 	AboutMe           *string    `json:"about_me"`
 }
@@ -194,6 +195,6 @@ type GetEditCarsResponse struct {
 	Wheel        *bool              `json:"wheel"`
 	TradeIN      *int               `json:"trade_id"`
 	Owners       *int               `json:"owners"`
-	Description  string             `json:"description"`
+	Description  *string            `json:"description"`
 	Crash        *bool              `json:"crash"`
 }

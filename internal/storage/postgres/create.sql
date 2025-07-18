@@ -7,6 +7,8 @@
 -- alter default privileges in schema public grant all on sequences to da;
 
 
+
+drop table if exists temp_users;
 drop table if exists configurations;
 drop table if exists images;
 drop table if exists videos;
@@ -30,6 +32,20 @@ drop table if exists users;
 drop table if exists admins;
 drop table if exists ownership_types;
 
+
+create table temp_users (
+    "id" serial primary key,
+    "email" varchar(100),
+    "username" varchar(100) not null,
+    "role_id" int not null default 1,
+    "password" varchar(100) not null,
+    "phone" varchar(100),
+    "registered_by" varchar(20) not null,
+    "updated_at" timestamp default now(),
+    "created_at" timestamp default now(),
+    unique("email"),
+    unique("phone")
+);
 
 create table users (
     "id" serial primary key,
@@ -68,6 +84,7 @@ create table profiles (
     "driving_experience" int,
     "notification" boolean default false,
     "username" varchar(100) not null,
+    "registered_by" varchar(20) not null,
     "google" varchar(200),
     "avatar" varchar(200),
     "birthday" date,
@@ -87,10 +104,10 @@ create table profiles (
 );
 
 insert into profiles(
-    user_id, username, driving_experience, notification, google, birthday, about_me
+    user_id, username, driving_experience, notification, google, birthday, about_me, registered_by
 )values
-( 1, 'user1', 3, false, 'user1@gmail.com', '2025-04-14', 'im a f1 driver with 3 years of experiences'),
-( 2, 'user2', 2, true, 'user2@gmail.com', '2025-04-14', 'im a truck driver with 2 years of experiences');
+( 1, 'user1', 3, false, 'user1@gmail.com', '2025-04-14', 'im a f1 driver with 3 years of experiences', 'email'),
+( 2, 'user2', 2, true, 'user2@gmail.com', '2025-04-14', 'im a truck driver with 2 years of experiences', 'email');
 
 create table admins (
     "id" serial primary key,

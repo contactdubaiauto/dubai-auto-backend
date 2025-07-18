@@ -349,6 +349,8 @@ definitions:
         type: boolean
       phone:
         type: string
+      registered_by:
+        type: string
       username:
         type: string
     type: object

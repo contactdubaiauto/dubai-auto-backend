@@ -3125,6 +3125,9 @@ const docTemplate = `{
                 "phone": {
                     "type": "string"
                 },
+                "registered_by": {
+                    "type": "string"
+                },
                 "username": {
                     "type": "string"
                 }

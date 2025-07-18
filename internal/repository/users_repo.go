@@ -236,7 +236,8 @@ func (r *UserRepository) GetProfile(ctx *context.Context, userID int) (model.Get
 			ps.username,
 			ps.google,
 			ps.birthday,
-			ps.about_me
+			ps.about_me,
+			ps.registered_by
 		from users us
 		left join profiles as ps on ps.user_id = us.id
 		where us.id = $1;
@@ -244,7 +245,7 @@ func (r *UserRepository) GetProfile(ctx *context.Context, userID int) (model.Get
 	`
 	var pf model.GetProfileResponse
 	err := r.db.QueryRow(*ctx, q, userID).Scan(&pf.ID, &pf.Email, &pf.Phone,
-		&pf.DrivingExperience, &pf.Notification, &pf.Username, &pf.Google, &pf.Birthday, &pf.AboutMe)
+		&pf.DrivingExperience, &pf.Notification, &pf.Username, &pf.Google, &pf.Birthday, &pf.AboutMe, &pf.RegisteredBy)
 
 	return pf, err
 }

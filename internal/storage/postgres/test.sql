@@ -771,3 +771,15 @@ ALTER TABLE profiles
 ADD CONSTRAINT profiles_profiles_fk
 FOREIGN KEY (profiles)
 REFERENCES cities(id)
+
+
+
+
+
+insert into images (vehicle_id, image) values (64, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');
+insert into images (vehicle_id, image) values (63, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+insert into images (vehicle_id, image) values (62, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3');
+insert into images (vehicle_id, image) values (61, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4');
+insert into images (vehicle_id, image) values (60, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
+
+
