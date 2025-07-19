@@ -100,7 +100,8 @@ create table profiles (
         foreign key (city_id) 
             references cities(id) 
                 on delete cascade 
-                on update cascade
+                on update cascade,
+    unique (user_id)
 );
 
 insert into profiles(

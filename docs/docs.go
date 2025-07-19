@@ -2908,6 +2908,9 @@ const docTemplate = `{
                 "owner": {
                     "$ref": "#/definitions/model.Owner"
                 },
+                "owners": {
+                    "type": "integer"
+                },
                 "phone_numbers": {
                     "type": "array",
                     "items": {
@@ -2921,6 +2924,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
+                    "type": "integer"
+                },
+                "trade_in": {
                     "type": "integer"
                 },
                 "transmission": {

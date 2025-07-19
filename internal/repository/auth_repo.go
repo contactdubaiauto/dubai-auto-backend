@@ -50,8 +50,8 @@ func (r *AuthRepository) UserByPhone(ctx context.Context, phone *string) (model.
 func (r *AuthRepository) TempUserEmailGetOrRegister(ctx context.Context, username, email, password string) error {
 	var userID int
 	q := `
-		insert into temp_users (email, password, username)
-		values ($1, $2, $3)
+		insert into temp_users (email, password, username, registered_by)
+		values ($1, $2, $3, 'email')
 		on conflict (email)
 		do update
 		set 
@@ -66,8 +66,8 @@ func (r *AuthRepository) TempUserEmailGetOrRegister(ctx context.Context, usernam
 func (r *AuthRepository) TempUserPhoneGetOrRegister(ctx context.Context, username, phone, password string) error {
 	var userID int
 	q := `
-		insert into temp_users (phone, password, username)
-		values ($1, $2, $3)
+		insert into temp_users (phone, password, username, registered_by)
+		values ($1, $2, $3, 'phone')
 		on conflict (phone)
 		do update
 		set 
@@ -97,11 +97,9 @@ func (r *AuthRepository) UserEmailGetOrRegister(ctx context.Context, username, e
 	}
 
 	q = `
-		insert into profiles (
-			user_id, username, registered_by
-		) values (
-			$1, $2, $3
-		)
+		INSERT INTO profiles (user_id, username, registered_by)
+		VALUES ($1, $2, $3)
+		ON CONFLICT (user_id) DO NOTHING;
 	`
 	_, err = r.db.Exec(ctx, q, userID, username, "email")
 	return userID, err
@@ -126,11 +124,9 @@ func (r *AuthRepository) UserPhoneGetOrRegister(ctx context.Context, username, p
 	}
 
 	q = `
-		insert into profiles (
-			user_id, username, registered_by
-		) values (
-			$1, $2, $3
-		)
+		INSERT INTO profiles (user_id, username, registered_by)
+		VALUES ($1, $2, $3)
+		ON CONFLICT (user_id) DO NOTHING;
 	`
 	_, err = r.db.Exec(ctx, q, userID, username, "phone")
 

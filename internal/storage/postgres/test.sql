@@ -773,7 +773,15 @@ FOREIGN KEY (profiles)
 REFERENCES cities(id)
 
 
+DELETE FROM profiles
+WHERE id NOT IN (
+    SELECT MIN(id)
+    FROM profiles
+    GROUP BY user_id
+);
 
+ALTER TABLE profiles
+ADD CONSTRAINT unique_user_id UNIQUE (user_id);
 
 
 insert into images (vehicle_id, image) values (64, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1');

@@ -43,11 +43,14 @@ func (r *UserRepository) GetMyCars(ctx *context.Context, userID *int) ([]model.G
 			vs.new,
 			vs.status,
 			vs.created_at,
+			vs.trade_in,
+			vs.owners,
 			vs.updated_at,
 			images,
 			vs.phone_numbers, 
 			vs.view_count,
-			true as my_car
+			true as my_car,
+			vs.description
 		from vehicles vs
 		left join generation_modifications gms on gms.id = vs.modification_id
 		left join colors cls on vs.color_id = cls.id
@@ -81,8 +84,8 @@ func (r *UserRepository) GetMyCars(ctx *context.Context, userID *int) ([]model.G
 		if err := rows.Scan(
 			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
 			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
-			&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt,
-			&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
+			&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt, &car.TradeIn, &car.Owners,
+			&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.ViewCount, &car.MyCar, &car.Description,
 		); err != nil {
 			return cars, err
 		}
@@ -115,11 +118,15 @@ func (r *UserRepository) OnSale(ctx *context.Context, userID *int) ([]model.GetC
 			vs.new,
 			vs.status,
 			vs.created_at,
+			vs.trade_in,
+			vs.owners,
 			vs.updated_at,
 			images,
+			videos,
 			vs.phone_numbers, 
 			vs.view_count, 
-			true as my_car
+			true as my_car,
+			vs.description
 		from vehicles vs
 		left join generation_modifications gms on gms.id = vs.modification_id
 		left join colors cls on vs.color_id = cls.id
@@ -138,6 +145,12 @@ func (r *UserRepository) OnSale(ctx *context.Context, userID *int) ([]model.GetC
 			from images 
 			where vehicle_id = vs.id
 		) images on true
+		left join lateral (
+			select 
+				json_agg(video) as videos
+			from videos 
+			where vehicle_id = vs.id
+		) videos on true
 		where vs.user_id = $1 and status = 3
 		order by vs.id desc
 	`
@@ -153,8 +166,8 @@ func (r *UserRepository) OnSale(ctx *context.Context, userID *int) ([]model.GetC
 		if err := rows.Scan(
 			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
 			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
-			&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt,
-			&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
+			&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt, &car.TradeIn, &car.Owners,
+			&car.UpdatedAt, &car.Images, &car.Videos, &car.PhoneNumbers, &car.ViewCount, &car.MyCar, &car.Description,
 		); err != nil {
 			return cars, err
 		}
@@ -251,37 +264,29 @@ func (r *UserRepository) GetProfile(ctx *context.Context, userID int) (model.Get
 }
 
 func (r *UserRepository) UpdateProfile(ctx *context.Context, userID int, profile *model.UpdateProfileRequest) error {
-	// Parse birthday string to time.Time if it's not empty
-	// var birthdayTime *time.Time
-	// if profile.Birthday != "" {
-	// 	parsedTime, err := time.Parse("2006-01-02", profile.Birthday)
-	// 	if err != nil {
-	// 		return fmt.Errorf("invalid birthday format: %v", err)
-	// 	}
-	// 	birthdayTime = &parsedTime
-	// }
+	keys, _, args := pkg.BuildParams(profile)
 
-	q := `
+	if len(keys) == 0 {
+		return nil // No fields to update
+	}
+
+	// Build dynamic SET clause
+	var setClause []string
+	for i, key := range keys {
+		setClause = append(setClause, fmt.Sprintf("%s = $%d", key, i+1))
+	}
+	setClause = append(setClause, "last_active_date = NOW()")
+
+	// Add userID as the last parameter
+	args = append(args, userID)
+
+	q := fmt.Sprintf(`
 		UPDATE profiles 
-		SET 
-			driving_experience = $1,
-			notification = $2,
-			username = $3,
-			google = $4,
-			birthday = $5,
-			about_me = $6,
-			last_active_date = NOW()
-		WHERE user_id = $7
-	`
-	_, err := r.db.Exec(*ctx, q,
-		profile.DrivingExperience,
-		profile.Notification,
-		profile.Username,
-		profile.Google,
-		profile.Birthday,
-		profile.AboutMe,
-		userID)
+		SET %s
+		WHERE user_id = $%d
+	`, strings.Join(setClause, ", "), len(args))
 
+	_, err := r.db.Exec(*ctx, q, args...)
 	return err
 }
 
@@ -884,18 +889,27 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 			vs.new,
 			vs.status,
 			vs.created_at,
+			vs.trade_in,
+			vs.owners,
 			vs.updated_at,
-			images,
-			videos,
+			images.images,
+			videos.videos,
 			vs.phone_numbers,
 			vs.view_count,
 			CASE
 				WHEN vs.user_id = $1 THEN TRUE
 				ELSE FALSE
-			END AS my_car
+			END AS my_car,
+			json_build_object(
+				'id', pf.user_id,
+				'username', pf.username,
+				'avatar', pf.avatar
+			) as owner,
+			vs.description
 		from vehicles vs
 		left join generation_modifications gms on gms.id = vs.modification_id
 		left join colors cls on vs.color_id = cls.id
+		left join profiles pf on pf.user_id = vs.user_id
 		left join brands bs on vs.brand_id = bs.id
 		left join regions rs on vs.region_id = rs.id
 		left join cities cs on vs.city_id = cs.id
@@ -935,8 +949,8 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 		if err := rows.Scan(
 			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
 			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
-			&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt,
-			&car.UpdatedAt, &car.Images, &car.Videos, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
+			&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt, &car.TradeIn, &car.Owners,
+			&car.UpdatedAt, &car.Images, &car.Videos, &car.PhoneNumbers, &car.ViewCount, &car.MyCar, &car.Owner, &car.Description,
 		); err != nil {
 			return cars, err
 		}
@@ -977,6 +991,8 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (mo
 			vs.new,
 			vs.status,
 			vs.created_at,
+			vs.trade_in,
+			vs.owners,
 			vs.updated_at,
 			images,
 			videos,
@@ -1021,7 +1037,7 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (mo
 	err := r.db.QueryRow(*ctx, q, carID, userID).Scan(
 		&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
 		&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
-		&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt,
+		&car.Exchange, &car.Credit, &car.New, &car.Status, &car.CreatedAt, &car.TradeIn, &car.Owners,
 		&car.UpdatedAt, &car.Images, &car.Videos, &car.PhoneNumbers, &car.ViewCount, &car.MyCar, &car.Owner, &car.Description,
 	)
 

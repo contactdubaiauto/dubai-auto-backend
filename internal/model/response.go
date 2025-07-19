@@ -143,6 +143,8 @@ type GetCarsResponse struct {
 	New          *bool      `json:"new"`
 	Color        *string    `json:"color"`
 	Status       *int       `json:"status"`
+	TradeIn      *int       `json:"trade_in"`
+	Owners       *int       `json:"owners"`
 	CreatedAt    *time.Time `json:"created_at"`
 	UpdatedAt    *time.Time `json:"updated_at"`
 	Images       *[]string  `json:"images"`
