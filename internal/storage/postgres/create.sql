@@ -135,8 +135,6 @@ create table brands (
 -- insert into brands (name, logo, car_count, popular) values ('Toyota', '/images/logo/toyota.png', 12, true);
 -- insert into brands (name, logo, car_count, popular) values ('Honda', '/images/logo/honda.png', 8, false);
 
-
-
 create table models (
     "id" serial primary key,
     "name" varchar(255) not null,
@@ -534,6 +532,7 @@ create table vehicles (
 create table images (
     "vehicle_id" int not null,
     "image" varchar(255) not null,
+    "created_at" not null default now();
     constraint images_vehicle_id_fk
         foreign key (vehicle_id)
             references vehicles(id)
@@ -542,12 +541,32 @@ create table images (
 );
 
 
+
+CREATE TABLE user_likes (
+    user_id INT NOT NULL,
+    vehicle_id INT NOT NULL,
+    PRIMARY KEY (user_id, vehicle_id),
+    constraint user_likes_vehicle_id_fk
+        foreign key (vehicle_id)
+            references vehicles(id)
+                on delete cascade
+                on update cascade,
+    constraint user_likes_user_id_fk
+        foreign key (user_id)
+            references users(id)
+                on delete cascade
+                on update cascade
+);
+
+
 create table videos (
     "vehicle_id" int not null,
     "video" varchar(255) not null,
+    "created_at" not null default now(),
     constraint videos_vehicle_id_fk
         foreign key (vehicle_id)
             references vehicles(id)
                 on delete cascade
                 on update cascade
 );
+

@@ -152,6 +152,7 @@ type GetCarsResponse struct {
 	PhoneNumbers *[]string  `json:"phone_numbers"`
 	ViewCount    int        `json:"view_count"`
 	MyCar        *bool      `json:"my_car"`
+	Liked        *bool      `json:"liked"`
 	Owner        *Owner     `json:"owner"`
 	Description  *string    `json:"description"`
 }

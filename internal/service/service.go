@@ -335,6 +335,49 @@ func (s *UserService) UpdateCar(ctx *context.Context, car *model.UpdateCarReques
 	}
 }
 
+func (s *UserService) CarLike(ctx *context.Context, carID, userID *int) *model.Response {
+	err := s.UserRepository.CarLike(ctx, carID, userID)
+
+	if err != nil {
+		return &model.Response{
+			Status: 409,
+			Error:  err,
+		}
+	}
+
+	return &model.Response{
+		Data: model.Success{Message: "Like created successfully"},
+	}
+}
+
+func (s *UserService) RemoveLike(ctx *context.Context, carID, userID *int) *model.Response {
+	err := s.UserRepository.RemoveLike(ctx, carID, userID)
+
+	if err != nil {
+		return &model.Response{
+			Status: 409,
+			Error:  err,
+		}
+	}
+
+	return &model.Response{
+		Data: model.Success{Message: "Like removed successfully"},
+	}
+}
+
+func (s *UserService) Likes(ctx *context.Context, userID *int) *model.Response {
+	data, err := s.UserRepository.Likes(ctx, userID)
+
+	if err != nil {
+		return &model.Response{
+			Status: 409,
+			Error:  err,
+		}
+	}
+
+	return &model.Response{Data: data}
+}
+
 func (s *UserService) CreateCarImages(ctx *context.Context, carID int, images []string) *model.Response {
 	err := s.UserRepository.CreateCarImages(ctx, carID, images)
 

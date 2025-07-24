@@ -655,7 +655,7 @@ func (h *UserHandler) GetCars(c *gin.Context) {
 	credit := c.Query("credit")
 	price_from := c.Query("price_from")
 	price_to := c.Query("price_to")
-
+	fmt.Println(userID)
 	data := h.UserService.GetCars(&ctx, userID, brands, models,
 		regions, cities, generations, transmissions, engines, drivetrains,
 		body_types, fuel_types, ownership_types,
@@ -826,6 +826,102 @@ func (h *UserHandler) UpdateCar(c *gin.Context) {
 	utils.GinResponse(c, data)
 }
 
+// Like car godoc
+// @Summary      Crate liked car
+// @Description  User like a car
+// @Tags         users
+// @Security     BearerAuth
+// @Produce      json
+// @Param        car_id   path      int  true  "Car ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object} model.ResultMessage
+// @Failure      401  {object} pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404  {object} model.ResultMessage
+// @Failure      500  {object} model.ResultMessage
+// @Router       /api/v1/users/like/{car_id} [post]
+func (h *UserHandler) CarLike(c *gin.Context) {
+	// todo: delete images if exist
+	ctx := c.Request.Context()
+	idStr := c.Param("car_id")
+	carID, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("car id must be integer"),
+		})
+		return
+	}
+
+	userID := c.MustGet("id").(int)
+
+	if userID <= 0 {
+		utils.GinResponse(c, &model.Response{
+			Status: 401,
+			Error:  errors.New("user_id must be must be bigger than 0"),
+		})
+		return
+	}
+	fmt.Println(userID)
+	data := h.UserService.CarLike(&ctx, &carID, &userID)
+	utils.GinResponse(c, data)
+}
+
+// remove Like car godoc
+// @Summary      remove Crate liked car
+// @Description  User like a car
+// @Tags         users
+// @Security     BearerAuth
+// @Produce      json
+// @Param        car_id   path      int  true  "Car ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object} model.ResultMessage
+// @Failure      401  {object} pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404  {object} model.ResultMessage
+// @Failure      500  {object} model.ResultMessage
+// @Router       /api/v1/users/like/{car_id} [delete]
+func (h *UserHandler) RemoveLike(c *gin.Context) {
+	// todo: delete images if exist
+	ctx := c.Request.Context()
+	idStr := c.Param("car_id")
+	carID, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("car id must be integer"),
+		})
+		return
+	}
+	userID := c.MustGet("id").(int)
+
+	data := h.UserService.RemoveLike(&ctx, &carID, &userID)
+	utils.GinResponse(c, data)
+}
+
+// Liked cars
+// @Summary      My liked cars
+// @Description  Liked cars
+// @Tags         users
+// @Security     BearerAuth
+// @Produce      json
+// @Success      200  {array}  model.GetCarsResponse
+// @Failure      400  {object} model.ResultMessage
+// @Failure      401  {object} pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404  {object} model.ResultMessage
+// @Failure      500  {object} model.ResultMessage
+// @Router       /api/v1/users/likes [get]
+func (h *UserHandler) Likes(c *gin.Context) {
+	// todo: delete images if exist
+	ctx := c.Request.Context()
+	userID := c.MustGet("id").(int)
+	data := h.UserService.Likes(&ctx, &userID)
+	utils.GinResponse(c, data)
+}
+
 // CreateCarImages godoc
 // @Summary      Upload car images
 // @Description  Uploads images for a car (max 10 files)
@@ -937,7 +1033,6 @@ func (h *UserHandler) CreateCarVideos(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(len(videos))
 	// path, err := pkg.SaveVideos(videos[0], config.ENV.STATIC_PATH+"cars/"+idStr+"/videos") // if have ffmpeg on server
 	path, err := pkg.SaveVideosOriginal(videos[0], config.ENV.STATIC_PATH+"cars/"+idStr+"/videos")
 

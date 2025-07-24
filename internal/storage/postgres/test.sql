@@ -791,3 +791,11 @@ insert into images (vehicle_id, image) values (61, '/images/cars/1/c3fba494-ca35
 insert into images (vehicle_id, image) values (60, '/images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2');
 
 
+
+
+ALTER TABLE images
+ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT NOW();
+
+
+ALTER TABLE videos
+ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT NOW();

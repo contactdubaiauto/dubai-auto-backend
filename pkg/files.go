@@ -14,10 +14,11 @@ import (
 	"strings"
 
 	// _ "github.com/chai2010/webp" // for decoding webp images
-
+	"github.com/disintegration/imaging"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/nfnt/resize"
+	"github.com/rwcarlsen/goexif/exif"
 )
 
 const maxFileSize = 10 * 1024 * 1024 // 10MB
@@ -131,6 +132,37 @@ func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]str
 	return filePaths, 0, nil
 }
 
+// func resizeImage(imagePath string, width uint) error {
+// 	file, err := os.Open(imagePath)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to open image: %w", err)
+// 	}
+// 	defer file.Close()
+
+// 	img, _, err := image.Decode(file)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to decode image: %w", err)
+// 	}
+
+// 	resizedImg := resize.Resize(width, 0, img, resize.Lanczos3)
+// 	size := "l"
+
+// 	if width == 320 {
+// 		size = "m"
+// 	}
+
+// 	outputPath := strings.TrimSuffix(imagePath, filepath.Ext(imagePath)) + "_" + size + ".jpg"
+// 	outFile, err := os.Create(outputPath)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to create output file: %w", err)
+// 	}
+// 	defer outFile.Close()
+
+// 	options := jpeg.Options{Quality: 90}
+// 	err = jpeg.Encode(outFile, resizedImg, &options)
+// 	return err
+// }
+
 func resizeImage(imagePath string, width uint) error {
 	file, err := os.Open(imagePath)
 	if err != nil {
@@ -143,9 +175,20 @@ func resizeImage(imagePath string, width uint) error {
 		return fmt.Errorf("failed to decode image: %w", err)
 	}
 
+	// Reopen file to read EXIF
+	file.Seek(0, 0)
+	x, err := exif.Decode(file)
+	if err == nil {
+		orientTag, err := x.Get(exif.Orientation)
+		if err == nil {
+			orientation, _ := orientTag.Int(0)
+			img = applyOrientation(img, orientation)
+		}
+	}
+
+	// Resize the image
 	resizedImg := resize.Resize(width, 0, img, resize.Lanczos3)
 	size := "l"
-
 	if width == 320 {
 		size = "m"
 	}
@@ -158,8 +201,20 @@ func resizeImage(imagePath string, width uint) error {
 	defer outFile.Close()
 
 	options := jpeg.Options{Quality: 90}
-	err = jpeg.Encode(outFile, resizedImg, &options)
-	return err
+	return jpeg.Encode(outFile, resizedImg, &options)
+}
+
+func applyOrientation(img image.Image, orientation int) image.Image {
+	switch orientation {
+	case 3:
+		return imaging.Rotate180(img)
+	case 6:
+		return imaging.Rotate270(img)
+	case 8:
+		return imaging.Rotate90(img)
+	default:
+		return img
+	}
 }
 
 func CreateFolderIfNotExists(path string) error {
