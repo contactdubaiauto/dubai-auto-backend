@@ -48,8 +48,6 @@ definitions:
         type: boolean
       description:
         type: string
-      exchange:
-        type: boolean
       model_id:
         type: integer
       modification_id:
@@ -176,6 +174,8 @@ definitions:
         type: string
       color:
         type: string
+      crash:
+        type: boolean
       created_at:
         type: string
       credit:
@@ -186,8 +186,6 @@ definitions:
         type: string
       engine:
         type: string
-      exchange:
-        type: boolean
       fuel_type:
         type: string
       id:
@@ -266,8 +264,6 @@ definitions:
         type: boolean
       description:
         type: string
-      exchange:
-        type: boolean
       generation:
         $ref: '#/definitions/model.EditCarGeneration'
       id:
@@ -450,8 +446,6 @@ definitions:
         type: boolean
       description:
         type: string
-      exchange:
-        type: boolean
       id:
         type: integer
       model_id:
@@ -1107,83 +1101,66 @@ paths:
     get:
       description: Returns a list of cars
       parameters:
-      - collectionFormat: csv
-        description: Filter by brand IDs
+      - description: Filter by brand IDs
         in: query
-        items:
-          type: string
         name: brands
-        type: array
-      - collectionFormat: csv
-        description: Filter by model IDs
+        type: string
+      - description: Filter by model IDs
         in: query
-        items:
-          type: string
         name: models
-        type: array
-      - collectionFormat: csv
-        description: Filter by region IDs
+        type: string
+      - description: Filter by region IDs
         in: query
-        items:
-          type: string
         name: regions
-        type: array
-      - collectionFormat: csv
-        description: Filter by city IDs
+        type: string
+      - description: Filter by city IDs
         in: query
-        items:
-          type: string
         name: cities
-        type: array
-      - collectionFormat: csv
-        description: Filter by generation IDs
+        type: string
+      - description: Filter by generation IDs
         in: query
-        items:
-          type: string
         name: generations
-        type: array
-      - collectionFormat: csv
-        description: Filter by transmission IDs
+        type: string
+      - description: Filter by color IDs
         in: query
-        items:
-          type: string
+        name: colors
+        type: string
+      - description: Filter by crash status, true or empty
+        in: query
+        name: crash
+        type: string
+      - description: Filter by transmission IDs
+        in: query
         name: transmissions
-        type: array
-      - collectionFormat: csv
-        description: Filter by engine IDs
+        type: string
+      - description: Filter by engine IDs
         in: query
-        items:
-          type: string
         name: engines
-        type: array
-      - collectionFormat: csv
-        description: Filter by drivetrain IDs
+        type: string
+      - description: Filter by drivetrain IDs
         in: query
-        items:
-          type: string
         name: drivetrains
-        type: array
-      - collectionFormat: csv
-        description: Filter by body type IDs
+        type: string
+      - description: Filter by body type IDs
         in: query
-        items:
-          type: string
         name: body_types
-        type: array
-      - collectionFormat: csv
-        description: Filter by fuel type IDs
+        type: string
+      - description: Filter by fuel type IDs
         in: query
-        items:
-          type: string
         name: fuel_types
-        type: array
-      - collectionFormat: csv
-        description: Filter by ownership type IDs
+        type: string
+      - description: Filter by trade_in id, from 1 to 5
         in: query
-        items:
-          type: string
+        name: trade_in
+        type: string
+      - description: Filter by owners id, from 1 to 4
+        in: query
+        name: owners
+        type: string
+      - description: Filter by ownership type IDs
+        in: query
         name: ownership_types
-        type: array
+        type: string
       - description: Filter by year from
         in: query
         name: year_from
@@ -1191,10 +1168,6 @@ paths:
       - description: Filter by year to
         in: query
         name: year_to
-        type: string
-      - description: Filter by exchange
-        in: query
-        name: exchange
         type: string
       - description: Filter by credit
         in: query
@@ -2179,6 +2152,47 @@ paths:
       security:
       - BearerAuth: []
       summary: My liked cars
+      tags:
+      - users
+  /api/v1/users/models/generations:
+    get:
+      description: Returns a list of generations for a given model ID
+      parameters:
+      - description: Model IDs
+        in: query
+        name: models
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Generation'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get generations by model ID
       tags:
       - users
   /api/v1/users/profile:

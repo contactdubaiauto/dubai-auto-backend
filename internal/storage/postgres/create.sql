@@ -472,9 +472,8 @@ create table vehicles (
     "year" int not null,
     "popular" int not null default 0,
     "description" text,
-    "exchange" boolean not null default false,
     "credit" boolean not null default false,
-    "wheel" boolean not null default true,
+    "wheel" boolean not null default true, -- true left, false right
     "crash" boolean not null default false,
     "odometer" int not null default 0,
     "vin_code" varchar(255) not null,

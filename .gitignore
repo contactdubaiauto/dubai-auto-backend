@@ -5,4 +5,4 @@ config.yaml
 bin/
 leetcode.go
 
-./images/car/videos
+./images/

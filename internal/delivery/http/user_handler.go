@@ -386,7 +386,7 @@ func (h *UserHandler) GetGenerationsByModelID(c *gin.Context) {
 	bodyTypeID := c.Query("body_type_id")
 	wheel := true
 
-	if c.DefaultQuery("wheel", "false") == "false" {
+	if c.DefaultQuery("wheel", "true") == "false" {
 		wheel = false
 	}
 	modelIDInt, err := strconv.Atoi(modelID)
@@ -398,6 +398,36 @@ func (h *UserHandler) GetGenerationsByModelID(c *gin.Context) {
 
 	ctx := c.Request.Context()
 	data := h.UserService.GetGenerationsByModelID(&ctx, modelIDInt, wheel, year, bodyTypeID)
+
+	utils.GinResponse(c, data)
+}
+
+// GetGenerationsByModelID godoc
+// @Summary      Get generations by model ID
+// @Description  Returns a list of generations for a given model ID
+// @Tags         users
+// @Produce      json
+// @Param        models			query		string		true  "Model IDs"
+// @Success      200   {array}  model.Generation
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  pkg.ErrorResponse
+// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/users/models/generations [get]
+func (h *UserHandler) GetGenerationsByModels(c *gin.Context) {
+	models, err := pkg.QueryParamToIntArray(c.Query("models"))
+
+	if err != nil {
+		utils.GinResponse(c, &model.Response{
+			Status: 400,
+			Error:  err,
+		})
+		return
+	}
+
+	ctx := c.Request.Context()
+	data := h.UserService.GetGenerationsByModels(&ctx, models)
 
 	utils.GinResponse(c, data)
 }
@@ -420,7 +450,7 @@ func (h *UserHandler) GetGenerationsByModelID(c *gin.Context) {
 func (h *UserHandler) GetYearsByModelID(c *gin.Context) {
 	modelID := c.Param("model_id")
 	wheel := true
-	if c.DefaultQuery("wheel", "false") == "false" {
+	if c.DefaultQuery("wheel", "true") == "false" {
 		wheel = false
 	}
 	modelIDInt, err := strconv.ParseInt(modelID, 10, 64)
@@ -457,7 +487,7 @@ func (h *UserHandler) GetBodyTypesByModelID(c *gin.Context) {
 	year := c.Query("year")
 	wheel := true
 
-	if c.DefaultQuery("wheel", "false") == "false" {
+	if c.DefaultQuery("wheel", "true") == "false" {
 		wheel = false
 	}
 	modelIDInt, err := strconv.Atoi(modelID)
@@ -611,23 +641,26 @@ func (h *UserHandler) GetHome(c *gin.Context) {
 // @Tags         users
 // @Produce      json
 // @Security 	 BearerAuth
-// @Param   brands            query   []string  false  "Filter by brand IDs"
-// @Param   models            query   []string  false  "Filter by model IDs"
-// @Param   regions           query   []string  false  "Filter by region IDs"
-// @Param   cities            query   []string  false  "Filter by city IDs"
-// @Param   generations       query   []string  false  "Filter by generation IDs"
-// @Param   transmissions     query   []string  false  "Filter by transmission IDs"
-// @Param   engines           query   []string  false  "Filter by engine IDs"
-// @Param   drivetrains       query   []string  false  "Filter by drivetrain IDs"
-// @Param   body_types        query   []string  false  "Filter by body type IDs"
-// @Param   fuel_types        query   []string  false  "Filter by fuel type IDs"
-// @Param   ownership_types   query   []string  false  "Filter by ownership type IDs"
-// @Param   year_from         query   string    false  "Filter by year from"
-// @Param   year_to           query   string    false  "Filter by year to"
-// @Param   exchange          query   string    false  "Filter by exchange"
-// @Param   credit            query   string    false  "Filter by credit"
-// @Param   price_from        query   string    false  "Filter by price from"
-// @Param   price_to          query   string    false  "Filter by price to"
+// @Param   brands            query   string  false  "Filter by brand IDs"
+// @Param   models            query   string  false  "Filter by model IDs"
+// @Param   regions           query   string  false  "Filter by region IDs"
+// @Param   cities            query   string  false  "Filter by city IDs"
+// @Param   generations       query   string  false  "Filter by generation IDs"
+// @Param   colors       	  query   string  false  "Filter by color IDs"
+// @Param   crash       	  query   string  false  "Filter by crash status, true or empty"
+// @Param   transmissions     query   string  false  "Filter by transmission IDs"
+// @Param   engines           query   string  false  "Filter by engine IDs"
+// @Param   drivetrains       query   string  false  "Filter by drivetrain IDs"
+// @Param   body_types        query   string  false  "Filter by body type IDs"
+// @Param   fuel_types        query   string  false  "Filter by fuel type IDs"
+// @Param   trade_in          query   string  false  "Filter by trade_in id, from 1 to 5"
+// @Param   owners            query   string  false  "Filter by owners id, from 1 to 4"
+// @Param   ownership_types   query   string  false  "Filter by ownership type IDs"
+// @Param   year_from         query   string  false  "Filter by year from"
+// @Param   year_to           query   string  false  "Filter by year to"
+// @Param   credit            query   string  false  "Filter by credit"
+// @Param   price_from        query   string  false  "Filter by price from"
+// @Param   price_to          query   string  false  "Filter by price to"
 // @Success      200  {array}  model.GetCarsResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  pkg.ErrorResponse
@@ -643,6 +676,7 @@ func (h *UserHandler) GetCars(c *gin.Context) {
 	regions := pkg.QueryParamToArray(c.Query("regions"))
 	cities := pkg.QueryParamToArray(c.Query("cities"))
 	generations := pkg.QueryParamToArray(c.Query("generations"))
+	colors := pkg.QueryParamToArray(c.Query("colors"))
 	transmissions := pkg.QueryParamToArray(c.Query("transmissions"))
 	engines := pkg.QueryParamToArray(c.Query("engines"))
 	drivetrains := pkg.QueryParamToArray(c.Query("drivetrains"))
@@ -651,15 +685,18 @@ func (h *UserHandler) GetCars(c *gin.Context) {
 	ownership_types := pkg.QueryParamToArray(c.Query("ownership_types"))
 	year_from := c.Query("year_from")
 	year_to := c.Query("year_to")
-	exchange := c.Query("exchange")
+	tradeIn := c.Query("trade_in")
 	credit := c.Query("credit")
+	crash := c.Query("crash")
+	new := c.Query("new")
+	owners := c.Query("owners")
 	price_from := c.Query("price_from")
 	price_to := c.Query("price_to")
-	fmt.Println(userID)
 	data := h.UserService.GetCars(&ctx, userID, brands, models,
 		regions, cities, generations, transmissions, engines, drivetrains,
-		body_types, fuel_types, ownership_types,
-		year_from, year_to, exchange, credit, price_from, price_to)
+		body_types, fuel_types, ownership_types, colors,
+		year_from, year_to, credit, price_from, price_to,
+		tradeIn, owners, crash, new)
 
 	utils.GinResponse(c, data)
 }

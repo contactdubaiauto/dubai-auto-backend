@@ -25,7 +25,6 @@ type CreateCarRequest struct {
 	VinCode        string   `json:"vin_code" binding:"required"`
 	PhoneNumbers   []string `json:"phone_numbers" binding:"required"`
 	Price          int      `json:"price" binding:"required"`
-	Exchange       bool     `json:"exchange"`
 	New            bool     `json:"new"`
 	Crash          bool     `json:"crash"`
 	Description    string   `json:"description"`
@@ -60,7 +59,6 @@ type UpdateCarRequest struct {
 	VinCode        string   `json:"vin_code" binding:"required"`
 	PhoneNumbers   []string `json:"phone_numbers" binding:"required"`
 	Price          int      `json:"price" binding:"required"`
-	Exchange       bool     `json:"exchange"`
 	New            bool     `json:"new"`
 	Crash          bool     `json:"crash"`
 	ColorID        int      `json:"color_id" binding:"required"`

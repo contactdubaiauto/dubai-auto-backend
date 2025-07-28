@@ -79,8 +79,10 @@ func QueryParamToIntArray(param string) ([]int, error) {
 	if param == "" {
 		return nil, nil
 	}
+
 	parts := strings.Split(param, ",")
 	result := make([]int, 0, len(parts))
+
 	for _, p := range parts {
 		p = strings.TrimSpace(p)
 		if p == "" {

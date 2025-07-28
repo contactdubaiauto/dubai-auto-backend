@@ -848,111 +848,91 @@ const docTemplate = `{
                 "summary": "Get cars",
                 "parameters": [
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
+                        "type": "string",
                         "description": "Filter by brand IDs",
                         "name": "brands",
                         "in": "query"
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
+                        "type": "string",
                         "description": "Filter by model IDs",
                         "name": "models",
                         "in": "query"
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
+                        "type": "string",
                         "description": "Filter by region IDs",
                         "name": "regions",
                         "in": "query"
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
+                        "type": "string",
                         "description": "Filter by city IDs",
                         "name": "cities",
                         "in": "query"
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
+                        "type": "string",
                         "description": "Filter by generation IDs",
                         "name": "generations",
                         "in": "query"
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
+                        "type": "string",
+                        "description": "Filter by color IDs",
+                        "name": "colors",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by crash status, true or empty",
+                        "name": "crash",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "Filter by transmission IDs",
                         "name": "transmissions",
                         "in": "query"
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
+                        "type": "string",
                         "description": "Filter by engine IDs",
                         "name": "engines",
                         "in": "query"
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
+                        "type": "string",
                         "description": "Filter by drivetrain IDs",
                         "name": "drivetrains",
                         "in": "query"
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
+                        "type": "string",
                         "description": "Filter by body type IDs",
                         "name": "body_types",
                         "in": "query"
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
+                        "type": "string",
                         "description": "Filter by fuel type IDs",
                         "name": "fuel_types",
                         "in": "query"
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
+                        "type": "string",
+                        "description": "Filter by trade_in id, from 1 to 5",
+                        "name": "trade_in",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by owners id, from 1 to 4",
+                        "name": "owners",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "Filter by ownership type IDs",
                         "name": "ownership_types",
                         "in": "query"
@@ -967,12 +947,6 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by year to",
                         "name": "year_to",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Filter by exchange",
-                        "name": "exchange",
                         "in": "query"
                     },
                     {
@@ -2490,6 +2464,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/users/models/generations": {
+            "get": {
+                "description": "Returns a list of generations for a given model ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get generations by model ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Model IDs",
+                        "name": "models",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Generation"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/profile": {
             "get": {
                 "security": [
@@ -2872,9 +2908,6 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
-                "exchange": {
-                    "type": "boolean"
-                },
                 "model_id": {
                     "type": "integer"
                 },
@@ -3047,6 +3080,9 @@ const docTemplate = `{
                 "color": {
                     "type": "string"
                 },
+                "crash": {
+                    "type": "boolean"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -3061,9 +3097,6 @@ const docTemplate = `{
                 },
                 "engine": {
                     "type": "string"
-                },
-                "exchange": {
-                    "type": "boolean"
                 },
                 "fuel_type": {
                     "type": "string"
@@ -3182,9 +3215,6 @@ const docTemplate = `{
                 },
                 "description": {
                     "type": "string"
-                },
-                "exchange": {
-                    "type": "boolean"
                 },
                 "generation": {
                     "$ref": "#/definitions/model.EditCarGeneration"
@@ -3481,9 +3511,6 @@ const docTemplate = `{
                 },
                 "description": {
                     "type": "string"
-                },
-                "exchange": {
-                    "type": "boolean"
                 },
                 "id": {
                     "type": "integer"

@@ -138,9 +138,9 @@ type GetCarsResponse struct {
 	Price        int        `json:"price"`
 	Mileage      *int       `json:"mileage"`
 	VinCode      *string    `json:"vin_code"`
-	Exchange     *bool      `json:"exchange"`
 	Credit       *bool      `json:"credit"`
 	New          *bool      `json:"new"`
+	Crash        *bool      `json:"crash"`
 	Color        *string    `json:"color"`
 	Status       *int       `json:"status"`
 	TradeIn      *int       `json:"trade_in"`
@@ -183,7 +183,6 @@ type GetEditCarsResponse struct {
 	Price        *int               `json:"price"`
 	Odometer     *int               `json:"odometer"`
 	VinCode      *string            `json:"vin_code"`
-	Exchange     *bool              `json:"exchange"`
 	Credit       *bool              `json:"credit"`
 	New          *bool              `json:"new"`
 	Color        *Color             `json:"color"`

@@ -167,8 +167,26 @@ func (s *UserService) GetFilterModelsByBrandID(ctx *context.Context, brandID int
 	return &model.Response{Data: data}
 }
 
+func (s *UserService) GetFilterModelsByBrands(ctx *context.Context, brands []int, text string) *model.Response {
+	data, err := s.UserRepository.GetFilterModelsByBrands(ctx, brands, text)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: 400}
+	}
+	return &model.Response{Data: data}
+}
+
 func (s *UserService) GetGenerationsByModelID(ctx *context.Context, modelID int, wheel bool, year, bodyTypeID string) *model.Response {
 	data, err := s.UserRepository.GetGenerationsByModelID(ctx, modelID, wheel, year, bodyTypeID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: 400}
+	}
+	return &model.Response{Data: data}
+}
+
+func (s *UserService) GetGenerationsByModels(ctx *context.Context, models []int) *model.Response {
+	data, err := s.UserRepository.GetGenerationsByModels(ctx, models)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: 400}
@@ -185,8 +203,26 @@ func (s *UserService) GetYearsByModelID(ctx *context.Context, modelID int64, whe
 	return &model.Response{Data: data}
 }
 
+func (s *UserService) GetYearsByModels(ctx *context.Context, models []int, wheel bool) *model.Response {
+	data, err := s.UserRepository.GetYearsByModels(ctx, models, wheel)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: 400}
+	}
+	return &model.Response{Data: data}
+}
+
 func (s *UserService) GetBodysByModelID(ctx *context.Context, modelID int, wheel bool, year string) *model.Response {
 	data, err := s.UserRepository.GetBodysByModelID(ctx, modelID, wheel, year)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: 400}
+	}
+	return &model.Response{Data: data}
+}
+
+func (s *UserService) GetBodysByModels(ctx *context.Context, wheel bool, models, years []int) *model.Response {
+	data, err := s.UserRepository.GetBodysByModels(ctx, wheel, models, years)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: 400}
@@ -259,13 +295,13 @@ func (s *UserService) GetHome(ctx *context.Context, userID int) *model.Response 
 }
 
 func (s *UserService) GetCars(ctx *context.Context, userID int, brands, models, regions, cities,
-	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types []string,
-	year_from, year_to, exchange, credit, price_from, price_to string) *model.Response {
+	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors []string,
+	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, new string) *model.Response {
 
 	cars, err := s.UserRepository.GetCars(ctx, userID, brands, models, regions, cities,
 		generations, transmissions, engines, drivetrains, body_types, fuel_types,
-		ownership_types, year_from, year_to, exchange, credit,
-		price_from, price_to)
+		ownership_types, colors, year_from, year_to, credit,
+		price_from, price_to, tradeIn, owners, crash, new)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
