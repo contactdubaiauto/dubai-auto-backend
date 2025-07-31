@@ -1173,6 +1173,16 @@ paths:
         in: query
         name: credit
         type: string
+      - description: true or false new
+        in: query
+        name: new
+        required: true
+        type: string
+      - description: true or false wheel
+        in: query
+        name: wheel
+        required: true
+        type: string
       - description: Filter by price from
         in: query
         name: price_from

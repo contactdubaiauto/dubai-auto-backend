@@ -967,8 +967,9 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int) (model.Ho
 
 func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 	brands, models, regions, cities, generations, transmissions,
-	engines, drivetrains, body_types, fuel_types, ownership_types, colors []string, year_from, year_to, credit,
-	price_from, price_to, tradeIn, owners, crash, new string) ([]model.GetCarsResponse, error) {
+	engines, drivetrains, body_types, fuel_types, ownership_types, colors []string,
+	year_from, year_to, credit,
+	price_from, price_to, tradeIn, owners, crash string, new, wheel bool) ([]model.GetCarsResponse, error) {
 
 	var qWhere string
 	var qValues []interface{}
@@ -1077,10 +1078,10 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 		qValues = append(qValues, crash)
 	}
 
-	if new != "" {
+	if credit != "" {
 		i += 1
-		qWhere += fmt.Sprintf(" AND vs.new = $%d", i)
-		qValues = append(qValues, new)
+		qWhere += fmt.Sprintf(" AND vs.credit = $%d", i)
+		qValues = append(qValues, true)
 	}
 
 	if credit != "" {
@@ -1100,6 +1101,14 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 		qWhere += fmt.Sprintf(" AND vs.price <= $%d", i)
 		qValues = append(qValues, price_to)
 	}
+
+	i += 1
+	qWhere += fmt.Sprintf(" AND vs.new = $%d", i)
+	qValues = append(qValues, new)
+
+	i += 1
+	qWhere += fmt.Sprintf(" AND vs.wheel = $%d", i)
+	qValues = append(qValues, wheel)
 
 	cars := make([]model.GetCarsResponse, 0)
 	q := `

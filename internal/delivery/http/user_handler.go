@@ -672,6 +672,8 @@ func (h *UserHandler) GetHome(c *fiber.Ctx) error {
 // @Param   year_from         query   string  false  "Filter by year from"
 // @Param   year_to           query   string  false  "Filter by year to"
 // @Param   credit            query   string  false  "Filter by credit"
+// @Param  	new   		  query   string    	true  "true or false new"
+// @Param  	wheel   		  query   string    	true  "true or false wheel"
 // @Param   price_from        query   string  false  "Filter by price from"
 // @Param   price_to          query   string  false  "Filter by price to"
 // @Success      200  {array}  model.GetCarsResponse
@@ -701,15 +703,26 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 	tradeIn := c.Query("trade_in")
 	credit := c.Query("credit")
 	crash := c.Query("crash")
-	new := c.Query("new")
 	owners := c.Query("owners")
 	price_from := c.Query("price_from")
 	price_to := c.Query("price_to")
+	wheel := true
+
+	if c.Query("wheel", "true") == "false" {
+		wheel = false
+	}
+
+	new := true
+
+	if c.Query("new", "true") == "false" {
+		new = false
+	}
+
 	data := h.UserService.GetCars(ctx, userID, brands, models,
 		regions, cities, generations, transmissions, engines, drivetrains,
 		body_types, fuel_types, ownership_types, colors,
 		year_from, year_to, credit, price_from, price_to,
-		tradeIn, owners, crash, new)
+		tradeIn, owners, crash, new, wheel)
 
 	return utils.FiberResponse(c, data)
 }

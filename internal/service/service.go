@@ -297,12 +297,12 @@ func (s *UserService) GetHome(ctx *fasthttp.RequestCtx, userID int) *model.Respo
 
 func (s *UserService) GetCars(ctx *fasthttp.RequestCtx, userID int, brands, models, regions, cities,
 	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors []string,
-	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, new string) *model.Response {
+	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash string, new, wheel bool) *model.Response {
 
 	cars, err := s.UserRepository.GetCars(ctx, userID, brands, models, regions, cities,
 		generations, transmissions, engines, drivetrains, body_types, fuel_types,
 		ownership_types, colors, year_from, year_to, credit,
-		price_from, price_to, tradeIn, owners, crash, new)
+		price_from, price_to, tradeIn, owners, crash, new, wheel)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}

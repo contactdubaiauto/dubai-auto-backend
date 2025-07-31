@@ -957,6 +957,20 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "true or false new",
+                        "name": "new",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "true or false wheel",
+                        "name": "wheel",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Filter by price from",
                         "name": "price_from",
                         "in": "query"
