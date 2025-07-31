@@ -4,11 +4,9 @@ import (
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
 	"dubai-auto/internal/utils"
-	"errors"
-	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
 type AuthHandler struct {
@@ -33,29 +31,27 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/auth/account/{id} [delete]
-func (h *AuthHandler) DeleteAccount(c *gin.Context) {
-	ctx := c.Request.Context()
-	idStr := c.Param("id")
+func (h *AuthHandler) DeleteAccount(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
 	userID, err := strconv.Atoi(idStr)
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
-			Error:  errors.New("user id must be integer"),
+			Error:  err,
 		})
-		return
 	}
 	// Optionally, you can check if the user is deleting their own account:
-	authUserID := c.MustGet("id").(int)
+	authUserID := c.Locals("id").(int)
 	if userID != authUserID {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 403,
-			Error:  errors.New("forbidden: cannot delete another user's account"),
+			Error:  err,
 		})
-		return
 	}
 
-	data := h.service.DeleteAccount(&ctx, userID)
-	utils.GinResponse(c, data)
+	data := h.service.DeleteAccount(ctx, userID)
+	return utils.FiberResponse(c, data)
 }
 
 // UserEmail confirmation godoc
@@ -65,24 +61,26 @@ func (h *AuthHandler) DeleteAccount(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        user  body      model.UserEmailConfirmationRequest  true  "User email confirmation credentials"
-// @Success      200   {object}  model.LoginResponse
+// @Success      200   {object}  model.LoFiberResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
 // @Failure      403   {object}  pkg.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/auth/user-email-confirmation [post]
-func (h *AuthHandler) UserEmailConfirmation(c *gin.Context) {
+func (h *AuthHandler) UserEmailConfirmation(c *fiber.Ctx) error {
 	user := &model.UserEmailConfirmationRequest{}
 
-	if err := c.ShouldBindJSON(user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if err := c.BodyParser(user); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  err,
+		})
 	}
 
-	data := h.service.UserEmailConfirmation(c.Request.Context(), user)
+	data := h.service.UserEmailConfirmation(c.Context(), user)
 
-	utils.GinResponse(c, &data)
+	return utils.FiberResponse(c, &data)
 }
 
 // UserPhone confirmation godoc
@@ -92,24 +90,26 @@ func (h *AuthHandler) UserEmailConfirmation(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        user  body      model.UserPhoneConfirmationRequest  true  "User phone confirmation credentials"
-// @Success      200   {object}  model.LoginResponse
+// @Success      200   {object}  model.LoFiberResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  pkg.ErrorResponse
 // @Failure      403   {object}  pkg.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/auth/user-phone-confirmation [post]
-func (h *AuthHandler) UserPhoneConfirmation(c *gin.Context) {
+func (h *AuthHandler) UserPhoneConfirmation(c *fiber.Ctx) error {
 	user := &model.UserPhoneConfirmationRequest{}
 
-	if err := c.ShouldBindJSON(user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if err := c.BodyParser(user); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  err,
+		})
 	}
 
-	data := h.service.UserPhoneConfirmation(c.Request.Context(), user)
+	data := h.service.UserPhoneConfirmation(c.Context(), user)
 
-	utils.GinResponse(c, &data)
+	return utils.FiberResponse(c, &data)
 }
 
 // UserLoginEmail godoc
@@ -126,16 +126,18 @@ func (h *AuthHandler) UserPhoneConfirmation(c *gin.Context) {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/auth/user-login-email [post]
-func (h *AuthHandler) UserLoginEmail(c *gin.Context) {
+func (h *AuthHandler) UserLoginEmail(c *fiber.Ctx) error {
 	user := &model.UserLoginEmail{}
 
-	if err := c.ShouldBindJSON(user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if err := c.BodyParser(user); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  err,
+		})
 	}
 
-	data := h.service.UserLoginEmail(c.Request.Context(), user)
-	utils.GinResponse(c, &data)
+	data := h.service.UserLoginEmail(c.Context(), user)
+	return utils.FiberResponse(c, &data)
 }
 
 // UserLoginPhone godoc
@@ -152,14 +154,16 @@ func (h *AuthHandler) UserLoginEmail(c *gin.Context) {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/auth/user-login-phone [post]
-func (h *AuthHandler) UserLoginPhone(c *gin.Context) {
+func (h *AuthHandler) UserLoginPhone(c *fiber.Ctx) error {
 	user := &model.UserLoginPhone{}
 
-	if err := c.ShouldBindJSON(user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if err := c.BodyParser(user); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  err,
+		})
 	}
 
-	data := h.service.UserLoginPhone(c.Request.Context(), user)
-	utils.GinResponse(c, &data)
+	data := h.service.UserLoginPhone(c.Context(), user)
+	return utils.FiberResponse(c, &data)
 }

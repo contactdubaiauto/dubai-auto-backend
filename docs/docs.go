@@ -107,7 +107,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.LoginResponse"
+                            "$ref": "#/definitions/model.LoFiberResponse"
                         }
                     },
                     "400": {
@@ -299,7 +299,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.LoginResponse"
+                            "$ref": "#/definitions/model.LoFiberResponse"
                         }
                     },
                     "400": {
@@ -3367,7 +3367,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.LoginResponse": {
+        "model.LoFiberResponse": {
             "type": "object",
             "properties": {
                 "access_token": {

@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"context"
 	"fmt"
 	"strings"
 
@@ -9,6 +8,7 @@ import (
 	"dubai-auto/pkg"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/valyala/fasthttp"
 )
 
 type UserRepository struct {
@@ -19,7 +19,7 @@ func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 	return &UserRepository{db}
 }
 
-func (r *UserRepository) GetMyCars(ctx *context.Context, userID *int) ([]model.GetCarsResponse, error) {
+func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int) ([]model.GetCarsResponse, error) {
 	cars := make([]model.GetCarsResponse, 0)
 	q := `
 		select 
@@ -89,7 +89,7 @@ func (r *UserRepository) GetMyCars(ctx *context.Context, userID *int) ([]model.G
 		where vs.user_id = $1 and status = 2
 		order by vs.id desc
 	`
-	rows, err := r.db.Query(*ctx, q, *userID)
+	rows, err := r.db.Query(ctx, q, *userID)
 
 	if err != nil {
 		return cars, err
@@ -111,7 +111,7 @@ func (r *UserRepository) GetMyCars(ctx *context.Context, userID *int) ([]model.G
 	return cars, err
 }
 
-func (r *UserRepository) OnSale(ctx *context.Context, userID *int) ([]model.GetCarsResponse, error) {
+func (r *UserRepository) OnSale(ctx *fasthttp.RequestCtx, userID *int) ([]model.GetCarsResponse, error) {
 	cars := make([]model.GetCarsResponse, 0)
 	q := `
 		select 
@@ -181,7 +181,7 @@ func (r *UserRepository) OnSale(ctx *context.Context, userID *int) ([]model.GetC
 		where vs.user_id = $1 and status = 3
 		order by vs.id desc
 	`
-	rows, err := r.db.Query(*ctx, q, *userID)
+	rows, err := r.db.Query(ctx, q, *userID)
 
 	if err != nil {
 		return cars, err
@@ -203,23 +203,23 @@ func (r *UserRepository) OnSale(ctx *context.Context, userID *int) ([]model.GetC
 	return cars, err
 }
 
-func (r *UserRepository) Cancel(ctx *context.Context, carID *int) error {
+func (r *UserRepository) Cancel(ctx *fasthttp.RequestCtx, carID *int) error {
 	q := `
 		delete from vehicles where id = $1
 	`
-	_, err := r.db.Exec(*ctx, q, *carID)
+	_, err := r.db.Exec(ctx, q, *carID)
 	return err
 }
 
-func (r *UserRepository) DeleteCar(ctx *context.Context, carID *int) error {
+func (r *UserRepository) DeleteCar(ctx *fasthttp.RequestCtx, carID *int) error {
 	q := `
 		delete from vehicles where id = $1
 	`
-	_, err := r.db.Exec(*ctx, q, *carID)
+	_, err := r.db.Exec(ctx, q, *carID)
 	return err
 }
 
-func (r *UserRepository) DontSell(ctx *context.Context, carID, userID *int) error {
+func (r *UserRepository) DontSell(ctx *fasthttp.RequestCtx, carID, userID *int) error {
 	q := `
 		update vehicles 
 			set status = 2 -- 2 is not sale
@@ -227,26 +227,26 @@ func (r *UserRepository) DontSell(ctx *context.Context, carID, userID *int) erro
 			and user_id = $2
 	`
 
-	_, err := r.db.Exec(*ctx, q, *carID, *userID)
+	_, err := r.db.Exec(ctx, q, *carID, *userID)
 	return err
 }
 
-func (r *UserRepository) Sell(ctx *context.Context, carID, userID *int) error {
+func (r *UserRepository) Sell(ctx *fasthttp.RequestCtx, carID, userID *int) error {
 	q := `
 		update vehicles 
 			set status = 3 -- 3 is on sale
 		where id = $1 and status = 2 -- 2 is not sale 
 			and user_id = $2
 	`
-	_, err := r.db.Exec(*ctx, q, *carID, *userID)
+	_, err := r.db.Exec(ctx, q, *carID, *userID)
 	return err
 }
 
-func (r *UserRepository) GetBrands(ctx *context.Context, text string) ([]*model.GetBrandsResponse, error) {
+func (r *UserRepository) GetBrands(ctx *fasthttp.RequestCtx, text string) ([]*model.GetBrandsResponse, error) {
 	q := `
 		SELECT id, name, logo, model_count FROM brands WHERE name ILIKE '%' || $1 || '%'
 	`
-	rows, err := r.db.Query(*ctx, q, text)
+	rows, err := r.db.Query(ctx, q, text)
 
 	if err != nil {
 		return nil, err
@@ -265,7 +265,7 @@ func (r *UserRepository) GetBrands(ctx *context.Context, text string) ([]*model.
 	return brands, err
 }
 
-func (r *UserRepository) GetProfile(ctx *context.Context, userID int) (model.GetProfileResponse, error) {
+func (r *UserRepository) GetProfile(ctx *fasthttp.RequestCtx, userID int) (model.GetProfileResponse, error) {
 	q := `
 		select 
 			us.id,
@@ -284,13 +284,13 @@ func (r *UserRepository) GetProfile(ctx *context.Context, userID int) (model.Get
 
 	`
 	var pf model.GetProfileResponse
-	err := r.db.QueryRow(*ctx, q, userID).Scan(&pf.ID, &pf.Email, &pf.Phone,
+	err := r.db.QueryRow(ctx, q, userID).Scan(&pf.ID, &pf.Email, &pf.Phone,
 		&pf.DrivingExperience, &pf.Notification, &pf.Username, &pf.Google, &pf.Birthday, &pf.AboutMe, &pf.RegisteredBy)
 
 	return pf, err
 }
 
-func (r *UserRepository) UpdateProfile(ctx *context.Context, userID int, profile *model.UpdateProfileRequest) error {
+func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, profile *model.UpdateProfileRequest) error {
 	keys, _, args := pkg.BuildParams(profile)
 
 	if len(keys) == 0 {
@@ -313,11 +313,11 @@ func (r *UserRepository) UpdateProfile(ctx *context.Context, userID int, profile
 		WHERE user_id = $%d
 	`, strings.Join(setClause, ", "), len(args))
 
-	_, err := r.db.Exec(*ctx, q, args...)
+	_, err := r.db.Exec(ctx, q, args...)
 	return err
 }
 
-func (r *UserRepository) GetFilterBrands(ctx *context.Context, text string) (model.GetFilterBrandsResponse, error) {
+func (r *UserRepository) GetFilterBrands(ctx *fasthttp.RequestCtx, text string) (model.GetFilterBrandsResponse, error) {
 	var brand model.GetFilterBrandsResponse
 	q := `
 		with popular as (
@@ -352,12 +352,12 @@ func (r *UserRepository) GetFilterBrands(ctx *context.Context, text string) (mod
 		left join all_brands as ab on true;
 
 	`
-	err := r.db.QueryRow(*ctx, q, text).Scan(&brand.PopularBrands, &brand.AllBrands)
+	err := r.db.QueryRow(ctx, q, text).Scan(&brand.PopularBrands, &brand.AllBrands)
 
 	return brand, err
 }
 
-func (r *UserRepository) GetCities(ctx *context.Context, text string) ([]model.GetCitiesResponse, error) {
+func (r *UserRepository) GetCities(ctx *fasthttp.RequestCtx, text string) ([]model.GetCitiesResponse, error) {
 	var cities = make([]model.GetCitiesResponse, 0)
 	var city model.GetCitiesResponse
 	q := `
@@ -375,7 +375,7 @@ func (r *UserRepository) GetCities(ctx *context.Context, text string) ([]model.G
 		where c.name ILIKE '%' || $1 || '%'
 		group by c.id, c.name;
 	`
-	rows, err := r.db.Query(*ctx, q, text)
+	rows, err := r.db.Query(ctx, q, text)
 
 	if err != nil {
 		return cities, err
@@ -393,11 +393,11 @@ func (r *UserRepository) GetCities(ctx *context.Context, text string) ([]model.G
 	return cities, err
 }
 
-func (r *UserRepository) GetModelsByBrandID(ctx *context.Context, brandID int64, text string) ([]model.Model, error) {
+func (r *UserRepository) GetModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text string) ([]model.Model, error) {
 	q := `
 			SELECT id, name FROM models WHERE brand_id = $1 AND name ILIKE '%' || $2 || '%'
 		`
-	rows, err := r.db.Query(*ctx, q, brandID, text)
+	rows, err := r.db.Query(ctx, q, brandID, text)
 
 	if err != nil {
 		return nil, err
@@ -418,7 +418,7 @@ func (r *UserRepository) GetModelsByBrandID(ctx *context.Context, brandID int64,
 	return models, err
 }
 
-func (r *UserRepository) GetFilterModelsByBrandID(ctx *context.Context, brandID int64, text string) (model.GetFilterModelsResponse, error) {
+func (r *UserRepository) GetFilterModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text string) (model.GetFilterModelsResponse, error) {
 	responseModel := model.GetFilterModelsResponse{}
 	q := `
 		with popular as (
@@ -448,7 +448,7 @@ func (r *UserRepository) GetFilterModelsByBrandID(ctx *context.Context, brandID 
 		from popular as pp
 		left join all_models as ms on true;
 		`
-	err := r.db.QueryRow(*ctx, q, brandID, text).Scan(&responseModel.PopularModels, &responseModel.AllModels)
+	err := r.db.QueryRow(ctx, q, brandID, text).Scan(&responseModel.PopularModels, &responseModel.AllModels)
 
 	if err != nil {
 		return responseModel, err
@@ -457,7 +457,7 @@ func (r *UserRepository) GetFilterModelsByBrandID(ctx *context.Context, brandID 
 	return responseModel, err
 }
 
-func (r *UserRepository) GetFilterModelsByBrands(ctx *context.Context, brands []int, text string) (model.GetFilterModelsResponse, error) {
+func (r *UserRepository) GetFilterModelsByBrands(ctx *fasthttp.RequestCtx, brands []int, text string) (model.GetFilterModelsResponse, error) {
 	responseModel := model.GetFilterModelsResponse{}
 	q := `
 		with popular as (
@@ -487,7 +487,7 @@ func (r *UserRepository) GetFilterModelsByBrands(ctx *context.Context, brands []
 		from popular as pp
 		left join all_models as ms on true;
 	`
-	err := r.db.QueryRow(*ctx, q, brands, text).Scan(&responseModel.PopularModels, &responseModel.AllModels)
+	err := r.db.QueryRow(ctx, q, brands, text).Scan(&responseModel.PopularModels, &responseModel.AllModels)
 
 	if err != nil {
 		return responseModel, err
@@ -496,7 +496,7 @@ func (r *UserRepository) GetFilterModelsByBrands(ctx *context.Context, brands []
 	return responseModel, err
 }
 
-func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID int, wheel bool, year, bodyTypeID string) ([]model.Generation, error) {
+func (r *UserRepository) GetGenerationsByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year, bodyTypeID string) ([]model.Generation, error) {
 	q := `
 		with gms as (
 			select 
@@ -535,7 +535,7 @@ func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID i
 		from gms
 		left join generations gs on gs.id = gms.generation_id;
 	`
-	rows, err := r.db.Query(*ctx, q, modelID, year, bodyTypeID, wheel)
+	rows, err := r.db.Query(ctx, q, modelID, year, bodyTypeID, wheel)
 
 	if err != nil {
 		return nil, err
@@ -557,7 +557,7 @@ func (r *UserRepository) GetGenerationsByModelID(ctx *context.Context, modelID i
 	return generations, err
 }
 
-func (r *UserRepository) GetGenerationsByModels(ctx *context.Context, models []int) ([]model.Generation, error) {
+func (r *UserRepository) GetGenerationsByModels(ctx *fasthttp.RequestCtx, models []int) ([]model.Generation, error) {
 
 	q := `
 		with gms as (
@@ -596,7 +596,7 @@ func (r *UserRepository) GetGenerationsByModels(ctx *context.Context, models []i
 		from gms
 		left join generations gs on gs.id = gms.generation_id;
 	`
-	rows, err := r.db.Query(*ctx, q, models)
+	rows, err := r.db.Query(ctx, q, models)
 
 	if err != nil {
 		return nil, err
@@ -619,7 +619,7 @@ func (r *UserRepository) GetGenerationsByModels(ctx *context.Context, models []i
 }
 
 // todo: after remove the array response, return an object
-func (r *UserRepository) GetYearsByModelID(ctx *context.Context, modelID int64, wheel bool) ([]*int, error) {
+func (r *UserRepository) GetYearsByModelID(ctx *fasthttp.RequestCtx, modelID int64, wheel bool) ([]*int, error) {
 	q := `
 		SELECT 
 			array_agg(y ORDER BY y) AS years
@@ -630,13 +630,13 @@ func (r *UserRepository) GetYearsByModelID(ctx *context.Context, modelID int64, 
 		) AS years_series;
 	`
 	var years []*int
-	err := r.db.QueryRow(*ctx, q, modelID, wheel).Scan(&years)
+	err := r.db.QueryRow(ctx, q, modelID, wheel).Scan(&years)
 
 	return years, err
 }
 
 // todo: after remove the array response, return an object
-func (r *UserRepository) GetYearsByModels(ctx *context.Context, models []int, wheel bool) ([]*int, error) {
+func (r *UserRepository) GetYearsByModels(ctx *fasthttp.RequestCtx, models []int, wheel bool) ([]*int, error) {
 	q := `
 		SELECT 
 			array_agg(y ORDER BY y) AS years
@@ -647,12 +647,12 @@ func (r *UserRepository) GetYearsByModels(ctx *context.Context, models []int, wh
 		) AS years_series;
 	`
 	var years []*int
-	err := r.db.QueryRow(*ctx, q, models, wheel).Scan(&years)
+	err := r.db.QueryRow(ctx, q, models, wheel).Scan(&years)
 
 	return years, err
 }
 
-func (r *UserRepository) GetBodysByModelID(ctx *context.Context, modelID int, wheel bool, year string) ([]model.BodyType, error) {
+func (r *UserRepository) GetBodysByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year string) ([]model.BodyType, error) {
 	q := `
 		select DISTINCT ON (bts.id)
 			bts.id,
@@ -669,7 +669,7 @@ func (r *UserRepository) GetBodysByModelID(ctx *context.Context, modelID int, wh
 		)
 	`
 
-	rows, err := r.db.Query(*ctx, q, year, modelID, wheel)
+	rows, err := r.db.Query(ctx, q, year, modelID, wheel)
 
 	if err != nil {
 		return nil, err
@@ -691,7 +691,7 @@ func (r *UserRepository) GetBodysByModelID(ctx *context.Context, modelID int, wh
 	return bodyTypes, err
 }
 
-func (r *UserRepository) GetBodysByModels(ctx *context.Context, wheel bool, models, years []int) ([]model.BodyType, error) {
+func (r *UserRepository) GetBodysByModels(ctx *fasthttp.RequestCtx, wheel bool, models, years []int) ([]model.BodyType, error) {
 	q := `
 		select DISTINCT ON (bts.id)
 			bts.id,
@@ -714,7 +714,7 @@ func (r *UserRepository) GetBodysByModels(ctx *context.Context, wheel bool, mode
 		)
 	`
 
-	rows, err := r.db.Query(*ctx, q, years, models, wheel)
+	rows, err := r.db.Query(ctx, q, years, models, wheel)
 
 	if err != nil {
 		return nil, err
@@ -736,12 +736,12 @@ func (r *UserRepository) GetBodysByModels(ctx *context.Context, wheel bool, mode
 	return bodyTypes, err
 }
 
-func (r *UserRepository) GetBodyTypes(ctx *context.Context) ([]model.BodyType, error) {
+func (r *UserRepository) GetBodyTypes(ctx *fasthttp.RequestCtx) ([]model.BodyType, error) {
 	q := `
 		SELECT id, name, image FROM body_types
 	`
 
-	rows, err := r.db.Query(*ctx, q)
+	rows, err := r.db.Query(ctx, q)
 
 	if err != nil {
 		return nil, err
@@ -762,12 +762,12 @@ func (r *UserRepository) GetBodyTypes(ctx *context.Context) ([]model.BodyType, e
 	return bodyTypes, err
 }
 
-func (r *UserRepository) GetTransmissions(ctx *context.Context) ([]model.Transmission, error) {
+func (r *UserRepository) GetTransmissions(ctx *fasthttp.RequestCtx) ([]model.Transmission, error) {
 	q := `
 		SELECT id, name FROM transmissions
 	`
 
-	rows, err := r.db.Query(*ctx, q)
+	rows, err := r.db.Query(ctx, q)
 
 	if err != nil {
 		return nil, err
@@ -786,12 +786,12 @@ func (r *UserRepository) GetTransmissions(ctx *context.Context) ([]model.Transmi
 	return transmissions, err
 }
 
-func (r *UserRepository) GetEngines(ctx *context.Context) ([]model.Engine, error) {
+func (r *UserRepository) GetEngines(ctx *fasthttp.RequestCtx) ([]model.Engine, error) {
 	q := `
 		SELECT id, value FROM engines
 	`
 
-	rows, err := r.db.Query(*ctx, q)
+	rows, err := r.db.Query(ctx, q)
 
 	if err != nil {
 		return nil, err
@@ -810,12 +810,12 @@ func (r *UserRepository) GetEngines(ctx *context.Context) ([]model.Engine, error
 	return engines, err
 }
 
-func (r *UserRepository) GetDrivetrains(ctx *context.Context) ([]model.Drivetrain, error) {
+func (r *UserRepository) GetDrivetrains(ctx *fasthttp.RequestCtx) ([]model.Drivetrain, error) {
 	q := `
 		SELECT id, name FROM drivetrains
 	`
 
-	rows, err := r.db.Query(*ctx, q)
+	rows, err := r.db.Query(ctx, q)
 
 	if err != nil {
 		return nil, err
@@ -834,12 +834,12 @@ func (r *UserRepository) GetDrivetrains(ctx *context.Context) ([]model.Drivetrai
 	return drivetrains, err
 }
 
-func (r *UserRepository) GetFuelTypes(ctx *context.Context) ([]model.FuelType, error) {
+func (r *UserRepository) GetFuelTypes(ctx *fasthttp.RequestCtx) ([]model.FuelType, error) {
 	q := `
 		SELECT id, name FROM fuel_types
 	`
 
-	rows, err := r.db.Query(*ctx, q)
+	rows, err := r.db.Query(ctx, q)
 
 	if err != nil {
 		return nil, err
@@ -858,12 +858,12 @@ func (r *UserRepository) GetFuelTypes(ctx *context.Context) ([]model.FuelType, e
 	return fuelTypes, err
 }
 
-func (r *UserRepository) GetColors(ctx *context.Context) ([]model.Color, error) {
+func (r *UserRepository) GetColors(ctx *fasthttp.RequestCtx) ([]model.Color, error) {
 	q := `
 		SELECT id, name, image FROM colors
 	`
 
-	rows, err := r.db.Query(*ctx, q)
+	rows, err := r.db.Query(ctx, q)
 
 	if err != nil {
 		return nil, err
@@ -883,7 +883,7 @@ func (r *UserRepository) GetColors(ctx *context.Context) ([]model.Color, error) 
 	return colors, err
 }
 
-func (r *UserRepository) GetHome(ctx *context.Context, userID int) (model.Home, error) {
+func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int) (model.Home, error) {
 	home := model.Home{}
 	cars := make([]model.GetCarsResponse, 0)
 
@@ -941,7 +941,7 @@ func (r *UserRepository) GetHome(ctx *context.Context, userID int) (model.Home, 
 		order by vs.id desc limit 4
 	`
 
-	rows, err := r.db.Query(*ctx, q, userID)
+	rows, err := r.db.Query(ctx, q, userID)
 
 	if err != nil {
 		return home, err
@@ -965,7 +965,7 @@ func (r *UserRepository) GetHome(ctx *context.Context, userID int) (model.Home, 
 	return home, nil
 }
 
-func (r *UserRepository) GetCars(ctx *context.Context, userID int,
+func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 	brands, models, regions, cities, generations, transmissions,
 	engines, drivetrains, body_types, fuel_types, ownership_types, colors []string, year_from, year_to, credit,
 	price_from, price_to, tradeIn, owners, crash, new string) ([]model.GetCarsResponse, error) {
@@ -1182,7 +1182,7 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 		order by vs.id desc
 	`
 
-	rows, err := r.db.Query(*ctx, q, qValues...)
+	rows, err := r.db.Query(ctx, q, qValues...)
 
 	if err != nil {
 		return cars, err
@@ -1204,7 +1204,7 @@ func (r *UserRepository) GetCars(ctx *context.Context, userID int,
 	return cars, err
 }
 
-func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (model.GetCarsResponse, error) {
+func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int) (model.GetCarsResponse, error) {
 	car := model.GetCarsResponse{}
 	q := `
 		WITH updated AS (
@@ -1289,7 +1289,7 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (mo
 		WHERE vs.id = $1;
 	`
 
-	err := r.db.QueryRow(*ctx, q, carID, userID).Scan(
+	err := r.db.QueryRow(ctx, q, carID, userID).Scan(
 		&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
 		&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
 		&car.Credit, &car.New, &car.Status, &car.CreatedAt, &car.TradeIn, &car.Owners,
@@ -1299,7 +1299,7 @@ func (r *UserRepository) GetCarByID(ctx *context.Context, carID, userID int) (mo
 	return car, err
 }
 
-func (r *UserRepository) GetEditCarByID(ctx *context.Context, carID, userID int) (model.GetEditCarsResponse, error) {
+func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID int) (model.GetEditCarsResponse, error) {
 	car := model.GetEditCarsResponse{}
 
 	q := `
@@ -1401,7 +1401,7 @@ func (r *UserRepository) GetEditCarByID(ctx *context.Context, carID, userID int)
 		) videos ON true
 		where vs.id = $1;
 	`
-	err := r.db.QueryRow(*ctx, q, carID, userID).Scan(
+	err := r.db.QueryRow(ctx, q, carID, userID).Scan(
 		&car.ID, &car.Brand, &car.Region, &car.City, &car.Model, &car.Modification,
 		&car.Color, &car.BodyType, &car.Generation, &car.Year, &car.Price, &car.Odometer, &car.VinCode,
 		&car.Wheel, &car.TradeIN, &car.Crash,
@@ -1412,7 +1412,7 @@ func (r *UserRepository) GetEditCarByID(ctx *context.Context, carID, userID int)
 	return car, err
 }
 
-func (r *UserRepository) BuyCar(ctx *context.Context, carID, userID int) error {
+func (r *UserRepository) BuyCar(ctx *fasthttp.RequestCtx, carID, userID int) error {
 
 	q := `
 		update vehicles 
@@ -1421,12 +1421,12 @@ func (r *UserRepository) BuyCar(ctx *context.Context, carID, userID int) error {
 		where id = $2 and status = 3 -- 3 is on sale
 	`
 
-	_, err := r.db.Exec(*ctx, q, userID, carID)
+	_, err := r.db.Exec(ctx, q, userID, carID)
 
 	return err
 }
 
-func (r *UserRepository) CreateCar(ctx *context.Context, car *model.CreateCarRequest) (int, error) {
+func (r *UserRepository) CreateCar(ctx *fasthttp.RequestCtx, car *model.CreateCarRequest) (int, error) {
 
 	keys, values, args := pkg.BuildParams(car)
 
@@ -1439,16 +1439,16 @@ func (r *UserRepository) CreateCar(ctx *context.Context, car *model.CreateCarReq
 			) RETURNING id
 	`
 	var id int
-	err := r.db.QueryRow(*ctx, q, args...).Scan(&id)
+	err := r.db.QueryRow(ctx, q, args...).Scan(&id)
 
 	return id, err
 }
 
-func (r *UserRepository) UpdateCar(ctx *context.Context, car *model.UpdateCarRequest, userID int) error {
+func (r *UserRepository) UpdateCar(ctx *fasthttp.RequestCtx, car *model.UpdateCarRequest, userID int) error {
 	// First check if the car belongs to the user
 	var exists bool
 	checkQuery := `SELECT EXISTS(SELECT 1 FROM vehicles WHERE id = $1 AND user_id = $2)`
-	err := r.db.QueryRow(*ctx, checkQuery, car.ID, userID).Scan(&exists)
+	err := r.db.QueryRow(ctx, checkQuery, car.ID, userID).Scan(&exists)
 
 	if err != nil {
 		return err
@@ -1484,29 +1484,29 @@ func (r *UserRepository) UpdateCar(ctx *context.Context, car *model.UpdateCarReq
 
 	updateArgs = append(updateArgs, userID)
 
-	_, err = r.db.Exec(*ctx, q, updateArgs...)
+	_, err = r.db.Exec(ctx, q, updateArgs...)
 	return err
 }
 
-func (r *UserRepository) CarLike(ctx *context.Context, carID, userID *int) error {
+func (r *UserRepository) CarLike(ctx *fasthttp.RequestCtx, carID, userID *int) error {
 
 	q := `
 		INSERT INTO user_likes(user_id, vehicle_id) values ($2, $1)
 	`
-	_, err := r.db.Exec(*ctx, q, carID, userID)
+	_, err := r.db.Exec(ctx, q, carID, userID)
 	return err
 }
 
-func (r *UserRepository) RemoveLike(ctx *context.Context, carID, userID *int) error {
+func (r *UserRepository) RemoveLike(ctx *fasthttp.RequestCtx, carID, userID *int) error {
 
 	q := `
 		delete from user_likes where vehicle_id = $1 and user_id = $2
 	`
-	_, err := r.db.Exec(*ctx, q, carID, userID)
+	_, err := r.db.Exec(ctx, q, carID, userID)
 	return err
 }
 
-func (r *UserRepository) Likes(ctx *context.Context, userID *int) ([]model.GetCarsResponse, error) {
+func (r *UserRepository) Likes(ctx *fasthttp.RequestCtx, userID *int) ([]model.GetCarsResponse, error) {
 	cars := make([]model.GetCarsResponse, 0)
 	q := `
 		select 
@@ -1576,7 +1576,7 @@ func (r *UserRepository) Likes(ctx *context.Context, userID *int) ([]model.GetCa
 		where vs.status = 3
 		order by vs.id desc
 	`
-	rows, err := r.db.Query(*ctx, q, *userID)
+	rows, err := r.db.Query(ctx, q, *userID)
 
 	if err != nil {
 		return cars, err
@@ -1598,7 +1598,7 @@ func (r *UserRepository) Likes(ctx *context.Context, userID *int) ([]model.GetCa
 	return cars, err
 }
 
-func (r *UserRepository) CreateCarImages(ctx *context.Context, carID int, images []string) error {
+func (r *UserRepository) CreateCarImages(ctx *fasthttp.RequestCtx, carID int, images []string) error {
 
 	if len(images) == 0 {
 		return nil
@@ -1609,7 +1609,7 @@ func (r *UserRepository) CreateCarImages(ctx *context.Context, carID int, images
 	`
 
 	for i := range images {
-		_, err := r.db.Exec(*ctx, q, carID, images[i])
+		_, err := r.db.Exec(ctx, q, carID, images[i])
 		if err != nil {
 			return err
 		}
@@ -1618,13 +1618,13 @@ func (r *UserRepository) CreateCarImages(ctx *context.Context, carID int, images
 	return nil
 }
 
-func (r *UserRepository) CreateCarVideos(ctx *context.Context, carID int, video string) error {
+func (r *UserRepository) CreateCarVideos(ctx *fasthttp.RequestCtx, carID int, video string) error {
 
 	q := `
 		INSERT INTO videos (vehicle_id, video) VALUES ($1, $2)
 	`
 
-	_, err := r.db.Exec(*ctx, q, carID, video)
+	_, err := r.db.Exec(ctx, q, carID, video)
 	if err != nil {
 		return err
 	}
@@ -1632,14 +1632,14 @@ func (r *UserRepository) CreateCarVideos(ctx *context.Context, carID int, video 
 	return err
 }
 
-func (r *UserRepository) DeleteCarImage(ctx *context.Context, carID int, imagePath string) error {
+func (r *UserRepository) DeleteCarImage(ctx *fasthttp.RequestCtx, carID int, imagePath string) error {
 	q := `DELETE FROM images WHERE vehicle_id = $1 AND image = $2`
-	_, err := r.db.Exec(*ctx, q, carID, imagePath)
+	_, err := r.db.Exec(ctx, q, carID, imagePath)
 	return err
 }
 
-func (r *UserRepository) DeleteCarVideo(ctx *context.Context, carID int, videoPath string) error {
+func (r *UserRepository) DeleteCarVideo(ctx *fasthttp.RequestCtx, carID int, videoPath string) error {
 	q := `DELETE FROM videos WHERE vehicle_id = $1 AND video = $2`
-	_, err := r.db.Exec(*ctx, q, carID, videoPath)
+	_, err := r.db.Exec(ctx, q, carID, videoPath)
 	return err
 }

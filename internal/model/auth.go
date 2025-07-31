@@ -32,7 +32,7 @@ type UserByPhone struct {
 	OTP      string `json:"otp"`
 }
 
-type LoginResponse struct {
+type LoFiberResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }

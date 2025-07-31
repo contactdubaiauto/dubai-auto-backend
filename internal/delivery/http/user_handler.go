@@ -2,11 +2,9 @@ package http
 
 import (
 	"errors"
-	"fmt"
-	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 
 	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
@@ -36,12 +34,12 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/profile/my-cars [get]
-func (h *UserHandler) GetMyCars(c *gin.Context) {
-	ctx := c.Request.Context()
-	userID := c.MustGet("id").(int)
-	data := h.UserService.GetMyCars(&ctx, &userID)
+func (h *UserHandler) GetMyCars(c *fiber.Ctx) error {
+	ctx := c.Context()
+	userID := c.Locals("id").(int)
+	data := h.UserService.GetMyCars(ctx, &userID)
 
-	utils.GinResponse(c, data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetProfileCars godoc
@@ -57,12 +55,12 @@ func (h *UserHandler) GetMyCars(c *gin.Context) {
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/profile/on-sale [get]
-func (h *UserHandler) OnSale(c *gin.Context) {
-	ctx := c.Request.Context()
-	userID := c.MustGet("id").(int)
-	data := h.UserService.OnSale(&ctx, &userID)
+func (h *UserHandler) OnSale(c *fiber.Ctx) error {
+	ctx := c.Context()
+	userID := c.Locals("id").(int)
+	data := h.UserService.OnSale(ctx, &userID)
 
-	utils.GinResponse(c, data)
+	return utils.FiberResponse(c, data)
 }
 
 // Cancel cars godoc
@@ -79,21 +77,21 @@ func (h *UserHandler) OnSale(c *gin.Context) {
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/cars/{car_id}/cancel [post]
-func (h *UserHandler) Cancel(c *gin.Context) {
+func (h *UserHandler) Cancel(c *fiber.Ctx) error {
 	// todo: delete images if exist
-	ctx := c.Request.Context()
-	idStr := c.Param("id")
+	ctx := c.Context()
+	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-		return
+
 	}
-	data := h.UserService.Cancel(&ctx, &id, "./images/cars/"+idStr)
-	utils.GinResponse(c, data)
+	data := h.UserService.Cancel(ctx, &id, "./images/cars/"+idStr)
+	return utils.FiberResponse(c, data)
 }
 
 // Cancel cars godoc
@@ -110,20 +108,20 @@ func (h *UserHandler) Cancel(c *gin.Context) {
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/cars/{car_id} [delete]
-func (h *UserHandler) DeleteCar(c *gin.Context) {
-	ctx := c.Request.Context()
-	idStr := c.Param("id")
+func (h *UserHandler) DeleteCar(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-		return
+
 	}
-	data := h.UserService.DeleteCar(&ctx, &id, "/images/cars/"+idStr)
-	utils.GinResponse(c, data)
+	data := h.UserService.DeleteCar(ctx, &id, "/images/cars/"+idStr)
+	return utils.FiberResponse(c, data)
 }
 
 // Dont sell godoc
@@ -140,21 +138,21 @@ func (h *UserHandler) DeleteCar(c *gin.Context) {
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/cars/{car_id}/dont-sell [post]
-func (h *UserHandler) DontSell(c *gin.Context) {
-	ctx := c.Request.Context()
-	idStr := c.Param("id")
-	userID := c.MustGet("id").(int)
+func (h *UserHandler) DontSell(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	userID := c.Locals("id").(int)
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-		return
+
 	}
-	data := h.UserService.DontSell(&ctx, &id, &userID)
-	utils.GinResponse(c, data)
+	data := h.UserService.DontSell(ctx, &id, &userID)
+	return utils.FiberResponse(c, data)
 }
 
 //	Sell godoc
@@ -172,21 +170,21 @@ func (h *UserHandler) DontSell(c *gin.Context) {
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/cars/{car_id}/sell [post]
-func (h *UserHandler) Sell(c *gin.Context) {
-	ctx := c.Request.Context()
-	idStr := c.Param("id")
-	userID := c.MustGet("id").(int)
+func (h *UserHandler) Sell(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	userID := c.Locals("id").(int)
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-		return
+
 	}
-	data := h.UserService.Sell(&ctx, &id, &userID)
-	utils.GinResponse(c, data)
+	data := h.UserService.Sell(ctx, &id, &userID)
+	return utils.FiberResponse(c, data)
 }
 
 // GetBrands godoc
@@ -202,11 +200,11 @@ func (h *UserHandler) Sell(c *gin.Context) {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/brands [get]
-func (h *UserHandler) GetBrands(c *gin.Context) {
+func (h *UserHandler) GetBrands(c *fiber.Ctx) error {
 	text := c.Query("text")
-	ctx := c.Request.Context()
-	data := h.UserService.GetBrands(&ctx, text)
-	utils.GinResponse(c, data)
+	ctx := c.Context()
+	data := h.UserService.GetBrands(ctx, text)
+	return utils.FiberResponse(c, data)
 }
 
 // GetProfile godoc
@@ -222,12 +220,12 @@ func (h *UserHandler) GetBrands(c *gin.Context) {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/profile [get]
-func (h *UserHandler) GetProfile(c *gin.Context) {
-	ctx := c.Request.Context()
-	userID := c.MustGet("id").(int)
+func (h *UserHandler) GetProfile(c *fiber.Ctx) error {
+	ctx := c.Context()
+	userID := c.Locals("id").(int)
 
-	data := h.UserService.GetProfile(&ctx, userID)
-	utils.GinResponse(c, data)
+	data := h.UserService.GetProfile(ctx, userID)
+	return utils.FiberResponse(c, data)
 }
 
 // UpdateProfile godoc
@@ -245,22 +243,22 @@ func (h *UserHandler) GetProfile(c *gin.Context) {
 // @Failure      404      {object}  model.ResultMessage
 // @Failure      500      {object}  model.ResultMessage
 // @Router       /api/v1/users/profile [put]
-func (h *UserHandler) UpdateProfile(c *gin.Context) {
+func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
 	// todo: add city
 	var profile model.UpdateProfileRequest
-	userID := c.MustGet("id").(int)
-	ctx := c.Request.Context()
+	userID := c.Locals("id").(int)
+	ctx := c.Context()
 
-	if err := c.ShouldBindJSON(&profile); err != nil {
-		utils.GinResponse(c, &model.Response{
+	if err := c.BodyParser(&profile); err != nil {
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
-		return
+
 	}
 
-	data := h.UserService.UpdateProfile(&ctx, userID, &profile)
-	utils.GinResponse(c, data)
+	data := h.UserService.UpdateProfile(ctx, userID, &profile)
+	return utils.FiberResponse(c, data)
 }
 
 // GetFilterBrands godoc
@@ -276,11 +274,11 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/filter-brands [get]
-func (h *UserHandler) GetFilterBrands(c *gin.Context) {
+func (h *UserHandler) GetFilterBrands(c *fiber.Ctx) error {
 	text := c.Query("text")
-	ctx := c.Request.Context()
-	data := h.UserService.GetFilterBrands(&ctx, text)
-	utils.GinResponse(c, data)
+	ctx := c.Context()
+	data := h.UserService.GetFilterBrands(ctx, text)
+	return utils.FiberResponse(c, data)
 }
 
 // GetBrands godoc
@@ -296,11 +294,11 @@ func (h *UserHandler) GetFilterBrands(c *gin.Context) {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/cities [get]
-func (h *UserHandler) GetCities(c *gin.Context) {
+func (h *UserHandler) GetCities(c *fiber.Ctx) error {
 	text := c.Query("text")
-	ctx := c.Request.Context()
-	data := h.UserService.GetCities(&ctx, text)
-	utils.GinResponse(c, data)
+	ctx := c.Context()
+	data := h.UserService.GetCities(ctx, text)
+	return utils.FiberResponse(c, data)
 }
 
 // GetModelsByBrandID godoc
@@ -317,20 +315,23 @@ func (h *UserHandler) GetCities(c *gin.Context) {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/brands/{id}/models [get]
-func (h *UserHandler) GetModelsByBrandID(c *gin.Context) {
-	brandID := c.Param("id")
+func (h *UserHandler) GetModelsByBrandID(c *fiber.Ctx) error {
+	brandID := c.Params("id")
 	text := c.Query("text")
 	brandIDInt, err := strconv.ParseInt(brandID, 10, 64)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error: ": err.Error()})
-		return
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+
 	}
 
-	ctx := c.Request.Context()
-	data := h.UserService.GetModelsByBrandID(&ctx, brandIDInt, text)
+	ctx := c.Context()
+	data := h.UserService.GetModelsByBrandID(ctx, brandIDInt, text)
 
-	utils.GinResponse(c, data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetFilterModelsByBrandID godoc
@@ -347,20 +348,23 @@ func (h *UserHandler) GetModelsByBrandID(c *gin.Context) {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/brands/{id}/filter-models [get]
-func (h *UserHandler) GetFilterModelsByBrandID(c *gin.Context) {
-	brandID := c.Param("id")
+func (h *UserHandler) GetFilterModelsByBrandID(c *fiber.Ctx) error {
+	brandID := c.Params("id")
 	text := c.Query("text")
 	brandIDInt, err := strconv.ParseInt(brandID, 10, 64)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error: ": err.Error()})
-		return
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+
 	}
 
-	ctx := c.Request.Context()
-	data := h.UserService.GetFilterModelsByBrandID(&ctx, brandIDInt, text)
+	ctx := c.Context()
+	data := h.UserService.GetFilterModelsByBrandID(ctx, brandIDInt, text)
 
-	utils.GinResponse(c, data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetGenerationsByModelID godoc
@@ -380,26 +384,29 @@ func (h *UserHandler) GetFilterModelsByBrandID(c *gin.Context) {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/brands/{id}/models/{model_id}/generations [get]
-func (h *UserHandler) GetGenerationsByModelID(c *gin.Context) {
-	modelID := c.Param("model_id")
+func (h *UserHandler) GetGenerationsByModelID(c *fiber.Ctx) error {
+	modelID := c.Params("model_id")
 	year := c.Query("year")
 	bodyTypeID := c.Query("body_type_id")
 	wheel := true
 
-	if c.DefaultQuery("wheel", "true") == "false" {
+	if c.Query("wheel", "true") == "false" {
 		wheel = false
 	}
 	modelIDInt, err := strconv.Atoi(modelID)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error: ": err.Error()})
-		return
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+
 	}
 
-	ctx := c.Request.Context()
-	data := h.UserService.GetGenerationsByModelID(&ctx, modelIDInt, wheel, year, bodyTypeID)
+	ctx := c.Context()
+	data := h.UserService.GetGenerationsByModelID(ctx, modelIDInt, wheel, year, bodyTypeID)
 
-	utils.GinResponse(c, data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetGenerationsByModelID godoc
@@ -415,21 +422,21 @@ func (h *UserHandler) GetGenerationsByModelID(c *gin.Context) {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/models/generations [get]
-func (h *UserHandler) GetGenerationsByModels(c *gin.Context) {
+func (h *UserHandler) GetGenerationsByModels(c *fiber.Ctx) error {
 	models, err := pkg.QueryParamToIntArray(c.Query("models"))
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  err,
 		})
-		return
+
 	}
 
-	ctx := c.Request.Context()
-	data := h.UserService.GetGenerationsByModels(&ctx, models)
+	ctx := c.Context()
+	data := h.UserService.GetGenerationsByModels(ctx, models)
 
-	utils.GinResponse(c, data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetYearsByModelID godoc
@@ -447,23 +454,26 @@ func (h *UserHandler) GetGenerationsByModels(c *gin.Context) {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/brands/{id}/models/{model_id}/years [get]
-func (h *UserHandler) GetYearsByModelID(c *gin.Context) {
-	modelID := c.Param("model_id")
+func (h *UserHandler) GetYearsByModelID(c *fiber.Ctx) error {
+	modelID := c.Params("model_id")
 	wheel := true
-	if c.DefaultQuery("wheel", "true") == "false" {
+	if c.Query("wheel", "true") == "false" {
 		wheel = false
 	}
 	modelIDInt, err := strconv.ParseInt(modelID, 10, 64)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error: ": err.Error()})
-		return
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+
 	}
 
-	ctx := c.Request.Context()
-	data := h.UserService.GetYearsByModelID(&ctx, modelIDInt, wheel)
+	ctx := c.Context()
+	data := h.UserService.GetYearsByModelID(ctx, modelIDInt, wheel)
 
-	utils.GinResponse(c, data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetBodysByModelID godoc
@@ -482,25 +492,28 @@ func (h *UserHandler) GetYearsByModelID(c *gin.Context) {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/brands/{id}/models/{model_id}/body-types [get]
-func (h *UserHandler) GetBodyTypesByModelID(c *gin.Context) {
-	modelID := c.Param("model_id")
+func (h *UserHandler) GetBodyTypesByModelID(c *fiber.Ctx) error {
+	modelID := c.Params("model_id")
 	year := c.Query("year")
 	wheel := true
 
-	if c.DefaultQuery("wheel", "true") == "false" {
+	if c.Query("wheel", "true") == "false" {
 		wheel = false
 	}
 	modelIDInt, err := strconv.Atoi(modelID)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error: ": err.Error()})
-		return
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+
 	}
 
-	ctx := c.Request.Context()
-	data := h.UserService.GetBodysByModelID(&ctx, modelIDInt, wheel, year)
+	ctx := c.Context()
+	data := h.UserService.GetBodysByModelID(ctx, modelIDInt, wheel, year)
 
-	utils.GinResponse(c, data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetBodyTypes godoc
@@ -515,10 +528,10 @@ func (h *UserHandler) GetBodyTypesByModelID(c *gin.Context) {
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/body-types [get]
-func (h *UserHandler) GetBodyTypes(c *gin.Context) {
-	ctx := c.Request.Context()
-	data := h.UserService.GetBodyTypes(&ctx)
-	utils.GinResponse(c, data)
+func (h *UserHandler) GetBodyTypes(c *fiber.Ctx) error {
+	ctx := c.Context()
+	data := h.UserService.GetBodyTypes(ctx)
+	return utils.FiberResponse(c, data)
 }
 
 // GetTransmissions godoc
@@ -533,10 +546,10 @@ func (h *UserHandler) GetBodyTypes(c *gin.Context) {
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/transmissions [get]
-func (h *UserHandler) GetTransmissions(c *gin.Context) {
-	ctx := c.Request.Context()
-	data := h.UserService.GetTransmissions(&ctx)
-	utils.GinResponse(c, data)
+func (h *UserHandler) GetTransmissions(c *fiber.Ctx) error {
+	ctx := c.Context()
+	data := h.UserService.GetTransmissions(ctx)
+	return utils.FiberResponse(c, data)
 }
 
 // GetEngines godoc
@@ -551,11 +564,11 @@ func (h *UserHandler) GetTransmissions(c *gin.Context) {
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/engines [get]
-func (h *UserHandler) GetEngines(c *gin.Context) {
-	ctx := c.Request.Context()
-	data := h.UserService.GetEngines(&ctx)
+func (h *UserHandler) GetEngines(c *fiber.Ctx) error {
+	ctx := c.Context()
+	data := h.UserService.GetEngines(ctx)
 
-	utils.GinResponse(c, data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetDrivetrains godoc
@@ -570,11 +583,11 @@ func (h *UserHandler) GetEngines(c *gin.Context) {
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/drivetrains [get]
-func (h *UserHandler) GetDrivetrains(c *gin.Context) {
-	ctx := c.Request.Context()
-	data := h.UserService.GetDrivetrains(&ctx)
+func (h *UserHandler) GetDrivetrains(c *fiber.Ctx) error {
+	ctx := c.Context()
+	data := h.UserService.GetDrivetrains(ctx)
 
-	utils.GinResponse(c, data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetFuelTypes godoc
@@ -589,11 +602,11 @@ func (h *UserHandler) GetDrivetrains(c *gin.Context) {
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/fuel-types [get]
-func (h *UserHandler) GetFuelTypes(c *gin.Context) {
-	ctx := c.Request.Context()
-	data := h.UserService.GetFuelTypes(&ctx)
+func (h *UserHandler) GetFuelTypes(c *fiber.Ctx) error {
+	ctx := c.Context()
+	data := h.UserService.GetFuelTypes(ctx)
 
-	utils.GinResponse(c, data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetColors godoc
@@ -608,10 +621,10 @@ func (h *UserHandler) GetFuelTypes(c *gin.Context) {
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/colors [get]
-func (h *UserHandler) GetColors(c *gin.Context) {
-	ctx := c.Request.Context()
-	data := h.UserService.GetColors(&ctx)
-	utils.GinResponse(c, data)
+func (h *UserHandler) GetColors(c *fiber.Ctx) error {
+	ctx := c.Context()
+	data := h.UserService.GetColors(ctx)
+	return utils.FiberResponse(c, data)
 }
 
 // GetHome godoc
@@ -627,12 +640,12 @@ func (h *UserHandler) GetColors(c *gin.Context) {
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/home [get]
-func (h *UserHandler) GetHome(c *gin.Context) {
-	ctx := c.Request.Context()
-	userID := c.MustGet("id").(int)
+func (h *UserHandler) GetHome(c *fiber.Ctx) error {
+	ctx := c.Context()
+	userID := c.Locals("id").(int)
 
-	data := h.UserService.GetHome(&ctx, userID)
-	utils.GinResponse(c, data)
+	data := h.UserService.GetHome(ctx, userID)
+	return utils.FiberResponse(c, data)
 }
 
 // GetCars godoc
@@ -668,9 +681,9 @@ func (h *UserHandler) GetHome(c *gin.Context) {
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/cars [get]
-func (h *UserHandler) GetCars(c *gin.Context) {
-	ctx := c.Request.Context()
-	userID := c.MustGet("id").(int)
+func (h *UserHandler) GetCars(c *fiber.Ctx) error {
+	ctx := c.Context()
+	userID := c.Locals("id").(int)
 	brands := pkg.QueryParamToArray(c.Query("brands"))
 	models := pkg.QueryParamToArray(c.Query("models"))
 	regions := pkg.QueryParamToArray(c.Query("regions"))
@@ -692,13 +705,13 @@ func (h *UserHandler) GetCars(c *gin.Context) {
 	owners := c.Query("owners")
 	price_from := c.Query("price_from")
 	price_to := c.Query("price_to")
-	data := h.UserService.GetCars(&ctx, userID, brands, models,
+	data := h.UserService.GetCars(ctx, userID, brands, models,
 		regions, cities, generations, transmissions, engines, drivetrains,
 		body_types, fuel_types, ownership_types, colors,
 		year_from, year_to, credit, price_from, price_to,
 		tradeIn, owners, crash, new)
 
-	utils.GinResponse(c, data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetCarByID godoc
@@ -715,23 +728,23 @@ func (h *UserHandler) GetCars(c *gin.Context) {
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/cars/{car_id} [get]
-func (h *UserHandler) GetCarByID(c *gin.Context) {
-	idStr := c.Param("id")
-	userID := c.MustGet("id").(int)
+func (h *UserHandler) GetCarByID(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	userID := c.Locals("id").(int)
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-		return
+
 	}
 
-	ctx := c.Request.Context()
-	data := h.UserService.GetCarByID(&ctx, id, userID)
+	ctx := c.Context()
+	data := h.UserService.GetCarByID(ctx, id, userID)
 
-	utils.GinResponse(c, data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetEditCarByID godoc
@@ -748,23 +761,23 @@ func (h *UserHandler) GetCarByID(c *gin.Context) {
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/cars/{car_id}/edit [get]
-func (h *UserHandler) GetEditCarByID(c *gin.Context) {
-	idStr := c.Param("id")
-	userID := c.MustGet("id").(int)
+func (h *UserHandler) GetEditCarByID(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	userID := c.Locals("id").(int)
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-		return
+
 	}
 
-	ctx := c.Request.Context()
-	data := h.UserService.GetEditCarByID(&ctx, id, userID)
+	ctx := c.Context()
+	data := h.UserService.GetEditCarByID(ctx, id, userID)
 
-	utils.GinResponse(c, data)
+	return utils.FiberResponse(c, data)
 }
 
 // BuyCar godoc
@@ -781,22 +794,22 @@ func (h *UserHandler) GetEditCarByID(c *gin.Context) {
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/cars/{car_id}/buy [post]
-func (h *UserHandler) BuyCar(c *gin.Context) {
-	idStr := c.Param("id")
-	userID := c.MustGet("id").(int)
+func (h *UserHandler) BuyCar(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	userID := c.Locals("id").(int)
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-		return
+
 	}
 
-	ctx := c.Request.Context()
-	data := h.UserService.BuyCar(&ctx, id, userID)
-	utils.GinResponse(c, data)
+	ctx := c.Context()
+	data := h.UserService.BuyCar(ctx, id, userID)
+	return utils.FiberResponse(c, data)
 }
 
 // CreateCar godoc
@@ -814,21 +827,21 @@ func (h *UserHandler) BuyCar(c *gin.Context) {
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/cars [post]
-func (h *UserHandler) CreateCar(c *gin.Context) {
+func (h *UserHandler) CreateCar(c *fiber.Ctx) error {
 	var car model.CreateCarRequest
-	car.UserID = c.MustGet("id").(int)
-	ctx := c.Request.Context()
+	car.UserID = c.Locals("id").(int)
+	ctx := c.Context()
 
-	if err := c.ShouldBindJSON(&car); err != nil {
-		utils.GinResponse(c, &model.Response{
+	if err := c.BodyParser(&car); err != nil {
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data" + err.Error()),
 		})
-		return
+
 	}
 
-	data := h.UserService.CreateCar(&ctx, &car)
-	utils.GinResponse(c, data)
+	data := h.UserService.CreateCar(ctx, &car)
+	return utils.FiberResponse(c, data)
 }
 
 // UpdateCar godoc
@@ -846,21 +859,21 @@ func (h *UserHandler) CreateCar(c *gin.Context) {
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/cars [put]
-func (h *UserHandler) UpdateCar(c *gin.Context) {
+func (h *UserHandler) UpdateCar(c *fiber.Ctx) error {
 	var car model.UpdateCarRequest
-	userID := c.MustGet("id").(int)
-	ctx := c.Request.Context()
+	userID := c.Locals("id").(int)
+	ctx := c.Context()
 
-	if err := c.ShouldBindJSON(&car); err != nil {
-		utils.GinResponse(c, &model.Response{
+	if err := c.BodyParser(&car); err != nil {
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data" + err.Error()),
 		})
-		return
+
 	}
 
-	data := h.UserService.UpdateCar(&ctx, &car, userID)
-	utils.GinResponse(c, data)
+	data := h.UserService.UpdateCar(ctx, &car, userID)
+	return utils.FiberResponse(c, data)
 }
 
 // Like car godoc
@@ -877,32 +890,31 @@ func (h *UserHandler) UpdateCar(c *gin.Context) {
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/like/{car_id} [post]
-func (h *UserHandler) CarLike(c *gin.Context) {
+func (h *UserHandler) CarLike(c *fiber.Ctx) error {
 	// todo: delete images if exist
-	ctx := c.Request.Context()
-	idStr := c.Param("car_id")
+	ctx := c.Context()
+	idStr := c.Params("car_id")
 	carID, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-		return
+
 	}
 
-	userID := c.MustGet("id").(int)
+	userID := c.Locals("id").(int)
 
 	if userID <= 0 {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 401,
 			Error:  errors.New("user_id must be must be bigger than 0"),
 		})
-		return
+
 	}
-	fmt.Println(userID)
-	data := h.UserService.CarLike(&ctx, &carID, &userID)
-	utils.GinResponse(c, data)
+	data := h.UserService.CarLike(ctx, &carID, &userID)
+	return utils.FiberResponse(c, data)
 }
 
 // remove Like car godoc
@@ -919,23 +931,23 @@ func (h *UserHandler) CarLike(c *gin.Context) {
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/like/{car_id} [delete]
-func (h *UserHandler) RemoveLike(c *gin.Context) {
+func (h *UserHandler) RemoveLike(c *fiber.Ctx) error {
 	// todo: delete images if exist
-	ctx := c.Request.Context()
-	idStr := c.Param("car_id")
+	ctx := c.Context()
+	idStr := c.Params("car_id")
 	carID, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-		return
-	}
-	userID := c.MustGet("id").(int)
 
-	data := h.UserService.RemoveLike(&ctx, &carID, &userID)
-	utils.GinResponse(c, data)
+	}
+	userID := c.Locals("id").(int)
+
+	data := h.UserService.RemoveLike(ctx, &carID, &userID)
+	return utils.FiberResponse(c, data)
 }
 
 // Liked cars
@@ -951,12 +963,12 @@ func (h *UserHandler) RemoveLike(c *gin.Context) {
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/likes [get]
-func (h *UserHandler) Likes(c *gin.Context) {
+func (h *UserHandler) Likes(c *fiber.Ctx) error {
 	// todo: delete images if exist
-	ctx := c.Request.Context()
-	userID := c.MustGet("id").(int)
-	data := h.UserService.Likes(&ctx, &userID)
-	utils.GinResponse(c, data)
+	ctx := c.Context()
+	userID := c.Locals("id").(int)
+	data := h.UserService.Likes(ctx, &userID)
+	return utils.FiberResponse(c, data)
 }
 
 // CreateCarImages godoc
@@ -975,51 +987,51 @@ func (h *UserHandler) Likes(c *gin.Context) {
 // @Failure      404     {object}  model.ResultMessage
 // @Failure      500     {object}  model.ResultMessage
 // @Router       /api/v1/users/cars/{car_id}/images [post]
-func (h *UserHandler) CreateCarImages(c *gin.Context) {
-	ctx := c.Request.Context()
-	idStr := c.Param("id")
+func (h *UserHandler) CreateCarImages(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("invalid car ID"),
 		})
-		return
+
 	}
 
 	form, _ := c.MultipartForm()
 
 	if form == nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("didn't upload the files"),
 		})
-		return
+
 	}
 
 	images := form.File["images"]
 
 	if len(images) > 10 {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("must load maximum 10 files"),
 		})
-		return
+
 	}
 
 	paths, status, err := pkg.SaveFiles(images, config.ENV.STATIC_PATH+"cars/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: status,
 			Error:  err,
 		})
-		return
+
 	}
 
-	data := h.UserService.CreateCarImages(&ctx, id, paths)
-	utils.GinResponse(c, data)
+	data := h.UserService.CreateCarImages(ctx, id, paths)
+	return utils.FiberResponse(c, data)
 }
 
 // CreateCarVideos godoc
@@ -1038,51 +1050,51 @@ func (h *UserHandler) CreateCarImages(c *gin.Context) {
 // @Failure      404     {object}  model.ResultMessage
 // @Failure      500     {object}  model.ResultMessage
 // @Router       /api/v1/users/cars/{car_id}/videos [post]
-func (h *UserHandler) CreateCarVideos(c *gin.Context) {
-	ctx := c.Request.Context()
-	idStr := c.Param("id")
+func (h *UserHandler) CreateCarVideos(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("invalid car ID"),
 		})
-		return
+
 	}
 
 	form, _ := c.MultipartForm()
 
 	if form == nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("didn't upload the files"),
 		})
-		return
+
 	}
 
 	videos := form.File["videos"]
 
 	if len(videos) > 1 {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("must load maximum 1 file(s)"),
 		})
-		return
+
 	}
 	// path, err := pkg.SaveVideos(videos[0], config.ENV.STATIC_PATH+"cars/"+idStr+"/videos") // if have ffmpeg on server
 	path, err := pkg.SaveVideosOriginal(videos[0], config.ENV.STATIC_PATH+"cars/"+idStr+"/videos")
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  err,
 		})
-		return
+
 	}
 
-	data := h.UserService.CreateCarVideos(&ctx, id, path)
-	utils.GinResponse(c, data)
+	data := h.UserService.CreateCarVideos(ctx, id, path)
+	return utils.FiberResponse(c, data)
 }
 
 // DeleteCarImage godoc
@@ -1101,35 +1113,35 @@ func (h *UserHandler) CreateCarVideos(c *gin.Context) {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/cars/{id}/images [delete]
-func (h *UserHandler) DeleteCarImage(c *gin.Context) {
-	idStr := c.Param("id")
+func (h *UserHandler) DeleteCarImage(c *fiber.Ctx) error {
+	idStr := c.Params("id")
 	carID, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-		return
+
 	}
 	var req model.DeleteCarImageRequest
 
-	if err := c.ShouldBindJSON(&req); err != nil || req.Image == "" {
-		utils.GinResponse(c, &model.Response{
+	if err := c.BodyParser(&req); err != nil || req.Image == "" {
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("invalid image path in request body"),
 		})
-		return
+
 	}
-	ctx := c.Request.Context()
+	ctx := c.Context()
 	// Remove from DB
-	resp := h.UserService.DeleteCarImage(&ctx, carID, req.Image)
+	resp := h.UserService.DeleteCarImage(ctx, carID, req.Image)
 
 	if resp.Error == nil {
 		// Remove from disk (ignore error, as file may not exist)
 		_ = pkg.RemoveFile(req.Image)
 	}
-	utils.GinResponse(c, resp)
+	return utils.FiberResponse(c, resp)
 }
 
 // DeleteCarVideo godoc
@@ -1148,35 +1160,35 @@ func (h *UserHandler) DeleteCarImage(c *gin.Context) {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/cars/{id}/videos [delete]
-func (h *UserHandler) DeleteCarVideo(c *gin.Context) {
-	idStr := c.Param("id")
+func (h *UserHandler) DeleteCarVideo(c *fiber.Ctx) error {
+	idStr := c.Params("id")
 	carID, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		utils.GinResponse(c, &model.Response{
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-		return
+
 	}
 
 	var video model.DeleteCarVideoRequest
 
-	if err := c.ShouldBindJSON(&video); err != nil || video.Video == "" {
-		utils.GinResponse(c, &model.Response{
+	if err := c.BodyParser(&video); err != nil || video.Video == "" {
+		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("invalid video path in request body"),
 		})
-		return
+
 	}
-	ctx := c.Request.Context()
+	ctx := c.Context()
 	// Remove from DB
-	resp := h.UserService.DeleteCarVideo(&ctx, carID, video.Video)
+	resp := h.UserService.DeleteCarVideo(ctx, carID, video.Video)
 
 	if resp.Error == nil {
 		// pkg.RemoveFile(req.Video[:5]) // use it if have car's multiple videos
 		pkg.RemoveFolder(config.ENV.STATIC_PATH + "cars/" + idStr + "/videos")
 
 	}
-	utils.GinResponse(c, resp)
+	return utils.FiberResponse(c, resp)
 }

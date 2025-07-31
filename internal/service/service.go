@@ -1,12 +1,13 @@
 package service
 
 import (
-	"context"
 	"net/http"
 
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
 	"dubai-auto/pkg"
+
+	"github.com/valyala/fasthttp"
 )
 
 type UserService struct {
@@ -17,7 +18,7 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 	return &UserService{repo}
 }
 
-func (s *UserService) GetMyCars(ctx *context.Context, userID *int) *model.Response {
+func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID *int) *model.Response {
 	cars, err := s.UserRepository.GetMyCars(ctx, userID)
 
 	if err != nil {
@@ -27,7 +28,7 @@ func (s *UserService) GetMyCars(ctx *context.Context, userID *int) *model.Respon
 	return &model.Response{Data: cars}
 }
 
-func (s *UserService) OnSale(ctx *context.Context, userID *int) *model.Response {
+func (s *UserService) OnSale(ctx *fasthttp.RequestCtx, userID *int) *model.Response {
 	cars, err := s.UserRepository.OnSale(ctx, userID)
 
 	if err != nil {
@@ -37,7 +38,7 @@ func (s *UserService) OnSale(ctx *context.Context, userID *int) *model.Response 
 	return &model.Response{Data: cars}
 }
 
-func (s *UserService) Cancel(ctx *context.Context, carID *int, dir string) *model.Response {
+func (s *UserService) Cancel(ctx *fasthttp.RequestCtx, carID *int, dir string) *model.Response {
 	err := s.UserRepository.Cancel(ctx, carID)
 
 	if err != nil {
@@ -48,7 +49,7 @@ func (s *UserService) Cancel(ctx *context.Context, carID *int, dir string) *mode
 	return &model.Response{Data: model.Success{Message: "succesfully cancelled"}}
 }
 
-func (s *UserService) DeleteCar(ctx *context.Context, carID *int, dir string) *model.Response {
+func (s *UserService) DeleteCar(ctx *fasthttp.RequestCtx, carID *int, dir string) *model.Response {
 	err := s.UserRepository.DeleteCar(ctx, carID)
 
 	if err != nil {
@@ -59,7 +60,7 @@ func (s *UserService) DeleteCar(ctx *context.Context, carID *int, dir string) *m
 	return &model.Response{Data: model.Success{Message: "succesfully deleted"}}
 }
 
-func (s *UserService) DontSell(ctx *context.Context, carID, userID *int) *model.Response {
+func (s *UserService) DontSell(ctx *fasthttp.RequestCtx, carID, userID *int) *model.Response {
 	err := s.UserRepository.DontSell(ctx, carID, userID)
 
 	if err != nil {
@@ -69,7 +70,7 @@ func (s *UserService) DontSell(ctx *context.Context, carID, userID *int) *model.
 	return &model.Response{Data: model.Success{Message: "succesfully updated status"}}
 }
 
-func (s *UserService) Sell(ctx *context.Context, carID, userID *int) *model.Response {
+func (s *UserService) Sell(ctx *fasthttp.RequestCtx, carID, userID *int) *model.Response {
 	err := s.UserRepository.Sell(ctx, carID, userID)
 
 	if err != nil {
@@ -79,7 +80,7 @@ func (s *UserService) Sell(ctx *context.Context, carID, userID *int) *model.Resp
 	return &model.Response{Data: model.Success{Message: "succesfully updated status"}}
 }
 
-func (s *UserService) GetBrands(ctx *context.Context, text string) *model.Response {
+func (s *UserService) GetBrands(ctx *fasthttp.RequestCtx, text string) *model.Response {
 	brands, err := s.UserRepository.GetBrands(ctx, text)
 
 	if err != nil {
@@ -93,7 +94,7 @@ func (s *UserService) GetBrands(ctx *context.Context, text string) *model.Respon
 	}
 }
 
-func (s *UserService) GetProfile(ctx *context.Context, userID int) *model.Response {
+func (s *UserService) GetProfile(ctx *fasthttp.RequestCtx, userID int) *model.Response {
 	profile, err := s.UserRepository.GetProfile(ctx, userID)
 
 	if err != nil {
@@ -107,7 +108,7 @@ func (s *UserService) GetProfile(ctx *context.Context, userID int) *model.Respon
 	}
 }
 
-func (s *UserService) UpdateProfile(ctx *context.Context, userID int, profile *model.UpdateProfileRequest) *model.Response {
+func (s *UserService) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, profile *model.UpdateProfileRequest) *model.Response {
 	err := s.UserRepository.UpdateProfile(ctx, userID, profile)
 
 	if err != nil {
@@ -121,7 +122,7 @@ func (s *UserService) UpdateProfile(ctx *context.Context, userID int, profile *m
 	}
 }
 
-func (s *UserService) GetFilterBrands(ctx *context.Context, text string) *model.Response {
+func (s *UserService) GetFilterBrands(ctx *fasthttp.RequestCtx, text string) *model.Response {
 	brands, err := s.UserRepository.GetFilterBrands(ctx, text)
 
 	if err != nil {
@@ -135,7 +136,7 @@ func (s *UserService) GetFilterBrands(ctx *context.Context, text string) *model.
 	}
 }
 
-func (s *UserService) GetCities(ctx *context.Context, text string) *model.Response {
+func (s *UserService) GetCities(ctx *fasthttp.RequestCtx, text string) *model.Response {
 	cities, err := s.UserRepository.GetCities(ctx, text)
 
 	if err != nil {
@@ -149,7 +150,7 @@ func (s *UserService) GetCities(ctx *context.Context, text string) *model.Respon
 	}
 }
 
-func (s *UserService) GetModelsByBrandID(ctx *context.Context, brandID int64, text string) *model.Response {
+func (s *UserService) GetModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text string) *model.Response {
 	data, err := s.UserRepository.GetModelsByBrandID(ctx, brandID, text)
 
 	if err != nil {
@@ -158,7 +159,7 @@ func (s *UserService) GetModelsByBrandID(ctx *context.Context, brandID int64, te
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetFilterModelsByBrandID(ctx *context.Context, brandID int64, text string) *model.Response {
+func (s *UserService) GetFilterModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text string) *model.Response {
 	data, err := s.UserRepository.GetFilterModelsByBrandID(ctx, brandID, text)
 
 	if err != nil {
@@ -167,7 +168,7 @@ func (s *UserService) GetFilterModelsByBrandID(ctx *context.Context, brandID int
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetFilterModelsByBrands(ctx *context.Context, brands []int, text string) *model.Response {
+func (s *UserService) GetFilterModelsByBrands(ctx *fasthttp.RequestCtx, brands []int, text string) *model.Response {
 	data, err := s.UserRepository.GetFilterModelsByBrands(ctx, brands, text)
 
 	if err != nil {
@@ -176,7 +177,7 @@ func (s *UserService) GetFilterModelsByBrands(ctx *context.Context, brands []int
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetGenerationsByModelID(ctx *context.Context, modelID int, wheel bool, year, bodyTypeID string) *model.Response {
+func (s *UserService) GetGenerationsByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year, bodyTypeID string) *model.Response {
 	data, err := s.UserRepository.GetGenerationsByModelID(ctx, modelID, wheel, year, bodyTypeID)
 
 	if err != nil {
@@ -185,7 +186,7 @@ func (s *UserService) GetGenerationsByModelID(ctx *context.Context, modelID int,
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetGenerationsByModels(ctx *context.Context, models []int) *model.Response {
+func (s *UserService) GetGenerationsByModels(ctx *fasthttp.RequestCtx, models []int) *model.Response {
 	data, err := s.UserRepository.GetGenerationsByModels(ctx, models)
 
 	if err != nil {
@@ -194,7 +195,7 @@ func (s *UserService) GetGenerationsByModels(ctx *context.Context, models []int)
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetYearsByModelID(ctx *context.Context, modelID int64, wheel bool) *model.Response {
+func (s *UserService) GetYearsByModelID(ctx *fasthttp.RequestCtx, modelID int64, wheel bool) *model.Response {
 	data, err := s.UserRepository.GetYearsByModelID(ctx, modelID, wheel)
 
 	if err != nil {
@@ -203,7 +204,7 @@ func (s *UserService) GetYearsByModelID(ctx *context.Context, modelID int64, whe
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetYearsByModels(ctx *context.Context, models []int, wheel bool) *model.Response {
+func (s *UserService) GetYearsByModels(ctx *fasthttp.RequestCtx, models []int, wheel bool) *model.Response {
 	data, err := s.UserRepository.GetYearsByModels(ctx, models, wheel)
 
 	if err != nil {
@@ -212,7 +213,7 @@ func (s *UserService) GetYearsByModels(ctx *context.Context, models []int, wheel
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetBodysByModelID(ctx *context.Context, modelID int, wheel bool, year string) *model.Response {
+func (s *UserService) GetBodysByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year string) *model.Response {
 	data, err := s.UserRepository.GetBodysByModelID(ctx, modelID, wheel, year)
 
 	if err != nil {
@@ -221,7 +222,7 @@ func (s *UserService) GetBodysByModelID(ctx *context.Context, modelID int, wheel
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetBodysByModels(ctx *context.Context, wheel bool, models, years []int) *model.Response {
+func (s *UserService) GetBodysByModels(ctx *fasthttp.RequestCtx, wheel bool, models, years []int) *model.Response {
 	data, err := s.UserRepository.GetBodysByModels(ctx, wheel, models, years)
 
 	if err != nil {
@@ -230,7 +231,7 @@ func (s *UserService) GetBodysByModels(ctx *context.Context, wheel bool, models,
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetBodyTypes(ctx *context.Context) *model.Response {
+func (s *UserService) GetBodyTypes(ctx *fasthttp.RequestCtx) *model.Response {
 	data, err := s.UserRepository.GetBodyTypes(ctx)
 
 	if err != nil {
@@ -240,7 +241,7 @@ func (s *UserService) GetBodyTypes(ctx *context.Context) *model.Response {
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetTransmissions(ctx *context.Context) *model.Response {
+func (s *UserService) GetTransmissions(ctx *fasthttp.RequestCtx) *model.Response {
 	data, err := s.UserRepository.GetTransmissions(ctx)
 
 	if err != nil {
@@ -249,7 +250,7 @@ func (s *UserService) GetTransmissions(ctx *context.Context) *model.Response {
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetEngines(ctx *context.Context) *model.Response {
+func (s *UserService) GetEngines(ctx *fasthttp.RequestCtx) *model.Response {
 	data, err := s.UserRepository.GetEngines(ctx)
 
 	if err != nil {
@@ -258,7 +259,7 @@ func (s *UserService) GetEngines(ctx *context.Context) *model.Response {
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetDrivetrains(ctx *context.Context) *model.Response {
+func (s *UserService) GetDrivetrains(ctx *fasthttp.RequestCtx) *model.Response {
 	data, err := s.UserRepository.GetDrivetrains(ctx)
 
 	if err != nil {
@@ -267,7 +268,7 @@ func (s *UserService) GetDrivetrains(ctx *context.Context) *model.Response {
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetFuelTypes(ctx *context.Context) *model.Response {
+func (s *UserService) GetFuelTypes(ctx *fasthttp.RequestCtx) *model.Response {
 	data, err := s.UserRepository.GetFuelTypes(ctx)
 
 	if err != nil {
@@ -276,7 +277,7 @@ func (s *UserService) GetFuelTypes(ctx *context.Context) *model.Response {
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetColors(ctx *context.Context) *model.Response {
+func (s *UserService) GetColors(ctx *fasthttp.RequestCtx) *model.Response {
 	data, err := s.UserRepository.GetColors(ctx)
 
 	if err != nil {
@@ -285,7 +286,7 @@ func (s *UserService) GetColors(ctx *context.Context) *model.Response {
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetHome(ctx *context.Context, userID int) *model.Response {
+func (s *UserService) GetHome(ctx *fasthttp.RequestCtx, userID int) *model.Response {
 	data, err := s.UserRepository.GetHome(ctx, userID)
 
 	if err != nil {
@@ -294,7 +295,7 @@ func (s *UserService) GetHome(ctx *context.Context, userID int) *model.Response 
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetCars(ctx *context.Context, userID int, brands, models, regions, cities,
+func (s *UserService) GetCars(ctx *fasthttp.RequestCtx, userID int, brands, models, regions, cities,
 	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors []string,
 	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, new string) *model.Response {
 
@@ -310,7 +311,7 @@ func (s *UserService) GetCars(ctx *context.Context, userID int, brands, models, 
 	return &model.Response{Data: cars}
 }
 
-func (s *UserService) GetCarByID(ctx *context.Context, carID, userID int) *model.Response {
+func (s *UserService) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int) *model.Response {
 	car, err := s.UserRepository.GetCarByID(ctx, carID, userID)
 
 	if err != nil {
@@ -320,7 +321,7 @@ func (s *UserService) GetCarByID(ctx *context.Context, carID, userID int) *model
 	return &model.Response{Data: car}
 }
 
-func (s *UserService) GetEditCarByID(ctx *context.Context, carID, userID int) *model.Response {
+func (s *UserService) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID int) *model.Response {
 	car, err := s.UserRepository.GetEditCarByID(ctx, carID, userID)
 
 	if err != nil {
@@ -330,7 +331,7 @@ func (s *UserService) GetEditCarByID(ctx *context.Context, carID, userID int) *m
 	return &model.Response{Data: car}
 }
 
-func (s *UserService) BuyCar(ctx *context.Context, carID, userID int) *model.Response {
+func (s *UserService) BuyCar(ctx *fasthttp.RequestCtx, carID, userID int) *model.Response {
 	err := s.UserRepository.BuyCar(ctx, carID, userID)
 
 	if err != nil {
@@ -340,7 +341,7 @@ func (s *UserService) BuyCar(ctx *context.Context, carID, userID int) *model.Res
 	return &model.Response{Data: model.Success{Message: "successfully buy a car"}}
 }
 
-func (s *UserService) CreateCar(ctx *context.Context, car *model.CreateCarRequest) *model.Response {
+func (s *UserService) CreateCar(ctx *fasthttp.RequestCtx, car *model.CreateCarRequest) *model.Response {
 
 	id, err := s.UserRepository.CreateCar(ctx, car)
 
@@ -356,7 +357,7 @@ func (s *UserService) CreateCar(ctx *context.Context, car *model.CreateCarReques
 	}
 }
 
-func (s *UserService) UpdateCar(ctx *context.Context, car *model.UpdateCarRequest, userID int) *model.Response {
+func (s *UserService) UpdateCar(ctx *fasthttp.RequestCtx, car *model.UpdateCarRequest, userID int) *model.Response {
 	err := s.UserRepository.UpdateCar(ctx, car, userID)
 
 	if err != nil {
@@ -371,7 +372,7 @@ func (s *UserService) UpdateCar(ctx *context.Context, car *model.UpdateCarReques
 	}
 }
 
-func (s *UserService) CarLike(ctx *context.Context, carID, userID *int) *model.Response {
+func (s *UserService) CarLike(ctx *fasthttp.RequestCtx, carID, userID *int) *model.Response {
 	err := s.UserRepository.CarLike(ctx, carID, userID)
 
 	if err != nil {
@@ -386,7 +387,7 @@ func (s *UserService) CarLike(ctx *context.Context, carID, userID *int) *model.R
 	}
 }
 
-func (s *UserService) RemoveLike(ctx *context.Context, carID, userID *int) *model.Response {
+func (s *UserService) RemoveLike(ctx *fasthttp.RequestCtx, carID, userID *int) *model.Response {
 	err := s.UserRepository.RemoveLike(ctx, carID, userID)
 
 	if err != nil {
@@ -401,7 +402,7 @@ func (s *UserService) RemoveLike(ctx *context.Context, carID, userID *int) *mode
 	}
 }
 
-func (s *UserService) Likes(ctx *context.Context, userID *int) *model.Response {
+func (s *UserService) Likes(ctx *fasthttp.RequestCtx, userID *int) *model.Response {
 	data, err := s.UserRepository.Likes(ctx, userID)
 
 	if err != nil {
@@ -414,7 +415,7 @@ func (s *UserService) Likes(ctx *context.Context, userID *int) *model.Response {
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) CreateCarImages(ctx *context.Context, carID int, images []string) *model.Response {
+func (s *UserService) CreateCarImages(ctx *fasthttp.RequestCtx, carID int, images []string) *model.Response {
 	err := s.UserRepository.CreateCarImages(ctx, carID, images)
 
 	if err != nil {
@@ -429,7 +430,7 @@ func (s *UserService) CreateCarImages(ctx *context.Context, carID int, images []
 	}
 }
 
-func (s *UserService) CreateCarVideos(ctx *context.Context, carID int, video string) *model.Response {
+func (s *UserService) CreateCarVideos(ctx *fasthttp.RequestCtx, carID int, video string) *model.Response {
 	err := s.UserRepository.CreateCarVideos(ctx, carID, video)
 
 	if err != nil {
@@ -444,7 +445,7 @@ func (s *UserService) CreateCarVideos(ctx *context.Context, carID int, video str
 	}
 }
 
-func (s *UserService) DeleteCarImage(ctx *context.Context, carID int, imagePath string) *model.Response {
+func (s *UserService) DeleteCarImage(ctx *fasthttp.RequestCtx, carID int, imagePath string) *model.Response {
 	err := s.UserRepository.DeleteCarImage(ctx, carID, imagePath)
 
 	if err != nil {
@@ -453,7 +454,7 @@ func (s *UserService) DeleteCarImage(ctx *context.Context, carID int, imagePath 
 	return &model.Response{Data: model.Success{Message: "Car image deleted successfully"}}
 }
 
-func (s *UserService) DeleteCarVideo(ctx *context.Context, carID int, videoPath string) *model.Response {
+func (s *UserService) DeleteCarVideo(ctx *fasthttp.RequestCtx, carID int, videoPath string) *model.Response {
 	err := s.UserRepository.DeleteCarVideo(ctx, carID, videoPath)
 
 	if err != nil {

@@ -101,7 +101,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.LoginResponse"
+                            "$ref": "#/definitions/model.LoFiberResponse"
                         }
                     },
                     "400": {
@@ -293,7 +293,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.LoginResponse"
+                            "$ref": "#/definitions/model.LoFiberResponse"
                         }
                     },
                     "400": {
@@ -3361,7 +3361,7 @@
                 }
             }
         },
-        "model.LoginResponse": {
+        "model.LoFiberResponse": {
             "type": "object",
             "properties": {
                 "access_token": {

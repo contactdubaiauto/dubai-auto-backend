@@ -363,7 +363,7 @@ definitions:
           $ref: '#/definitions/model.GetCarsResponse'
         type: array
     type: object
-  model.LoginResponse:
+  model.LoFiberResponse:
     properties:
       access_token:
         type: string
@@ -614,7 +614,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.LoginResponse'
+            $ref: '#/definitions/model.LoFiberResponse'
         "400":
           description: Bad Request
           schema:
@@ -740,7 +740,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.LoginResponse'
+            $ref: '#/definitions/model.LoFiberResponse'
         "400":
           description: Bad Request
           schema:

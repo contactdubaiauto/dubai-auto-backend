@@ -15,7 +15,6 @@ import (
 
 	// _ "github.com/chai2010/webp" // for decoding webp images
 	"github.com/disintegration/imaging"
-	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/nfnt/resize"
 	"github.com/rwcarlsen/goexif/exif"
@@ -32,34 +31,34 @@ var extensions map[string]bool = map[string]bool{
 	// "heic": true,
 }
 
-func WriteImage(c *gin.Context, upload_path, folder, id string) string {
-	base := upload_path + folder + id
-	image, header, _ := c.Request.FormFile("image")
+// func WriteImage(c *fiber.Ctx, upload_path, folder, id string) string {
+// 	base := upload_path + folder + id
+// 	image, header, _ := c.Request.FormFile("image")
 
-	if image == nil {
-		return ""
-	}
-	splitedFileName := strings.Split(header.Filename, ".")
-	extension := splitedFileName[len(splitedFileName)-1]
-	filename := fmt.Sprintf("%v.", uuid.NewString()) + extension
+// 	if image == nil {
+// 		return ""
+// 	}
+// 	splitedFileName := strings.Split(header.Filename, ".")
+// 	extension := splitedFileName[len(splitedFileName)-1]
+// 	filename := fmt.Sprintf("%v.", uuid.NewString()) + extension
 
-	if extension == "webp" || extension == "svg" || extension == "jpeg" ||
-		extension == "jpg" || extension == "png" {
+// 	if extension == "webp" || extension == "svg" || extension == "jpeg" ||
+// 		extension == "jpg" || extension == "png" {
 
-		buf := bytes.NewBuffer(nil)
-		io.Copy(buf, image)
-		err := os.WriteFile(
-			base+"/"+filename,
-			buf.Bytes(), os.ModePerm,
-		)
+// 		buf := bytes.NewBuffer(nil)
+// 		io.Copy(buf, image)
+// 		err := os.WriteFile(
+// 			base+"/"+filename,
+// 			buf.Bytes(), os.ModePerm,
+// 		)
 
-		if err != nil {
-			return ""
-		}
-		return filename
-	}
-	return ""
-}
+// 		if err != nil {
+// 			return ""
+// 		}
+// 		return filename
+// 	}
+// 	return ""
+// }
 
 func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]string, int, error) {
 	err := CreateFolderIfNotExists("." + base)
@@ -102,6 +101,7 @@ func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]str
 		readerFile, _ := files[index].Open()
 		buf := bytes.NewBuffer(nil)
 		io.Copy(buf, readerFile)
+
 		err := os.WriteFile(
 			"."+base+"/"+fileNames[index],
 			buf.Bytes(),
@@ -256,12 +256,11 @@ func RemoveFolder(path string) error {
 
 func SaveVideosOriginal(file *multipart.FileHeader, folder string) (string, error) {
 	err := CreateFolderIfNotExists("." + folder)
-	fmt.Println("98sduf9s8hdf98h")
+
 	if err != nil {
 		return "", fmt.Errorf("failed to create output folder: %v", err)
 	}
 
-	fmt.Println("sdf87huij")
 	// Open the uploaded file
 	src, err := file.Open()
 	if err != nil {
@@ -269,7 +268,6 @@ func SaveVideosOriginal(file *multipart.FileHeader, folder string) (string, erro
 	}
 	defer src.Close()
 
-	fmt.Println("sdu87fuhij")
 	// Generate a UUID for the output file name
 	outputID := uuid.New().String()
 
@@ -280,7 +278,6 @@ func SaveVideosOriginal(file *multipart.FileHeader, folder string) (string, erro
 		return "", fmt.Errorf("failed to create temp file: %v", err)
 	}
 	defer dst.Close()
-	fmt.Println("8s7ydfuu8h")
 
 	_, err = io.Copy(dst, src)
 	if err != nil {
@@ -295,12 +292,11 @@ func SaveVideosOriginal(file *multipart.FileHeader, folder string) (string, erro
 
 func SaveVideos(file *multipart.FileHeader, folder string) (string, error) {
 	err := CreateFolderIfNotExists("." + folder)
-	fmt.Println("98sduf9s8hdf98h")
+
 	if err != nil {
 		return "", fmt.Errorf("failed to create output folder: %v", err)
 	}
 
-	fmt.Println("sdf87huij")
 	// Open the uploaded file
 	src, err := file.Open()
 	if err != nil {
@@ -308,7 +304,6 @@ func SaveVideos(file *multipart.FileHeader, folder string) (string, error) {
 	}
 	defer src.Close()
 
-	fmt.Println("sdu87fuhij")
 	// Generate a UUID for the output file name
 	outputID := uuid.New().String()
 
@@ -319,7 +314,6 @@ func SaveVideos(file *multipart.FileHeader, folder string) (string, error) {
 		return "", fmt.Errorf("failed to create temp file: %v", err)
 	}
 	defer dst.Close()
-	fmt.Println("8s7ydfuu8h")
 
 	_, err = io.Copy(dst, src)
 	if err != nil {
