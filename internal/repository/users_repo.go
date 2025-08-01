@@ -969,7 +969,7 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 	brands, models, regions, cities, generations, transmissions,
 	engines, drivetrains, body_types, fuel_types, ownership_types, colors []string,
 	year_from, year_to, credit,
-	price_from, price_to, tradeIn, owners, crash string, new, wheel bool) ([]model.GetCarsResponse, error) {
+	price_from, price_to, tradeIn, owners, crash string, new, wheel *bool) ([]model.GetCarsResponse, error) {
 
 	var qWhere string
 	var qValues []interface{}
@@ -1102,13 +1102,17 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 		qValues = append(qValues, price_to)
 	}
 
-	i += 1
-	qWhere += fmt.Sprintf(" AND vs.new = $%d", i)
-	qValues = append(qValues, new)
+	if new != nil {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.new = $%d", i)
+		qValues = append(qValues, new)
+	}
 
-	i += 1
-	qWhere += fmt.Sprintf(" AND vs.wheel = $%d", i)
-	qValues = append(qValues, wheel)
+	if wheel != nil {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.wheel = $%d", i)
+		qValues = append(qValues, wheel)
+	}
 
 	cars := make([]model.GetCarsResponse, 0)
 	q := `

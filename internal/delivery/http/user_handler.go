@@ -13,6 +13,11 @@ import (
 	"dubai-auto/pkg"
 )
 
+const (
+	true  = 0 == 0
+	false = 0 != 0
+)
+
 type UserHandler struct {
 	UserService *service.UserService
 }
@@ -706,16 +711,29 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 	owners := c.Query("owners")
 	price_from := c.Query("price_from")
 	price_to := c.Query("price_to")
-	wheel := true
+	wheelQ := c.Query("wheel")
+	newQ := c.Query("wheel")
+	var wheel *bool
+	var new *bool
 
-	if c.Query("wheel", "true") == "false" {
-		wheel = false
+	if newQ != "" {
+		if newQ == "false" {
+			tmp := false
+			new = &tmp
+		} else {
+			tmp := true
+			new = &tmp
+		}
 	}
 
-	new := true
-
-	if c.Query("new", "true") == "false" {
-		new = false
+	if wheelQ != "" {
+		if wheelQ == "false" {
+			tmp := false
+			wheel = &tmp
+		} else {
+			tmp := true
+			wheel = &tmp
+		}
 	}
 
 	data := h.UserService.GetCars(ctx, userID, brands, models,
