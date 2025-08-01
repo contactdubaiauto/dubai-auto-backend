@@ -5,7 +5,7 @@ import (
 	"dubai-auto/internal/config"
 	"dubai-auto/internal/storage/postgres"
 	"dubai-auto/internal/utils"
-	"dubai-auto/pkg"
+	"dubai-auto/pkg/auth"
 	"dubai-auto/pkg/logger"
 	"log"
 	"os"
@@ -32,7 +32,7 @@ import (
 func main() {
 
 	conf := config.Init()
-	pkg.Init(conf.ACCESS_KEY, conf.ACCESS_TIME, conf.REFRESH_KEY, conf.REFRESH_TIME)
+	auth.Init(conf.ACCESS_KEY, conf.ACCESS_TIME, conf.REFRESH_KEY, conf.REFRESH_TIME)
 	logger := logger.InitLogger(conf.LOGGER_FOLDER_PATH, conf.LOGGER_FILENAME, conf.GIN_MODE)
 	db := postgres.Init()
 	app := app.InitApp(db, conf, logger)

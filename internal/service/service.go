@@ -5,7 +5,7 @@ import (
 
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
-	"dubai-auto/pkg"
+	"dubai-auto/pkg/files"
 
 	"github.com/valyala/fasthttp"
 )
@@ -44,7 +44,7 @@ func (s *UserService) Cancel(ctx *fasthttp.RequestCtx, carID *int, dir string) *
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	pkg.RemoveFolder(dir)
+	files.RemoveFolder(dir)
 
 	return &model.Response{Data: model.Success{Message: "succesfully cancelled"}}
 }
@@ -55,8 +55,8 @@ func (s *UserService) DeleteCar(ctx *fasthttp.RequestCtx, carID *int, dir string
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	pkg.RemoveFolder(dir)
 
+	files.RemoveFolder(dir)
 	return &model.Response{Data: model.Success{Message: "succesfully deleted"}}
 }
 

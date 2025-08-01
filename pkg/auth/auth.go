@@ -1,25 +1,23 @@
-package pkg
+package auth
 
 import (
 	"log"
 	"net/http"
 	"strings"
-	"sync"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	"golang.org/x/time/rate"
 )
 
 func TokenGuard(c *fiber.Ctx) error {
 	authorization := c.Get("Authorization")
 	if authorization == "" {
-		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "not found any token there!"})
+		return c.Status(http.StatusUnauthorized).JSON(ErrorResponse{Message: "not found any token there!"})
 	}
 
 	bearer := strings.Split(authorization, "Bearer ")
 	if len(bearer) < 2 {
-		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "not found any token there!"})
+		return c.Status(http.StatusUnauthorized).JSON(ErrorResponse{Message: "not found any token there!"})
 	}
 
 	token := bearer[1]
@@ -33,7 +31,7 @@ func TokenGuard(c *fiber.Ctx) error {
 	)
 	if err != nil {
 		log.Println("Error:", err.Error())
-		return c.Status(http.StatusForbidden).JSON(fiber.Map{"message": err.Error()})
+		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: err.Error()})
 	}
 
 	c.Locals("id", int(claims["id"].(float64)))
@@ -82,9 +80,4 @@ func AdminGuard(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusForbidden)
 	}
 	return c.Next()
-}
-
-type RateLimiter struct {
-	limiters map[string]*rate.Limiter
-	mu       sync.RWMutex
 }

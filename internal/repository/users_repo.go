@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"dubai-auto/internal/model"
-	"dubai-auto/pkg"
+	"dubai-auto/pkg/auth"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
@@ -291,7 +291,7 @@ func (r *UserRepository) GetProfile(ctx *fasthttp.RequestCtx, userID int) (model
 }
 
 func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, profile *model.UpdateProfileRequest) error {
-	keys, _, args := pkg.BuildParams(profile)
+	keys, _, args := auth.BuildParams(profile)
 
 	if len(keys) == 0 {
 		return nil // No fields to update
@@ -1441,7 +1441,7 @@ func (r *UserRepository) BuyCar(ctx *fasthttp.RequestCtx, carID, userID int) err
 
 func (r *UserRepository) CreateCar(ctx *fasthttp.RequestCtx, car *model.CreateCarRequest) (int, error) {
 
-	keys, values, args := pkg.BuildParams(car)
+	keys, values, args := auth.BuildParams(car)
 
 	q := `
 		INSERT INTO vehicles 
@@ -1471,7 +1471,7 @@ func (r *UserRepository) UpdateCar(ctx *fasthttp.RequestCtx, car *model.UpdateCa
 		return fmt.Errorf("car not found or access denied")
 	}
 
-	keys, _, args := pkg.BuildParams(car)
+	keys, _, args := auth.BuildParams(car)
 
 	var updateFields []string
 	var updateArgs []interface{}

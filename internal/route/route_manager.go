@@ -5,7 +5,7 @@ import (
 	"dubai-auto/internal/delivery/http"
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/service"
-	"dubai-auto/pkg"
+	"dubai-auto/pkg/auth"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -27,12 +27,12 @@ func SetupUserRoutes(r fiber.Router, db *pgxpool.Pool) {
 	userHandler := http.NewUserHandler(userService)
 
 	{
-		r.Get("/profile/my-cars/:id", pkg.TokenGuard, userHandler.GetMyCars)
-		r.Get("/profile/my-cars", pkg.TokenGuard, userHandler.GetMyCars)
-		r.Get("/profile/on-sale", pkg.TokenGuard, userHandler.OnSale)
+		r.Get("/profile/my-cars/:id", auth.TokenGuard, userHandler.GetMyCars)
+		r.Get("/profile/my-cars", auth.TokenGuard, userHandler.GetMyCars)
+		r.Get("/profile/on-sale", auth.TokenGuard, userHandler.OnSale)
 
-		r.Get("/profile", pkg.TokenGuard, userHandler.GetProfile)
-		r.Put("/profile", pkg.TokenGuard, userHandler.UpdateProfile)
+		r.Get("/profile", auth.TokenGuard, userHandler.GetProfile)
+		r.Put("/profile", auth.TokenGuard, userHandler.UpdateProfile)
 		r.Get("/brands", userHandler.GetBrands)
 		r.Get("/filter-brands", userHandler.GetFilterBrands)
 		r.Get("/cities", userHandler.GetCities)
@@ -51,26 +51,26 @@ func SetupUserRoutes(r fiber.Router, db *pgxpool.Pool) {
 		r.Get("/drivetrains", userHandler.GetDrivetrains)
 		r.Get("/fuel-types", userHandler.GetFuelTypes)
 		r.Get("/colors", userHandler.GetColors)
-		r.Get("/home", pkg.UserGuardOrDefault, userHandler.GetHome)
-		r.Get("/cars", pkg.UserGuardOrDefault, userHandler.GetCars)
-		r.Get("/cars/:id", pkg.UserGuardOrDefault, userHandler.GetCarByID)
-		r.Get("/cars/:id/edit", pkg.UserGuardOrDefault, userHandler.GetEditCarByID)
-		r.Get("/likes", pkg.TokenGuard, userHandler.Likes)
+		r.Get("/home", auth.UserGuardOrDefault, userHandler.GetHome)
+		r.Get("/cars", auth.UserGuardOrDefault, userHandler.GetCars)
+		r.Get("/cars/:id", auth.UserGuardOrDefault, userHandler.GetCarByID)
+		r.Get("/cars/:id/edit", auth.UserGuardOrDefault, userHandler.GetEditCarByID)
+		r.Get("/likes", auth.TokenGuard, userHandler.Likes)
 
-		r.Post("/cars/:id/buy", pkg.TokenGuard, userHandler.BuyCar)
-		r.Post("/cars", pkg.TokenGuard, userHandler.CreateCar)
-		r.Put("/cars", pkg.TokenGuard, userHandler.UpdateCar)
-		r.Post("/likes/:car_id", pkg.TokenGuard, userHandler.CarLike)
-		r.Post("/cars/:id/images", pkg.TokenGuard, userHandler.CreateCarImages)
-		r.Post("/cars/:id/videos", pkg.TokenGuard, userHandler.CreateCarVideos)
-		r.Post("/cars/:id/cancel", pkg.TokenGuard, userHandler.Cancel)
-		r.Post("/cars/:id/dont-sell", pkg.TokenGuard, userHandler.DontSell)
-		r.Post("/cars/:id/sell", pkg.TokenGuard, userHandler.Sell)
+		r.Post("/cars/:id/buy", auth.TokenGuard, userHandler.BuyCar)
+		r.Post("/cars", auth.TokenGuard, userHandler.CreateCar)
+		r.Put("/cars", auth.TokenGuard, userHandler.UpdateCar)
+		r.Post("/likes/:car_id", auth.TokenGuard, userHandler.CarLike)
+		r.Post("/cars/:id/images", auth.TokenGuard, userHandler.CreateCarImages)
+		r.Post("/cars/:id/videos", auth.TokenGuard, userHandler.CreateCarVideos)
+		r.Post("/cars/:id/cancel", auth.TokenGuard, userHandler.Cancel)
+		r.Post("/cars/:id/dont-sell", auth.TokenGuard, userHandler.DontSell)
+		r.Post("/cars/:id/sell", auth.TokenGuard, userHandler.Sell)
 
-		r.Delete("/likes/:car_id", pkg.TokenGuard, userHandler.RemoveLike)
-		r.Delete("/cars/:id/images", pkg.TokenGuard, userHandler.DeleteCarImage)
-		r.Delete("/cars/:id/videos", pkg.TokenGuard, userHandler.DeleteCarVideo)
-		r.Delete("/cars/:id", pkg.TokenGuard, userHandler.DeleteCar)
+		r.Delete("/likes/:car_id", auth.TokenGuard, userHandler.RemoveLike)
+		r.Delete("/cars/:id/images", auth.TokenGuard, userHandler.DeleteCarImage)
+		r.Delete("/cars/:id/videos", auth.TokenGuard, userHandler.DeleteCarVideo)
+		r.Delete("/cars/:id", auth.TokenGuard, userHandler.DeleteCar)
 	}
 }
 
@@ -84,6 +84,6 @@ func SetupAuthRoutes(r fiber.Router, db *pgxpool.Pool) {
 		r.Post("/user-email-confirmation", authHandler.UserEmailConfirmation)
 		r.Post("/user-login-phone", authHandler.UserLoginPhone)
 		r.Post("/user-phone-confirmation", authHandler.UserPhoneConfirmation)
-		r.Delete("/account/:id", pkg.TokenGuard, authHandler.DeleteAccount)
+		r.Delete("/account/:id", auth.TokenGuard, authHandler.DeleteAccount)
 	}
 }

@@ -3,7 +3,8 @@ package service
 import (
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
-	"dubai-auto/pkg"
+	"dubai-auto/internal/utils"
+	"dubai-auto/pkg/auth"
 	"fmt"
 	"net/http"
 
@@ -52,7 +53,7 @@ func (s *AuthService) UserEmailConfirmation(ctx *fasthttp.RequestCtx, user *mode
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	accessToken, refreshToken := pkg.CreateRefreshAccsessToken(u.ID, 1)
+	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, 1)
 
 	return model.Response{
 		Data: model.LoFiberResponse{
@@ -85,7 +86,7 @@ func (s *AuthService) UserPhoneConfirmation(ctx *fasthttp.RequestCtx, user *mode
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	accessToken, refreshToken := pkg.CreateRefreshAccsessToken(u.ID, 1)
+	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, 1)
 
 	return model.Response{
 		Data: model.LoFiberResponse{
@@ -96,10 +97,10 @@ func (s *AuthService) UserPhoneConfirmation(ctx *fasthttp.RequestCtx, user *mode
 }
 
 func (s *AuthService) UserLoginEmail(ctx *fasthttp.RequestCtx, user *model.UserLoginEmail) model.Response {
-	otp := pkg.RandomOTP()
+	otp := utils.RandomOTP()
 	// todo: send otp to the mail
 	otp = 123456
-	username := pkg.RandomUsername()
+	username := utils.RandomUsername()
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%d", otp)), bcrypt.DefaultCost)
 
 	if err != nil {
@@ -123,10 +124,10 @@ func (s *AuthService) UserLoginEmail(ctx *fasthttp.RequestCtx, user *model.UserL
 }
 
 func (s *AuthService) UserLoginPhone(ctx *fasthttp.RequestCtx, user *model.UserLoginPhone) model.Response {
-	otp := pkg.RandomOTP()
+	otp := utils.RandomOTP()
 	// todo: send otp to the mail
 	otp = 123456
-	username := pkg.RandomUsername()
+	username := utils.RandomUsername()
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%d", otp)), bcrypt.DefaultCost)
 
 	if err != nil {
