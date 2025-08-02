@@ -1,5 +1,11 @@
 basePath: /
 definitions:
+  auth.ErrorResponse:
+    properties:
+      message:
+        example: Invalid param ID
+        type: string
+    type: object
   model.BodyType:
     properties:
       id:
@@ -69,7 +75,7 @@ definitions:
       vin_code:
         type: string
       wheel:
-        description: BodyTypeID     int      `json:"body_type_id" binding:"required"`
+        description: BodyTypeID     int      `json:"body_type_id" validate:"required"`
         type: boolean
       year:
         type: integer
@@ -542,12 +548,6 @@ definitions:
     - otp
     - phone
     type: object
-  pkg.ErrorResponse:
-    properties:
-      message:
-        example: Invalid param ID
-        type: string
-    type: object
 host: 95.85.126.220
 info:
   contact: {}
@@ -578,11 +578,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -622,11 +622,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -664,11 +664,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -706,11 +706,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -748,11 +748,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -783,11 +783,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -823,11 +823,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -867,11 +867,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -913,11 +913,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -969,11 +969,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1030,11 +1030,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1081,11 +1081,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1176,12 +1176,14 @@ paths:
       - description: true or false new
         in: query
         name: new
-        required: true
         type: string
       - description: true or false wheel
         in: query
         name: wheel
-        required: true
+        type: string
+      - description: Filter by odometer
+        in: query
+        name: odometer
         type: string
       - description: Filter by price from
         in: query
@@ -1207,11 +1209,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1250,11 +1252,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1293,11 +1295,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1334,11 +1336,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1374,11 +1376,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1415,11 +1417,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1456,11 +1458,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1497,11 +1499,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1538,11 +1540,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1586,11 +1588,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1627,11 +1629,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1675,11 +1677,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1724,11 +1726,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1773,11 +1775,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1815,11 +1817,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1850,11 +1852,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1885,11 +1887,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1920,11 +1922,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1958,11 +1960,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1993,11 +1995,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -2028,11 +2030,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -2069,11 +2071,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -2109,11 +2111,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -2146,11 +2148,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -2189,11 +2191,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -2222,11 +2224,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -2265,11 +2267,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -2302,11 +2304,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -2339,11 +2341,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -2376,11 +2378,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/pkg.ErrorResponse'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
           description: Not Found
           schema:

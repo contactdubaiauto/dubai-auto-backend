@@ -136,7 +136,7 @@ type GetCarsResponse struct {
 	FuelType     *string    `json:"fuel_type"`
 	Year         int        `json:"year"`
 	Price        int        `json:"price"`
-	Mileage      *int       `json:"mileage"`
+	Mileage      *int       `json:"mileage"` // todo: change it to odometer
 	VinCode      *string    `json:"vin_code"`
 	Credit       *bool      `json:"credit"`
 	New          *bool      `json:"new"`

@@ -302,8 +302,8 @@ func (h *UserHandler) GetFilterBrands(c *fiber.Ctx) error {
 // @Param        text  query     string  false  "Filter cities by text"
 // @Success      200   {array}  model.GetCitiesResponse
 // @Failure      400   {object}  model.ResultMessage
-// @Failure      401   {object}  pkg.ErrorResponse
-// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/cities [get]
@@ -323,8 +323,8 @@ func (h *UserHandler) GetCities(c *fiber.Ctx) error {
 // @Param        text  query     string  false  "coroll"
 // @Success      200   {array}  model.Model
 // @Failure      400   {object}  model.ResultMessage
-// @Failure      401   {object}  pkg.ErrorResponse
-// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/brands/{id}/models [get]
@@ -356,8 +356,8 @@ func (h *UserHandler) GetModelsByBrandID(c *fiber.Ctx) error {
 // @Param        text  query     string  false  "coroll"
 // @Success      200   {object}  model.GetFilterModelsResponse
 // @Failure      400   {object}  model.ResultMessage
-// @Failure      401   {object}  pkg.ErrorResponse
-// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/brands/{id}/filter-models [get]
@@ -392,8 +392,8 @@ func (h *UserHandler) GetFilterModelsByBrandID(c *fiber.Ctx) error {
 // @Param   	 body_type_id   query   string    	true  "the selected body type's ID"
 // @Success      200   {array}  model.Generation
 // @Failure      400   {object}  model.ResultMessage
-// @Failure      401   {object}  pkg.ErrorResponse
-// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/brands/{id}/models/{model_id}/generations [get]
@@ -554,8 +554,8 @@ func (h *UserHandler) GetBodyTypes(c *fiber.Ctx) error {
 // @Produce      json
 // @Success      200  {array}  model.Transmission
 // @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  pkg.ErrorResponse
-// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/transmissions [get]
@@ -610,8 +610,8 @@ func (h *UserHandler) GetDrivetrains(c *fiber.Ctx) error {
 // @Produce      json
 // @Success      200  {array}  model.FuelType
 // @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  pkg.ErrorResponse
-// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/fuel-types [get]
@@ -648,8 +648,8 @@ func (h *UserHandler) GetColors(c *fiber.Ctx) error {
 // @Security 	 BearerAuth
 // @Success      200  {array}  model.Home
 // @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  pkg.ErrorResponse
-// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/home [get]
@@ -685,8 +685,9 @@ func (h *UserHandler) GetHome(c *fiber.Ctx) error {
 // @Param   year_from         query   string  false  "Filter by year from"
 // @Param   year_to           query   string  false  "Filter by year to"
 // @Param   credit            query   string  false  "Filter by credit"
-// @Param  	new   		  query   string    	true  "true or false new"
-// @Param  	wheel   		  query   string    	true  "true or false wheel"
+// @Param  	new   		      query   string  false  "true or false new"
+// @Param  	wheel   		  query   string  false  "true or false wheel"
+// @Param  	odometer   	      query   string  false  "Filter by odometer"
 // @Param   price_from        query   string  false  "Filter by price from"
 // @Param   price_to          query   string  false  "Filter by price to"
 // @Success      200  {array}  model.GetCarsResponse
@@ -712,6 +713,7 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 	fuel_types := auth.QueryParamToArray(c.Query("fuel_types"))
 	ownership_types := auth.QueryParamToArray(c.Query("ownership_types"))
 	year_from := c.Query("year_from")
+	odometer := c.Query("odometer")
 	year_to := c.Query("year_to")
 	tradeIn := c.Query("trade_in")
 	credit := c.Query("credit")
@@ -748,7 +750,7 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 		regions, cities, generations, transmissions, engines, drivetrains,
 		body_types, fuel_types, ownership_types, colors,
 		year_from, year_to, credit, price_from, price_to,
-		tradeIn, owners, crash, new, wheel)
+		tradeIn, owners, crash, odometer, new, wheel)
 
 	return utils.FiberResponse(c, data)
 }
@@ -900,8 +902,8 @@ func (h *UserHandler) CreateCar(c *fiber.Ctx) error {
 // @Param        car  body      model.UpdateCarRequest  true  "Car data"
 // @Success      200  {object}  model.Success
 // @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  pkg.ErrorResponse
-// @Failure		 403  {object}  pkg.ErrorResponse
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure		 403  {object}  auth.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/cars [put]
@@ -938,8 +940,8 @@ func (h *UserHandler) UpdateCar(c *fiber.Ctx) error {
 // @Param        car_id   path      int  true  "Car ID"
 // @Success      200  {object}  model.Success
 // @Failure      400  {object} model.ResultMessage
-// @Failure      401  {object} pkg.ErrorResponse
-// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      401  {object} auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/like/{car_id} [post]
@@ -979,8 +981,8 @@ func (h *UserHandler) CarLike(c *fiber.Ctx) error {
 // @Param        car_id   path      int  true  "Car ID"
 // @Success      200  {object}  model.Success
 // @Failure      400  {object} model.ResultMessage
-// @Failure      401  {object} pkg.ErrorResponse
-// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      401  {object} auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/like/{car_id} [delete]
@@ -1011,8 +1013,8 @@ func (h *UserHandler) RemoveLike(c *fiber.Ctx) error {
 // @Produce      json
 // @Success      200  {array}  model.GetCarsResponse
 // @Failure      400  {object} model.ResultMessage
-// @Failure      401  {object} pkg.ErrorResponse
-// @Failure		 403  {object} pkg.ErrorResponse
+// @Failure      401  {object} auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/likes [get]
@@ -1098,8 +1100,8 @@ func (h *UserHandler) CreateCarImages(c *fiber.Ctx) error {
 // @Param        videos  formData  file    true   "Car videos (max 10)"
 // @Success      200     {object}  model.Success
 // @Failure      400     {object}  model.ResultMessage
-// @Failure      401     {object}  pkg.ErrorResponse
-// @Failure	 	 403  	 {object}  pkg.ErrorResponse
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure	 	 403  	 {object}  auth.ErrorResponse
 // @Failure      404     {object}  model.ResultMessage
 // @Failure      500     {object}  model.ResultMessage
 // @Router       /api/v1/users/cars/{car_id}/videos [post]
@@ -1215,8 +1217,8 @@ func (h *UserHandler) DeleteCarImage(c *fiber.Ctx) error {
 // @Param        video body      model.DeleteCarVideoRequest true "Video path"
 // @Success      200   {object}  model.Success
 // @Failure      400   {object}  model.ResultMessage
-// @Failure      401   {object}  pkg.ErrorResponse
-// @Failure      403   {object}  pkg.ErrorResponse
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/cars/{id}/videos [delete]

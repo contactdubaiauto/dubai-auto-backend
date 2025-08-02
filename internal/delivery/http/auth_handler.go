@@ -26,8 +26,8 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 // @Param        id   path      int  true  "User ID"
 // @Success      200  {object}  model.Success
 // @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  pkg.ErrorResponse
-// @Failure      403  {object}  pkg.ErrorResponse
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/auth/account/{id} [delete]
@@ -63,8 +63,8 @@ func (h *AuthHandler) DeleteAccount(c *fiber.Ctx) error {
 // @Param        user  body      model.UserEmailConfirmationRequest  true  "User email confirmation credentials"
 // @Success      200   {object}  model.LoFiberResponse
 // @Failure      400   {object}  model.ResultMessage
-// @Failure      401   {object}  pkg.ErrorResponse
-// @Failure      403   {object}  pkg.ErrorResponse
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/auth/user-email-confirmation [post]
@@ -92,8 +92,8 @@ func (h *AuthHandler) UserEmailConfirmation(c *fiber.Ctx) error {
 // @Param        user  body      model.UserPhoneConfirmationRequest  true  "User phone confirmation credentials"
 // @Success      200   {object}  model.LoFiberResponse
 // @Failure      400   {object}  model.ResultMessage
-// @Failure      401   {object}  pkg.ErrorResponse
-// @Failure      403   {object}  pkg.ErrorResponse
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/auth/user-phone-confirmation [post]
@@ -121,8 +121,8 @@ func (h *AuthHandler) UserPhoneConfirmation(c *fiber.Ctx) error {
 // @Param        user  body      model.UserLoginEmail  true  "User login email credentials"
 // @Success      200   {object}  model.Success
 // @Failure      400   {object}  model.ResultMessage
-// @Failure      401   {object}  pkg.ErrorResponse
-// @Failure      403   {object}  pkg.ErrorResponse
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/auth/user-login-email [post]
@@ -149,8 +149,8 @@ func (h *AuthHandler) UserLoginEmail(c *fiber.Ctx) error {
 // @Param        user  body      model.UserLoginPhone  true  "User login phone credentials"
 // @Success      200   {object}  model.Success
 // @Failure      400   {object}  model.ResultMessage
-// @Failure      401   {object}  pkg.ErrorResponse
-// @Failure      403   {object}  pkg.ErrorResponse
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/auth/user-login-phone [post]

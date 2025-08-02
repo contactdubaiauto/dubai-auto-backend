@@ -14,7 +14,7 @@ func ZerologMiddleware(logger *logger.Logger) fiber.Handler {
 				Str("method", c.Method()).
 				Str("path", c.Path()).
 				Int("status", c.Response().StatusCode()).
-				Msg("Non-200 response")
+				Msg("Non-200 response:" + err.Error())
 		}
 		return err
 	}
