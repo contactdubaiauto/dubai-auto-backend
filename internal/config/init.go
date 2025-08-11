@@ -30,7 +30,7 @@ type Config struct {
 	REFRESH_TIME         time.Duration
 	APP_VERSION          string
 	PORT                 string
-	GIN_MODE             string
+	APP_MODE             string
 	LOGGER_FOLDER_PATH   string
 	LOGGER_FILENAME      string
 	STATIC_PATH          string
@@ -50,7 +50,7 @@ func Init() *Config {
 	ENV.DB_PASSWORD = loadEnvVariable("DB_PASSWORD")
 	ENV.DB_NAME = loadEnvVariable("DB_NAME")
 
-	ENV.GIN_MODE = loadEnvVariable("GIN_MODE")
+	ENV.APP_MODE = loadEnvVariable("APP_MODE")
 
 	ENV.LOGGER_FOLDER_PATH = loadEnvVariable("LOGGER_FOLDER_PATH")
 	ENV.LOGGER_FILENAME = loadEnvVariable("LOGGER_FILENAME")

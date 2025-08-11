@@ -22,7 +22,7 @@ func InitApp(db *pgxpool.Pool, conf *config.Config, logger *logger.Logger) *fibe
 
 	app.Use(auth.Cors)
 
-	if config.ENV.GIN_MODE == "release" {
+	if config.ENV.APP_MODE == "release" {
 		app.Use(middleware.ZerologMiddleware(logger))
 	} else {
 		app.Use(fb_logger.New(fb_logger.Config{
