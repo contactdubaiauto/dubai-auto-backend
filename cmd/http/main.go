@@ -34,7 +34,7 @@ func main() {
 	conf := config.Init()
 	auth.Init(conf.ACCESS_KEY, conf.ACCESS_TIME, conf.REFRESH_KEY, conf.REFRESH_TIME)
 	logger := logger.InitLogger(conf.LOGGER_FOLDER_PATH, conf.LOGGER_FILENAME, conf.APP_MODE)
-	db := postgres.Init()
+	db := postgres.Init(conf)
 	app := app.InitApp(db, conf, logger)
 
 	app.Get("/swagger/*", swagger.New(swagger.Config{

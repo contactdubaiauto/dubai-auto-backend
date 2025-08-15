@@ -10,16 +10,16 @@ import (
 	"dubai-auto/internal/config"
 )
 
-func Init() *pgxpool.Pool {
-	connectionString := buildConnectionString()
-	config, err := pgxpool.ParseConfig(connectionString)
+func Init(cfg *config.Config) *pgxpool.Pool {
+	connectionString := buildConnectionString(cfg)
+	dbConfig, err := pgxpool.ParseConfig(connectionString)
 
 	if err != nil {
 		log.Fatalf("Unable to parse database config💊: %v\n", err)
 	}
 
-	config.MaxConns = 200
-	pool, err := pgxpool.NewWithConfig(context.Background(), config)
+	dbConfig.MaxConns = 200
+	pool, err := pgxpool.NewWithConfig(context.Background(), dbConfig)
 
 	if err != nil {
 		log.Fatalf("failed to create connection poolpool🏊: %v\n", err)
@@ -33,10 +33,10 @@ func Init() *pgxpool.Pool {
 	return pool
 }
 
-func buildConnectionString() string {
+func buildConnectionString(cfg *config.Config) string {
 	return fmt.Sprintf(
 		"user=%s password=%s host=%s port=%s dbname=%s sslmode=disable",
-		config.ENV.DB_USER, config.ENV.DB_PASSWORD,
-		config.ENV.DB_HOST, config.ENV.DB_PORT, config.ENV.DB_NAME,
+		cfg.DB_USER, cfg.DB_PASSWORD,
+		cfg.DB_HOST, cfg.DB_PORT, cfg.DB_NAME,
 	)
 }
