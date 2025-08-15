@@ -799,3 +799,94 @@ ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT NOW();
 
 ALTER TABLE videos
 ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT NOW();
+
+
+
+
+
+category                   Moto,    skuter,         motovezdehody,          snegohody
+type,                      1                        1                       1
+drivetrain,                1                        1                       
+transmission,              1        1               1                       
+cylinder_count,            1                        1                       1
+cylinder_arrangement,      1                        1                       1
+equipment,                 1        1               1                       1
+-- ////////////////////////////////////////////////////////////////////////////////////////////
+brand,                     1        1               1                       1
+model,                     1        1               1                       1
+engine,                    1        1               1                       1
+power,                     1        1               1                       1
+year,                      1        1               1                       1
+fuel_type,                 1        1               1                       1
+number_of_cycles,          1        1               1                       1
+color,                     1        1               1                       1
+odometer,                  1        1               1                       1
+crash,                     1        1               1                       1
+not_cleared,               1        1               1                       1
+owners,                    1        1               1                       1
+date_of_purchase,          1        1               1                       1
+warranty_date,             1        1               1                       1
+ptc,                       1        1               1                       1
+vin_code,                  1        1               1                       1
+certificate,               1        1               1                       1
+description,               1        1               1                       1
+city,                      1        1               1                       1
+can_look_coordinate,       1        1               1                       1
+phone_number,              1        1               1                       1
+refuse_dealers_calls,      1        1               1                       1
+only_chat,                 1        1               1                       1
+protect_spam,              1        1               1                       1
+verified_buyers,           1        1               1                       1
+contact_person,            1        1               1                       1
+email,                     1        1               1                       1
+price,                     1        1               1                       1
+price_type,                1        1               1                       1
+exchange,                  1        1               1                       1
+
+
+
+category            lyekie kommerceskie,    gruzoviki,      cedelnye tyagachi,      avtobusy,
+loading_kg,             1                   1                                       
+type,                                                                               1
+body_type,              1                   1                                       
+cabin_type,                                 1               1                       
+drivetrain,             1                                                           
+wheel_arrangement,                          1               1                       1
+wheel_height,                                               1                       
+chassis_suspension,                         1                                       
+chassis_cabin,                              1               1                       
+euro_exhaust,                               1                                       
+seats,                  1                                                           1
+equipment,              1                   1               1                       1
+-- ////////////////////////////////////////////////////////////////////////////////////////////
+brand,                  1                   1               1                       1
+model,                  1                   1               1                       1
+transmission,           1                   1               1                       1
+year,                   1                   1               1                       1
+fuel_type,              1                   1               1                       1
+engine,                 1                   1               1                       1
+power,                  1                   1               1                       1
+wheel,                  1                   1               1                       1
+color,                  1                   1               1                       1
+odometer,               1                   1               1                       1
+crash,                  1                   1               1                       1
+not_cleared,            1                   1               1                       1
+owners,                 1                   1               1                       1
+date_of_purchase,       1                   1               1                       1
+warranty_date,          1                   1               1                       1
+ptc,                    1                   1               1                       1
+vin_code,               1                   1               1                       1
+certificate,            1                   1               1                       1
+description,            1                   1               1                       1
+city,                   1                   1               1                       1
+can_look_coordinate,    1                   1               1                       1
+phone_number,           1                   1               1                       1
+refuse_dealers_calls,   1                   1               1                       1
+only_chat,              1                   1               1                       1
+protect_spam,           1                   1               1                       1
+verified_buyers,        1                   1               1                       1
+contact_person,         1                   1               1                       1
+email,                  1                   1               1                       1
+price,                  1                   1               1                       1
+price_type,             1                   1               1                       1
+exchange,               1                   1               1                       1

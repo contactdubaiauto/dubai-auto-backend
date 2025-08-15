@@ -531,7 +531,7 @@ create table vehicles (
 create table images (
     "vehicle_id" int not null,
     "image" varchar(255) not null,
-    "created_at" not null default now();
+    "created_at" timestamp not null default now();
     constraint images_vehicle_id_fk
         foreign key (vehicle_id)
             references vehicles(id)
@@ -561,7 +561,7 @@ CREATE TABLE user_likes (
 create table videos (
     "vehicle_id" int not null,
     "video" varchar(255) not null,
-    "created_at" not null default now(),
+    "created_at" timestamp not null default now(),
     constraint videos_vehicle_id_fk
         foreign key (vehicle_id)
             references vehicles(id)
@@ -569,3 +569,513 @@ create table videos (
                 on update cascade
 );
 
+
+drop table if exists motorcycle_parameters;
+drop table if exists motorcycles;
+drop table if exists moto_category_parameters;
+drop table if exists moto_parameter_values;
+drop table if exists moto_parameters;
+drop table if exists moto_models;
+drop table if exists moto_brands;
+drop table if exists moto_categories;
+
+
+
+create table moto_categories (
+    "id" serial primary key,
+    "name" varchar(100) not null,
+    "created_at" timestamp not null default now()
+);
+
+insert into moto_categories (name) values ('Moto');
+insert into moto_categories (name) values ('Skuter');
+insert into moto_categories (name) values ('Motovezdehody');
+insert into moto_categories (name) values ('Snegohody');
+
+create table moto_brands (
+    "id" serial primary key,
+    "name" varchar(100) not null,
+    "moto_category_id" integer not null,
+    "created_at" timestamp not null default now(),
+    constraint moto_brands_moto_category_id_fk
+        foreign key (moto_category_id)
+            references moto_categories(id)
+                on delete cascade
+                on update cascade
+);
+
+insert into moto_brands (name, moto_category_id) values ('Honda', 1);
+insert into moto_brands (name, moto_category_id) values ('Yamaha', 1);
+insert into moto_brands (name, moto_category_id) values ('Suzuki', 2);
+insert into moto_brands (name, moto_category_id) values ('Kawasaki', 2);
+insert into moto_brands (name, moto_category_id) values ('BMW', 3);
+insert into moto_brands (name, moto_category_id) values ('Ducati', 3);
+insert into moto_brands (name, moto_category_id) values ('BMW', 4);
+insert into moto_brands (name, moto_category_id) values ('Ducati', 4);
+
+create table moto_models (
+    "id" serial primary key,
+    "name" varchar(100) not null,
+    "moto_brand_id" integer not null,
+    "created_at" timestamp not null default now(),
+    constraint moto_brand_models_moto_brand_id_fk
+        foreign key (moto_brand_id)
+            references moto_brands(id)
+                on delete cascade
+                on update cascade
+);
+
+insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 1);
+insert into moto_models (name, moto_brand_id) values ('CBR650R', 1);
+
+insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 2);
+insert into moto_models (name, moto_brand_id) values ('CBR650R', 2);
+
+insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 3);
+insert into moto_models (name, moto_brand_id) values ('CBR650R', 3);
+
+insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 4);
+insert into moto_models (name, moto_brand_id) values ('CBR650R', 4);
+
+insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 5);
+insert into moto_models (name, moto_brand_id) values ('CBR650R', 5);
+
+insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 6);
+insert into moto_models (name, moto_brand_id) values ('CBR650R', 6);
+
+
+insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 7);
+insert into moto_models (name, moto_brand_id) values ('CBR650R', 7);
+
+
+insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 8);
+insert into moto_models (name, moto_brand_id) values ('CBR650R', 8);
+
+
+
+create table moto_parameters (
+    "id" serial primary key,
+    "moto_category_id" int not null,
+    "name" varchar(100) not null,
+    "created_at" timestamp default now(),
+    constraint moto_parameters_moto_category_id_fk
+        foreign key (moto_category_id)
+            references moto_categories(id)
+                on delete cascade
+                on update cascade,
+    unique("name", "moto_category_id")
+);
+
+insert into moto_parameters (name, moto_category_id) values ('Type', 1);
+insert into moto_parameters (name, moto_category_id) values ('Drivetrain', 1);
+insert into moto_parameters (name, moto_category_id) values ('Transmission', 1);
+insert into moto_parameters (name, moto_category_id) values ('Cylinder Count', 1);
+insert into moto_parameters (name, moto_category_id) values ('Cylinder Arrangement', 1);
+insert into moto_parameters (name, moto_category_id) values ('Equipment', 1);
+
+insert into moto_parameters (name, moto_category_id) values ('Type', 2);
+insert into moto_parameters (name, moto_category_id) values ('Drivetrain', 2);
+insert into moto_parameters (name, moto_category_id) values ('Transmission', 2);
+insert into moto_parameters (name, moto_category_id) values ('Cylinder Count', 2);
+insert into moto_parameters (name, moto_category_id) values ('Cylinder Arrangement', 2);
+insert into moto_parameters (name, moto_category_id) values ('Equipment', 2);
+
+insert into moto_parameters (name, moto_category_id) values ('Type', 3);
+insert into moto_parameters (name, moto_category_id) values ('Drivetrain', 3);
+insert into moto_parameters (name, moto_category_id) values ('Transmission', 3);
+insert into moto_parameters (name, moto_category_id) values ('Cylinder Count', 3);
+insert into moto_parameters (name, moto_category_id) values ('Cylinder Arrangement', 3);
+insert into moto_parameters (name, moto_category_id) values ('Equipment', 3);
+
+insert into moto_parameters (name, moto_category_id) values ('Type', 4);
+insert into moto_parameters (name, moto_category_id) values ('Drivetrain', 4);
+insert into moto_parameters (name, moto_category_id) values ('Transmission', 4);
+insert into moto_parameters (name, moto_category_id) values ('Cylinder Count', 4);
+insert into moto_parameters (name, moto_category_id) values ('Cylinder Arrangement', 4);
+insert into moto_parameters (name, moto_category_id) values ('Equipment', 4);
+
+
+create table moto_parameter_values (
+    "id" serial primary key,
+    "moto_parameter_id" int not null,
+    "name" varchar(100) not null,
+    "created_at" timestamp default now(),
+    constraint moto_parameter_values_moto_parameter_id_fk
+        foreign key (moto_parameter_id)
+            references moto_parameters(id)
+                on delete cascade
+                on update cascade
+);
+
+insert into moto_parameter_values (moto_parameter_id, name) values (1, 'Sport');
+insert into moto_parameter_values (moto_parameter_id, name) values (1, 'Touring');
+insert into moto_parameter_values (moto_parameter_id, name) values (1, 'Cruiser');
+insert into moto_parameter_values (moto_parameter_id, name) values (1, 'Sport Touring');
+insert into moto_parameter_values (moto_parameter_id, name) values (1, 'Sport Tourer');
+
+insert into moto_parameter_values (moto_parameter_id, name) values (2, 'Front');
+insert into moto_parameter_values (moto_parameter_id, name) values (2, 'Rear');
+insert into moto_parameter_values (moto_parameter_id, name) values (2, 'All');
+
+insert into moto_parameter_values (moto_parameter_id, name) values (3, 'Automatic');
+insert into moto_parameter_values (moto_parameter_id, name) values (3, 'Manual');
+insert into moto_parameter_values (moto_parameter_id, name) values (3, 'Semi-Automatic');
+
+insert into moto_parameter_values (moto_parameter_id, name) values (4, '4');
+insert into moto_parameter_values (moto_parameter_id, name) values (4, '6');
+insert into moto_parameter_values (moto_parameter_id, name) values (4, '8');
+
+insert into moto_parameter_values (moto_parameter_id, name) values (5, 'V-Twin');
+insert into moto_parameter_values (moto_parameter_id, name) values (5, 'In-Twin');
+
+insert into moto_parameter_values (moto_parameter_id, name) values (6, 'Single');
+insert into moto_parameter_values (moto_parameter_id, name) values (6, 'Twin');
+insert into moto_parameter_values (moto_parameter_id, name) values (6, 'Twin-Cooled');
+
+
+insert into moto_parameter_values (moto_parameter_id, name) values (7, 'Sport');
+insert into moto_parameter_values (moto_parameter_id, name) values (7, 'Touring');
+insert into moto_parameter_values (moto_parameter_id, name) values (7, 'Enduro');
+insert into moto_parameter_values (moto_parameter_id, name) values (7, 'Cross');
+insert into moto_parameter_values (moto_parameter_id, name) values (7, 'Enduro Cross');
+
+insert into moto_parameter_values (moto_parameter_id, name) values (8, 'Sport');
+insert into moto_parameter_values (moto_parameter_id, name) values (8, 'Touring');
+insert into moto_parameter_values (moto_parameter_id, name) values (8, 'Enduro');
+insert into moto_parameter_values (moto_parameter_id, name) values (8, 'Cross');
+insert into moto_parameter_values (moto_parameter_id, name) values (8, 'Enduro Cross');
+
+insert into moto_parameter_values (moto_parameter_id, name) values (9, 'Sport');
+insert into moto_parameter_values (moto_parameter_id, name) values (9, 'Touring');
+insert into moto_parameter_values (moto_parameter_id, name) values (9, 'Enduro');
+insert into moto_parameter_values (moto_parameter_id, name) values (9, 'Cross');
+insert into moto_parameter_values (moto_parameter_id, name) values (9, 'Enduro Cross');
+
+create table moto_category_parameters (
+    "moto_category_id" int not null,
+    "moto_parameter_id" int not null,
+    "created_at" timestamp not null default now(),
+    constraint moto_category_parameters_moto_category_id_fk
+        foreign key (moto_category_id)
+            references moto_categories(id)
+                on delete cascade
+                on update cascade,
+    constraint moto_category_parameters_moto_parameter_id_fk
+        foreign key (moto_parameter_id)
+            references moto_parameters(id)
+                on delete cascade
+                on update cascade
+);
+
+insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (1, 1);
+insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (1, 2);
+insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (1, 3);
+insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (1, 5);
+
+insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (2, 3);
+insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (2, 4);
+insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (2, 5);
+insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (2, 6);
+
+insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (3, 1);
+insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (3, 6);
+
+insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (4, 1);
+insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (4, 4);
+insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (4, 5);
+
+
+
+create table motorcycles (
+    "id" serial primary key,
+    "user_id" int not null,
+    "moto_category_id" int not null,
+    "moto_brand_id" int not null,
+    "moto_model_id" int not null,
+    "fuel_type_id" int not null,
+    "city_id" int not null,
+    "color_id" int not null,
+    "engine" int, -- cm3
+    "power" int, -- hp
+    "year" int not null,
+    "number_of_cycles" int,
+    "odometer" int not null default 0,
+    "crash" boolean,
+    "not_cleared" boolean,
+    "owners" int,
+    "date_of_purchase" varchar (50),
+    "warranty_date" varchar(50),
+    "ptc" boolean,
+    "vin_code" varchar(50) not null,
+    "certificate" varchar(50),
+    "description" text,
+    "can_look_coordinate" varchar(50),
+    "phone_number" varchar(50) not null,
+    "refuse_dealers_calls" boolean,
+    "only_chat" boolean,
+    "protect_spam" boolean,
+    "verified_buyers" boolean,
+    "contact_person" varchar(50), -- email or user_id
+    "email" varchar(50),
+    "price" int not null,
+    "parameters" json not null,
+    constraint motorcycles_user_id_fk
+        foreign key (user_id)
+            references users(id)
+                on delete cascade
+                on update cascade,
+    constraint motorcycles_category_id_fk
+        foreign key (moto_category_id)
+            references moto_categories(id)
+                on delete cascade
+                on update cascade,
+    constraint motorcycles_brand_id_fk
+        foreign key (moto_brand_id)
+            references moto_brands(id)
+                on delete cascade
+                on update cascade,
+    constraint motorcycles_model_id_fk
+        foreign key (moto_model_id)
+            references moto_models(id)
+                on delete cascade
+                on update cascade,
+    constraint motorcycles_fuel_type_id_fk
+        foreign key (fuel_type_id)
+            references fuel_types(id)
+                on delete cascade
+                on update cascade,
+    constraint motorcycles_color_id_fk
+        foreign key (color_id)
+            references colors(id)
+                on delete cascade
+                on update cascade,
+    constraint motorcycles_city_id_fk
+        foreign key (city_id)
+            references cities(id)
+                on delete cascade
+                on update cascade
+);
+
+create table motorcycle_parameters (
+    "id" serial primary key,
+    "motocycle_id" int not null,
+    "moto_parameter_id" int not null,
+    "moto_parameter_value_id" int not null,
+    "created_at" timestamp default now(),
+    constraint motorcycle_parameters_motocycle_id_fk
+        foreign key (motocycle_id)
+            references motorcycles(id)
+                on delete cascade
+                on update cascade,
+    constraint motorcycle_parameters_moto_parameter_id_fk
+        foreign key (moto_parameter_id)
+            references moto_parameters(id)
+                on delete cascade
+                on update cascade,
+    constraint motorcycle_parameters_moto_parameter_value_id_fk
+        foreign key (moto_parameter_value_id)
+            references moto_parameter_values(id)
+                on delete cascade
+                on update cascade
+);
+
+
+--  comtrans
+
+create table comtran_categories (
+    "id" serial primary key,
+    "name" varchar(100) not null,
+    "created_at" timestamp not null default now(),
+
+);
+
+create table comtran_brands (
+    "id" serial primary key,
+    "name" varchar(100) not null,
+    "comtran_category_id" integer not null,
+    "created_at" timestamp not null default now(),
+    constraint comtran_brands_comtran_category_id_fk
+        foreign key (comtran_category_id)
+            references comtran_categories(id)
+                on delete cascade
+                on update cascade
+);
+
+create table comtran_models (
+    "id" serial primary key,
+    "name" varchar(100) not null,
+    "comtran_brand_id" integer not null,
+    "created_at" timestamp not null default now(),
+    constraint comtran_brand_models_comtran_brand_id_fk
+        foreign key (comtran_brand_id)
+            references comtran_brands(id)
+                on delete cascade
+                on update cascade
+);
+
+create table comtran_drivetrains(
+    "id" serial primary key,
+    "comtran_category_id" integer not null,
+    "name" varchar(100) not null,
+    "created_at" timestamp default now(),
+    constraint comtran_drivetrains_comtran_category_id_fk
+        foreign key (comtran_category_id)
+            references comtran_categories(id)
+                on delete cascade
+                on update cascade,
+    unique("name")
+);
+
+create table comtran_parameters (
+    "id" serial primary key,
+    "comtran_category_id" int not null,
+    "name" varchar(100) not null,
+    "type" varchar(50) not null,
+    "value" json not null,
+    "created_at" timestamp default now(),
+    constraint comtran_parameters_comtran_category_id_fk
+        foreign key (comtran_category_id)
+            references comtran_categories(id)
+                on delete cascade
+                on update cascade,
+    unique("name", "comtran_category_id")
+);
+
+create table comtran_category_parameters (
+    "parameter_id" int not null,
+    "comtran_category_id" int not null,
+    "created_at" timestamp not null default now(),
+    constraint comtran_category_parameters_comtran_category_id_fk
+        foreign key (comtran_category_id)
+            references comtran_categories(id)
+                on delete cascade
+                on update cascade
+);
+
+create table comtrans (
+    "id" serial primary key,
+    "user_id" int not null,
+    "comtran_category_id" int not null,
+    "comtran_brand_id" int not null,
+    "comtran_model_id" int not null,
+    "fuel_type_id" int not null,
+    "city_id" int not null,
+    "color_id" int not null,
+    "engine" int, -- cm3
+    "power" int, -- hp
+    "year" int not null,
+    "number_of_cycles" int,
+    "odometer" int not null default 0,
+    "crash" boolean,
+    "not_cleared" boolean,
+    "wheel" boolean,
+    "owners" int,
+    "date_of_purchase" varchar (50),
+    "warranty_date" varchar(50),
+    "ptc" boolean,
+    "vin_code" varchar(50) not null,
+    "certificate" varchar(50),
+    "description" text,
+    "can_look_coordinate" varchar(50),
+    "phone_number" varchar(50) not null,
+    "refuse_dealers_calls" boolean,
+    "only_chat" boolean,
+    "protect_spam" boolean,
+    "verified_buyers" boolean,
+    "contact_person" varchar(50), -- email or user_id
+    "email" varchar(50),
+    "price" int not null,
+    constraint comtrans_user_id_fk
+        foreign key (user_id)
+            references users(id)
+                on delete cascade
+                on update cascade,
+    constraint comtrans_category_id_fk
+        foreign key (category_id)
+            references comtran_categories(id)
+                on delete cascade
+                on update cascade,
+    constraint comtrans_brand_id_fk
+        foreign key (brand_id)
+            references comtran_brands(id)
+                on delete cascade
+                on update cascade,
+    constraint comtrans_model_id_fk
+        foreign key (model_id)
+            references comtran_models(id)
+                on delete cascade
+                on update cascade,
+    constraint comtrans_fuel_type_id_fk
+        foreign key (fuel_type_id)
+            references fuel_types(id)
+                on delete cascade
+                on update cascade,
+    constraint comtrans_color_id_fk
+        foreign key (color_id)
+            references colors(id)
+                on delete cascade
+                on update cascade,
+    constraint comtrans_city_id_fk
+        foreign key (city_id)
+            references cities(id)
+                on delete cascade
+                on update cascade
+);
+
+
+
+
+
+-- create table transmissions (
+--     "id" serial primary key,
+--     "name" varchar(255) not null,
+--     "created_at" timestamp default now(),
+--     unique("name")
+-- );
+
+-- insert into transmissions (name) values ('Automatic');
+-- insert into transmissions (name) values ('Manual');
+-- insert into transmissions (name) values ('Semi-Automatic');
+
+
+-- create table engines (
+--     "id" serial primary key,
+--     "value" varchar(255) not null,
+--     "created_at" timestamp default now(),
+--     unique("value")
+-- );
+
+-- insert into engines (value) values ('1.0L');
+-- insert into engines (value) values ('1.5L');
+-- insert into engines (value) values ('2.0L');
+-- insert into engines (value) values ('2.5L');
+-- insert into engines (value) values ('3.0L');
+-- insert into engines (value) values ('4.0L');
+-- insert into engines (value) values ('5.0L');
+-- insert into engines (value) values ('6.0L');
+-- insert into engines (value) values ('7.0L');
+
+
+-- create table drivetrains (
+--     "id" serial primary key,
+--     "name" varchar(255) not null,
+--     "created_at" timestamp default now(),
+--     unique("name")
+-- );
+
+-- insert into drivetrains (name) values ('Front-Wheel Drive');
+-- insert into drivetrains (name) values ('Rear-Wheel Drive');
+-- insert into drivetrains (name) values ('All-Wheel Drive');
+
+
+-- create table fuel_types (
+--     "id" serial primary key,
+--     "name" varchar(255) not null,
+--     "created_at" timestamp default now(),
+--     unique("name")
+-- );
+
+-- insert into fuel_types (name) values ('Gasoline');
+-- insert into fuel_types (name) values ('Diesel');
+-- insert into fuel_types (name) values ('Electric');
+-- insert into fuel_types (name) values ('Hybrid');
