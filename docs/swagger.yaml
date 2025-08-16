@@ -47,6 +47,7 @@ definitions:
       brand_id:
         type: integer
       city_id:
+        description: new
         type: integer
       color_id:
         type: integer
@@ -92,6 +93,99 @@ definitions:
     - trade_in
     - vin_code
     - wheel
+    - year
+    type: object
+  model.CreateMotorcycleParameterRequest:
+    properties:
+      parameter_id:
+        type: integer
+      value_id:
+        type: integer
+    required:
+    - parameter_id
+    - value_id
+    type: object
+  model.CreateMotorcycleRequest:
+    properties:
+      can_look_coordinate:
+        type: string
+      certificate:
+        type: string
+      city_id:
+        type: integer
+      color_id:
+        type: integer
+      contact_person:
+        type: string
+      crash:
+        type: boolean
+      date_of_purchase:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      engine:
+        type: integer
+      fuel_type_id:
+        type: integer
+      moto_brand_id:
+        type: string
+      moto_category_id:
+        type: string
+      moto_model_id:
+        type: string
+      not_cleared:
+        type: boolean
+      number_of_cycles:
+        type: integer
+      odometer:
+        type: integer
+      only_chat:
+        type: boolean
+      owners:
+        type: integer
+      parameters:
+        items:
+          $ref: '#/definitions/model.CreateMotorcycleParameterRequest'
+        type: array
+      phone_number:
+        type: string
+      power:
+        type: integer
+      price:
+        type: integer
+      price_type:
+        enum:
+        - USD
+        - AED
+        - RUB
+        type: string
+      protect_spam:
+        type: boolean
+      ptc:
+        type: boolean
+      refuse_dealers_calls:
+        type: boolean
+      verified_buyers:
+        type: boolean
+      vin_code:
+        type: string
+      warranty_date:
+        type: string
+      year:
+        type: integer
+    required:
+    - city_id
+    - color_id
+    - fuel_type_id
+    - moto_brand_id
+    - moto_category_id
+    - moto_model_id
+    - phone_number
+    - price
+    - price_type
+    - vin_code
     - year
     type: object
   model.DeleteCarImageRequest:
@@ -203,6 +297,7 @@ definitions:
       liked:
         type: boolean
       mileage:
+        description: 'todo: change it to odometer'
         type: integer
       model:
         type: string
@@ -337,6 +432,40 @@ definitions:
       popular_models:
         items:
           $ref: '#/definitions/model.Model'
+        type: array
+    type: object
+  model.GetMotorcycleBrandsResponse:
+    properties:
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+    type: object
+  model.GetMotorcycleModelsResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.GetMotorcycleParameterValuesResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.GetMotorcycleParametersResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      values:
+        items:
+          $ref: '#/definitions/model.GetMotorcycleParameterValuesResponse'
         type: array
     type: object
   model.GetProfileResponse:
@@ -2394,6 +2523,104 @@ paths:
       summary: Get transmissions
       tags:
       - users
+  /motorcycles:
+    post:
+      consumes:
+      - application/json
+      description: Create motorcycle
+      parameters:
+      - description: Motorcycle
+        in: body
+        name: motorcycle
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateMotorcycleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+      security:
+      - BearerAuth: []
+      summary: Create motorcycle
+      tags:
+      - motorcycles
+  /motorcycles/categories/{category_id}/brands:
+    get:
+      consumes:
+      - application/json
+      description: Get motorcycle brands
+      parameters:
+      - description: Category ID
+        in: path
+        name: category_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetMotorcycleBrandsResponse'
+            type: array
+      summary: Get motorcycle brands
+      tags:
+      - motorcycles
+  /motorcycles/categories/{category_id}/brands/{brand_id}/models:
+    get:
+      consumes:
+      - application/json
+      description: Get motorcycle models by brand ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: category_id
+        required: true
+        type: string
+      - description: Brand ID
+        in: path
+        name: brand_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetMotorcycleModelsResponse'
+            type: array
+      summary: Get motorcycle models by brand ID
+      tags:
+      - motorcycles
+  /motorcycles/categories/{category_id}/parameters:
+    get:
+      consumes:
+      - application/json
+      description: Get motorcycle parameters
+      parameters:
+      - description: Category ID
+        in: path
+        name: category_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetMotorcycleParametersResponse'
+            type: array
+      summary: Get motorcycle parameters
+      tags:
+      - motorcycles
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT token.

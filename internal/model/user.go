@@ -13,7 +13,6 @@ type DeleteCarImageRequest struct {
 
 type CreateCarRequest struct {
 	// new
-	UserID  int `json:"user_id"`
 	CityID  int `json:"city_id" validate:"required"`
 	BrandID int `json:"brand_id" validate:"required"`
 	ModelID int `json:"model_id" validate:"required"`

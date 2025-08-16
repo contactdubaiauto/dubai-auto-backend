@@ -341,9 +341,9 @@ func (s *UserService) BuyCar(ctx *fasthttp.RequestCtx, carID, userID int) *model
 	return &model.Response{Data: model.Success{Message: "successfully buy a car"}}
 }
 
-func (s *UserService) CreateCar(ctx *fasthttp.RequestCtx, car *model.CreateCarRequest) *model.Response {
+func (s *UserService) CreateCar(ctx *fasthttp.RequestCtx, car *model.CreateCarRequest, userID int) *model.Response {
 
-	id, err := s.UserRepository.CreateCar(ctx, car)
+	id, err := s.UserRepository.CreateCar(ctx, car, userID)
 
 	if err != nil {
 		return &model.Response{

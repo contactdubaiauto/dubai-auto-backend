@@ -870,7 +870,7 @@ func (h *UserHandler) BuyCar(c *fiber.Ctx) error {
 // @Router       /api/v1/users/cars [post]
 func (h *UserHandler) CreateCar(c *fiber.Ctx) error {
 	var car model.CreateCarRequest
-	car.UserID = c.Locals("id").(int)
+	userID := c.Locals("id").(int)
 	ctx := c.Context()
 
 	if err := c.BodyParser(&car); err != nil {
@@ -888,7 +888,7 @@ func (h *UserHandler) CreateCar(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.UserService.CreateCar(ctx, &car)
+	data := h.UserService.CreateCar(ctx, &car, userID)
 	return utils.FiberResponse(c, data)
 }
 

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"dubai-auto/internal/model"
@@ -1445,7 +1446,7 @@ func (r *UserRepository) BuyCar(ctx *fasthttp.RequestCtx, carID, userID int) err
 	return err
 }
 
-func (r *UserRepository) CreateCar(ctx *fasthttp.RequestCtx, car *model.CreateCarRequest) (int, error) {
+func (r *UserRepository) CreateCar(ctx *fasthttp.RequestCtx, car *model.CreateCarRequest, userID int) (int, error) {
 
 	keys, values, args := auth.BuildParams(car)
 
@@ -1453,11 +1454,14 @@ func (r *UserRepository) CreateCar(ctx *fasthttp.RequestCtx, car *model.CreateCa
 		INSERT INTO vehicles 
 			(
 				` + strings.Join(keys, ", ") + `
+				, user_id
 			) VALUES (
-				` + strings.Join(values, ", ") + `
+				` + strings.Join(values, ", ") + `,
+				$` + strconv.Itoa(len(keys)+1) + `
 			) RETURNING id
 	`
 	var id int
+	args = append(args, userID)
 	err := r.db.QueryRow(ctx, q, args...).Scan(&id)
 
 	return id, err

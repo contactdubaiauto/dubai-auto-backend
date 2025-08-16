@@ -2828,6 +2828,157 @@
                     }
                 }
             }
+        },
+        "/motorcycles": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create motorcycle",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "motorcycles"
+                ],
+                "summary": "Create motorcycle",
+                "parameters": [
+                    {
+                        "description": "Motorcycle",
+                        "name": "motorcycle",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CreateMotorcycleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.SuccessWithId"
+                        }
+                    }
+                }
+            }
+        },
+        "/motorcycles/categories/{category_id}/brands": {
+            "get": {
+                "description": "Get motorcycle brands",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "motorcycles"
+                ],
+                "summary": "Get motorcycle brands",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "category_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.GetMotorcycleBrandsResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/motorcycles/categories/{category_id}/brands/{brand_id}/models": {
+            "get": {
+                "description": "Get motorcycle models by brand ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "motorcycles"
+                ],
+                "summary": "Get motorcycle models by brand ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "category_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Brand ID",
+                        "name": "brand_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.GetMotorcycleModelsResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/motorcycles/categories/{category_id}/parameters": {
+            "get": {
+                "description": "Get motorcycle parameters",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "motorcycles"
+                ],
+                "summary": "Get motorcycle parameters",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "category_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.GetMotorcycleParametersResponse"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -2918,6 +3069,7 @@
                     "type": "integer"
                 },
                 "city_id": {
+                    "description": "new",
                     "type": "integer"
                 },
                 "color_id": {
@@ -2962,6 +3114,140 @@
                 "wheel": {
                     "description": "BodyTypeID     int      `json:\"body_type_id\" validate:\"required\"`",
                     "type": "boolean"
+                },
+                "year": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.CreateMotorcycleParameterRequest": {
+            "type": "object",
+            "required": [
+                "parameter_id",
+                "value_id"
+            ],
+            "properties": {
+                "parameter_id": {
+                    "type": "integer"
+                },
+                "value_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.CreateMotorcycleRequest": {
+            "type": "object",
+            "required": [
+                "city_id",
+                "color_id",
+                "fuel_type_id",
+                "moto_brand_id",
+                "moto_category_id",
+                "moto_model_id",
+                "phone_number",
+                "price",
+                "price_type",
+                "vin_code",
+                "year"
+            ],
+            "properties": {
+                "can_look_coordinate": {
+                    "type": "string"
+                },
+                "certificate": {
+                    "type": "string"
+                },
+                "city_id": {
+                    "type": "integer"
+                },
+                "color_id": {
+                    "type": "integer"
+                },
+                "contact_person": {
+                    "type": "string"
+                },
+                "crash": {
+                    "type": "boolean"
+                },
+                "date_of_purchase": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "engine": {
+                    "type": "integer"
+                },
+                "fuel_type_id": {
+                    "type": "integer"
+                },
+                "moto_brand_id": {
+                    "type": "string"
+                },
+                "moto_category_id": {
+                    "type": "string"
+                },
+                "moto_model_id": {
+                    "type": "string"
+                },
+                "not_cleared": {
+                    "type": "boolean"
+                },
+                "number_of_cycles": {
+                    "type": "integer"
+                },
+                "odometer": {
+                    "type": "integer"
+                },
+                "only_chat": {
+                    "type": "boolean"
+                },
+                "owners": {
+                    "type": "integer"
+                },
+                "parameters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CreateMotorcycleParameterRequest"
+                    }
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "power": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "price_type": {
+                    "type": "string",
+                    "enum": [
+                        "USD",
+                        "AED",
+                        "RUB"
+                    ]
+                },
+                "protect_spam": {
+                    "type": "boolean"
+                },
+                "ptc": {
+                    "type": "boolean"
+                },
+                "refuse_dealers_calls": {
+                    "type": "boolean"
+                },
+                "verified_buyers": {
+                    "type": "boolean"
+                },
+                "vin_code": {
+                    "type": "string"
+                },
+                "warranty_date": {
+                    "type": "string"
                 },
                 "year": {
                     "type": "integer"
@@ -3135,6 +3421,7 @@
                     "type": "boolean"
                 },
                 "mileage": {
+                    "description": "todo: change it to odometer",
                     "type": "integer"
                 },
                 "model": {
@@ -3338,6 +3625,59 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.Model"
+                    }
+                }
+            }
+        },
+        "model.GetMotorcycleBrandsResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.GetMotorcycleModelsResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.GetMotorcycleParameterValuesResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.GetMotorcycleParametersResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GetMotorcycleParameterValuesResponse"
                     }
                 }
             }
