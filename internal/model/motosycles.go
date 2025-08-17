@@ -64,6 +64,6 @@ type CreateMotorcycleRequest struct {
 	ContactPerson      string                             `json:"contact_person"`
 	Email              string                             `json:"email"`
 	Price              int                                `json:"price" validate:"required"`
-	PriceType          string                             `json:"price_type" validate:"required,oneof=USD AED RUB"`
+	PriceType          string                             `json:"price_type" validate:"required,oneof=USD AED RUB EUR"`
 	Parameters         []CreateMotorcycleParameterRequest `json:"parameters"`
 }

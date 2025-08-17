@@ -788,7 +788,7 @@ insert into moto_category_parameters (moto_category_id, moto_parameter_id) value
 
 
 -- Create enum type for price currency
-CREATE TYPE price_type_enum AS ENUM ('USD', 'AED', 'RUB');
+CREATE TYPE price_type_enum AS ENUM ('USD', 'AED', 'RUB', 'EUR');
 
 create table motorcycles (
     "id" serial primary key,
