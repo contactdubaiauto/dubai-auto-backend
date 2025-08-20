@@ -570,6 +570,8 @@ create table videos (
 );
 
 
+drop table if exists moto_images;
+drop table if exists moto_videos;
 drop table if exists motorcycle_parameters;
 drop table if exists motorcycles;
 drop table if exists moto_category_parameters;
@@ -578,6 +580,8 @@ drop table if exists moto_parameters;
 drop table if exists moto_models;
 drop table if exists moto_brands;
 drop table if exists moto_categories;
+drop type if exists price_type_enum;
+
 
 
 
@@ -863,6 +867,48 @@ create table motorcycles (
                 on update cascade
 );
 
+insert into motorcycles (
+    user_id, moto_category_id, moto_brand_id, moto_model_id, fuel_type_id, 
+    city_id, color_id, engine, power, year, number_of_cycles, odometer, 
+    crash, not_cleared, owners, date_of_purchase, warranty_date, ptc, vin_code, 
+    certificate, description, can_look_coordinate, phone_number, refuse_dealers_calls, 
+    only_chat, protect_spam, verified_buyers, contact_person, email, price, price_type
+) values (
+    1, 1, 1, 1, 1,
+    1, 1, 1, 1, 2020, 1, 10000,
+    true, false, 1, '2020-01-01', '2020-01-01', false, '1234567890',
+    true, 'description', '1234567890', '1234567890', true,
+    true, true, true, 'John Doe', 'john.doe@example.com', 10000, 'USD'
+);
+
+insert into motorcycles (
+    user_id, moto_category_id, moto_brand_id, moto_model_id, fuel_type_id, 
+    city_id, color_id, engine, power, year, number_of_cycles, odometer, 
+    crash, not_cleared, owners, date_of_purchase, warranty_date, ptc, vin_code, 
+    certificate, description, can_look_coordinate, phone_number, refuse_dealers_calls, 
+    only_chat, protect_spam, verified_buyers, contact_person, email, price, price_type
+) values (
+    1, 1, 1, 1, 1,
+    1, 1, 1, 1, 2020, 1, 10000,
+    true, false, 1, '2020-01-01', '2020-01-01', false, '1234567890',
+    true, 'description', '1234567890', '1234567890', true,
+    true, true, true, 'John Doe', 'john.doe@example.com', 10000, 'USD'
+);
+
+insert into motorcycles (
+    user_id, moto_category_id, moto_brand_id, moto_model_id, fuel_type_id, 
+    city_id, color_id, engine, power, year, number_of_cycles, odometer, 
+    crash, not_cleared, owners, date_of_purchase, warranty_date, ptc, vin_code, 
+    certificate, description, can_look_coordinate, phone_number, refuse_dealers_calls, 
+    only_chat, protect_spam, verified_buyers, contact_person, email, price, price_type
+) values (
+    1, 1, 1, 1, 1,
+    1, 1, 1, 1, 2020, 1, 10000,
+    true, false, 1, '2020-01-01', '2020-01-01', false, '1234567890',
+    true, 'description', '1234567890', '1234567890', true,
+    true, true, true, 'John Doe', 'john.doe@example.com', 10000, 'USD'
+);
+
 create table motorcycle_parameters (
     "id" serial primary key,
     "motorcycle_id" int not null,
@@ -883,8 +929,73 @@ create table motorcycle_parameters (
         foreign key (moto_parameter_value_id)
             references moto_parameter_values(id)
                 on delete cascade
+                on update cascade,
+    unique("motorcycle_id", "moto_parameter_id")
+);
+
+insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (1, 1, 1);
+insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (1, 2, 1);
+insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (1, 3, 1);
+insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (1, 4, 1);
+insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (1, 5, 1);
+
+insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (2, 1, 1);
+insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (2, 2, 1);
+insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (2, 3, 1);
+insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (2, 4, 1);
+insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (2, 5, 1);
+
+insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (3, 1, 1);
+insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (3, 2, 1);
+insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (3, 3, 1);
+insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (3, 4, 1);
+insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (3, 5, 1);
+
+
+create table moto_images (
+    "id" serial primary key,
+    "moto_id" int not null,
+    "image" varchar(255) not null,
+    "created_at" timestamp not null default now(),
+    constraint moto_images_moto_id_fk
+        foreign key (moto_id)
+            references motorcycles(id)
+                on delete cascade
                 on update cascade
 );
+
+insert into moto_images (moto_id, image) values (1, 'https://via.placeholder.com/150');
+insert into moto_images (moto_id, image) values (1, 'https://via.placeholder.com/150');
+insert into moto_images (moto_id, image) values (1, 'https://via.placeholder.com/150');
+insert into moto_images (moto_id, image) values (1, 'https://via.placeholder.com/150');
+
+insert into moto_images (moto_id, image) values (2, 'https://via.placeholder.com/150');
+insert into moto_images (moto_id, image) values (2, 'https://via.placeholder.com/150');
+
+insert into moto_images (moto_id, image) values (3, 'https://via.placeholder.com/150');
+insert into moto_images (moto_id, image) values (3, 'https://via.placeholder.com/150');
+
+
+create table moto_videos (
+    "id" serial primary key,
+    "moto_id" int not null,
+    "video" varchar(255) not null,
+    "created_at" timestamp not null default now(),
+    constraint moto_videos_moto_id_fk
+        foreign key (moto_id)
+            references motorcycles(id)
+                on delete cascade
+                on update cascade
+);
+
+insert into moto_videos (moto_id, video) values (1, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+insert into moto_videos (moto_id, video) values (1, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+
+insert into moto_videos (moto_id, video) values (2, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+insert into moto_videos (moto_id, video) values (2, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+
+insert into moto_videos (moto_id, video) values (3, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+insert into moto_videos (moto_id, video) values (3, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
 
 --  comtrans

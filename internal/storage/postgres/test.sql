@@ -890,3 +890,99 @@ email,                  1                   1               1                   
 price,                  1                   1               1                       1
 price_type,             1                   1               1                       1
 exchange,               1                   1               1                       1
+
+
+
+
+-- Parameters will be handled with LEFT JOIN LATERAL below
+select 
+    mcs.id,
+    json_build_object(
+        'id', pf.user_id,
+        'username', pf.username,
+        'avatar', pf.avatar
+    ) as owner,
+    mcs.engine,
+    mcs.power,
+    mcs.year,
+    mcs.number_of_cycles,
+    mcs.odometer,
+    mcs.crash,
+    mcs.not_cleared,
+    mcs.owners,
+    mcs.date_of_purchase,
+    mcs.warranty_date,
+    mcs.ptc,
+    mcs.vin_code,
+    mcs.certificate,
+    mcs.description,
+    mcs.can_look_coordinate,
+    mcs.phone_number,
+    mcs.refuse_dealers_calls,
+    mcs.only_chat,
+    mcs.protect_spam,
+    mcs.verified_buyers,
+    mcs.contact_person,
+    mcs.email,
+    mcs.price,
+    mcs.price_type,
+    mcs.status,
+    mcs.updated_at,
+    mcs.created_at,
+    mocs.name as moto_category,
+    mbs.name as moto_brand,
+    mms.name as moto_model,
+    fts.name as fuel_type,
+    cs.name as city,
+    cls.name as color,
+    CASE
+        WHEN mcs.user_id = 1 THEN TRUE
+        ELSE FALSE
+    END AS my_car,
+    ps.parameters,
+    images.images,
+    videos.videos
+from motorcycles mcs
+left join profiles pf on pf.user_id = mcs.user_id
+left join moto_categories mocs on mocs.id = mcs.moto_category_id
+left join moto_brands mbs on mbs.id = mcs.moto_brand_id
+left join moto_models mms on mms.id = mcs.moto_model_id
+left join fuel_types fts on fts.id = mcs.fuel_type_id
+left join cities cs on cs.id = mcs.city_id
+left join colors cls on cls.id = mcs.color_id
+LEFT JOIN LATERAL (
+    SELECT json_agg(
+        json_build_object(
+            'parameter_id', mcp.moto_parameter_id,
+            'parameter_value_id', mpv.id,
+            'parameter', mp.name,
+            'parameter_value', mpv.name
+        )
+    ) AS parameters
+    FROM motorcycle_parameters mcp
+    LEFT JOIN moto_parameters mp ON mp.id = mcp.moto_parameter_id
+    LEFT JOIN moto_parameter_values mpv ON mpv.id = mcp.moto_parameter_value_id
+    WHERE mcp.motorcycle_id = mcs.id
+) ps ON true
+LEFT JOIN LATERAL (
+    SELECT json_agg(img.image) AS images
+    FROM (
+        SELECT image
+        FROM moto_images
+        WHERE moto_id = mcs.id
+        ORDER BY created_at DESC
+    ) img
+) images ON true
+LEFT JOIN LATERAL (
+    SELECT json_agg(v.video) AS videos
+    FROM (
+        SELECT video
+        FROM moto_videos
+        WHERE moto_id = mcs.id
+        ORDER BY created_at DESC
+    ) v
+) videos ON true
+where mcs.id = 1;
+
+
+

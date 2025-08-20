@@ -34,3 +34,15 @@ func (s *MotorcycleService) GetMotorcycleModelsByBrandID(ctx *fasthttp.RequestCt
 func (s *MotorcycleService) CreateMotorcycle(ctx *fasthttp.RequestCtx, motorcycle model.CreateMotorcycleRequest, userID int) (data model.SuccessWithId, err error) {
 	return s.repository.CreateMotorcycle(ctx, motorcycle, userID)
 }
+
+func (s *MotorcycleService) GetMotorcycles(ctx *fasthttp.RequestCtx) (data []model.GetMotorcyclesResponse, err error) {
+	return s.repository.GetMotorcycles(ctx)
+}
+
+// func (s *MotorcycleService) GetMotorcycleByID(ctx *fasthttp.RequestCtx, id int) (data model.GetMotorcyclesResponse, err error) {
+// 	return s.repository.GetMotorcycleByID(ctx, id)
+// }
+
+// func (s *MotorcycleService) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, id int) (data model.GetMotorcyclesResponse, err error) {
+// 	return s.repository.GetEditMotorcycleByID(ctx, id)
+// }

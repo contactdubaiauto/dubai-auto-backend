@@ -110,6 +110,17 @@ func SetupMotorcycleRoutes(r fiber.Router, db *pgxpool.Pool) {
 		r.Get("/categories/:category_id/parameters", auth.TokenGuard, motorcycleHandler.GetMotorcycleParameters)
 		r.Get("/categories/:category_id/brands", auth.TokenGuard, motorcycleHandler.GetMotorcycleBrands)
 		r.Get("/categories/:category_id/brands/:brand_id/models", auth.TokenGuard, motorcycleHandler.GetMotorcycleModelsByBrandID)
+
+		// motorcycles
 		r.Post("/", auth.TokenGuard, motorcycleHandler.CreateMotorcycle)
+		r.Get("/", auth.TokenGuard, motorcycleHandler.GetMotorcycles)
+		// r.Get("/:id", auth.TokenGuard, motorcycleHandler.GetMotorcycleByID)
+		// r.Get("/:id/edit", auth.TokenGuard, motorcycleHandler.GetEditMotorcycleByID)
+		// r.Post("/:id/buy", auth.TokenGuard, motorcycleHandler.BuyMotorcycle)
+		// r.Post("/:id/dont-sell", auth.TokenGuard, motorcycleHandler.DontSellMotorcycle)
+		// r.Post("/:id/sell", auth.TokenGuard, motorcycleHandler.SellMotorcycle)
+		// r.Delete("/:id", auth.TokenGuard, motorcycleHandler.DeleteMotorcycle)
+		// r.Delete("/:id/images", auth.TokenGuard, motorcycleHandler.DeleteMotorcycleImage)
+		// r.Delete("/:id/videos", auth.TokenGuard, motorcycleHandler.DeleteMotorcycleVideo)
 	}
 }

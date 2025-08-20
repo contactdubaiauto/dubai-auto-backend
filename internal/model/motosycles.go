@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 // RESPONSES
 type GetMotorcycleCategoriesResponse struct {
 	ID   int    `json:"id"`
@@ -66,4 +68,61 @@ type CreateMotorcycleRequest struct {
 	Price              int                                `json:"price" validate:"required"`
 	PriceType          string                             `json:"price_type" validate:"required,oneof=USD AED RUB EUR"`
 	Parameters         []CreateMotorcycleParameterRequest `json:"parameters"`
+}
+
+// Owner represents the motorcycle owner information
+type MotorcycleOwner struct {
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+	Avatar   string `json:"avatar"`
+}
+
+// MotorcycleParameter represents a motorcycle parameter with its value
+type MotorcycleParameter struct {
+	ParameterID      int    `json:"parameter_id"`
+	ParameterValueID int    `json:"parameter_value_id"`
+	Parameter        string `json:"parameter"`
+	ParameterValue   string `json:"parameter_value"`
+}
+
+type GetMotorcyclesResponse struct {
+	ID                 int                   `json:"id"`
+	Owner              MotorcycleOwner       `json:"owner"`
+	Engine             int                   `json:"engine"`
+	Power              int                   `json:"power"`
+	Year               int                   `json:"year"`
+	NumberOfCycles     int                   `json:"number_of_cycles"`
+	Odometer           int                   `json:"odometer"`
+	Crash              *bool                 `json:"crash"`
+	NotCleared         *bool                 `json:"not_cleared"`
+	Owners             int                   `json:"owners"`
+	DateOfPurchase     string                `json:"date_of_purchase"`
+	WarrantyDate       string                `json:"warranty_date"`
+	PTC                *bool                 `json:"ptc"`
+	VinCode            string                `json:"vin_code"`
+	Certificate        string                `json:"certificate"`
+	Description        string                `json:"description"`
+	CanLookCoordinate  string                `json:"can_look_coordinate"`
+	PhoneNumber        string                `json:"phone_number"`
+	RefuseDealersCalls *bool                 `json:"refuse_dealers_calls"`
+	OnlyChat           *bool                 `json:"only_chat"`
+	ProtectSpam        *bool                 `json:"protect_spam"`
+	VerifiedBuyers     *bool                 `json:"verified_buyers"`
+	ContactPerson      string                `json:"contact_person"`
+	Email              string                `json:"email"`
+	Price              int                   `json:"price"`
+	PriceType          string                `json:"price_type"`
+	Status             string                `json:"status"`
+	UpdatedAt          time.Time             `json:"updated_at"`
+	CreatedAt          time.Time             `json:"created_at"`
+	MotoCategory       string                `json:"moto_category"`
+	MotoBrand          string                `json:"moto_brand"`
+	MotoModel          string                `json:"moto_model"`
+	FuelType           string                `json:"fuel_type"`
+	City               string                `json:"city"`
+	Color              string                `json:"color"`
+	MyCar              bool                  `json:"my_car"`
+	Parameters         []MotorcycleParameter `json:"parameters"`
+	Images             []string              `json:"images"`
+	Videos             []string              `json:"videos"`
 }

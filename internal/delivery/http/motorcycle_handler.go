@@ -23,6 +23,7 @@ func NewMotorcycleHandler(service *service.MotorcycleService) *MotorcycleHandler
 // @Accept json
 // @Produce json
 // @Success 200 {array} model.GetMotorcycleCategoriesResponse
+// @Failure 500 {object} model.ResultMessage
 // @Router /motorcycles/categories [get]
 
 func (h *MotorcycleHandler) GetMotorcycleCategories(c *fiber.Ctx) error {
@@ -51,6 +52,7 @@ func (h *MotorcycleHandler) GetMotorcycleCategories(c *fiber.Ctx) error {
 // @Produce json
 // @Param category_id path string true "Category ID"
 // @Success 200 {array} model.GetMotorcycleParametersResponse
+// @Failure 500 {object} model.ResultMessage
 // @Router /motorcycles/categories/{category_id}/parameters [get]
 func (h *MotorcycleHandler) GetMotorcycleParameters(c *fiber.Ctx) error {
 	ctx := c.Context()
@@ -78,6 +80,7 @@ func (h *MotorcycleHandler) GetMotorcycleParameters(c *fiber.Ctx) error {
 // @Produce json
 // @Param category_id path string true "Category ID"
 // @Success 200 {array} model.GetMotorcycleBrandsResponse
+// @Failure 500 {object} model.ResultMessage
 // @Router /motorcycles/categories/{category_id}/brands [get]
 func (h *MotorcycleHandler) GetMotorcycleBrands(c *fiber.Ctx) error {
 	ctx := c.Context()
@@ -106,6 +109,7 @@ func (h *MotorcycleHandler) GetMotorcycleBrands(c *fiber.Ctx) error {
 // @Param category_id path string true "Category ID"
 // @Param brand_id path string true "Brand ID"
 // @Success 200 {array} model.GetMotorcycleModelsResponse
+// @Failure 500 {object} model.ResultMessage
 // @Router /motorcycles/categories/{category_id}/brands/{brand_id}/models [get]
 func (h *MotorcycleHandler) GetMotorcycleModelsByBrandID(c *fiber.Ctx) error {
 	ctx := c.Context()
@@ -135,6 +139,8 @@ func (h *MotorcycleHandler) GetMotorcycleModelsByBrandID(c *fiber.Ctx) error {
 // @Security BearerAuth
 // @Param motorcycle body model.CreateMotorcycleRequest true "Motorcycle"
 // @Success 200 {object} model.SuccessWithId
+// @Failure 500 {object} model.ResultMessage
+// @Failure 400 {object} model.ResultMessage
 // @Router /motorcycles [post]
 func (h *MotorcycleHandler) CreateMotorcycle(c *fiber.Ctx) error {
 	ctx := c.Context()
@@ -161,5 +167,32 @@ func (h *MotorcycleHandler) CreateMotorcycle(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, &model.Response{
 		Status: 200,
 		Data:   createdMotorcycle,
+	})
+}
+
+// GetMotorcycles godoc
+// @Summary Get motorcycles
+// @Description Get motorcycles
+// @Tags motorcycles
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {array} model.GetMotorcyclesResponse
+// @Failure 500 {object} model.ResultMessage
+// @Router /motorcycles [get]
+func (h *MotorcycleHandler) GetMotorcycles(c *fiber.Ctx) error {
+	ctx := c.Context()
+	motorcycles, err := h.service.GetMotorcycles(ctx)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 500,
+			Error:  err,
+		})
+	}
+
+	return utils.FiberResponse(c, &model.Response{
+		Status: 200,
+		Data:   motorcycles,
 	})
 }
