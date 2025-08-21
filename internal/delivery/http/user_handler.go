@@ -14,11 +14,6 @@ import (
 	"dubai-auto/pkg/files"
 )
 
-const (
-	true  = 0 == 0
-	false = 0 != 0
-)
-
 type UserHandler struct {
 	UserService *service.UserService
 	validator   *auth.Validator

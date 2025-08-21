@@ -8,18 +8,32 @@
 
 
 
+
+drop table if exists moto_images;
+drop table if exists moto_videos;
+drop table if exists motorcycle_parameters;
+drop table if exists motorcycles;
+drop table if exists moto_category_parameters;
+drop table if exists moto_parameter_values;
+drop table if exists moto_parameters;
+drop table if exists moto_models;
+drop table if exists moto_brands;
+drop table if exists moto_categories;
+drop type if exists price_type_enum;
+
+drop table if exists user_likes;
 drop table if exists temp_users;
 drop table if exists configurations;
 drop table if exists images;
 drop table if exists videos;
-drop table if exists cities;
 drop table if exists vehicles;
 drop table if exists profiles;
+drop table if exists regions;
+drop table if exists cities;
 drop table if exists generation_modifications;
 drop table if exists colors;
 drop table if exists services;
 drop table if exists service_types;
-drop table if exists regions;
 drop table if exists fuel_types;
 drop table if exists drivetrains;
 drop table if exists engines;
@@ -531,7 +545,7 @@ create table vehicles (
 create table images (
     "vehicle_id" int not null,
     "image" varchar(255) not null,
-    "created_at" timestamp not null default now();
+    "created_at" timestamp not null default now(),
     constraint images_vehicle_id_fk
         foreign key (vehicle_id)
             references vehicles(id)
@@ -568,19 +582,6 @@ create table videos (
                 on delete cascade
                 on update cascade
 );
-
-
-drop table if exists moto_images;
-drop table if exists moto_videos;
-drop table if exists motorcycle_parameters;
-drop table if exists motorcycles;
-drop table if exists moto_category_parameters;
-drop table if exists moto_parameter_values;
-drop table if exists moto_parameters;
-drop table if exists moto_models;
-drop table if exists moto_brands;
-drop table if exists moto_categories;
-drop type if exists price_type_enum;
 
 
 

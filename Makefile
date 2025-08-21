@@ -5,26 +5,26 @@ deploy:
 	@echo "Building done"
 
 	@echo "Stopping remote service..."
-	# @ssh root@95.85.126.220 "sudo -S systemctl stop da.service"
+	# @ssh root@84.200.87.48 "sudo -S systemctl stop da.service"
 
 	@echo "Deploying..."
-	@scp ./bin/da2 root@95.85.126.220:/var/www/
-	@ssh root@95.85.126.220 "rm -f /var/www/da && mv /var/www/da2 /var/www/da"
+	@scp ./bin/da2 root@84.200.87.48:/var/www/
+	@ssh root@84.200.87.48 "rm -f /var/www/da && mv /var/www/da2 /var/www/da"
 	@echo "Restarting remote service..."
-	@ssh root@95.85.126.220 "sudo -S systemctl restart da.service"
+	@ssh root@84.200.87.48 "sudo -S systemctl restart da.service"
 	@echo "Done"
 	
-	# @scp ./images/logo/audi.png root@95.85.126.220:/var/www/images/logo
-	# @scp -r ./docs root@95.85.126.220:/var/www/
-	# @scp -r ./images/body root@95.85.126.220:/var/www/images
-	# @scp ./.env root@95.85.126.220:/var/www/
+	# @scp ./images/logo/audi.png root@84.200.87.48:/var/www/da/images/logo
+	# @scp -r ./docs root@84.200.87.48:/var/www/
+	# @scp -r ./images/body root@84.200.87.48:/var/www/da/images
+	# @scp ./.env root@84.200.87.48:/var/www/
 	
 	@echo "Starting remote service..."
-	# @ssh root@95.85.126.220 "sudo -S systemctl start da.service"
+	# @ssh root@84.200.87.48 "sudo -S systemctl start da.service"
 	@echo "Done"
 folder:
 	@echo "deploying images..."
-	@scp -r ./images root@95.85.126.220:/var/www/images
+	@scp -r ./images root@84.200.87.48:/var/www/da/images
 	@echo "done"
 swag:
 	@swag init -g cmd/http/main.go  
