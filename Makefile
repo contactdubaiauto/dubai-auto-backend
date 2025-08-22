@@ -6,9 +6,9 @@ deploy:
 
 	@echo "Deploying..."
 	@scp ./bin/da2 root@84.200.87.48:/var/www/da/da2
-	# @ssh root@84.200.87.48 "rm -f /var/www/da/da && mv /var/www/da/da2 /var/www/da/da"
+	@ssh root@84.200.87.48 "rm -f /var/www/da/da && mv /var/www/da/da2 /var/www/da/da"
 	@echo "Restarting remote service..."
-	# @ssh root@84.200.87.48 "sudo -S systemctl restart da.service"
+	@ssh root@84.200.87.48 "sudo -S systemctl restart da.service"
 	@echo "Done"
 	
 	# @scp -r ./images/logo root@84.200.87.48:/var/www/da/images

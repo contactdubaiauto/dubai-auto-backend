@@ -21,7 +21,7 @@ import (
 // @title Project name
 // @version 1.0
 // @description Project Description
-// @host 95.85.126.220
+// @host 84.200.87.48
 // @BasePath /
 
 // @securityDefinitions.apikey BearerAuth

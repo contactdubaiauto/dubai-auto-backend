@@ -17,43 +17,6 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 	return &AuthHandler{service}
 }
 
-// DeleteAccount godoc
-// @Summary      Delete user account
-// @Description  Deletes the authenticated user's account and related data
-// @Tags         auth
-// @Security     BearerAuth
-// @Produce      json
-// @Param        id   path      int  true  "User ID"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      404  {object}  model.ResultMessage
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/auth/account/{id} [delete]
-func (h *AuthHandler) DeleteAccount(c *fiber.Ctx) error {
-	ctx := c.Context()
-	idStr := c.Params("id")
-	userID, err := strconv.Atoi(idStr)
-	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
-			Status: 400,
-			Error:  err,
-		})
-	}
-	// Optionally, you can check if the user is deleting their own account:
-	authUserID := c.Locals("id").(int)
-	if userID != authUserID {
-		return utils.FiberResponse(c, &model.Response{
-			Status: 403,
-			Error:  err,
-		})
-	}
-
-	data := h.service.DeleteAccount(ctx, userID)
-	return utils.FiberResponse(c, data)
-}
-
 // UserEmail confirmation godoc
 // @Summary      User email confirmation
 // @Description  Authenticates a user and returns a JWT token
@@ -166,4 +129,41 @@ func (h *AuthHandler) UserLoginPhone(c *fiber.Ctx) error {
 
 	data := h.service.UserLoginPhone(c.Context(), user)
 	return utils.FiberResponse(c, &data)
+}
+
+// DeleteAccount godoc
+// @Summary      Delete user account
+// @Description  Deletes the authenticated user's account and related data
+// @Tags         auth
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/auth/account/{id} [delete]
+func (h *AuthHandler) DeleteAccount(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	userID, err := strconv.Atoi(idStr)
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+	// Optionally, you can check if the user is deleting their own account:
+	authUserID := c.Locals("id").(int)
+	if userID != authUserID {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 403,
+			Error:  err,
+		})
+	}
+
+	data := h.service.DeleteAccount(ctx, userID)
+	return utils.FiberResponse(c, data)
 }

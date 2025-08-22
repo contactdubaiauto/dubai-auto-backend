@@ -63,7 +63,7 @@ func SetupUserRoutes(r fiber.Router, db *pgxpool.Pool) {
 		// cars
 		r.Get("/cars", auth.UserGuardOrDefault, userHandler.GetCars)
 		r.Get("/cars/price-recommendation", auth.TokenGuard, userHandler.GetPriceRecommendation)
-		// r.Get("/cars/:id", auth.UserGuardOrDefault, userHandler.GetCarByID)
+		r.Get("/cars/:id", auth.UserGuardOrDefault, userHandler.GetCarByID)
 		r.Get("/cars/:id/edit", auth.UserGuardOrDefault, userHandler.GetEditCarByID)
 		r.Post("/cars/:id/buy", auth.TokenGuard, userHandler.BuyCar)
 		r.Post("/cars", auth.TokenGuard, userHandler.CreateCar)
@@ -113,8 +113,8 @@ func SetupMotorcycleRoutes(r fiber.Router, db *pgxpool.Pool) {
 		r.Get("/categories/:category_id/brands/:brand_id/models", auth.TokenGuard, motorcycleHandler.GetMotorcycleModelsByBrandID)
 
 		// motorcycles
-		r.Post("/", auth.TokenGuard, motorcycleHandler.CreateMotorcycle)
 		r.Get("/", auth.TokenGuard, motorcycleHandler.GetMotorcycles)
+		r.Post("/", auth.TokenGuard, motorcycleHandler.CreateMotorcycle)
 		// r.Get("/:id", auth.TokenGuard, motorcycleHandler.GetMotorcycleByID)
 		// r.Get("/:id/edit", auth.TokenGuard, motorcycleHandler.GetEditMotorcycleByID)
 		// r.Post("/:id/buy", auth.TokenGuard, motorcycleHandler.BuyMotorcycle)

@@ -130,6 +130,33 @@ func (h *MotorcycleHandler) GetMotorcycleModelsByBrandID(c *fiber.Ctx) error {
 	})
 }
 
+// GetMotorcycles godoc
+// @Summary Get motorcycles
+// @Description Get motorcycles
+// @Tags motorcycles
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {array} model.GetMotorcyclesResponse
+// @Failure 500 {object} model.ResultMessage
+// @Router /motorcycles [get]
+func (h *MotorcycleHandler) GetMotorcycles(c *fiber.Ctx) error {
+	ctx := c.Context()
+	motorcycles, err := h.service.GetMotorcycles(ctx)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 500,
+			Error:  err,
+		})
+	}
+
+	return utils.FiberResponse(c, &model.Response{
+		Status: 200,
+		Data:   motorcycles,
+	})
+}
+
 // CreateMotorcycle godoc
 // @Summary Create motorcycle
 // @Description Create motorcycle
@@ -167,32 +194,5 @@ func (h *MotorcycleHandler) CreateMotorcycle(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, &model.Response{
 		Status: 200,
 		Data:   createdMotorcycle,
-	})
-}
-
-// GetMotorcycles godoc
-// @Summary Get motorcycles
-// @Description Get motorcycles
-// @Tags motorcycles
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Success 200 {array} model.GetMotorcyclesResponse
-// @Failure 500 {object} model.ResultMessage
-// @Router /motorcycles [get]
-func (h *MotorcycleHandler) GetMotorcycles(c *fiber.Ctx) error {
-	ctx := c.Context()
-	motorcycles, err := h.service.GetMotorcycles(ctx)
-
-	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
-			Status: 500,
-			Error:  err,
-		})
-	}
-
-	return utils.FiberResponse(c, &model.Response{
-		Status: 200,
-		Data:   motorcycles,
 	})
 }

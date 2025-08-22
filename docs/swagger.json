@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "95.85.126.220",
+    "host": "84.200.87.48",
     "basePath": "/",
     "paths": {
         "/api/v1/auth/account/{id}": {
@@ -336,7 +336,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get body types",
                 "responses": {
@@ -389,7 +389,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "brand"
                 ],
                 "summary": "Get car brands",
                 "parameters": [
@@ -450,7 +450,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "brand"
                 ],
                 "summary": "Get filter models by brand ID",
                 "parameters": [
@@ -515,7 +515,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "brand"
                 ],
                 "summary": "Get models by brand ID for create cars",
                 "parameters": [
@@ -583,7 +583,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "brand"
                 ],
                 "summary": "Get bodys by model ID",
                 "parameters": [
@@ -666,7 +666,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "brand"
                 ],
                 "summary": "Get generations by model ID",
                 "parameters": [
@@ -756,7 +756,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "brand"
                 ],
                 "summary": "Get years by model ID",
                 "parameters": [
@@ -837,7 +837,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Get cars",
                 "parameters": [
@@ -1036,7 +1036,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Update a car",
                 "parameters": [
@@ -1103,7 +1103,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Create a car",
                 "parameters": [
@@ -1169,7 +1169,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Get price recommendation",
                 "parameters": [
@@ -1265,7 +1265,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Get car by ID",
                 "parameters": [
@@ -1327,7 +1327,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Get user's cars",
                 "parameters": [
@@ -1391,7 +1391,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Buy car",
                 "parameters": [
@@ -1455,7 +1455,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Get user's cars",
                 "parameters": [
@@ -1519,7 +1519,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Dont sell cars",
                 "parameters": [
@@ -1583,7 +1583,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Get Edit car by ID",
                 "parameters": [
@@ -1650,7 +1650,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Upload car images",
                 "parameters": [
@@ -1721,7 +1721,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Sell cars",
                 "parameters": [
@@ -1788,7 +1788,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Upload car videos",
                 "parameters": [
@@ -1862,7 +1862,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Delete car image",
                 "parameters": [
@@ -1938,7 +1938,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Delete car video",
                 "parameters": [
@@ -2006,7 +2006,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get car cities",
                 "parameters": [
@@ -2067,7 +2067,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get colors",
                 "responses": {
@@ -2120,7 +2120,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get drivetrains",
                 "responses": {
@@ -2173,7 +2173,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get engines",
                 "responses": {
@@ -2226,7 +2226,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get car brands",
                 "parameters": [
@@ -2284,7 +2284,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get fuel types",
                 "responses": {
@@ -2342,7 +2342,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get home",
                 "responses": {
@@ -2400,7 +2400,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "like"
                 ],
                 "summary": "Crate liked car",
                 "parameters": [
@@ -2462,7 +2462,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "like"
                 ],
                 "summary": "remove Crate liked car",
                 "parameters": [
@@ -2526,7 +2526,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "like"
                 ],
                 "summary": "My liked cars",
                 "responses": {
@@ -2579,7 +2579,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get generations by model ID",
                 "parameters": [
@@ -2646,7 +2646,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "profile"
                 ],
                 "summary": "Get user profile",
                 "responses": {
@@ -2702,7 +2702,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "profile"
                 ],
                 "summary": "Update user profile",
                 "parameters": [
@@ -2768,7 +2768,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "profile"
                 ],
                 "summary": "Get user's profile cars",
                 "responses": {
@@ -2826,7 +2826,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "profile"
                 ],
                 "summary": "Get user's profile cars",
                 "responses": {
@@ -2879,7 +2879,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get transmissions",
                 "responses": {

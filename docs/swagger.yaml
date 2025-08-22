@@ -794,7 +794,7 @@ definitions:
     - otp
     - phone
     type: object
-host: 95.85.126.220
+host: 84.200.87.48
 info:
   contact: {}
   description: Project Description
@@ -1044,7 +1044,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get body types
       tags:
-      - users
+      - filter
   /api/v1/users/brands:
     get:
       description: Returns a list of car brands, optionally filtered by text
@@ -1084,7 +1084,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get car brands
       tags:
-      - users
+      - brand
   /api/v1/users/brands/{id}/filter-models:
     get:
       description: Returns a list of car models for a given brand ID, optionally filtered
@@ -1128,7 +1128,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get filter models by brand ID
       tags:
-      - users
+      - brand
   /api/v1/users/brands/{id}/models:
     get:
       description: Returns a list of car models for a given brand ID, optionally filtered
@@ -1174,7 +1174,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get models by brand ID for create cars
       tags:
-      - users
+      - brand
   /api/v1/users/brands/{id}/models/{model_id}/body-types:
     get:
       description: Returns a list of bodys for a given model ID
@@ -1230,7 +1230,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get bodys by model ID
       tags:
-      - users
+      - brand
   /api/v1/users/brands/{id}/models/{model_id}/generations:
     get:
       description: Returns a list of generations for a given model ID
@@ -1291,7 +1291,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get generations by model ID
       tags:
-      - users
+      - brand
   /api/v1/users/brands/{id}/models/{model_id}/years:
     get:
       description: Returns a list of years for a given model ID
@@ -1342,7 +1342,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get years by model ID
       tags:
-      - users
+      - brand
   /api/v1/users/cars:
     get:
       description: Returns a list of cars
@@ -1472,7 +1472,7 @@ paths:
       - BearerAuth: []
       summary: Get cars
       tags:
-      - users
+      - car
     post:
       consumes:
       - application/json
@@ -1515,7 +1515,7 @@ paths:
       - BearerAuth: []
       summary: Create a car
       tags:
-      - users
+      - car
     put:
       consumes:
       - application/json
@@ -1558,7 +1558,7 @@ paths:
       - BearerAuth: []
       summary: Update a car
       tags:
-      - users
+      - car
   /api/v1/users/cars/{car_id}:
     delete:
       description: Returns the cars associated with the authenticated user's
@@ -1599,7 +1599,7 @@ paths:
       - BearerAuth: []
       summary: Get user's cars
       tags:
-      - users
+      - car
     get:
       description: Returns a car by its ID
       parameters:
@@ -1639,7 +1639,7 @@ paths:
       - BearerAuth: []
       summary: Get car by ID
       tags:
-      - users
+      - car
   /api/v1/users/cars/{car_id}/buy:
     post:
       description: Returns a status response message
@@ -1680,7 +1680,7 @@ paths:
       - BearerAuth: []
       summary: Buy car
       tags:
-      - users
+      - car
   /api/v1/users/cars/{car_id}/cancel:
     post:
       description: Returns the cars associated with the authenticated user's
@@ -1721,7 +1721,7 @@ paths:
       - BearerAuth: []
       summary: Get user's cars
       tags:
-      - users
+      - car
   /api/v1/users/cars/{car_id}/dont-sell:
     post:
       description: Returns the cars associated with the authenticated user's
@@ -1762,7 +1762,7 @@ paths:
       - BearerAuth: []
       summary: Dont sell cars
       tags:
-      - users
+      - car
   /api/v1/users/cars/{car_id}/edit:
     get:
       description: Returns a car by its ID
@@ -1803,7 +1803,7 @@ paths:
       - BearerAuth: []
       summary: Get Edit car by ID
       tags:
-      - users
+      - car
   /api/v1/users/cars/{car_id}/images:
     post:
       consumes:
@@ -1851,7 +1851,7 @@ paths:
       - BearerAuth: []
       summary: Upload car images
       tags:
-      - users
+      - car
   /api/v1/users/cars/{car_id}/sell:
     post:
       description: Returns the cars associated with the authenticated user's
@@ -1892,7 +1892,7 @@ paths:
       - BearerAuth: []
       summary: Sell cars
       tags:
-      - users
+      - car
   /api/v1/users/cars/{car_id}/videos:
     post:
       consumes:
@@ -1940,7 +1940,7 @@ paths:
       - BearerAuth: []
       summary: Upload car videos
       tags:
-      - users
+      - car
   /api/v1/users/cars/{id}/images:
     delete:
       consumes:
@@ -1989,7 +1989,7 @@ paths:
       - BearerAuth: []
       summary: Delete car image
       tags:
-      - users
+      - car
   /api/v1/users/cars/{id}/videos:
     delete:
       consumes:
@@ -2038,7 +2038,7 @@ paths:
       - BearerAuth: []
       summary: Delete car video
       tags:
-      - users
+      - car
   /api/v1/users/cars/price-recommendation:
     get:
       description: Returns a price recommendation
@@ -2101,7 +2101,7 @@ paths:
       - BearerAuth: []
       summary: Get price recommendation
       tags:
-      - users
+      - car
   /api/v1/users/cities:
     get:
       description: Returns a list of car cities, optionally filtered by text
@@ -2141,7 +2141,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get car cities
       tags:
-      - users
+      - filter
   /api/v1/users/colors:
     get:
       description: Returns a list of car colors
@@ -2176,7 +2176,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get colors
       tags:
-      - users
+      - filter
   /api/v1/users/drivetrains:
     get:
       description: Returns a list of car drivetrains
@@ -2211,7 +2211,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get drivetrains
       tags:
-      - users
+      - filter
   /api/v1/users/engines:
     get:
       description: Returns a list of car engines
@@ -2246,7 +2246,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get engines
       tags:
-      - users
+      - filter
   /api/v1/users/filter-brands:
     get:
       description: Returns a list of car brands, optionally filtered by text
@@ -2284,7 +2284,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get car brands
       tags:
-      - users
+      - filter
   /api/v1/users/fuel-types:
     get:
       description: Returns a list of car fuel types
@@ -2319,7 +2319,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get fuel types
       tags:
-      - users
+      - filter
   /api/v1/users/home:
     get:
       description: Returns a list of car home
@@ -2356,7 +2356,7 @@ paths:
       - BearerAuth: []
       summary: Get home
       tags:
-      - users
+      - filter
   /api/v1/users/like/{car_id}:
     delete:
       description: User like a car
@@ -2397,7 +2397,7 @@ paths:
       - BearerAuth: []
       summary: remove Crate liked car
       tags:
-      - users
+      - like
     post:
       description: User like a car
       parameters:
@@ -2437,7 +2437,7 @@ paths:
       - BearerAuth: []
       summary: Crate liked car
       tags:
-      - users
+      - like
   /api/v1/users/likes:
     get:
       description: Liked cars
@@ -2474,7 +2474,7 @@ paths:
       - BearerAuth: []
       summary: My liked cars
       tags:
-      - users
+      - like
   /api/v1/users/models/generations:
     get:
       description: Returns a list of generations for a given model ID
@@ -2515,7 +2515,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get generations by model ID
       tags:
-      - users
+      - filter
   /api/v1/users/profile:
     get:
       description: Returns a list of user profile
@@ -2550,7 +2550,7 @@ paths:
       - BearerAuth: []
       summary: Get user profile
       tags:
-      - users
+      - profile
     put:
       consumes:
       - application/json
@@ -2593,7 +2593,7 @@ paths:
       - BearerAuth: []
       summary: Update user profile
       tags:
-      - users
+      - profile
   /api/v1/users/profile/my-cars:
     get:
       description: Returns the cars associated with the authenticated user's profile
@@ -2630,7 +2630,7 @@ paths:
       - BearerAuth: []
       summary: Get user's profile cars
       tags:
-      - users
+      - profile
   /api/v1/users/profile/on-sale:
     get:
       description: Returns the cars associated with the authenticated user's profile
@@ -2667,7 +2667,7 @@ paths:
       - BearerAuth: []
       summary: Get user's profile cars
       tags:
-      - users
+      - profile
   /api/v1/users/transmissions:
     get:
       description: Returns a list of car transmissions
@@ -2702,7 +2702,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get transmissions
       tags:
-      - users
+      - filter
   /motorcycles:
     get:
       consumes:

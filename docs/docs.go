@@ -342,7 +342,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get body types",
                 "responses": {
@@ -395,7 +395,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "brand"
                 ],
                 "summary": "Get car brands",
                 "parameters": [
@@ -456,7 +456,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "brand"
                 ],
                 "summary": "Get filter models by brand ID",
                 "parameters": [
@@ -521,7 +521,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "brand"
                 ],
                 "summary": "Get models by brand ID for create cars",
                 "parameters": [
@@ -589,7 +589,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "brand"
                 ],
                 "summary": "Get bodys by model ID",
                 "parameters": [
@@ -672,7 +672,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "brand"
                 ],
                 "summary": "Get generations by model ID",
                 "parameters": [
@@ -762,7 +762,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "brand"
                 ],
                 "summary": "Get years by model ID",
                 "parameters": [
@@ -843,7 +843,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Get cars",
                 "parameters": [
@@ -1042,7 +1042,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Update a car",
                 "parameters": [
@@ -1109,7 +1109,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Create a car",
                 "parameters": [
@@ -1175,7 +1175,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Get price recommendation",
                 "parameters": [
@@ -1271,7 +1271,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Get car by ID",
                 "parameters": [
@@ -1333,7 +1333,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Get user's cars",
                 "parameters": [
@@ -1397,7 +1397,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Buy car",
                 "parameters": [
@@ -1461,7 +1461,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Get user's cars",
                 "parameters": [
@@ -1525,7 +1525,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Dont sell cars",
                 "parameters": [
@@ -1589,7 +1589,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Get Edit car by ID",
                 "parameters": [
@@ -1656,7 +1656,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Upload car images",
                 "parameters": [
@@ -1727,7 +1727,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Sell cars",
                 "parameters": [
@@ -1794,7 +1794,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Upload car videos",
                 "parameters": [
@@ -1868,7 +1868,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Delete car image",
                 "parameters": [
@@ -1944,7 +1944,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "car"
                 ],
                 "summary": "Delete car video",
                 "parameters": [
@@ -2012,7 +2012,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get car cities",
                 "parameters": [
@@ -2073,7 +2073,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get colors",
                 "responses": {
@@ -2126,7 +2126,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get drivetrains",
                 "responses": {
@@ -2179,7 +2179,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get engines",
                 "responses": {
@@ -2232,7 +2232,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get car brands",
                 "parameters": [
@@ -2290,7 +2290,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get fuel types",
                 "responses": {
@@ -2348,7 +2348,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get home",
                 "responses": {
@@ -2406,7 +2406,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "like"
                 ],
                 "summary": "Crate liked car",
                 "parameters": [
@@ -2468,7 +2468,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "like"
                 ],
                 "summary": "remove Crate liked car",
                 "parameters": [
@@ -2532,7 +2532,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "like"
                 ],
                 "summary": "My liked cars",
                 "responses": {
@@ -2585,7 +2585,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get generations by model ID",
                 "parameters": [
@@ -2652,7 +2652,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "profile"
                 ],
                 "summary": "Get user profile",
                 "responses": {
@@ -2708,7 +2708,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "profile"
                 ],
                 "summary": "Update user profile",
                 "parameters": [
@@ -2774,7 +2774,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "profile"
                 ],
                 "summary": "Get user's profile cars",
                 "responses": {
@@ -2832,7 +2832,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "profile"
                 ],
                 "summary": "Get user's profile cars",
                 "responses": {
@@ -2885,7 +2885,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "filter"
                 ],
                 "summary": "Get transmissions",
                 "responses": {
@@ -4353,7 +4353,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "95.85.126.220",
+	Host:             "84.200.87.48",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Project name",
