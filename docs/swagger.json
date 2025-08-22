@@ -1157,6 +1157,102 @@
                 }
             }
         },
+        "/api/v1/users/cars/price-recommendation": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns a price recommendation",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get price recommendation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Brand ID",
+                        "name": "brand_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Model ID",
+                        "name": "model_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Modification ID",
+                        "name": "modification_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "City ID",
+                        "name": "city_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Odometer",
+                        "name": "odometer",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.GetPriceRecommendationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/cars/{car_id}": {
             "get": {
                 "security": [
@@ -2830,6 +2926,41 @@
             }
         },
         "/motorcycles": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get motorcycles",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "motorcycles"
+                ],
+                "summary": "Get motorcycles",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.GetMotorcyclesResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -2863,6 +2994,18 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.SuccessWithId"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
                         }
                     }
                 }
@@ -2898,6 +3041,12 @@
                             "items": {
                                 "$ref": "#/definitions/model.GetMotorcycleBrandsResponse"
                             }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
                         }
                     }
                 }
@@ -2941,6 +3090,12 @@
                                 "$ref": "#/definitions/model.GetMotorcycleModelsResponse"
                             }
                         }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
                     }
                 }
             }
@@ -2975,6 +3130,12 @@
                             "items": {
                                 "$ref": "#/definitions/model.GetMotorcycleParametersResponse"
                             }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
                         }
                     }
                 }
@@ -3228,7 +3389,8 @@
                     "enum": [
                         "USD",
                         "AED",
-                        "RUB"
+                        "RUB",
+                        "EUR"
                     ]
                 },
                 "protect_spam": {
@@ -3682,6 +3844,151 @@
                 }
             }
         },
+        "model.GetMotorcyclesResponse": {
+            "type": "object",
+            "properties": {
+                "can_look_coordinate": {
+                    "type": "string"
+                },
+                "certificate": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "contact_person": {
+                    "type": "string"
+                },
+                "crash": {
+                    "type": "boolean"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "date_of_purchase": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "engine": {
+                    "type": "integer"
+                },
+                "fuel_type": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "moto_brand": {
+                    "type": "string"
+                },
+                "moto_category": {
+                    "type": "string"
+                },
+                "moto_model": {
+                    "type": "string"
+                },
+                "my_car": {
+                    "type": "boolean"
+                },
+                "not_cleared": {
+                    "type": "boolean"
+                },
+                "number_of_cycles": {
+                    "type": "integer"
+                },
+                "odometer": {
+                    "type": "integer"
+                },
+                "only_chat": {
+                    "type": "boolean"
+                },
+                "owner": {
+                    "$ref": "#/definitions/model.MotorcycleOwner"
+                },
+                "owners": {
+                    "type": "integer"
+                },
+                "parameters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.MotorcycleParameter"
+                    }
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "power": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "price_type": {
+                    "type": "string"
+                },
+                "protect_spam": {
+                    "type": "boolean"
+                },
+                "ptc": {
+                    "type": "boolean"
+                },
+                "refuse_dealers_calls": {
+                    "type": "boolean"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "verified_buyers": {
+                    "type": "boolean"
+                },
+                "videos": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "vin_code": {
+                    "type": "string"
+                },
+                "warranty_date": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.GetPriceRecommendationResponse": {
+            "type": "object",
+            "properties": {
+                "avg_price": {
+                    "type": "integer"
+                },
+                "max_price": {
+                    "type": "integer"
+                },
+                "min_price": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.GetProfileResponse": {
             "type": "object",
             "properties": {
@@ -3767,6 +4074,37 @@
                 },
                 "transmission": {
                     "type": "string"
+                }
+            }
+        },
+        "model.MotorcycleOwner": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.MotorcycleParameter": {
+            "type": "object",
+            "properties": {
+                "parameter": {
+                    "type": "string"
+                },
+                "parameter_id": {
+                    "type": "integer"
+                },
+                "parameter_value": {
+                    "type": "string"
+                },
+                "parameter_value_id": {
+                    "type": "integer"
                 }
             }
         },

@@ -986,3 +986,27 @@ where mcs.id = 1;
 
 
 
+brand_id, model_id, year, odometer, city_id, modification_id
+
+
+
+
+query:
+
+
+my data:
+ price  
+--------
+  23000
+  32000
+  16000
+  26000
+  25000
+  28000
+  25000
+  26000
+ 399999
+(9 rows)
+
+
+

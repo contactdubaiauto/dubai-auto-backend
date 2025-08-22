@@ -1224,6 +1224,44 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 	return cars, err
 }
 
+func (r *UserRepository) GetPriceRecommendation(ctx *fasthttp.RequestCtx, filter model.GetPriceRecommendationRequest) ([]int, error) {
+	keys, _, args := auth.BuildParams(filter)
+	qWhere := ""
+
+	for i, key := range keys {
+		if i == 0 {
+			qWhere += fmt.Sprintf("vs.%s = $%d", key, i+1)
+		} else {
+			qWhere += fmt.Sprintf(" AND vs.%s = $%d", key, i+1)
+		}
+	}
+
+	q := `
+		with prices as (
+			select 
+				price
+			from vehicles vs 
+			where 
+				` + qWhere + `
+			order by updated_at desc
+			limit 10
+		),
+		ordered as (
+			select 
+			price
+			from prices
+			order by price desc
+		)
+		select 
+			json_agg(price) as prices
+		from ordered;
+	`
+
+	var prices []int
+	err := r.db.QueryRow(ctx, q, args...).Scan(&prices)
+	return prices, err
+}
+
 func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int) (model.GetCarsResponse, error) {
 	car := model.GetCarsResponse{}
 	q := `

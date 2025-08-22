@@ -62,7 +62,8 @@ func SetupUserRoutes(r fiber.Router, db *pgxpool.Pool) {
 
 		// cars
 		r.Get("/cars", auth.UserGuardOrDefault, userHandler.GetCars)
-		r.Get("/cars/:id", auth.UserGuardOrDefault, userHandler.GetCarByID)
+		r.Get("/cars/price-recommendation", auth.TokenGuard, userHandler.GetPriceRecommendation)
+		// r.Get("/cars/:id", auth.UserGuardOrDefault, userHandler.GetCarByID)
 		r.Get("/cars/:id/edit", auth.UserGuardOrDefault, userHandler.GetEditCarByID)
 		r.Post("/cars/:id/buy", auth.TokenGuard, userHandler.BuyCar)
 		r.Post("/cars", auth.TokenGuard, userHandler.CreateCar)

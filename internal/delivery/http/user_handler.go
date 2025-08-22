@@ -750,6 +750,53 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
+// GetPriceRecommendation godoc
+// @Summary      Get price recommendation
+// @Description  Returns a price recommendation
+// @Tags         users
+// @Produce      json
+// @Security 	 BearerAuth
+// @Param        brand_id          query   string  true  "Brand ID"
+// @Param        model_id          query   string  true  "Model ID"
+// @Param        year              query   string  true  "Year"
+// @Param        modification_id   query   string  false  "Modification ID"
+// @Param        city_id           query   string  false  "City ID"
+// @Param        odometer          query   string  false  "Odometer"
+// @Router       /api/v1/users/cars/price-recommendation [get]
+// @Success      200  {object}  model.GetPriceRecommendationResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+func (h *UserHandler) GetPriceRecommendation(c *fiber.Ctx) error {
+	ctx := c.Context()
+	brandID := c.Query("brand_id")
+	modelID := c.Query("model_id")
+	modificationID := c.Query("modification_id")
+	cityID := c.Query("city_id")
+	year := c.Query("year")
+	odometer := c.Query("odometer")
+
+	if brandID == "" || modelID == "" || year == "" {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data"),
+		})
+	}
+
+	data := h.UserService.GetPriceRecommendation(ctx, model.GetPriceRecommendationRequest{
+		BrandID:        brandID,
+		ModelID:        modelID,
+		Year:           year,
+		ModificationID: modificationID,
+		CityID:         cityID,
+		Odometer:       odometer,
+	})
+
+	return utils.FiberResponse(c, data)
+}
+
 // GetCarByID godoc
 // @Summary      Get car by ID
 // @Description  Returns a car by its ID

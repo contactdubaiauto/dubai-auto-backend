@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"net/http"
 
 	"dubai-auto/internal/model"
@@ -309,6 +310,20 @@ func (s *UserService) GetCars(ctx *fasthttp.RequestCtx, userID int, brands, mode
 	}
 
 	return &model.Response{Data: cars}
+}
+
+func (s *UserService) GetPriceRecommendation(ctx *fasthttp.RequestCtx, filter model.GetPriceRecommendationRequest) *model.Response {
+	prices, err := s.UserRepository.GetPriceRecommendation(ctx, filter)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusNotFound}
+	}
+
+	if len(prices) == 0 {
+		return &model.Response{Error: errors.New("no prices found"), Status: http.StatusNotFound}
+	}
+
+	return &model.Response{Data: model.GetPriceRecommendationResponse{MaxPrice: prices[0], MinPrice: prices[len(prices)-1], AvgPrice: prices[len(prices)/2]}}
 }
 
 func (s *UserService) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int) *model.Response {

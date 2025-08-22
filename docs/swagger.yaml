@@ -160,6 +160,7 @@ definitions:
         - USD
         - AED
         - RUB
+        - EUR
         type: string
       protect_spam:
         type: boolean
@@ -468,6 +469,102 @@ definitions:
           $ref: '#/definitions/model.GetMotorcycleParameterValuesResponse'
         type: array
     type: object
+  model.GetMotorcyclesResponse:
+    properties:
+      can_look_coordinate:
+        type: string
+      certificate:
+        type: string
+      city:
+        type: string
+      color:
+        type: string
+      contact_person:
+        type: string
+      crash:
+        type: boolean
+      created_at:
+        type: string
+      date_of_purchase:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      engine:
+        type: integer
+      fuel_type:
+        type: string
+      id:
+        type: integer
+      images:
+        items:
+          type: string
+        type: array
+      moto_brand:
+        type: string
+      moto_category:
+        type: string
+      moto_model:
+        type: string
+      my_car:
+        type: boolean
+      not_cleared:
+        type: boolean
+      number_of_cycles:
+        type: integer
+      odometer:
+        type: integer
+      only_chat:
+        type: boolean
+      owner:
+        $ref: '#/definitions/model.MotorcycleOwner'
+      owners:
+        type: integer
+      parameters:
+        items:
+          $ref: '#/definitions/model.MotorcycleParameter'
+        type: array
+      phone_number:
+        type: string
+      power:
+        type: integer
+      price:
+        type: integer
+      price_type:
+        type: string
+      protect_spam:
+        type: boolean
+      ptc:
+        type: boolean
+      refuse_dealers_calls:
+        type: boolean
+      status:
+        type: string
+      updated_at:
+        type: string
+      verified_buyers:
+        type: boolean
+      videos:
+        items:
+          type: string
+        type: array
+      vin_code:
+        type: string
+      warranty_date:
+        type: string
+      year:
+        type: integer
+    type: object
+  model.GetPriceRecommendationResponse:
+    properties:
+      avg_price:
+        type: integer
+      max_price:
+        type: integer
+      min_price:
+        type: integer
+    type: object
   model.GetProfileResponse:
     properties:
       about_me:
@@ -524,6 +621,26 @@ definitions:
         type: integer
       transmission:
         type: string
+    type: object
+  model.MotorcycleOwner:
+    properties:
+      avatar:
+        type: string
+      id:
+        type: integer
+      username:
+        type: string
+    type: object
+  model.MotorcycleParameter:
+    properties:
+      parameter:
+        type: string
+      parameter_id:
+        type: integer
+      parameter_value:
+        type: string
+      parameter_value_id:
+        type: integer
     type: object
   model.Owner:
     properties:
@@ -1922,6 +2039,69 @@ paths:
       summary: Delete car video
       tags:
       - users
+  /api/v1/users/cars/price-recommendation:
+    get:
+      description: Returns a price recommendation
+      parameters:
+      - description: Brand ID
+        in: query
+        name: brand_id
+        required: true
+        type: string
+      - description: Model ID
+        in: query
+        name: model_id
+        required: true
+        type: string
+      - description: Year
+        in: query
+        name: year
+        required: true
+        type: string
+      - description: Modification ID
+        in: query
+        name: modification_id
+        type: string
+      - description: City ID
+        in: query
+        name: city_id
+        type: string
+      - description: Odometer
+        in: query
+        name: odometer
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetPriceRecommendationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get price recommendation
+      tags:
+      - users
   /api/v1/users/cities:
     get:
       description: Returns a list of car cities, optionally filtered by text
@@ -2524,6 +2704,28 @@ paths:
       tags:
       - users
   /motorcycles:
+    get:
+      consumes:
+      - application/json
+      description: Get motorcycles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetMotorcyclesResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get motorcycles
+      tags:
+      - motorcycles
     post:
       consumes:
       - application/json
@@ -2542,6 +2744,14 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
       security:
       - BearerAuth: []
       summary: Create motorcycle
@@ -2567,6 +2777,10 @@ paths:
             items:
               $ref: '#/definitions/model.GetMotorcycleBrandsResponse'
             type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
       summary: Get motorcycle brands
       tags:
       - motorcycles
@@ -2595,6 +2809,10 @@ paths:
             items:
               $ref: '#/definitions/model.GetMotorcycleModelsResponse'
             type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
       summary: Get motorcycle models by brand ID
       tags:
       - motorcycles
@@ -2618,6 +2836,10 @@ paths:
             items:
               $ref: '#/definitions/model.GetMotorcycleParametersResponse'
             type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
       summary: Get motorcycle parameters
       tags:
       - motorcycles

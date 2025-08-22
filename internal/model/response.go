@@ -2,6 +2,21 @@ package model
 
 import "time"
 
+type GetPriceRecommendationRequest struct {
+	BrandID        string `json:"brand_id"`
+	ModelID        string `json:"model_id"`
+	Year           string `json:"year"`
+	ModificationID string `json:"modification_id"`
+	Odometer       string `json:"odometer"`
+	CityID         string `json:"city_id"`
+}
+
+type GetPriceRecommendationResponse struct {
+	MinPrice int `json:"min_price"`
+	MaxPrice int `json:"max_price"`
+	AvgPrice int `json:"avg_price"`
+}
+
 type Brand struct {
 	ID         *int    `json:"id"`
 	Name       *string `json:"name"`
