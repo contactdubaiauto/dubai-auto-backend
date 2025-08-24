@@ -22,6 +22,9 @@ func Init(r *fiber.App, db *pgxpool.Pool) {
 	motorcycleRoute := r.Group("/api/v1/motorcycles")
 	SetupMotorcycleRoutes(motorcycleRoute, db)
 
+	comtransRoute := r.Group("/api/v1/comtrans")
+	SetupComtransRoutes(comtransRoute, db)
+
 }
 
 func SetupUserRoutes(r fiber.Router, db *pgxpool.Pool) {
@@ -115,13 +118,43 @@ func SetupMotorcycleRoutes(r fiber.Router, db *pgxpool.Pool) {
 		// motorcycles
 		r.Get("/", auth.TokenGuard, motorcycleHandler.GetMotorcycles)
 		r.Post("/", auth.TokenGuard, motorcycleHandler.CreateMotorcycle)
-		// r.Get("/:id", auth.TokenGuard, motorcycleHandler.GetMotorcycleByID)
-		// r.Get("/:id/edit", auth.TokenGuard, motorcycleHandler.GetEditMotorcycleByID)
-		// r.Post("/:id/buy", auth.TokenGuard, motorcycleHandler.BuyMotorcycle)
-		// r.Post("/:id/dont-sell", auth.TokenGuard, motorcycleHandler.DontSellMotorcycle)
-		// r.Post("/:id/sell", auth.TokenGuard, motorcycleHandler.SellMotorcycle)
-		// r.Delete("/:id", auth.TokenGuard, motorcycleHandler.DeleteMotorcycle)
-		// r.Delete("/:id/images", auth.TokenGuard, motorcycleHandler.DeleteMotorcycleImage)
-		// r.Delete("/:id/videos", auth.TokenGuard, motorcycleHandler.DeleteMotorcycleVideo)
+		r.Post("/:id/images", auth.TokenGuard, motorcycleHandler.CreateMotorcycleImages)
+		r.Post("/:id/videos", auth.TokenGuard, motorcycleHandler.CreateMotorcycleVideos)
+		r.Delete("/:id/images", auth.TokenGuard, motorcycleHandler.DeleteMotorcycleImage)
+		r.Delete("/:id/videos", auth.TokenGuard, motorcycleHandler.DeleteMotorcycleVideo)
+		r.Delete("/:id", auth.TokenGuard, motorcycleHandler.DeleteMotorcycle)
+		r.Get("/:id", auth.TokenGuard, motorcycleHandler.GetMotorcycleByID)
+		r.Get("/:id/edit", auth.TokenGuard, motorcycleHandler.GetEditMotorcycleByID)
+		r.Post("/:id/buy", auth.TokenGuard, motorcycleHandler.BuyMotorcycle)
+		r.Post("/:id/dont-sell", auth.TokenGuard, motorcycleHandler.DontSellMotorcycle)
+		r.Post("/:id/sell", auth.TokenGuard, motorcycleHandler.SellMotorcycle)
+	}
+}
+
+func SetupComtransRoutes(r fiber.Router, db *pgxpool.Pool) {
+	comtransRepository := repository.NewComtransRepository(db)
+	comtransService := service.NewComtransService(comtransRepository)
+	comtransHandler := http.NewComtransHandler(comtransService)
+
+	{
+		// get comtrans categories
+		r.Get("/categories", auth.TokenGuard, comtransHandler.GetComtransCategories)
+		r.Get("/categories/:category_id/parameters", auth.TokenGuard, comtransHandler.GetComtransParameters)
+		r.Get("/categories/:category_id/brands", auth.TokenGuard, comtransHandler.GetComtransBrands)
+		r.Get("/categories/:category_id/brands/:brand_id/models", auth.TokenGuard, comtransHandler.GetComtransModelsByBrandID)
+
+		// comtrans
+		r.Get("/", auth.TokenGuard, comtransHandler.GetComtrans)
+		r.Post("/", auth.TokenGuard, comtransHandler.CreateComtrans)
+		r.Post("/:id/images", auth.TokenGuard, comtransHandler.CreateComtransImages)
+		r.Post("/:id/videos", auth.TokenGuard, comtransHandler.CreateComtransVideos)
+		r.Delete("/:id/images", auth.TokenGuard, comtransHandler.DeleteComtransImage)
+		r.Delete("/:id/videos", auth.TokenGuard, comtransHandler.DeleteComtransVideo)
+		r.Delete("/:id", auth.TokenGuard, comtransHandler.DeleteComtrans)
+		r.Get("/:id", auth.TokenGuard, comtransHandler.GetComtransByID)
+		r.Get("/:id/edit", auth.TokenGuard, comtransHandler.GetEditComtransByID)
+		r.Post("/:id/buy", auth.TokenGuard, comtransHandler.BuyComtrans)
+		r.Post("/:id/dont-sell", auth.TokenGuard, comtransHandler.DontSellComtrans)
+		r.Post("/:id/sell", auth.TokenGuard, comtransHandler.SellComtrans)
 	}
 }

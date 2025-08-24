@@ -3,6 +3,8 @@ package service
 import (
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
+	"dubai-auto/pkg/files"
+	"errors"
 
 	"github.com/valyala/fasthttp"
 )
@@ -15,34 +17,242 @@ func NewMotorcycleService(repository *repository.MotorcycleRepository) *Motorcyc
 	return &MotorcycleService{repository}
 }
 
-func (s *MotorcycleService) GetMotorcycleCategories(ctx *fasthttp.RequestCtx) (data []model.GetMotorcycleCategoriesResponse, err error) {
-	return s.repository.GetMotorcycleCategories(ctx)
+func (s *MotorcycleService) GetMotorcycleCategories(ctx *fasthttp.RequestCtx) *model.Response {
+	data, err := s.repository.GetMotorcycleCategories(ctx)
+
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+	return &model.Response{
+		Status: 200,
+		Data:   data,
+	}
 }
 
-func (s *MotorcycleService) GetMotorcycleParameters(ctx *fasthttp.RequestCtx, categoryID string) (data []model.GetMotorcycleParametersResponse, err error) {
-	return s.repository.GetMotorcycleParameters(ctx, categoryID)
+func (s *MotorcycleService) GetMotorcycleParameters(ctx *fasthttp.RequestCtx, categoryID string) *model.Response {
+	data, err := s.repository.GetMotorcycleParameters(ctx, categoryID)
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+	return &model.Response{
+		Status: 200,
+		Data:   data,
+	}
 }
 
-func (s *MotorcycleService) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, categoryID string) (data []model.GetMotorcycleBrandsResponse, err error) {
-	return s.repository.GetMotorcycleBrands(ctx, categoryID)
+func (s *MotorcycleService) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, categoryID string) *model.Response {
+	data, err := s.repository.GetMotorcycleBrands(ctx, categoryID)
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+	return &model.Response{
+		Status: 200,
+		Data:   data,
+	}
 }
 
-func (s *MotorcycleService) GetMotorcycleModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID string, brandID string) (data []model.GetMotorcycleModelsResponse, err error) {
-	return s.repository.GetMotorcycleModelsByBrandID(ctx, categoryID, brandID)
+func (s *MotorcycleService) GetMotorcycleModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID string, brandID string) *model.Response {
+	data, err := s.repository.GetMotorcycleModelsByBrandID(ctx, categoryID, brandID)
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+	return &model.Response{
+		Status: 200,
+		Data:   data,
+	}
 }
 
-func (s *MotorcycleService) CreateMotorcycle(ctx *fasthttp.RequestCtx, motorcycle model.CreateMotorcycleRequest, userID int) (data model.SuccessWithId, err error) {
-	return s.repository.CreateMotorcycle(ctx, motorcycle, userID)
+func (s *MotorcycleService) CreateMotorcycle(ctx *fasthttp.RequestCtx, motorcycle model.CreateMotorcycleRequest, userID int) *model.Response {
+	data, err := s.repository.CreateMotorcycle(ctx, motorcycle, userID)
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+	return &model.Response{
+		Status: 200,
+		Data:   data,
+	}
 }
 
-func (s *MotorcycleService) GetMotorcycles(ctx *fasthttp.RequestCtx) (data []model.GetMotorcyclesResponse, err error) {
-	return s.repository.GetMotorcycles(ctx)
+func (s *MotorcycleService) GetMotorcycles(ctx *fasthttp.RequestCtx) *model.Response {
+	data, err := s.repository.GetMotorcycles(ctx)
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return &model.Response{
+		Status: 200,
+		Data:   data,
+	}
 }
 
-// func (s *MotorcycleService) GetMotorcycleByID(ctx *fasthttp.RequestCtx, id int) (data model.GetMotorcyclesResponse, err error) {
-// 	return s.repository.GetMotorcycleByID(ctx, id)
-// }
+func (s *MotorcycleService) CreateMotorcycleImages(ctx *fasthttp.RequestCtx, motorcycleID int, images []string) *model.Response {
 
-// func (s *MotorcycleService) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, id int) (data model.GetMotorcyclesResponse, err error) {
-// 	return s.repository.GetEditMotorcycleByID(ctx, id)
-// }
+	if len(images) == 0 {
+		return &model.Response{
+			Status: 400,
+			Error:  errors.New("images are required"),
+		}
+	}
+	err := s.repository.CreateMotorcycleImages(ctx, motorcycleID, images)
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return &model.Response{
+		Data: model.Success{Message: "Motorcycle images created successfully"},
+	}
+}
+
+func (s *MotorcycleService) CreateMotorcycleVideos(ctx *fasthttp.RequestCtx, motorcycleID int, video string) *model.Response {
+	err := s.repository.CreateMotorcycleVideos(ctx, motorcycleID, video)
+
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return &model.Response{
+		Data: model.Success{Message: "Motorcycle videos created successfully"},
+	}
+}
+
+func (s *MotorcycleService) DeleteMotorcycleImage(ctx *fasthttp.RequestCtx, motorcycleID int, imageID int) *model.Response {
+
+	err := s.repository.DeleteMotorcycleImage(ctx, motorcycleID, imageID)
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return &model.Response{
+		Data: model.Success{Message: "Motorcycle image deleted successfully"},
+	}
+}
+
+func (s *MotorcycleService) DeleteMotorcycleVideo(ctx *fasthttp.RequestCtx, motorcycleID int, videoID int) *model.Response {
+
+	err := s.repository.DeleteMotorcycleVideo(ctx, motorcycleID, videoID)
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return &model.Response{
+		Data: model.Success{Message: "Motorcycle video deleted successfully"},
+	}
+}
+
+func (s *MotorcycleService) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, userID int) *model.Response {
+	motorcycle, err := s.repository.GetMotorcycleByID(ctx, motorcycleID, userID)
+	if err != nil {
+		return &model.Response{
+			Status: 404,
+			Error:  err,
+		}
+	}
+	return &model.Response{
+		Status: 200,
+		Data:   motorcycle,
+	}
+}
+
+func (s *MotorcycleService) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, userID int) *model.Response {
+	motorcycle, err := s.repository.GetEditMotorcycleByID(ctx, motorcycleID, userID)
+	if err != nil {
+		return &model.Response{
+			Status: 404,
+			Error:  err,
+		}
+	}
+	return &model.Response{
+		Status: 200,
+		Data:   motorcycle,
+	}
+}
+
+func (s *MotorcycleService) BuyMotorcycle(ctx *fasthttp.RequestCtx, motorcycleID, userID int) *model.Response {
+	err := s.repository.BuyMotorcycle(ctx, motorcycleID, userID)
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+	return &model.Response{
+		Status: 200,
+		Data:   model.Success{Message: "Successfully bought the motorcycle"},
+	}
+}
+
+func (s *MotorcycleService) DontSellMotorcycle(ctx *fasthttp.RequestCtx, motorcycleID, userID int) *model.Response {
+	err := s.repository.DontSellMotorcycle(ctx, motorcycleID, userID)
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+	return &model.Response{
+		Status: 200,
+		Data:   model.Success{Message: "Successfully updated motorcycle status to not for sale"},
+	}
+}
+
+func (s *MotorcycleService) SellMotorcycle(ctx *fasthttp.RequestCtx, motorcycleID, userID int) *model.Response {
+	err := s.repository.SellMotorcycle(ctx, motorcycleID, userID)
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+	return &model.Response{
+		Status: 200,
+		Data:   model.Success{Message: "Successfully updated motorcycle status to for sale"},
+	}
+}
+
+func (s *MotorcycleService) DeleteMotorcycle(ctx *fasthttp.RequestCtx, motorcycleID int, dir string) *model.Response {
+	err := s.repository.DeleteMotorcycle(ctx, motorcycleID)
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+	// Remove associated files
+	if dir != "" {
+		files.RemoveFolder(dir)
+	}
+	return &model.Response{
+		Status: 200,
+		Data:   model.Success{Message: "Successfully deleted motorcycle"},
+	}
+}

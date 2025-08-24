@@ -11,8 +11,8 @@ deploy:
 	@ssh root@84.200.87.48 "sudo -S systemctl restart da.service"
 	@echo "Done"
 	
+	@scp -r ./docs root@84.200.87.48:/var/www/da
 	# @scp -r ./images/logo root@84.200.87.48:/var/www/da/images
-	# @scp -r ./docs root@84.200.87.48:/var/www/da
 	# @scp -r ./images/body root@84.200.87.48:/var/www/da/images
 	# @scp ./.env root@84.200.87.48:/var/www/da
 	@echo "Done"
