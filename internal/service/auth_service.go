@@ -1,15 +1,16 @@
 package service
 
 import (
-	"dubai-auto/internal/model"
-	"dubai-auto/internal/repository"
-	"dubai-auto/internal/utils"
-	"dubai-auto/pkg/auth"
 	"fmt"
 	"net/http"
 
 	"github.com/valyala/fasthttp"
 	"golang.org/x/crypto/bcrypt"
+
+	"dubai-auto/internal/model"
+	"dubai-auto/internal/repository"
+	"dubai-auto/internal/utils"
+	"dubai-auto/pkg/auth"
 )
 
 type AuthService struct {

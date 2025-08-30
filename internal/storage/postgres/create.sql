@@ -9,6 +9,7 @@
 
 
 
+
 drop table if exists moto_images;
 drop table if exists moto_videos;
 drop table if exists motorcycle_parameters;
@@ -1036,81 +1037,255 @@ insert into moto_videos (moto_id, video) values (3, 'https://www.youtube.com/wat
 
 --  comtrans
 
-create table comtran_categories (
+drop table if exists comtran_videos;
+drop table if exists comtran_images;
+drop table if exists comtran_parameters;
+drop table if exists com_category_parameters;
+drop table if exists com_parameter_values;
+drop table if exists comtrans;
+drop table if exists com_models;
+drop table if exists com_brands;
+drop table if exists com_parameters;
+drop table if exists com_categories;
+
+create table com_categories (
     "id" serial primary key,
     "name" varchar(100) not null,
     "created_at" timestamp not null default now()
 );
 
-create table comtran_brands (
+insert into com_categories (name) values ('Truck');
+insert into com_categories (name) values ('Bus');
+insert into com_categories (name) values ('Trailer');
+insert into com_categories (name) values ('Other');
+
+create table com_brands (
     "id" serial primary key,
     "name" varchar(100) not null,
     "image" varchar(255) not null,
     "comtran_category_id" integer not null,
     "created_at" timestamp not null default now(),
-    constraint comtran_brands_comtran_category_id_fk
+    constraint com_brands_comtran_category_id_fk
         foreign key (comtran_category_id)
-            references comtran_categories(id)
+            references com_categories(id)
                 on delete cascade
                 on update cascade
 );
 
-create table comtran_models (
+insert into com_brands (name, image, comtran_category_id) values ('Volvo', 'https://via.placeholder.com/150', 1);
+insert into com_brands (name, image, comtran_category_id) values ('Mercedes-Benz', 'https://via.placeholder.com/150', 1);
+insert into com_brands (name, image, comtran_category_id) values ('MAN', 'https://via.placeholder.com/150', 1);
+insert into com_brands (name, image, comtran_category_id) values ('Scania', 'https://via.placeholder.com/150', 1);
+insert into com_brands (name, image, comtran_category_id) values ('Iveco', 'https://via.placeholder.com/150', 1);
+
+insert into com_brands (name, image, comtran_category_id) values ('Volvo', 'https://via.placeholder.com/150', 2);
+insert into com_brands (name, image, comtran_category_id) values ('Mercedes-Benz', 'https://via.placeholder.com/150', 2);
+insert into com_brands (name, image, comtran_category_id) values ('MAN', 'https://via.placeholder.com/150', 2);
+insert into com_brands (name, image, comtran_category_id) values ('Scania', 'https://via.placeholder.com/150', 2);
+insert into com_brands (name, image, comtran_category_id) values ('Iveco', 'https://via.placeholder.com/150', 2);
+
+insert into com_brands (name, image, comtran_category_id) values ('Volvo', 'https://via.placeholder.com/150', 3);
+insert into com_brands (name, image, comtran_category_id) values ('Mercedes-Benz', 'https://via.placeholder.com/150', 3);
+insert into com_brands (name, image, comtran_category_id) values ('MAN', 'https://via.placeholder.com/150', 3);
+insert into com_brands (name, image, comtran_category_id) values ('Scania', 'https://via.placeholder.com/150', 3);
+insert into com_brands (name, image, comtran_category_id) values ('Iveco', 'https://via.placeholder.com/150', 3);
+
+insert into com_brands (name, image, comtran_category_id) values ('Volvo', 'https://via.placeholder.com/150', 4);
+insert into com_brands (name, image, comtran_category_id) values ('Mercedes-Benz', 'https://via.placeholder.com/150', 4);
+insert into com_brands (name, image, comtran_category_id) values ('MAN', 'https://via.placeholder.com/150', 4);
+insert into com_brands (name, image, comtran_category_id) values ('Scania', 'https://via.placeholder.com/150', 4);
+insert into com_brands (name, image, comtran_category_id) values ('Iveco', 'https://via.placeholder.com/150', 4);
+
+
+create table com_models (
     "id" serial primary key,
     "name" varchar(100) not null,
     "comtran_brand_id" integer not null,
     "created_at" timestamp not null default now(),
-    constraint comtran_brand_models_comtran_brand_id_fk
+    constraint com_brand_models_comtran_brand_id_fk
         foreign key (comtran_brand_id)
-            references comtran_brands(id)
+            references com_brands(id)
                 on delete cascade
                 on update cascade
 );
 
+insert into com_models (name, comtran_brand_id) values ('FH', 1);
+insert into com_models (name, comtran_brand_id) values ('FM', 1);
+
+insert into com_models (name, comtran_brand_id) values ('FH', 2);
+insert into com_models (name, comtran_brand_id) values ('FM', 2);
+
+insert into com_models (name, comtran_brand_id) values ('FH', 3);
+insert into com_models (name, comtran_brand_id) values ('FM', 3);
+
+insert into com_models (name, comtran_brand_id) values ('FH', 4);
+insert into com_models (name, comtran_brand_id) values ('FM', 4);
 
 
+insert into com_models (name, comtran_brand_id) values ('FH', 5);
+insert into com_models (name, comtran_brand_id) values ('FM', 5);
 
-create table comtran_parameters (
+
+insert into com_models (name, comtran_brand_id) values ('FH', 6);
+insert into com_models (name, comtran_brand_id) values ('FM', 6);
+
+insert into com_models (name, comtran_brand_id) values ('FH', 7);
+insert into com_models (name, comtran_brand_id) values ('FM', 7);
+
+insert into com_models (name, comtran_brand_id) values ('FH', 8);
+insert into com_models (name, comtran_brand_id) values ('FM', 8);
+
+
+insert into com_models (name, comtran_brand_id) values ('FH', 9);
+insert into com_models (name, comtran_brand_id) values ('FM', 9);
+
+insert into com_models (name, comtran_brand_id) values ('FH', 10);
+insert into com_models (name, comtran_brand_id) values ('FM', 10);
+
+insert into com_models (name, comtran_brand_id) values ('FH', 11);
+insert into com_models (name, comtran_brand_id) values ('FM', 11);
+
+insert into com_models (name, comtran_brand_id) values ('FH', 12);
+insert into com_models (name, comtran_brand_id) values ('FM', 12);
+
+insert into com_models (name, comtran_brand_id) values ('FH', 13);
+insert into com_models (name, comtran_brand_id) values ('FM', 13);
+
+insert into com_models (name, comtran_brand_id) values ('FH', 14);
+insert into com_models (name, comtran_brand_id) values ('FM', 14);
+
+insert into com_models (name, comtran_brand_id) values ('FH', 15);
+
+insert into com_models (name, comtran_brand_id) values ('FM', 15);
+insert into com_models (name, comtran_brand_id) values ('FH', 16);
+insert into com_models (name, comtran_brand_id) values ('FM', 16);
+
+insert into com_models (name, comtran_brand_id) values ('FH', 17);
+insert into com_models (name, comtran_brand_id) values ('FM', 17);
+
+insert into com_models (name, comtran_brand_id) values ('FH', 18);
+insert into com_models (name, comtran_brand_id) values ('FM', 18);
+
+insert into com_models (name, comtran_brand_id) values ('FH', 19);
+insert into com_models (name, comtran_brand_id) values ('FM', 19);
+
+insert into com_models (name, comtran_brand_id) values ('FH', 20);
+insert into com_models (name, comtran_brand_id) values ('FM', 20);
+
+
+create table com_parameters (
     "id" serial primary key,
     "comtran_category_id" int not null,
     "name" varchar(100) not null,
     "created_at" timestamp default now(),
-    constraint comtran_parameters_comtran_category_id_fk
+    constraint com_parameters_comtran_category_id_fk
         foreign key (comtran_category_id)
-            references comtran_categories(id)
+            references com_categories(id)
                 on delete cascade
                 on update cascade,
     unique("name", "comtran_category_id")
 );
 
-create table comtran_parameter_values (
+insert into com_parameters (name, comtran_category_id) values ('Engine', 1);
+
+insert into com_parameters (name, comtran_category_id) values ('Engine', 2);
+insert into com_parameters (name, comtran_category_id) values ('Power', 2);
+insert into com_parameters (name, comtran_category_id) values ('Number of Cycles', 2);
+insert into com_parameters (name, comtran_category_id) values ('Odometer', 2);
+
+insert into com_parameters (name, comtran_category_id) values ('Engine', 3);
+insert into com_parameters (name, comtran_category_id) values ('Crash', 3);
+
+insert into com_parameters (name, comtran_category_id) values ('Engine', 4);
+insert into com_parameters (name, comtran_category_id) values ('Number of Cycles', 4);
+insert into com_parameters (name, comtran_category_id) values ('Crash', 4);
+
+
+create table com_parameter_values (
     "id" serial primary key,
     "comtran_parameter_id" int not null,
     "name" varchar(100) not null,
     "created_at" timestamp default now(),
-    constraint comtran_parameter_values_comtran_parameter_id_fk
+    constraint com_parameter_values_comtran_parameter_id_fk
         foreign key (comtran_parameter_id)
-            references comtran_parameters(id)
+            references com_parameters(id)
                 on delete cascade
                 on update cascade
 );
 
-create table comtran_category_parameters (
+insert into com_parameter_values (comtran_parameter_id, name) values (1, '1000');
+insert into com_parameter_values (comtran_parameter_id, name) values (2, '1000');
+insert into com_parameter_values (comtran_parameter_id, name) values (3, '1000');
+insert into com_parameter_values (comtran_parameter_id, name) values (3, '800');
+insert into com_parameter_values (comtran_parameter_id, name) values (4, '1000');
+insert into com_parameter_values (comtran_parameter_id, name) values (5, '1000');
+insert into com_parameter_values (comtran_parameter_id, name) values (6, '1000');
+insert into com_parameter_values (comtran_parameter_id, name) values (7, '1000');
+insert into com_parameter_values (comtran_parameter_id, name) values (7, '800');
+insert into com_parameter_values (comtran_parameter_id, name) values (8, '1000');
+insert into com_parameter_values (comtran_parameter_id, name) values (8, '200');
+insert into com_parameter_values (comtran_parameter_id, name) values (9, '1000');
+insert into com_parameter_values (comtran_parameter_id, name) values (9, '800');
+insert into com_parameter_values (comtran_parameter_id, name) values (10, '1000');
+insert into com_parameter_values (comtran_parameter_id, name) values (10, '800');
+
+create table com_category_parameters (
     "comtran_category_id" int not null,
     "comtran_parameter_id" int not null,
     "created_at" timestamp not null default now(),
-    constraint comtran_category_parameters_comtran_category_id_fk
+    constraint com_category_parameters_comtran_category_id_fk
         foreign key (comtran_category_id)
-            references comtran_categories(id)
+            references com_categories(id)
                 on delete cascade
                 on update cascade,
-    constraint comtran_category_parameters_comtran_parameter_id_fk
+    constraint com_category_parameters_comtran_parameter_id_fk
         foreign key (comtran_parameter_id)
-            references comtran_parameters(id)
+            references com_parameters(id)
                 on delete cascade
                 on update cascade
 );
 
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 1);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 2);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 3);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 4);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 5);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 6);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 7);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 8);
+
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 1);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 2);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 3);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 4);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 5);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 6);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 7);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 8);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 9);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 10);
+
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 1);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 2);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 3);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 4);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 5);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 6);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 7);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 8);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 9);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 10);
+
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 1);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 2);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 3);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 4);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 5);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 6);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 7);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 8);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 9);
+insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 10);
 
 
 create table comtrans (
@@ -1156,17 +1331,17 @@ create table comtrans (
                 on update cascade,
     constraint comtrans_category_id_fk
         foreign key (comtran_category_id)
-            references comtran_categories(id)
+            references com_categories(id)
                 on delete cascade
                 on update cascade,
     constraint comtrans_brand_id_fk
         foreign key (comtran_brand_id)
-            references comtran_brands(id)
+            references com_brands(id)
                 on delete cascade
                 on update cascade,
     constraint comtrans_model_id_fk
         foreign key (comtran_model_id)
-            references comtran_models(id)
+            references com_models(id)
                 on delete cascade
                 on update cascade,
     constraint comtrans_fuel_type_id_fk
@@ -1186,6 +1361,11 @@ create table comtrans (
                 on update cascade
 );
 
+insert into comtrans (user_id, comtran_category_id, comtran_brand_id, comtran_model_id, fuel_type_id, city_id, color_id, engine, power, year, number_of_cycles, odometer, crash, not_cleared, owners, date_of_purchase, warranty_date, ptc, vin_code, certificate, description, can_look_coordinate, phone_number, refuse_dealers_calls, only_chat, protect_spam, verified_buyers, contact_person, email, price, price_type, status) values (1, 1, 1, 1, 1, 1, 1, 1000, 1000, 2020, 100000, 0, false, false, 1, '2020-01-01', '2020-01-01', true, '1234567890', '1234567890', 'description', '1234567890', '1234567890', true, true, true, true, 'contact_person', 'email', 10000, 'USD', 1);
+insert into comtrans (user_id, comtran_category_id, comtran_brand_id, comtran_model_id, fuel_type_id, city_id, color_id, engine, power, year, number_of_cycles, odometer, crash, not_cleared, owners, date_of_purchase, warranty_date, ptc, vin_code, certificate, description, can_look_coordinate, phone_number, refuse_dealers_calls, only_chat, protect_spam, verified_buyers, contact_person, email, price, price_type, status) values (1, 2, 1, 1, 1, 1, 1, 1000, 1000, 2020, 100000, 0, false, false, 1, '2020-01-01', '2020-01-01', true, '1234567890', '1234567890', 'description', '1234567890', '1234567890', true, true, true, true, 'contact_person', 'email', 10000, 'USD', 1);
+insert into comtrans (user_id, comtran_category_id, comtran_brand_id, comtran_model_id, fuel_type_id, city_id, color_id, engine, power, year, number_of_cycles, odometer, crash, not_cleared, owners, date_of_purchase, warranty_date, ptc, vin_code, certificate, description, can_look_coordinate, phone_number, refuse_dealers_calls, only_chat, protect_spam, verified_buyers, contact_person, email, price, price_type, status) values (1, 3, 1, 1, 1, 1, 1, 1000, 1000, 2020, 100000, 0, false, false, 1, '2020-01-01', '2020-01-01', true, '1234567890', '1234567890', 'description', '1234567890', '1234567890', true, true, true, true, 'contact_person', 'email', 10000, 'USD', 1);
+insert into comtrans (user_id, comtran_category_id, comtran_brand_id, comtran_model_id, fuel_type_id, city_id, color_id, engine, power, year, number_of_cycles, odometer, crash, not_cleared, owners, date_of_purchase, warranty_date, ptc, vin_code, certificate, description, can_look_coordinate, phone_number, refuse_dealers_calls, only_chat, protect_spam, verified_buyers, contact_person, email, price, price_type, status) values (1, 4, 1, 1, 1, 1, 1, 1000, 1000, 2020, 100000, 0, false, false, 1, '2020-01-01', '2020-01-01', true, '1234567890', '1234567890', 'description', '1234567890', '1234567890', true, true, true, true, 'contact_person', 'email', 10000, 'USD', 1);
+
 
 create table comtran_parameters (
     "id" serial primary key,
@@ -1200,16 +1380,45 @@ create table comtran_parameters (
                 on update cascade,
     constraint comtran_parameters_comtran_parameter_id_fk
         foreign key (comtran_parameter_id)
-            references comtran_parameters(id)
+            references com_parameters(id)
                 on delete cascade
                 on update cascade,
     constraint comtran_parameters_comtran_parameter_value_id_fk
         foreign key (comtran_parameter_value_id)
-            references comtran_parameter_values(id)
+            references com_parameter_values(id)
                 on delete cascade
                 on update cascade,
     unique("comtran_id", "comtran_parameter_id")
 );
+
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 1, 1);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 2, 2);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 3, 3);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 4, 4);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 5, 5);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 6, 6);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 7, 7);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 8, 8);
+
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (2, 1, 1);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (2, 2, 2);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (2, 3, 3);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (2, 4, 4);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (2, 5, 5);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (2, 6, 6);
+
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (3, 1, 1);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (3, 2, 2);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (3, 3, 3);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (3, 4, 4);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (3, 5, 5);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (3, 6, 6);
+
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (4, 1, 1);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (4, 2, 2);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (4, 3, 3);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (4, 4, 4);
+insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (4, 5, 5);
 
 
 create table comtran_images (
@@ -1224,6 +1433,12 @@ create table comtran_images (
                 on update cascade
 );
 
+insert into comtran_images (comtran_id, image) values (1, 'https://via.placeholder.com/150');
+insert into comtran_images (comtran_id, image) values (2, 'https://via.placeholder.com/150');
+insert into comtran_images (comtran_id, image) values (3, 'https://via.placeholder.com/150');
+insert into comtran_images (comtran_id, image) values (4, 'https://via.placeholder.com/150');
+
+
 create table comtran_videos (
     "id" serial primary key,
     "comtran_id" int not null,
@@ -1235,3 +1450,14 @@ create table comtran_videos (
                 on delete cascade
                 on update cascade
 );
+
+insert into comtran_videos (comtran_id, video) values (1, 'https://via.placeholder.com/150');
+insert into comtran_videos (comtran_id, video) values (2, 'https://via.placeholder.com/150');
+insert into comtran_videos (comtran_id, video) values (3, 'https://via.placeholder.com/150');
+insert into comtran_videos (comtran_id, video) values (4, 'https://via.placeholder.com/150');
+
+insert into comtran_videos (comtran_id, video) values (1, 'https://via.placeholder.com/150');
+insert into comtran_videos (comtran_id, video) values (2, 'https://via.placeholder.com/150');
+insert into comtran_videos (comtran_id, video) values (3, 'https://via.placeholder.com/150');
+insert into comtran_videos (comtran_id, video) values (4, 'https://via.placeholder.com/150');
+

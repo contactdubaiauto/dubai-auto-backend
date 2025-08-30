@@ -1,17 +1,17 @@
 package internal
 
 import (
+	"os"
+
+	"github.com/gofiber/fiber/v2"
+	fb_logger "github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/jackc/pgx/v5/pgxpool"
+
 	"dubai-auto/internal/config"
 	"dubai-auto/internal/delivery/http/middleware"
 	"dubai-auto/internal/route"
 	"dubai-auto/pkg/auth"
 	"dubai-auto/pkg/logger"
-	"os"
-
-	fb_logger "github.com/gofiber/fiber/v2/middleware/logger"
-
-	"github.com/gofiber/fiber/v2"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func InitApp(db *pgxpool.Pool, conf *config.Config, logger *logger.Logger) *fiber.App {

@@ -1,10 +1,10 @@
 package utils
 
 import (
+	"github.com/gofiber/fiber/v2"
+
 	"dubai-auto/internal/model"
 	"dubai-auto/pkg/logger"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 func FiberResponse(c *fiber.Ctx, data *model.Response) error {

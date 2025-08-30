@@ -16,24 +16,8 @@ deploy:
 	# @scp -r ./images/body root@84.200.87.48:/var/www/da/images
 	# @scp ./.env root@84.200.87.48:/var/www/da
 	@echo "Done"
-folder:
-	@echo "deploying images..."
-	@scp -r ./images root@84.200.87.48:/var/www/da/images
-	@echo "done"
+	
 swag:
 	@swag init -g cmd/http/main.go  
 
-# swag init -g ./cmd/http/main.go
-# todo: write swagger init command in this file
 
-# -- for i in $(seq 1 30); do
-# --   mkdir -p ./images/cars/$i
-# --   cp ./images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1_l.jpg ./images/cars/$i/
-# --   cp ./images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f1_m.jpg ./images/cars/$i/
-# --   cp ./images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2_l.jpg ./images/cars/$i/
-# --   cp ./images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f2_m.jpg ./images/cars/$i/
-# --   cp ./images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3_l.jpg ./images/cars/$i/
-# --   cp ./images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f3_m.jpg ./images/cars/$i/
-# --   cp ./images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4_l.jpg ./images/cars/$i/
-# --   cp ./images/cars/1/c3fba494-ca35-4be0-8345-3e3b1eb6f7f4_m.jpg ./images/cars/$i/
-# -- done

@@ -1,10 +1,10 @@
 package repository
 
 import (
-	"dubai-auto/internal/model"
-
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
+
+	"dubai-auto/internal/model"
 )
 
 type AuthRepository struct {

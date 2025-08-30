@@ -5,11 +5,11 @@ import (
 	"strconv"
 	"strings"
 
-	"dubai-auto/internal/model"
-	"dubai-auto/pkg/auth"
-
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
+
+	"dubai-auto/internal/model"
+	"dubai-auto/pkg/auth"
 )
 
 type UserRepository struct {

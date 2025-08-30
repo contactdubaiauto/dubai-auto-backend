@@ -1,12 +1,13 @@
 package http
 
 import (
-	"dubai-auto/internal/model"
-	"dubai-auto/internal/service"
-	"dubai-auto/internal/utils"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+
+	"dubai-auto/internal/model"
+	"dubai-auto/internal/service"
+	"dubai-auto/internal/utils"
 )
 
 type AuthHandler struct {

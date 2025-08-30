@@ -1,15 +1,16 @@
 package http
 
 import (
+	"errors"
+	"strconv"
+
+	"github.com/gofiber/fiber/v2"
+
 	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
 	"dubai-auto/internal/utils"
 	"dubai-auto/pkg/files"
-	"errors"
-	"strconv"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 type MotorcycleHandler struct {

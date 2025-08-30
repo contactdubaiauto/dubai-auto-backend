@@ -1,14 +1,15 @@
 package repository
 
 import (
-	"dubai-auto/internal/model"
-	"dubai-auto/pkg/auth"
 	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
+
+	"dubai-auto/internal/model"
+	"dubai-auto/pkg/auth"
 )
 
 type ComtransRepository struct {

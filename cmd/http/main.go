@@ -1,21 +1,21 @@
 package main
 
 import (
-	app "dubai-auto/internal"
-	"dubai-auto/internal/config"
-	"dubai-auto/internal/storage/postgres"
-	"dubai-auto/internal/utils"
-	"dubai-auto/pkg/auth"
-	"dubai-auto/pkg/logger"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	_ "dubai-auto/docs"
-
 	"github.com/gofiber/swagger"
+
+	_ "dubai-auto/docs"
+	app "dubai-auto/internal"
+	"dubai-auto/internal/config"
+	"dubai-auto/internal/storage/postgres"
+	"dubai-auto/internal/utils"
+	"dubai-auto/pkg/auth"
+	"dubai-auto/pkg/logger"
 )
 
 // @title Project name

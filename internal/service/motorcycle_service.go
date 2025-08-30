@@ -1,12 +1,13 @@
 package service
 
 import (
-	"dubai-auto/internal/model"
-	"dubai-auto/internal/repository"
-	"dubai-auto/pkg/files"
 	"errors"
 
 	"github.com/valyala/fasthttp"
+
+	"dubai-auto/internal/model"
+	"dubai-auto/internal/repository"
+	"dubai-auto/pkg/files"
 )
 
 type MotorcycleService struct {

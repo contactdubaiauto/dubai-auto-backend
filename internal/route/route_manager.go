@@ -1,14 +1,14 @@
 package route
 
 import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/jackc/pgx/v5/pgxpool"
+
 	_ "dubai-auto/docs"
 	"dubai-auto/internal/delivery/http"
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/service"
 	"dubai-auto/pkg/auth"
-
-	"github.com/gofiber/fiber/v2"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func Init(r *fiber.App, db *pgxpool.Pool) {
@@ -70,12 +70,12 @@ func SetupUserRoutes(r fiber.Router, db *pgxpool.Pool) {
 		r.Get("/cars/:id/edit", auth.UserGuardOrDefault, userHandler.GetEditCarByID)
 		r.Post("/cars/:id/buy", auth.TokenGuard, userHandler.BuyCar)
 		r.Post("/cars", auth.TokenGuard, userHandler.CreateCar)
-		r.Put("/cars", auth.TokenGuard, userHandler.UpdateCar)
 		r.Post("/cars/:id/images", auth.TokenGuard, userHandler.CreateCarImages)
 		r.Post("/cars/:id/videos", auth.TokenGuard, userHandler.CreateCarVideos)
 		r.Post("/cars/:id/cancel", auth.TokenGuard, userHandler.Cancel)
 		r.Post("/cars/:id/dont-sell", auth.TokenGuard, userHandler.DontSell)
 		r.Post("/cars/:id/sell", auth.TokenGuard, userHandler.Sell)
+		r.Put("/cars", auth.TokenGuard, userHandler.UpdateCar)
 		r.Delete("/cars/:id/images", auth.TokenGuard, userHandler.DeleteCarImage)
 		r.Delete("/cars/:id/videos", auth.TokenGuard, userHandler.DeleteCarVideo)
 		r.Delete("/cars/:id", auth.TokenGuard, userHandler.DeleteCar)
@@ -117,17 +117,17 @@ func SetupMotorcycleRoutes(r fiber.Router, db *pgxpool.Pool) {
 
 		// motorcycles
 		r.Get("/", auth.TokenGuard, motorcycleHandler.GetMotorcycles)
+		r.Get("/:id", auth.TokenGuard, motorcycleHandler.GetMotorcycleByID)
+		r.Get("/:id/edit", auth.TokenGuard, motorcycleHandler.GetEditMotorcycleByID)
 		r.Post("/", auth.TokenGuard, motorcycleHandler.CreateMotorcycle)
 		r.Post("/:id/images", auth.TokenGuard, motorcycleHandler.CreateMotorcycleImages)
 		r.Post("/:id/videos", auth.TokenGuard, motorcycleHandler.CreateMotorcycleVideos)
-		r.Delete("/:id/images", auth.TokenGuard, motorcycleHandler.DeleteMotorcycleImage)
-		r.Delete("/:id/videos", auth.TokenGuard, motorcycleHandler.DeleteMotorcycleVideo)
-		r.Delete("/:id", auth.TokenGuard, motorcycleHandler.DeleteMotorcycle)
-		r.Get("/:id", auth.TokenGuard, motorcycleHandler.GetMotorcycleByID)
-		r.Get("/:id/edit", auth.TokenGuard, motorcycleHandler.GetEditMotorcycleByID)
 		r.Post("/:id/buy", auth.TokenGuard, motorcycleHandler.BuyMotorcycle)
 		r.Post("/:id/dont-sell", auth.TokenGuard, motorcycleHandler.DontSellMotorcycle)
 		r.Post("/:id/sell", auth.TokenGuard, motorcycleHandler.SellMotorcycle)
+		r.Delete("/:id/images", auth.TokenGuard, motorcycleHandler.DeleteMotorcycleImage)
+		r.Delete("/:id/videos", auth.TokenGuard, motorcycleHandler.DeleteMotorcycleVideo)
+		r.Delete("/:id", auth.TokenGuard, motorcycleHandler.DeleteMotorcycle)
 	}
 }
 
@@ -145,16 +145,16 @@ func SetupComtransRoutes(r fiber.Router, db *pgxpool.Pool) {
 
 		// comtrans
 		r.Get("/", auth.TokenGuard, comtransHandler.GetComtrans)
+		r.Get("/:id", auth.TokenGuard, comtransHandler.GetComtransByID)
+		r.Get("/:id/edit", auth.TokenGuard, comtransHandler.GetEditComtransByID)
 		r.Post("/", auth.TokenGuard, comtransHandler.CreateComtrans)
 		r.Post("/:id/images", auth.TokenGuard, comtransHandler.CreateComtransImages)
 		r.Post("/:id/videos", auth.TokenGuard, comtransHandler.CreateComtransVideos)
-		r.Delete("/:id/images", auth.TokenGuard, comtransHandler.DeleteComtransImage)
-		r.Delete("/:id/videos", auth.TokenGuard, comtransHandler.DeleteComtransVideo)
-		r.Delete("/:id", auth.TokenGuard, comtransHandler.DeleteComtrans)
-		r.Get("/:id", auth.TokenGuard, comtransHandler.GetComtransByID)
-		r.Get("/:id/edit", auth.TokenGuard, comtransHandler.GetEditComtransByID)
 		r.Post("/:id/buy", auth.TokenGuard, comtransHandler.BuyComtrans)
 		r.Post("/:id/dont-sell", auth.TokenGuard, comtransHandler.DontSellComtrans)
 		r.Post("/:id/sell", auth.TokenGuard, comtransHandler.SellComtrans)
+		r.Delete("/:id/images", auth.TokenGuard, comtransHandler.DeleteComtransImage)
+		r.Delete("/:id/videos", auth.TokenGuard, comtransHandler.DeleteComtransVideo)
+		r.Delete("/:id", auth.TokenGuard, comtransHandler.DeleteComtrans)
 	}
 }
