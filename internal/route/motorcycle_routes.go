@@ -1,0 +1,39 @@
+package route
+
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	"dubai-auto/internal/delivery/http"
+	"dubai-auto/internal/repository"
+	"dubai-auto/internal/service"
+	"dubai-auto/pkg/auth"
+)
+
+func SetupMotorcycleRoutes(r fiber.Router, db *pgxpool.Pool) {
+	motorcycleRepository := repository.NewMotorcycleRepository(db)
+	motorcycleService := service.NewMotorcycleService(motorcycleRepository)
+	motorcycleHandler := http.NewMotorcycleHandler(motorcycleService)
+
+	{
+		// get motorcycles categories
+		r.Get("/categories", auth.TokenGuard, motorcycleHandler.GetMotorcycleCategories)
+		r.Get("/categories/:category_id/parameters", auth.TokenGuard, motorcycleHandler.GetMotorcycleParameters)
+		r.Get("/categories/:category_id/brands", auth.TokenGuard, motorcycleHandler.GetMotorcycleBrands)
+		r.Get("/categories/:category_id/brands/:brand_id/models", auth.TokenGuard, motorcycleHandler.GetMotorcycleModelsByBrandID)
+
+		// motorcycles
+		r.Get("/", auth.TokenGuard, motorcycleHandler.GetMotorcycles)
+		r.Get("/:id", auth.TokenGuard, motorcycleHandler.GetMotorcycleByID)
+		r.Get("/:id/edit", auth.TokenGuard, motorcycleHandler.GetEditMotorcycleByID)
+		r.Post("/", auth.TokenGuard, motorcycleHandler.CreateMotorcycle)
+		r.Post("/:id/images", auth.TokenGuard, motorcycleHandler.CreateMotorcycleImages)
+		r.Post("/:id/videos", auth.TokenGuard, motorcycleHandler.CreateMotorcycleVideos)
+		r.Post("/:id/buy", auth.TokenGuard, motorcycleHandler.BuyMotorcycle)
+		r.Post("/:id/dont-sell", auth.TokenGuard, motorcycleHandler.DontSellMotorcycle)
+		r.Post("/:id/sell", auth.TokenGuard, motorcycleHandler.SellMotorcycle)
+		r.Delete("/:id/images", auth.TokenGuard, motorcycleHandler.DeleteMotorcycleImage)
+		r.Delete("/:id/videos", auth.TokenGuard, motorcycleHandler.DeleteMotorcycleVideo)
+		r.Delete("/:id", auth.TokenGuard, motorcycleHandler.DeleteMotorcycle)
+	}
+}

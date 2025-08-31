@@ -13,10 +13,10 @@ type DeleteCarImageRequest struct {
 
 type CreateCarRequest struct {
 	// new
-	CityID  int `json:"city_id" validate:"required"`
-	BrandID int `json:"brand_id" validate:"required"`
-	ModelID int `json:"model_id" validate:"required"`
 	// BodyTypeID     int      `json:"body_type_id" validate:"required"`
+	CityID         int      `json:"city_id" validate:"required"`
+	BrandID        int      `json:"brand_id" validate:"required"`
+	ModelID        int      `json:"model_id" validate:"required"`
 	Wheel          *bool    `json:"wheel" validate:"required"` // left true, right false
 	ModificationID int      `json:"modification_id" validate:"required"`
 	Year           int      `json:"year" validate:"required"`
@@ -74,4 +74,78 @@ type UpdateProfileRequest struct {
 	Birthday          string `json:"birthday"`
 	AboutMe           string `json:"about_me"`
 	// todo: add city
+}
+
+// Admin request/response models
+type CreateCityRequest struct {
+	Name string `json:"name" validate:"required,min=2,max=255"`
+}
+
+type UpdateCityRequest struct {
+	Name string `json:"name" validate:"required,min=2,max=255"`
+}
+
+type CreateBrandRequest struct {
+	Name    string `json:"name" validate:"required,min=2,max=255"`
+	Logo    string `json:"logo" validate:"required"`
+	Popular bool   `json:"popular"`
+}
+
+type UpdateBrandRequest struct {
+	Name    string `json:"name" validate:"required,min=2,max=255"`
+	Logo    string `json:"logo" validate:"required"`
+	Popular bool   `json:"popular"`
+}
+
+type CreateModelRequest struct {
+	Name    string `json:"name" validate:"required,min=2,max=255"`
+	BrandID int    `json:"brand_id" validate:"required"`
+	Popular bool   `json:"popular"`
+}
+
+type UpdateModelRequest struct {
+	Name    string `json:"name" validate:"required,min=2,max=255"`
+	BrandID int    `json:"brand_id" validate:"required"`
+	Popular bool   `json:"popular"`
+}
+
+type CreateBodyTypeRequest struct {
+	Name  string `json:"name" validate:"required,min=2,max=255"`
+	Image string `json:"image" validate:"required"`
+}
+
+type UpdateBodyTypeRequest struct {
+	Name  string `json:"name" validate:"required,min=2,max=255"`
+	Image string `json:"image" validate:"required"`
+}
+
+type AdminCityResponse struct {
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	CreatedAt string `json:"created_at"`
+}
+
+type AdminBrandResponse struct {
+	ID         int    `json:"id"`
+	Name       string `json:"name"`
+	Logo       string `json:"logo"`
+	ModelCount int    `json:"model_count"`
+	Popular    bool   `json:"popular"`
+	UpdatedAt  string `json:"updated_at"`
+}
+
+type AdminModelResponse struct {
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	BrandID   int    `json:"brand_id"`
+	BrandName string `json:"brand_name"`
+	Popular   bool   `json:"popular"`
+	UpdatedAt string `json:"updated_at"`
+}
+
+type AdminBodyTypeResponse struct {
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Image     string `json:"image"`
+	CreatedAt string `json:"created_at"`
 }
