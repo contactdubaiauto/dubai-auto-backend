@@ -52,7 +52,7 @@ create table temp_users (
     "id" serial primary key,
     "email" varchar(100),
     "username" varchar(100) not null,
-    "role_id" int not null default 1,
+    "role_id" int not null default 1, -- 1 user, 2 dealer, 3 logistic, 4 broker
     "password" varchar(100) not null,
     "phone" varchar(100),
     "registered_by" varchar(20) not null,
@@ -65,13 +65,32 @@ create table temp_users (
 create table users (
     "id" serial primary key,
     "email" varchar(100),
-    "role_id" int not null default 1,
+    "role_id" int not null default 1, -- 1 user, 2 dealer, 3 logistic, 4 broker
     "password" varchar(100) not null,
     "phone" varchar(100),
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
     unique("email"),
     unique("phone")
+);
+
+create table messages (
+    "id" serial primary key,
+    "sender_id" int not null,
+    "receiver_id" int not null,
+    "message" text not null,
+    "type" int not null default 1, -- 1-text, 2-image, 3-video, 4-audio, 5-file, 6-item
+    "created_at" timestamp default now(),
+    constraint messages_sender_id_fk
+        foreign key (sender_id)
+            references users(id)
+                on delete cascade
+                on update cascade,
+    constraint messages_receiver_id_fk
+        foreign key (receiver_id)
+            references users(id)
+                on delete cascade
+                on update cascade
 );
 
 insert into users (email, password, phone, created_at) 

@@ -24,4 +24,7 @@ func Init(r *fiber.App, db *pgxpool.Pool) {
 	adminRoute := r.Group("/api/v1/admin")
 	SetupAdminRoutes(adminRoute, db)
 
+	thirdPartyRoute := r.Group("/api/v1/third-party")
+	SetupThirdPartyRoutes(thirdPartyRoute, db)
+
 }

@@ -6,6 +6,56 @@ definitions:
         example: Invalid param ID
         type: string
     type: object
+  model.AdminBodyTypeResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+    type: object
+  model.AdminBrandResponse:
+    properties:
+      id:
+        type: integer
+      logo:
+        type: string
+      model_count:
+        type: integer
+      name:
+        type: string
+      popular:
+        type: boolean
+      updated_at:
+        type: string
+    type: object
+  model.AdminCityResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.AdminModelResponse:
+    properties:
+      brand_id:
+        type: integer
+      brand_name:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      popular:
+        type: boolean
+      updated_at:
+        type: string
+    type: object
   model.BodyType:
     properties:
       id:
@@ -62,12 +112,40 @@ definitions:
       parameter_value_id:
         type: integer
     type: object
+  model.CreateBodyTypeRequest:
+    properties:
+      image:
+        type: string
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
+    - image
+    - name
+    type: object
+  model.CreateBrandRequest:
+    properties:
+      logo:
+        type: string
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      popular:
+        type: boolean
+    required:
+    - logo
+    - name
+    type: object
   model.CreateCarRequest:
     properties:
       brand_id:
         type: integer
       city_id:
-        description: new
+        description: |-
+          new
+          BodyTypeID     int      `json:"body_type_id" validate:"required"`
         type: integer
       color_id:
         type: integer
@@ -96,7 +174,7 @@ definitions:
       vin_code:
         type: string
       wheel:
-        description: BodyTypeID     int      `json:"body_type_id" validate:"required"`
+        description: left true, right false
         type: boolean
       year:
         type: integer
@@ -114,6 +192,15 @@ definitions:
     - vin_code
     - wheel
     - year
+    type: object
+  model.CreateCityRequest:
+    properties:
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
+    - name
     type: object
   model.CreateComtransParameterRequest:
     properties:
@@ -208,6 +295,20 @@ definitions:
     - price_type
     - vin_code
     - year
+    type: object
+  model.CreateModelRequest:
+    properties:
+      brand_id:
+        type: integer
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      popular:
+        type: boolean
+    required:
+    - brand_id
+    - name
     type: object
   model.CreateMotorcycleParameterRequest:
     properties:
@@ -928,6 +1029,32 @@ definitions:
       name:
         type: string
     type: object
+  model.UpdateBodyTypeRequest:
+    properties:
+      image:
+        type: string
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
+    - image
+    - name
+    type: object
+  model.UpdateBrandRequest:
+    properties:
+      logo:
+        type: string
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      popular:
+        type: boolean
+    required:
+    - logo
+    - name
+    type: object
   model.UpdateCarRequest:
     properties:
       brand_id:
@@ -982,6 +1109,29 @@ definitions:
     - vin_code
     - wheel
     - year
+    type: object
+  model.UpdateCityRequest:
+    properties:
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
+  model.UpdateModelRequest:
+    properties:
+      brand_id:
+        type: integer
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      popular:
+        type: boolean
+    required:
+    - brand_id
+    - name
     type: object
   model.UpdateProfileRequest:
     properties:
@@ -1043,6 +1193,618 @@ info:
   title: Project name
   version: "1.0"
 paths:
+  /api/v1/admin/body-types:
+    get:
+      description: Returns a list of all body types
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminBodyTypeResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all body types
+      tags:
+      - admin-body-types
+    post:
+      consumes:
+      - application/json
+      description: Creates a new body type
+      parameters:
+      - description: Body type data
+        in: body
+        name: bodyType
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateBodyTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a new body type
+      tags:
+      - admin-body-types
+  /api/v1/admin/body-types/{id}:
+    delete:
+      description: Deletes a body type by ID
+      parameters:
+      - description: Body type ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a body type
+      tags:
+      - admin-body-types
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing body type
+      parameters:
+      - description: Body type ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Body type data
+        in: body
+        name: bodyType
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateBodyTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a body type
+      tags:
+      - admin-body-types
+  /api/v1/admin/brands:
+    get:
+      description: Returns a list of all brands
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminBrandResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all brands
+      tags:
+      - admin-brands
+    post:
+      consumes:
+      - application/json
+      description: Creates a new brand
+      parameters:
+      - description: Brand data
+        in: body
+        name: brand
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateBrandRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a new brand
+      tags:
+      - admin-brands
+  /api/v1/admin/brands/{id}:
+    delete:
+      description: Deletes a brand by ID
+      parameters:
+      - description: Brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a brand
+      tags:
+      - admin-brands
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing brand
+      parameters:
+      - description: Brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Brand data
+        in: body
+        name: brand
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateBrandRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a brand
+      tags:
+      - admin-brands
+  /api/v1/admin/cities:
+    get:
+      description: Returns a list of all cities
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminCityResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all cities
+      tags:
+      - admin-cities
+    post:
+      consumes:
+      - application/json
+      description: Creates a new city
+      parameters:
+      - description: City data
+        in: body
+        name: city
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateCityRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a new city
+      tags:
+      - admin-cities
+  /api/v1/admin/cities/{id}:
+    delete:
+      description: Deletes a city by ID
+      parameters:
+      - description: City ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a city
+      tags:
+      - admin-cities
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing city
+      parameters:
+      - description: City ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: City data
+        in: body
+        name: city
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateCityRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a city
+      tags:
+      - admin-cities
+  /api/v1/admin/models:
+    get:
+      description: Returns a list of all models
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminModelResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all models
+      tags:
+      - admin-models
+    post:
+      consumes:
+      - application/json
+      description: Creates a new model
+      parameters:
+      - description: Model data
+        in: body
+        name: model
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateModelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a new model
+      tags:
+      - admin-models
+  /api/v1/admin/models/{id}:
+    delete:
+      description: Deletes a model by ID
+      parameters:
+      - description: Model ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a model
+      tags:
+      - admin-models
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing model
+      parameters:
+      - description: Model ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Model data
+        in: body
+        name: model
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateModelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a model
+      tags:
+      - admin-models
   /api/v1/auth/account/{id}:
     delete:
       description: Deletes the authenticated user's account and related data
