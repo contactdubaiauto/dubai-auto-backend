@@ -20,7 +20,7 @@ type UserHandler struct {
 }
 
 func NewUserHandler(service *service.UserService) *UserHandler {
-	return &UserHandler{service, auth.New()}
+	return &UserHandler{service, auth.NewValidator()}
 }
 
 // GetCars godoc

@@ -6,10 +6,12 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
 	"dubai-auto/internal/utils"
 	"dubai-auto/pkg/auth"
+	"dubai-auto/pkg/files"
 )
 
 type AdminHandler struct {
@@ -18,7 +20,7 @@ type AdminHandler struct {
 }
 
 func NewAdminHandler(service *service.AdminService) *AdminHandler {
-	return &AdminHandler{service, auth.New()}
+	return &AdminHandler{service, auth.NewValidator()}
 }
 
 // Cities handlers
@@ -217,7 +219,7 @@ func (h *AdminHandler) CreateBrand(c *fiber.Ctx) error {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id     path      int                       true  "Brand ID"
-// @Param        brand  body      model.UpdateBrandRequest  true  "Brand data"
+// @Param        brand  body      model.CreateBrandRequest  true  "Brand data"
 // @Success      200    {object}  model.Success
 // @Failure      400    {object}  model.ResultMessage
 // @Failure      401    {object}  auth.ErrorResponse
@@ -235,7 +237,7 @@ func (h *AdminHandler) UpdateBrand(c *fiber.Ctx) error {
 		})
 	}
 
-	var req model.UpdateBrandRequest
+	var req model.CreateBrandRequest
 	ctx := c.Context()
 
 	if err := c.BodyParser(&req); err != nil {
@@ -298,10 +300,18 @@ func (h *AdminHandler) DeleteBrand(c *fiber.Ctx) error {
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/models [get]
+// @Router       /api/v1/admin/brands/:brand_id/models [get]
 func (h *AdminHandler) GetModels(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetModels(ctx)
+	brandIdStr := c.Params("brand_id")
+	brandId, err := strconv.Atoi(brandIdStr)
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("brand id must be integer"),
+		})
+	}
+	data := h.AdminService.GetModels(ctx, brandId)
 	return utils.FiberResponse(c, data)
 }
 
@@ -318,11 +328,19 @@ func (h *AdminHandler) GetModels(c *fiber.Ctx) error {
 // @Failure      401    {object}  auth.ErrorResponse
 // @Failure      403    {object}  auth.ErrorResponse
 // @Failure      500    {object}  model.ResultMessage
-// @Router       /api/v1/admin/models [post]
+// @Router       /api/v1/admin/brands/:brand_id/models [post]
 func (h *AdminHandler) CreateModel(c *fiber.Ctx) error {
 	var req model.CreateModelRequest
 	ctx := c.Context()
+	brandIdStr := c.Params("brand_id")
+	brandId, err := strconv.Atoi(brandIdStr)
 
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("brand id must be integer"),
+		})
+	}
 	if err := c.BodyParser(&req); err != nil {
 		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
@@ -337,7 +355,7 @@ func (h *AdminHandler) CreateModel(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.AdminService.CreateModel(ctx, &req)
+	data := h.AdminService.CreateModel(ctx, brandId, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -355,8 +373,9 @@ func (h *AdminHandler) CreateModel(c *fiber.Ctx) error {
 // @Failure      401    {object}  auth.ErrorResponse
 // @Failure      403    {object}  auth.ErrorResponse
 // @Failure      500    {object}  model.ResultMessage
-// @Router       /api/v1/admin/models/{id} [put]
+// @Router       /api/v1/admin/brands/:brand_id/models/{id} [put]
 func (h *AdminHandler) UpdateModel(c *fiber.Ctx) error {
+	ctx := c.Context()
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
 
@@ -368,7 +387,6 @@ func (h *AdminHandler) UpdateModel(c *fiber.Ctx) error {
 	}
 
 	var req model.UpdateModelRequest
-	ctx := c.Context()
 
 	if err := c.BodyParser(&req); err != nil {
 		return utils.FiberResponse(c, &model.Response{
@@ -400,7 +418,7 @@ func (h *AdminHandler) UpdateModel(c *fiber.Ctx) error {
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/models/{id} [delete]
+// @Router       /api/v1/admin/brands/:brand_id/models/{id} [delete]
 func (h *AdminHandler) DeleteModel(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
@@ -473,6 +491,67 @@ func (h *AdminHandler) CreateBodyType(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
+// CreateBodyTypeImage godoc
+// @Summary      Create a new body type image
+// @Description  Creates a new body type image
+// @Tags         admin-body-types
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id        path      int                          true  "Body type ID"
+// @Param        bodyType  body      model.CreateBodyTypeImageRequest  true  "Body type image data"
+// @Success      200       {object}  model.SuccessWithId
+// @Failure      400       {object}  model.ResultMessage
+// @Failure      401       {object}  auth.ErrorResponse
+// @Failure      403       {object}  auth.ErrorResponse
+// @Failure      500       {object}  model.ResultMessage
+// @Router       /api/v1/admin/body-types/{id} [post]
+func (h *AdminHandler) CreateBodyTypeImage(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("body type id must be integer"),
+		})
+	}
+
+	form, _ := c.MultipartForm()
+
+	if form == nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the files"),
+		})
+
+	}
+
+	images := form.File["images"]
+
+	if len(images) > 10 {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 10 files"),
+		})
+
+	}
+
+	paths, status, err := files.SaveFiles(images, config.ENV.STATIC_PATH+"cars/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: status,
+			Error:  err,
+		})
+
+	}
+
+	data := h.AdminService.CreateBodyTypeImage(ctx, id, paths)
+	return utils.FiberResponse(c, data)
+}
+
 // UpdateBodyType godoc
 // @Summary      Update a body type
 // @Description  Updates an existing body type
@@ -481,7 +560,7 @@ func (h *AdminHandler) CreateBodyType(c *fiber.Ctx) error {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id        path      int                          true  "Body type ID"
-// @Param        bodyType  body      model.UpdateBodyTypeRequest  true  "Body type data"
+// @Param        bodyType  body      model.CreateBodyTypeRequest  true  "Body type data"
 // @Success      200       {object}  model.Success
 // @Failure      400       {object}  model.ResultMessage
 // @Failure      401       {object}  auth.ErrorResponse
@@ -499,7 +578,7 @@ func (h *AdminHandler) UpdateBodyType(c *fiber.Ctx) error {
 		})
 	}
 
-	var req model.UpdateBodyTypeRequest
+	var req model.CreateBodyTypeRequest
 	ctx := c.Context()
 
 	if err := c.BodyParser(&req); err != nil {
@@ -548,3 +627,3166 @@ func (h *AdminHandler) DeleteBodyType(c *fiber.Ctx) error {
 	data := h.AdminService.DeleteBodyType(ctx, id)
 	return utils.FiberResponse(c, data)
 }
+
+// DeleteBodyTypeImage godoc
+// @Summary      Delete a body type image
+// @Description  Deletes a body type image by ID
+// @Tags         admin-body-types
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Body type image ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/body-types/{id}/images [delete]
+func (h *AdminHandler) DeleteBodyTypeImage(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("body type image id must be integer"),
+		})
+	}
+	data := h.AdminService.DeleteBodyTypeImage(ctx, id)
+	return utils.FiberResponse(c, data)
+}
+
+// // Transmissions handlers
+
+// // GetTransmissions godoc
+// // @Summary      Get all transmissions
+// // @Description  Returns a list of all transmissions
+// // @Tags         admin-transmissions
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminTransmissionResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/transmissions [get]
+// func (h *AdminHandler) GetTransmissions(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetTransmissions(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateTransmission godoc
+// // @Summary      Create a new transmission
+// // @Description  Creates a new transmission
+// // @Tags         admin-transmissions
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        transmission  body      model.CreateTransmissionRequest  true  "Transmission data"
+// // @Success      200       {object}  model.SuccessWithId
+// // @Failure      400       {object}  model.ResultMessage
+// // @Failure      401       {object}  auth.ErrorResponse
+// // @Failure      403       {object}  auth.ErrorResponse
+// // @Failure      500       {object}  model.ResultMessage
+// // @Router       /api/v1/admin/transmissions [post]
+// func (h *AdminHandler) CreateTransmission(c *fiber.Ctx) error {
+// 	var req model.CreateTransmissionRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateTransmission(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateTransmission godoc
+// // @Summary      Update a transmission
+// // @Description  Updates an existing transmission
+// // @Tags         admin-transmissions
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id        path      int                          true  "Transmission ID"
+// // @Param        transmission  body      model.CreateTransmissionRequest  true  "Transmission data"
+// // @Success      200       {object}  model.Success
+// // @Failure      400       {object}  model.ResultMessage
+// // @Failure      401       {object}  auth.ErrorResponse
+// // @Failure      403       {object}  auth.ErrorResponse
+// // @Failure      500       {object}  model.ResultMessage
+// // @Router       /api/v1/admin/transmissions/{id} [put]
+// func (h *AdminHandler) UpdateTransmission(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("transmission id must be integer"),
+// 		})
+// 	}
+
+// 	var req model.CreateTransmissionRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.UpdateTransmission(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteTransmission godoc
+// // @Summary      Delete a transmission
+// // @Description  Deletes a transmission by ID
+// // @Tags         admin-transmissions
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Transmission ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/transmissions/{id} [delete]
+// func (h *AdminHandler) DeleteTransmission(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("transmission id must be integer"),
+// 		})
+// 	}
+
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteTransmission(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Engines handlers
+
+// // GetEngines godoc
+// // @Summary      Get all engines
+// // @Description  Returns a list of all engines
+// // @Tags         admin-engines
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminEngineResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/engines [get]
+// func (h *AdminHandler) GetEngines(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetEngines(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateEngine godoc
+// // @Summary      Create a new engine
+// // @Description  Creates a new engine
+// // @Tags         admin-engines
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        engine  body      model.CreateEngineRequest  true  "Engine data"
+// // @Success      200       {object}  model.SuccessWithId
+// // @Failure      400       {object}  model.ResultMessage
+// // @Failure      401       {object}  auth.ErrorResponse
+// // @Failure      403       {object}  auth.ErrorResponse
+// // @Failure      500       {object}  model.ResultMessage
+// // @Router       /api/v1/admin/engines [post]
+// func (h *AdminHandler) CreateEngine(c *fiber.Ctx) error {
+// 	var req model.CreateEngineRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateEngine(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateEngine godoc
+// // @Summary      Update a engine
+// // @Description  Updates an existing engine
+// // @Tags         admin-engines
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id      path      int                          true  "Engine ID"
+// // @Param        engine  body      model.CreateEngineRequest  true  "Engine data"
+// // @Success      200    {object}  model.Success
+// // @Failure      400    {object}  model.ResultMessage
+// // @Failure      401    {object}  auth.ErrorResponse
+// // @Failure      403    {object}  auth.ErrorResponse
+// // @Failure      500    {object}  model.ResultMessage
+// // @Router       /api/v1/admin/engines/{id} [put]
+// func (h *AdminHandler) UpdateEngine(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("engine id must be integer"),
+// 		})
+// 	}
+// 	var req model.CreateEngineRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.UpdateEngine(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteEngine godoc
+// // @Summary      Delete a engine
+// // @Description  Deletes a engine by ID
+// // @Tags         admin-engines
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Engine ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/engines/{id} [delete]
+// func (h *AdminHandler) DeleteEngine(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("engine id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteEngine(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Drivetrains handlers
+
+// // GetDrivetrains godoc
+// // @Summary      Get all drivetrains
+// // @Description  Returns a list of all drivetrains
+// // @Tags         admin-drivetrains
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminDrivetrainResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/drivetrains [get]
+// func (h *AdminHandler) GetDrivetrains(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetDrivetrains(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateDrivetrain godoc
+// // @Summary      Create a new drivetrain
+// // @Description  Creates a new drivetrain
+// // @Tags         admin-drivetrains
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        drivetrain  body      model.CreateDrivetrainRequest  true  "Drivetrain data"
+// // @Success      200       {object}  model.SuccessWithId
+// // @Failure      400       {object}  model.ResultMessage
+// // @Failure      401       {object}  auth.ErrorResponse
+// // @Failure      403       {object}  auth.ErrorResponse
+// // @Failure      500       {object}  model.ResultMessage
+// // @Router       /api/v1/admin/drivetrains [post]
+// func (h *AdminHandler) CreateDrivetrain(c *fiber.Ctx) error {
+// 	var req model.CreateDrivetrainRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateDrivetrain(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateDrivetrain godoc
+// // @Summary      Update a drivetrain
+// // @Description  Updates an existing drivetrain
+// // @Tags         admin-drivetrains
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id      path      int                          true  "Drivetrain ID"
+// // @Param        drivetrain  body      model.CreateDrivetrainRequest  true  "Drivetrain data"
+// // @Success      200    {object}  model.Success
+// // @Failure      400    {object}  model.ResultMessage
+// // @Failure      401    {object}  auth.ErrorResponse
+// // @Failure      403    {object}  auth.ErrorResponse
+// // @Failure      500    {object}  model.ResultMessage
+// // @Router       /api/v1/admin/drivetrains/{id} [put]
+// func (h *AdminHandler) UpdateDrivetrain(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("drivetrain id must be integer"),
+// 		})
+// 	}
+// 	var req model.CreateDrivetrainRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateDrivetrain(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteDrivetrain godoc
+// // @Summary      Delete a drivetrain
+// // @Description  Deletes a drivetrain by ID
+// // @Tags         admin-drivetrains
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Drivetrain ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/drivetrains/{id} [delete]
+// func (h *AdminHandler) DeleteDrivetrain(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("drivetrain id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteDrivetrain(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Fuel Types handlers
+
+// // GetFuelTypes godoc
+// // @Summary      Get all fuel types
+// // @Description  Returns a list of all fuel types
+// // @Tags         admin-fuel-types
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminFuelTypeResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/fuel-types [get]
+// func (h *AdminHandler) GetFuelTypes(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetFuelTypes(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateFuelType godoc
+// // @Summary      Create a new fuel type
+// // @Description  Creates a new fuel type
+// // @Tags         admin-fuel-types
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        fuelType  body      model.CreateFuelTypeRequest  true  "Fuel type data"
+// // @Success      200       {object}  model.SuccessWithId
+// // @Failure      400       {object}  model.ResultMessage
+// // @Failure      401       {object}  auth.ErrorResponse
+// // @Failure      403       {object}  auth.ErrorResponse
+// // @Failure      500       {object}  model.ResultMessage
+// // @Router       /api/v1/admin/fuel-types [post]
+// func (h *AdminHandler) CreateFuelType(c *fiber.Ctx) error {
+// 	var req model.CreateFuelTypeRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.CreateFuelType(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateFuelType godoc
+// // @Summary      Update a fuel type
+// // @Description  Updates an existing fuel type
+// // @Tags         admin-fuel-types
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id      path      int                          true  "Fuel type ID"
+// // @Param        fuelType  body      model.CreateFuelTypeRequest  true  "Fuel type data"
+// // @Success      200    {object}  model.Success
+// // @Failure      400    {object}  model.ResultMessage
+// // @Failure      401    {object}  auth.ErrorResponse
+// // @Failure      403    {object}  auth.ErrorResponse
+// // @Failure      500    {object}  model.ResultMessage
+// // @Router       /api/v1/admin/fuel-types/{id} [put]
+// func (h *AdminHandler) UpdateFuelType(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("fuel type id must be integer"),
+// 		})
+// 	}
+// 	var req model.CreateFuelTypeRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateFuelType(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteFuelType godoc
+// // @Summary      Delete a fuel type
+// // @Description  Deletes a fuel type by ID
+// // @Tags         admin-fuel-types
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Fuel type ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/fuel-types/{id} [delete]
+// func (h *AdminHandler) DeleteFuelType(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("fuel type id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteFuelType(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Regions handlers
+
+// // GetRegions godoc
+// // @Summary      Get all regions
+// // @Description  Returns a list of all regions
+// // @Tags         admin-regions
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        city_id   path      int  true  "City ID"
+// // @Success      200  {array}  model.AdminRegionResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/cities/{city_id}/regions [get]
+// func (h *AdminHandler) GetRegions(c *fiber.Ctx) error {
+// 	cityIdStr := c.Params("city_id")
+// 	cityId, err := strconv.Atoi(cityIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("city id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetRegions(ctx, cityId)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateRegion godoc
+// // @Summary      Create a new region
+// // @Description  Creates a new region
+// // @Tags         admin-regions
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        city_id   path      int  true  "City ID"
+// // @Param        region  body      model.CreateRegionRequest  true  "Region data"
+// // @Success      200    {object}  model.SuccessWithId
+// // @Failure      400    {object}  model.ResultMessage
+// // @Failure      401    {object}  auth.ErrorResponse
+// // @Failure      403    {object}  auth.ErrorResponse
+// // @Failure      500    {object}  model.ResultMessage
+// // @Router       /api/v1/admin/cities/{city_id}/regions [post]
+// func (h *AdminHandler) CreateRegion(c *fiber.Ctx) error {
+// 	cityIdStr := c.Params("city_id")
+// 	cityId, err := strconv.Atoi(cityIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("city id must be integer"),
+// 		})
+// 	}
+
+// 	var req model.CreateRegionRequest
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request body"),
+// 		})
+// 	}
+
+// 	ctx := c.Context()
+// 	data := h.AdminService.CreateRegion(ctx, cityId, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateRegion godoc
+// // @Summary      Update a region
+// // @Description  Updates an existing region
+// // @Tags         admin-regions
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        city_id   path      int  true  "City ID"
+// // @Param        id        path      int  true  "Region ID"
+// // @Param        region    body      model.CreateRegionRequest  true  "Region data"
+// // @Success      200       {object}  model.Success
+// // @Failure      400       {object}  model.ResultMessage
+// // @Failure      401       {object}  auth.ErrorResponse
+// // @Failure      403       {object}  auth.ErrorResponse
+// // @Failure      500       {object}  model.ResultMessage
+// // @Router       /api/v1/admin/cities/{city_id}/regions/{id} [put]
+// func (h *AdminHandler) UpdateRegion(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("region id must be integer"),
+// 		})
+// 	}
+
+// 	var req model.CreateRegionRequest
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request body"),
+// 		})
+// 	}
+
+// 	ctx := c.Context()
+// 	data := h.AdminService.UpdateRegion(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteRegion godoc
+// // @Summary      Delete a region
+// // @Description  Deletes an existing region
+// // @Tags         admin-regions
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        city_id   path      int  true  "City ID"
+// // @Param        id        path      int  true  "Region ID"
+// // @Success      200       {object}  model.Success
+// // @Failure      400       {object}  model.ResultMessage
+// // @Failure      401       {object}  auth.ErrorResponse
+// // @Failure      403       {object}  auth.ErrorResponse
+// // @Failure      500       {object}  model.ResultMessage
+// // @Router       /api/v1/admin/cities/{city_id}/regions/{id} [delete]
+// func (h *AdminHandler) DeleteRegion(c *fiber.Ctx) error {
+// 	cityIdStr := c.Params("city_id")
+// 	cityId, err := strconv.Atoi(cityIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("city id must be integer"),
+// 		})
+// 	}
+
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("region id must be integer"),
+// 		})
+// 	}
+
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteRegion(ctx, cityId, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Service Types handlers
+
+// // GetServiceTypes godoc
+// // @Summary      Get all service types
+// // @Description  Returns a list of all service types
+// // @Tags         admin-service-types
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminServiceTypeResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/service-types [get]
+// func (h *AdminHandler) GetServiceTypes(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetServiceTypes(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateServiceType godoc
+// // @Summary      Create a new service type
+// // @Description  Creates a new service type
+// // @Tags         admin-service-types
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        serviceType  body      model.CreateServiceTypeRequest  true  "Service type data"
+// // @Success      200          {object}  model.SuccessWithId
+// // @Failure      400          {object}  model.ResultMessage
+// // @Failure      401          {object}  auth.ErrorResponse
+// // @Failure      403          {object}  auth.ErrorResponse
+// // @Failure      500          {object}  model.ResultMessage
+// // @Router       /api/v1/admin/service-types [post]
+// func (h *AdminHandler) CreateServiceType(c *fiber.Ctx) error {
+// 	var req model.CreateServiceTypeRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateServiceType(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateServiceType godoc
+// // @Summary      Update a service type
+// // @Description  Updates an existing service type
+// // @Tags         admin-service-types
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id          path      int                            true  "Service Type ID"
+// // @Param        serviceType body      model.UpdateServiceTypeRequest true  "Service type data"
+// // @Success      200         {object}  model.Success
+// // @Failure      400         {object}  model.ResultMessage
+// // @Failure      401         {object}  auth.ErrorResponse
+// // @Failure      403         {object}  auth.ErrorResponse
+// // @Failure      500         {object}  model.ResultMessage
+// // @Router       /api/v1/admin/service-types/{id} [put]
+// func (h *AdminHandler) UpdateServiceType(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("service type id must be integer"),
+// 		})
+// 	}
+// 	var req model.UpdateServiceTypeRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateServiceType(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteServiceType godoc
+// // @Summary      Delete a service type
+// // @Description  Deletes a service type by ID
+// // @Tags         admin-service-types
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Service Type ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/service-types/{id} [delete]
+// func (h *AdminHandler) DeleteServiceType(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("service type id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteServiceType(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Services handlers
+
+// // GetServices godoc
+// // @Summary      Get all services
+// // @Description  Returns a list of all services
+// // @Tags         admin-services
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminServiceResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/services [get]
+// func (h *AdminHandler) GetServices(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetServices(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateService godoc
+// // @Summary      Create a new service
+// // @Description  Creates a new service
+// // @Tags         admin-services
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        service  body      model.CreateServiceRequest  true  "Service data"
+// // @Success      200      {object}  model.SuccessWithId
+// // @Failure      400      {object}  model.ResultMessage
+// // @Failure      401      {object}  auth.ErrorResponse
+// // @Failure      403      {object}  auth.ErrorResponse
+// // @Failure      500      {object}  model.ResultMessage
+// // @Router       /api/v1/admin/services [post]
+// func (h *AdminHandler) CreateService(c *fiber.Ctx) error {
+// 	var req model.CreateServiceRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateService(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateService godoc
+// // @Summary      Update a service
+// // @Description  Updates an existing service
+// // @Tags         admin-services
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id      path      int                        true  "Service ID"
+// // @Param        service body      model.UpdateServiceRequest true  "Service data"
+// // @Success      200     {object}  model.Success
+// // @Failure      400     {object}  model.ResultMessage
+// // @Failure      401     {object}  auth.ErrorResponse
+// // @Failure      403     {object}  auth.ErrorResponse
+// // @Failure      500     {object}  model.ResultMessage
+// // @Router       /api/v1/admin/services/{id} [put]
+// func (h *AdminHandler) UpdateService(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("service id must be integer"),
+// 		})
+// 	}
+// 	var req model.UpdateServiceRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateService(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteService godoc
+// // @Summary      Delete a service
+// // @Description  Deletes a service by ID
+// // @Tags         admin-services
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Service ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/services/{id} [delete]
+// func (h *AdminHandler) DeleteService(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("service id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteService(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Generations handlers
+
+// // GetGenerations godoc
+// // @Summary      Get all generations
+// // @Description  Returns a list of all generations
+// // @Tags         admin-generations
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminGenerationResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/generations [get]
+// func (h *AdminHandler) GetGenerations(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetGenerations(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateGeneration godoc
+// // @Summary      Create a new generation
+// // @Description  Creates a new generation
+// // @Tags         admin-generations
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        generation  body      model.CreateGenerationRequest  true  "Generation data"
+// // @Success      200         {object}  model.SuccessWithId
+// // @Failure      400         {object}  model.ResultMessage
+// // @Failure      401         {object}  auth.ErrorResponse
+// // @Failure      403         {object}  auth.ErrorResponse
+// // @Failure      500         {object}  model.ResultMessage
+// // @Router       /api/v1/admin/generations [post]
+// func (h *AdminHandler) CreateGeneration(c *fiber.Ctx) error {
+// 	var req model.CreateGenerationRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateGeneration(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateGeneration godoc
+// // @Summary      Update a generation
+// // @Description  Updates an existing generation
+// // @Tags         admin-generations
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id         path      int                           true  "Generation ID"
+// // @Param        generation body      model.UpdateGenerationRequest true  "Generation data"
+// // @Success      200        {object}  model.Success
+// // @Failure      400        {object}  model.ResultMessage
+// // @Failure      401        {object}  auth.ErrorResponse
+// // @Failure      403        {object}  auth.ErrorResponse
+// // @Failure      500        {object}  model.ResultMessage
+// // @Router       /api/v1/admin/generations/{id} [put]
+// func (h *AdminHandler) UpdateGeneration(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("generation id must be integer"),
+// 		})
+// 	}
+// 	var req model.UpdateGenerationRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateGeneration(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteGeneration godoc
+// // @Summary      Delete a generation
+// // @Description  Deletes a generation by ID
+// // @Tags         admin-generations
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Generation ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/generations/{id} [delete]
+// func (h *AdminHandler) DeleteGeneration(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("generation id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteGeneration(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Configurations handlers
+
+// // GetConfigurations godoc
+// // @Summary      Get all configurations
+// // @Description  Returns a list of all configurations
+// // @Tags         admin-configurations
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminConfigurationResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/configurations [get]
+// func (h *AdminHandler) GetConfigurations(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetConfigurations(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateConfiguration godoc
+// // @Summary      Create a new configuration
+// // @Description  Creates a new configuration
+// // @Tags         admin-configurations
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        configuration  body      model.CreateConfigurationRequest  true  "Configuration data"
+// // @Success      200            {object}  model.SuccessWithId
+// // @Failure      400            {object}  model.ResultMessage
+// // @Failure      401            {object}  auth.ErrorResponse
+// // @Failure      403            {object}  auth.ErrorResponse
+// // @Failure      500            {object}  model.ResultMessage
+// // @Router       /api/v1/admin/configurations [post]
+// func (h *AdminHandler) CreateConfiguration(c *fiber.Ctx) error {
+// 	var req model.CreateConfigurationRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateConfiguration(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateConfiguration godoc
+// // @Summary      Update a configuration
+// // @Description  Updates an existing configuration
+// // @Tags         admin-configurations
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id            path      int                              true  "Configuration ID"
+// // @Param        configuration body      model.UpdateConfigurationRequest true  "Configuration data"
+// // @Success      200           {object}  model.Success
+// // @Failure      400           {object}  model.ResultMessage
+// // @Failure      401           {object}  auth.ErrorResponse
+// // @Failure      403           {object}  auth.ErrorResponse
+// // @Failure      500           {object}  model.ResultMessage
+// // @Router       /api/v1/admin/configurations/{id} [put]
+// func (h *AdminHandler) UpdateConfiguration(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("configuration id must be integer"),
+// 		})
+// 	}
+// 	var req model.UpdateConfigurationRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateConfiguration(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteConfiguration godoc
+// // @Summary      Delete a configuration
+// // @Description  Deletes a configuration by ID
+// // @Tags         admin-configurations
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Configuration ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/configurations/{id} [delete]
+// func (h *AdminHandler) DeleteConfiguration(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("configuration id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteConfiguration(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Generation Modifications handlers
+
+// // GetGenerationModifications godoc
+// // @Summary      Get all generation modifications
+// // @Description  Returns a list of all generation modifications
+// // @Tags         admin-generation-modifications
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminGenerationModificationResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/generations/:generation_id/generation-modifications [get]
+// func (h *AdminHandler) GetGenerationModifications(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	generationIdStr := c.Params("generation_id")
+// 	generationId, err := strconv.Atoi(generationIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("generation id must be integer"),
+// 		})
+// 	}
+// 	data := h.AdminService.GetGenerationModifications(ctx, generationId)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateGenerationModification godoc
+// // @Summary      Create a new generation modification
+// // @Description  Creates a new generation modification
+// // @Tags         admin-generation-modifications
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        generationModification  body      model.CreateGenerationModificationRequest  true  "Generation modification data"
+// // @Success      200                     {object}  model.SuccessWithId
+// // @Failure      400                     {object}  model.ResultMessage
+// // @Failure      401                     {object}  auth.ErrorResponse
+// // @Failure      403                     {object}  auth.ErrorResponse
+// // @Failure      500                     {object}  model.ResultMessage
+// // @Router       /api/v1/admin/generations/:generation_id/generation-modifications [post]
+// func (h *AdminHandler) CreateGenerationModification(c *fiber.Ctx) error {
+// 	var req model.CreateGenerationModificationRequest
+// 	ctx := c.Context()
+// 	generationIdStr := c.Params("generation_id")
+// 	generationId, err := strconv.Atoi(generationIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("generation id must be integer"),
+// 		})
+// 	}
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateGenerationModification(ctx, generationId, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateGenerationModification godoc
+// // @Summary      Update a generation modification
+// // @Description  Updates an existing generation modification
+// // @Tags         admin-generation-modifications
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id                     path      int                                       true  "Generation Modification ID"
+// // @Param        generationModification body      model.UpdateGenerationModificationRequest true  "Generation modification data"
+// // @Success      200                    {object}  model.Success
+// // @Failure      400                    {object}  model.ResultMessage
+// // @Failure      401                    {object}  auth.ErrorResponse
+// // @Failure      403                    {object}  auth.ErrorResponse
+// // @Failure      500                    {object}  model.ResultMessage
+// // @Router       /api/v1/admin/generations/:generation_id/generation-modifications/{id} [put]
+// func (h *AdminHandler) UpdateGenerationModification(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("modification id must be integer"),
+// 		})
+// 	}
+
+// 	generationIdStr := c.Params("generation_id")
+// 	generationId, err := strconv.Atoi(generationIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("generation id must be integer"),
+// 		})
+// 	}
+// 	var req model.UpdateGenerationModificationRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateGenerationModification(ctx, generationId, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteGenerationModification godoc
+// // @Summary      Delete a generation modification
+// // @Description  Deletes a generation modification by ID
+// // @Tags         admin-generation-modifications
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Generation Modification ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/generations/:generation_id/generation-modifications/{id} [delete]
+// func (h *AdminHandler) DeleteGenerationModification(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("modification id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	generationIdStr := c.Params("generation_id")
+// 	generationId, err := strconv.Atoi(generationIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("generation id must be integer"),
+// 		})
+// 	}
+// 	data := h.AdminService.DeleteGenerationModification(ctx, generationId, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Colors handlers
+
+// // GetColors godoc
+// // @Summary      Get all colors
+// // @Description  Returns a list of all colors
+// // @Tags         admin-colors
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminColorResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/colors [get]
+// func (h *AdminHandler) GetColors(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetColors(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateColor godoc
+// // @Summary      Create a new color
+// // @Description  Creates a new color
+// // @Tags         admin-colors
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        color  body      model.CreateColorRequest  true  "Color data"
+// // @Success      200    {object}  model.SuccessWithId
+// // @Failure      400    {object}  model.ResultMessage
+// // @Failure      401    {object}  auth.ErrorResponse
+// // @Failure      403    {object}  auth.ErrorResponse
+// // @Failure      500    {object}  model.ResultMessage
+// // @Router       /api/v1/admin/colors [post]
+// func (h *AdminHandler) CreateColor(c *fiber.Ctx) error {
+// 	var req model.CreateColorRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateColor(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateColor godoc
+// // @Summary      Update a color
+// // @Description  Updates an existing color
+// // @Tags         admin-colors
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id    path      int                     true  "Color ID"
+// // @Param        color body      model.UpdateColorRequest true  "Color data"
+// // @Success      200   {object}  model.Success
+// // @Failure      400   {object}  model.ResultMessage
+// // @Failure      401   {object}  auth.ErrorResponse
+// // @Failure      403   {object}  auth.ErrorResponse
+// // @Failure      500   {object}  model.ResultMessage
+// // @Router       /api/v1/admin/colors/{id} [put]
+// func (h *AdminHandler) UpdateColor(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("color id must be integer"),
+// 		})
+// 	}
+// 	var req model.UpdateColorRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateColor(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteColor godoc
+// // @Summary      Delete a color
+// // @Description  Deletes a color by ID
+// // @Tags         admin-colors
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Color ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/colors/{id} [delete]
+// func (h *AdminHandler) DeleteColor(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("color id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteColor(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Moto Categories handlers
+
+// // GetMotoCategories godoc
+// // @Summary      Get all moto categories
+// // @Description  Returns a list of all moto categories
+// // @Tags         admin-moto-categories
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminMotoCategoryResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-categories [get]
+// func (h *AdminHandler) GetMotoCategories(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetMotoCategories(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateMotoCategory godoc
+// // @Summary      Create a new moto category
+// // @Description  Creates a new moto category
+// // @Tags         admin-moto-categories
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        motoCategory  body      model.CreateMotoCategoryRequest  true  "Moto category data"
+// // @Success      200           {object}  model.SuccessWithId
+// // @Failure      400           {object}  model.ResultMessage
+// // @Failure      401           {object}  auth.ErrorResponse
+// // @Failure      403           {object}  auth.ErrorResponse
+// // @Failure      500           {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-categories [post]
+// func (h *AdminHandler) CreateMotoCategory(c *fiber.Ctx) error {
+// 	var req model.CreateMotoCategoryRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateMotoCategory(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateMotoCategory godoc
+// // @Summary      Update a moto category
+// // @Description  Updates an existing moto category
+// // @Tags         admin-moto-categories
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id           path      int                             true  "Moto Category ID"
+// // @Param        motoCategory body      model.UpdateMotoCategoryRequest true  "Moto category data"
+// // @Success      200          {object}  model.Success
+// // @Failure      400          {object}  model.ResultMessage
+// // @Failure      401          {object}  auth.ErrorResponse
+// // @Failure      403          {object}  auth.ErrorResponse
+// // @Failure      500          {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-categories/{id} [put]
+// func (h *AdminHandler) UpdateMotoCategory(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto category id must be integer"),
+// 		})
+// 	}
+// 	var req model.UpdateMotoCategoryRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateMotoCategory(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteMotoCategory godoc
+// // @Summary      Delete a moto category
+// // @Description  Deletes a moto category by ID
+// // @Tags         admin-moto-categories
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Moto Category ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-categories/{id} [delete]
+// func (h *AdminHandler) DeleteMotoCategory(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto category id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteMotoCategory(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Moto Brands handlers
+
+// // GetMotoBrands godoc
+// // @Summary      Get all moto brands
+// // @Description  Returns a list of all moto brands
+// // @Tags         admin-moto-brands
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminMotoBrandResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-brands [get]
+// func (h *AdminHandler) GetMotoBrands(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetMotoBrands(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateMotoBrand godoc
+// // @Summary      Create a new moto brand
+// // @Description  Creates a new moto brand
+// // @Tags         admin-moto-brands
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        motoBrand  body      model.CreateMotoBrandRequest  true  "Moto brand data"
+// // @Success      200        {object}  model.SuccessWithId
+// // @Failure      400        {object}  model.ResultMessage
+// // @Failure      401        {object}  auth.ErrorResponse
+// // @Failure      403        {object}  auth.ErrorResponse
+// // @Failure      500        {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-brands [post]
+// func (h *AdminHandler) CreateMotoBrand(c *fiber.Ctx) error {
+// 	var req model.CreateMotoBrandRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateMotoBrand(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateMotoBrand godoc
+// // @Summary      Update a moto brand
+// // @Description  Updates an existing moto brand
+// // @Tags         admin-moto-brands
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id        path      int                          true  "Moto Brand ID"
+// // @Param        motoBrand body      model.UpdateMotoBrandRequest true  "Moto brand data"
+// // @Success      200       {object}  model.Success
+// // @Failure      400       {object}  model.ResultMessage
+// // @Failure      401       {object}  auth.ErrorResponse
+// // @Failure      403       {object}  auth.ErrorResponse
+// // @Failure      500       {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-brands/{id} [put]
+// func (h *AdminHandler) UpdateMotoBrand(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto brand id must be integer"),
+// 		})
+// 	}
+// 	var req model.UpdateMotoBrandRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateMotoBrand(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteMotoBrand godoc
+// // @Summary      Delete a moto brand
+// // @Description  Deletes a moto brand by ID
+// // @Tags         admin-moto-brands
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Moto Brand ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-brands/{id} [delete]
+// func (h *AdminHandler) DeleteMotoBrand(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto brand id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteMotoBrand(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Moto Models handlers
+
+// // GetMotoModels godoc
+// // @Summary      Get all moto models
+// // @Description  Returns a list of all moto models
+// // @Tags         admin-moto-models
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminMotoModelResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-models [get]
+// func (h *AdminHandler) GetMotoModels(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetMotoModels(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateMotoModel godoc
+// // @Summary      Create a new moto model
+// // @Description  Creates a new moto model
+// // @Tags         admin-moto-models
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        motoModel  body      model.CreateMotoModelRequest  true  "Moto model data"
+// // @Success      200        {object}  model.SuccessWithId
+// // @Failure      400        {object}  model.ResultMessage
+// // @Failure      401        {object}  auth.ErrorResponse
+// // @Failure      403        {object}  auth.ErrorResponse
+// // @Failure      500        {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-models [post]
+// func (h *AdminHandler) CreateMotoModel(c *fiber.Ctx) error {
+// 	var req model.CreateMotoModelRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateMotoModel(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateMotoModel godoc
+// // @Summary      Update a moto model
+// // @Description  Updates an existing moto model
+// // @Tags         admin-moto-models
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id        path      int                          true  "Moto Model ID"
+// // @Param        motoModel body      model.UpdateMotoModelRequest true  "Moto model data"
+// // @Success      200       {object}  model.Success
+// // @Failure      400       {object}  model.ResultMessage
+// // @Failure      401       {object}  auth.ErrorResponse
+// // @Failure      403       {object}  auth.ErrorResponse
+// // @Failure      500       {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-models/{id} [put]
+// func (h *AdminHandler) UpdateMotoModel(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto model id must be integer"),
+// 		})
+// 	}
+// 	var req model.UpdateMotoModelRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateMotoModel(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteMotoModel godoc
+// // @Summary      Delete a moto model
+// // @Description  Deletes a moto model by ID
+// // @Tags         admin-moto-models
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Moto Model ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-models/{id} [delete]
+// func (h *AdminHandler) DeleteMotoModel(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto model id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteMotoModel(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Moto Parameters handlers
+
+// // GetMotoParameters godoc
+// // @Summary      Get all moto parameters
+// // @Description  Returns a list of all moto parameters
+// // @Tags         admin-moto-parameters
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminMotoParameterResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters [get]
+// func (h *AdminHandler) GetMotoParameters(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetMotoParameters(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateMotoParameter godoc
+// // @Summary      Create a new moto parameter
+// // @Description  Creates a new moto parameter
+// // @Tags         admin-moto-parameters
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        motoParameter  body      model.CreateMotoParameterRequest  true  "Moto parameter data"
+// // @Success      200            {object}  model.SuccessWithId
+// // @Failure      400            {object}  model.ResultMessage
+// // @Failure      401            {object}  auth.ErrorResponse
+// // @Failure      403            {object}  auth.ErrorResponse
+// // @Failure      500            {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters [post]
+// func (h *AdminHandler) CreateMotoParameter(c *fiber.Ctx) error {
+// 	var req model.CreateMotoParameterRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateMotoParameter(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateMotoParameter godoc
+// // @Summary      Update a moto parameter
+// // @Description  Updates an existing moto parameter
+// // @Tags         admin-moto-parameters
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id            path      int                              true  "Moto Parameter ID"
+// // @Param        motoParameter body      model.UpdateMotoParameterRequest true  "Moto parameter data"
+// // @Success      200           {object}  model.Success
+// // @Failure      400           {object}  model.ResultMessage
+// // @Failure      401           {object}  auth.ErrorResponse
+// // @Failure      403           {object}  auth.ErrorResponse
+// // @Failure      500           {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters/{id} [put]
+// func (h *AdminHandler) UpdateMotoParameter(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter id must be integer"),
+// 		})
+// 	}
+// 	var req model.UpdateMotoParameterRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateMotoParameter(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteMotoParameter godoc
+// // @Summary      Delete a moto parameter
+// // @Description  Deletes a moto parameter by ID
+// // @Tags         admin-moto-parameters
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Moto Parameter ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters/{id} [delete]
+// func (h *AdminHandler) DeleteMotoParameter(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteMotoParameter(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Moto Parameter Values handlers
+
+// // GetMotoParameterValues godoc
+// // @Summary      Get all moto parameter values
+// // @Description  Returns a list of all moto parameter values
+// // @Tags         admin-moto-parameter-values
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminMotoParameterValueResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters/:moto_param_id/values [get]
+// func (h *AdminHandler) GetMotoParameterValues(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	motoParamIdStr := c.Params("moto_param_id")
+// 	motoParamId, err := strconv.Atoi(motoParamIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter id must be integer"),
+// 		})
+// 	}
+// 	data := h.AdminService.GetMotoParameterValues(ctx, motoParamId)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateMotoParameterValue godoc
+// // @Summary      Create a new moto parameter value
+// // @Description  Creates a new moto parameter value
+// // @Tags         admin-moto-parameter-values
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        motoParameterValue  body      model.CreateMotoParameterValueRequest  true  "Moto parameter value data"
+// // @Success      200                 {object}  model.SuccessWithId
+// // @Failure      400                 {object}  model.ResultMessage
+// // @Failure      401                 {object}  auth.ErrorResponse
+// // @Failure      403                 {object}  auth.ErrorResponse
+// // @Failure      500                 {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters/:moto_param_id/values [post]
+// func (h *AdminHandler) CreateMotoParameterValue(c *fiber.Ctx) error {
+// 	var req model.CreateMotoParameterValueRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	motoParamIdStr := c.Params("moto_param_id")
+// 	motoParamId, err := strconv.Atoi(motoParamIdStr)
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter id must be integer"),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateMotoParameterValue(ctx, motoParamId, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateMotoParameterValue godoc
+// // @Summary      Update a moto parameter value
+// // @Description  Updates an existing moto parameter value
+// // @Tags         admin-moto-parameter-values
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id                 path      int                                   true  "Moto Parameter Value ID"
+// // @Param        motoParameterValue body      model.UpdateMotoParameterValueRequest true  "Moto parameter value data"
+// // @Success      200                {object}  model.Success
+// // @Failure      400                {object}  model.ResultMessage
+// // @Failure      401                {object}  auth.ErrorResponse
+// // @Failure      403                {object}  auth.ErrorResponse
+// // @Failure      500                {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters/:moto_param_id/values/{id} [put]
+// func (h *AdminHandler) UpdateMotoParameterValue(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter value id must be integer"),
+// 		})
+// 	}
+
+// 	motoParamIdStr := c.Params("moto_param_id")
+// 	motoParamId, err := strconv.Atoi(motoParamIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter id must be integer"),
+// 		})
+// 	}
+
+// 	var req model.UpdateMotoParameterValueRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateMotoParameterValue(ctx, motoParamId, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteMotoParameterValue godoc
+// // @Summary      Delete a moto parameter value
+// // @Description  Deletes a moto parameter value by ID
+// // @Tags         admin-moto-parameter-values
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Moto Parameter Value ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters/:moto_param_id/values/{id} [delete]
+// func (h *AdminHandler) DeleteMotoParameterValue(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter value id must be integer"),
+// 		})
+// 	}
+
+// 	motoParamIdStr := c.Params("moto_param_id")
+// 	motoParamId, err := strconv.Atoi(motoParamIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter id must be integer"),
+// 		})
+// 	}
+
+// 	data := h.AdminService.DeleteMotoParameterValue(ctx, motoParamId, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Moto Category Parameters handlers
+
+// // GetMotoCategoryParameters godoc
+// // @Summary      Get all moto category parameters
+// // @Description  Returns a list of all moto category parameters
+// // @Tags         admin-moto-category-parameters
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminMotoCategoryParameterResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-categories/:category_id/parameters [get]
+// func (h *AdminHandler) GetMotoCategoryParameters(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	categoryIdStr := c.Params("category_id")
+// 	categoryId, err := strconv.Atoi(categoryIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("category id must be integer"),
+// 		})
+// 	}
+
+// 	data := h.AdminService.GetMotoCategoryParameters(ctx, categoryId)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateMotoCategoryParameter godoc
+// // @Summary      Create a new moto category parameter
+// // @Description  Creates a new moto category parameter
+// // @Tags         admin-moto-category-parameters
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        motoCategoryParameter  body      model.CreateMotoCategoryParameterRequest  true  "Moto category parameter data"
+// // @Success      200                    {object}  model.SuccessWithId
+// // @Failure      400                    {object}  model.ResultMessage
+// // @Failure      401                    {object}  auth.ErrorResponse
+// // @Failure      403                    {object}  auth.ErrorResponse
+// // @Failure      500                    {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-categories/:category_id/parameters [post]
+// func (h *AdminHandler) CreateMotoCategoryParameter(c *fiber.Ctx) error {
+// 	var req model.CreateMotoCategoryParameterRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	categoryIdStr := c.Params("category_id")
+// 	categoryId, err := strconv.Atoi(categoryIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("category id must be integer"),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateMotoCategoryParameter(ctx, categoryId, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateMotoCategoryParameter godoc
+// // @Summary      Update a moto category parameter
+// // @Description  Updates an existing moto category parameter
+// // @Tags         admin-moto-category-parameters
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id                    path      int                                      true  "Moto Category Parameter ID"
+// // @Param        motoCategoryParameter body      model.UpdateMotoCategoryParameterRequest true  "Moto category parameter data"
+// // @Success      200                   {object}  model.Success
+// // @Failure      400                   {object}  model.ResultMessage
+// // @Failure      401                   {object}  auth.ErrorResponse
+// // @Failure      403                   {object}  auth.ErrorResponse
+// // @Failure      500                   {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-categories/:category_id/parameters/{id} [put]
+// func (h *AdminHandler) UpdateMotoCategoryParameter(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("parameter id must be integer"),
+// 		})
+// 	}
+
+// 	categoryIdStr := c.Params("category_id")
+// 	categoryId, err := strconv.Atoi(categoryIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("category id must be integer"),
+// 		})
+// 	}
+
+// 	var req model.UpdateMotoCategoryParameterRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.UpdateMotoCategoryParameter(ctx, categoryId, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteMotoCategoryParameter godoc
+// // @Summary      Delete a moto category parameter
+// // @Description  Deletes a moto category parameter by ID
+// // @Tags         admin-moto-category-parameters
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Moto Category Parameter ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-categories/:category_id/parameters/{id} [delete]
+// func (h *AdminHandler) DeleteMotoCategoryParameter(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("parameter id must be integer"),
+// 		})
+// 	}
+
+// 	categoryIdStr := c.Params("category_id")
+// 	categoryId, err := strconv.Atoi(categoryIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("category id must be integer"),
+// 		})
+// 	}
+// 	data := h.AdminService.DeleteMotoCategoryParameter(ctx, categoryId, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Comtrans Categories handlers
+
+// // GetComtransCategories godoc
+// // @Summary      Get all comtrans categories
+// // @Description  Returns a list of all comtrans categories
+// // @Tags         admin-comtrans-categories
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminComtransCategoryResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-categories [get]
+// func (h *AdminHandler) GetComtransCategories(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetComtransCategories(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateComtransCategory godoc
+// // @Summary      Create a new comtrans category
+// // @Description  Creates a new comtrans category
+// // @Tags         admin-comtrans-categories
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        comtransCategory  body      model.CreateComtransCategoryRequest  true  "Comtrans category data"
+// // @Success      200                 {object}  model.SuccessWithId
+// // @Failure      400                 {object}  model.ResultMessage
+// // @Failure      401                 {object}  auth.ErrorResponse
+// // @Failure      403                 {object}  auth.ErrorResponse
+// // @Failure      500                 {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-categories [post]
+// func (h *AdminHandler) CreateComtransCategory(c *fiber.Ctx) error {
+// 	var req model.CreateComtransCategoryRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateComtransCategory(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateComtransCategory godoc
+// // @Summary      Update a comtrans category
+// // @Description  Updates an existing comtrans category
+// // @Tags         admin-comtrans-categories
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id                 path      int                                   true  "Comtrans Category ID"
+// // @Param        comtransCategory body      model.UpdateComtransCategoryRequest true  "Comtrans category data"
+// // @Success      200                {object}  model.Success
+// // @Failure      400                {object}  model.ResultMessage
+// // @Failure      401                {object}  auth.ErrorResponse
+// // @Failure      403                {object}  auth.ErrorResponse
+// // @Failure      500                {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-categories/{id} [put]
+// func (h *AdminHandler) UpdateComtransCategory(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("comtrans category id must be integer"),
+// 		})
+// 	}
+// 	var req model.UpdateComtransCategoryRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateComtransCategory(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteComtransCategory godoc
+// // @Summary      Delete a comtrans category
+// // @Description  Deletes a comtrans category by ID
+// // @Tags         admin-comtrans-categories
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Comtrans Category ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-categories/{id} [delete]
+// func (h *AdminHandler) DeleteComtransCategory(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("comtrans category id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteComtransCategory(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Comtrans Brands handlers
+
+// // GetComtransBrands godoc
+// // @Summary      Get all comtrans brands
+// // @Description  Returns a list of all comtrans brands
+// // @Tags         admin-comtrans-brands
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminComtransBrandResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-brands [get]
+// func (h *AdminHandler) GetComtransBrands(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetComtransBrands(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateComtransBrand godoc
+// // @Summary      Create a new comtrans brand
+// // @Description  Creates a new comtrans brand
+// // @Tags         admin-comtrans-brands
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        comtransBrand  body      model.CreateComtransBrandRequest  true  "Comtrans brand data"
+// // @Success      200              {object}  model.SuccessWithId
+// // @Failure      400              {object}  model.ResultMessage
+// // @Failure      401              {object}  auth.ErrorResponse
+// // @Failure      403              {object}  auth.ErrorResponse
+// // @Failure      500              {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-brands [post]
+// func (h *AdminHandler) CreateComtransBrand(c *fiber.Ctx) error {
+// 	var req model.CreateComtransBrandRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateComtransBrand(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateComtransBrand godoc
+// // @Summary      Update a comtrans brand
+// // @Description  Updates an existing comtrans brand
+// // @Tags         admin-comtrans-brands
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id              path      int                                true  "Comtrans Brand ID"
+// // @Param        comtransBrand body      model.UpdateComtransBrandRequest true  "Comtrans brand data"
+// // @Success      200             {object}  model.Success
+// // @Failure      400             {object}  model.ResultMessage
+// // @Failure      401             {object}  auth.ErrorResponse
+// // @Failure      403             {object}  auth.ErrorResponse
+// // @Failure      500             {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-brands/{id} [put]
+// func (h *AdminHandler) UpdateComtransBrand(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("comtrans brand id must be integer"),
+// 		})
+// 	}
+// 	var req model.UpdateComtransBrandRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateComtransBrand(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteComtransBrand godoc
+// // @Summary      Delete a comtrans brand
+// // @Description  Deletes a comtrans brand by ID
+// // @Tags         admin-comtrans-brands
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Comtrans Brand ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-brands/{id} [delete]
+// func (h *AdminHandler) DeleteComtransBrand(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("comtrans brand id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteComtransBrand(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Comtrans Models handlers
+
+// // GetComtransModels godoc
+// // @Summary      Get all comtrans models
+// // @Description  Returns a list of all comtrans models
+// // @Tags         admin-comtrans-models
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminComtransModelResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-models [get]
+// func (h *AdminHandler) GetComtransModels(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetComtransModels(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateComtransModel godoc
+// // @Summary      Create a new comtrans model
+// // @Description  Creates a new comtrans model
+// // @Tags         admin-comtrans-models
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        comtransModel  body      model.CreateComtransModelRequest  true  "Comtrans model data"
+// // @Success      200              {object}  model.SuccessWithId
+// // @Failure      400              {object}  model.ResultMessage
+// // @Failure      401              {object}  auth.ErrorResponse
+// // @Failure      403              {object}  auth.ErrorResponse
+// // @Failure      500              {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-models [post]
+// func (h *AdminHandler) CreateComtransModel(c *fiber.Ctx) error {
+// 	var req model.CreateComtransModelRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateComtransModel(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateComtransModel godoc
+// // @Summary      Update a comtrans model
+// // @Description  Updates an existing comtrans model
+// // @Tags         admin-comtrans-models
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id              path      int                                true  "Comtrans Model ID"
+// // @Param        comtransModel body      model.UpdateComtransModelRequest true  "Comtrans model data"
+// // @Success      200             {object}  model.Success
+// // @Failure      400             {object}  model.ResultMessage
+// // @Failure      401             {object}  auth.ErrorResponse
+// // @Failure      403             {object}  auth.ErrorResponse
+// // @Failure      500             {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-models/{id} [put]
+// func (h *AdminHandler) UpdateComtransModel(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("comtrans model id must be integer"),
+// 		})
+// 	}
+// 	var req model.UpdateComtransModelRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateComtransModel(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteComtransModel godoc
+// // @Summary      Delete a comtrans model
+// // @Description  Deletes a comtrans model by ID
+// // @Tags         admin-comtrans-models
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Comtrans Model ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-models/{id} [delete]
+// func (h *AdminHandler) DeleteComtransModel(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("comtrans model id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteComtransModel(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Comtrans Parameters handlers
+
+// // GetComtransParameters godoc
+// // @Summary      Get all comtrans parameters
+// // @Description  Returns a list of all comtrans parameters
+// // @Tags         admin-comtrans-parameters
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminComtransParameterResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-parameters [get]
+// func (h *AdminHandler) GetComtransParameters(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.AdminService.GetComtransParameters(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateComtransParameter godoc
+// // @Summary      Create a new comtrans parameter
+// // @Description  Creates a new comtrans parameter
+// // @Tags         admin-comtrans-parameters
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        comtransParameter  body      model.CreateComtransParameterRequest  true  "Comtrans parameter data"
+// // @Success      200                  {object}  model.SuccessWithId
+// // @Failure      400                  {object}  model.ResultMessage
+// // @Failure      401                  {object}  auth.ErrorResponse
+// // @Failure      403                  {object}  auth.ErrorResponse
+// // @Failure      500                  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-parameters [post]
+// func (h *AdminHandler) CreateComtransParameter(c *fiber.Ctx) error {
+// 	var req model.CreateComtransParameterRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateComtransParameter(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateComtransParameter godoc
+// // @Summary      Update a comtrans parameter
+// // @Description  Updates an existing comtrans parameter
+// // @Tags         admin-comtrans-parameters
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id                  path      int                                    true  "Comtrans Parameter ID"
+// // @Param        comtransParameter body      model.UpdateComtransParameterRequest true  "Comtrans parameter data"
+// // @Success      200                 {object}  model.Success
+// // @Failure      400                 {object}  model.ResultMessage
+// // @Failure      401                 {object}  auth.ErrorResponse
+// // @Failure      403                 {object}  auth.ErrorResponse
+// // @Failure      500                 {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-parameters/{id} [put]
+// func (h *AdminHandler) UpdateComtransParameter(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("comtrans parameter id must be integer"),
+// 		})
+// 	}
+// 	var req model.UpdateComtransParameterRequest
+// 	ctx := c.Context()
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateComtransParameter(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteComtransParameter godoc
+// // @Summary      Delete a comtrans parameter
+// // @Description  Deletes a comtrans parameter by ID
+// // @Tags         admin-comtrans-parameters
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Comtrans Parameter ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-parameters/{id} [delete]
+// func (h *AdminHandler) DeleteComtransParameter(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("comtrans parameter id must be integer"),
+// 		})
+// 	}
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteComtransParameter(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Comtrans Parameter Values handlers
+
+// // GetComtransParameterValues godoc
+// // @Summary      Get all comtrans parameter values
+// // @Description  Returns a list of all comtrans parameter values
+// // @Tags         admin-comtrans-parameter-values
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminComtransParameterValueResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-parameters/:parameter_id/values [get]
+// func (h *AdminHandler) GetComtransParameterValues(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	parameterIdStr := c.Params("parameter_id")
+// 	parameterId, err := strconv.Atoi(parameterIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("parameter id must be integer"),
+// 		})
+// 	}
+
+// 	data := h.AdminService.GetComtransParameterValues(ctx, parameterId)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateComtransParameterValue godoc
+// // @Summary      Create a new comtrans parameter value
+// // @Description  Creates a new comtrans parameter value
+// // @Tags         admin-comtrans-parameter-values
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        comtransParameterValue  body      model.CreateComtransParameterValueRequest  true  "Comtrans parameter value data"
+// // @Success      200                  {object}  model.SuccessWithId
+// // @Failure      400                  {object}  model.ResultMessage
+// // @Failure      401                  {object}  auth.ErrorResponse
+// // @Failure      403                  {object}  auth.ErrorResponse
+// // @Failure      500                  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-parameters/:parameter_id/values [post]
+// func (h *AdminHandler) CreateComtransParameterValue(c *fiber.Ctx) error {
+// 	var req model.CreateComtransParameterValueRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	parameterIdStr := c.Params("parameter_id")
+// 	parameterId, err := strconv.Atoi(parameterIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("parameter id must be integer"),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateComtransParameterValue(ctx, parameterId, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateComtransParameterValue godoc
+// // @Summary      Update a comtrans parameter value
+// // @Description  Updates an existing comtrans parameter value
+// // @Tags         admin-comtrans-parameter-values
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id                  path      int                                    true  "Comtrans Parameter Value ID"
+// // @Param        comtransParameterValue body      model.UpdateComtransParameterValueRequest true  "Comtrans parameter value data"
+// // @Success      200                 {object}  model.Success
+// // @Failure      400                 {object}  model.ResultMessage
+// // @Failure      401                 {object}  auth.ErrorResponse
+// // @Failure      403                 {object}  auth.ErrorResponse
+// // @Failure      500                 {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-parameters/:parameter_id/values/{id} [put]
+// func (h *AdminHandler) UpdateComtransParameterValue(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("comtrans parameter value id must be integer"),
+// 		})
+// 	}
+
+// 	parameterIdStr := c.Params("parameter_id")
+// 	parameterId, err := strconv.Atoi(parameterIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("parameter id must be integer"),
+// 		})
+// 	}
+
+// 	var req model.UpdateComtransParameterValueRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	data := h.AdminService.UpdateComtransParameterValue(ctx, parameterId, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteComtransParameterValue godoc
+// // @Summary      Delete a comtrans parameter value
+// // @Description  Deletes a comtrans parameter value by ID
+// // @Tags         admin-comtrans-parameter-values
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Comtrans Parameter Value ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans-parameters/:parameter_id/values/{id} [delete]
+// func (h *AdminHandler) DeleteComtransParameterValue(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("comtrans parameter value id must be integer"),
+// 		})
+// 	}
+
+// 	ctx := c.Context()
+// 	parameterIdStr := c.Params("parameter_id")
+// 	parameterId, err := strconv.Atoi(parameterIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("parameter id must be integer"),
+// 		})
+// 	}
+
+// 	data := h.AdminService.DeleteComtransParameterValue(ctx, parameterId, id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // Comtrans Category Parameters handlers
+
+// // GetComtransCategoryParameters godoc
+// // @Summary      Get all comtrans category parameters
+// // @Description  Returns a list of all comtrans category parameters
+// // @Tags         admin-comtrans-category-parameters
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminComtransCategoryParameterResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/categories/:category_id/comtrans-category-parameters [get]
+// func (h *AdminHandler) GetComtransCategoryParameters(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	categoryIdStr := c.Params("category_id")
+// 	categoryId, err := strconv.Atoi(categoryIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("category id must be integer"),
+// 		})
+// 	}
+
+// 	data := h.AdminService.GetComtransCategoryParameters(ctx, categoryId)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // CreateComtransCategoryParameter godoc
+// // @Summary      Create a new comtrans category parameter
+// // @Description  Creates a new comtrans category parameter
+// // @Tags         admin-comtrans-category-parameters
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        comtransCategoryParameter  body      model.CreateComtransCategoryParameterRequest  true  "Comtrans category parameter data"
+// // @Success      200                  {object}  model.SuccessWithId
+// // @Failure      400                  {object}  model.ResultMessage
+// // @Failure      401                  {object}  auth.ErrorResponse
+// // @Failure      403                  {object}  auth.ErrorResponse
+// // @Failure      500                  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/categories/:category_id/comtrans-category-parameters [post]
+// func (h *AdminHandler) CreateComtransCategoryParameter(c *fiber.Ctx) error {
+// 	var req model.CreateComtransCategoryParameterRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	categoryIdStr := c.Params("category_id")
+// 	categoryId, err := strconv.Atoi(categoryIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("category id must be integer"),
+// 		})
+// 	}
+
+// 	data := h.AdminService.CreateComtransCategoryParameter(ctx, categoryId, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // UpdateComtransCategoryParameter godoc
+// // @Summary      Update a comtrans category parameter
+// // @Description  Updates an existing comtrans category parameter
+// // @Tags         admin-comtrans-category-parameters
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id     path      int                       true  "Comtrans Category Parameter ID"
+// // @Param        comtransCategoryParameter  body      model.UpdateComtransCategoryParameterRequest  true  "Comtrans category parameter data"
+// // @Success      200    {object}  model.Success
+// // @Failure      400    {object}  model.ResultMessage
+// // @Failure      401    {object}  auth.ErrorResponse
+// // @Failure      403    {object}  auth.ErrorResponse
+// // @Failure      500    {object}  model.ResultMessage
+// // @Router       /api/v1/admin/categories/:category_id/comtrans-category-parameters/{id} [put]
+// func (h *AdminHandler) UpdateComtransCategoryParameter(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("comtrans category parameter id must be integer"),
+// 		})
+// 	}
+
+// 	categoryIdStr := c.Params("category_id")
+// 	categoryId, err := strconv.Atoi(categoryIdStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("category id must be integer"),
+// 		})
+// 	}
+
+// 	var req model.UpdateComtransCategoryParameterRequest
+// 	ctx := c.Context()
+
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request data: " + err.Error()),
+// 		})
+// 	}
+// 	data := h.AdminService.UpdateComtransCategoryParameter(ctx, categoryId, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteComtransCategoryParameter godoc
+// // @Summary      Delete a comtrans category parameter
+// // @Description  Deletes a comtrans category parameter by ID
+// // @Tags         admin-comtrans-category-parameters
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Comtrans Category Parameter ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/categories/:category_id/comtrans-category-parameters/{id} [delete]
+// func (h *AdminHandler) DeleteComtransCategoryParameter(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("comtrans category parameter id must be integer"),
+// 		})
+// 	}
+
+// 	ctx := c.Context()
+// 	data := h.AdminService.DeleteComtransCategoryParameter(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }

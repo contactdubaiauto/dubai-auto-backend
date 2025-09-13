@@ -15,6 +15,22 @@ func NewAuthRepository(db *pgxpool.Pool) *AuthRepository {
 	return &AuthRepository{db}
 }
 
+func (r *AuthRepository) UserLoginGoogle(ctx *fasthttp.RequestCtx, claims model.IDTokenClaims) (model.UserByEmail, error) {
+	query := `
+		INSERT INTO users (email, password)
+		VALUES ($1, 'google')
+		ON CONFLICT (email)
+		DO NOTHING
+		RETURNING id, type;
+	`
+	row := r.db.QueryRow(ctx, query, claims.Email)
+
+	var userByEmail model.UserByEmail
+	err := row.Scan(&userByEmail.ID, &userByEmail.Type)
+
+	return userByEmail, err
+}
+
 func (r *AuthRepository) DeleteAccount(ctx *fasthttp.RequestCtx, userID int) error {
 
 	// Delete user

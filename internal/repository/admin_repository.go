@@ -77,15 +77,15 @@ func (r *AdminRepository) GetBrands(ctx *fasthttp.RequestCtx) ([]model.AdminBran
 }
 
 func (r *AdminRepository) CreateBrand(ctx *fasthttp.RequestCtx, req *model.CreateBrandRequest) (int, error) {
-	q := `INSERT INTO brands (name, logo, popular, updated_at) VALUES ($1, $2, $3, NOW()) RETURNING id`
+	q := `INSERT INTO brands (name, popular, updated_at) VALUES ($1, $2, NOW()) RETURNING id`
 	var id int
-	err := r.db.QueryRow(ctx, q, req.Name, req.Logo, req.Popular).Scan(&id)
+	err := r.db.QueryRow(ctx, q, req.Name, req.Popular).Scan(&id)
 	return id, err
 }
 
-func (r *AdminRepository) UpdateBrand(ctx *fasthttp.RequestCtx, id int, req *model.UpdateBrandRequest) error {
-	q := `UPDATE brands SET name = $2, logo = $3, popular = $4, updated_at = NOW() WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.Logo, req.Popular)
+func (r *AdminRepository) UpdateBrand(ctx *fasthttp.RequestCtx, id int, req *model.CreateBrandRequest) error {
+	q := `UPDATE brands SET name = $2, popular = $3, updated_at = NOW() WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.Popular)
 	return err
 }
 
@@ -96,12 +96,13 @@ func (r *AdminRepository) DeleteBrand(ctx *fasthttp.RequestCtx, id int) error {
 }
 
 // Models CRUD operations
-func (r *AdminRepository) GetModels(ctx *fasthttp.RequestCtx) ([]model.AdminModelResponse, error) {
+func (r *AdminRepository) GetModels(ctx *fasthttp.RequestCtx, brand_id int) ([]model.AdminModelResponse, error) {
 	models := make([]model.AdminModelResponse, 0)
 	q := `
 		SELECT m.id, m.name, m.brand_id, b.name as brand_name, m.popular, m.updated_at 
 		FROM models m
 		LEFT JOIN brands b ON m.brand_id = b.id
+		WHERE m.brand_id = $1
 		ORDER BY m.id DESC
 	`
 
@@ -121,10 +122,10 @@ func (r *AdminRepository) GetModels(ctx *fasthttp.RequestCtx) ([]model.AdminMode
 	return models, err
 }
 
-func (r *AdminRepository) CreateModel(ctx *fasthttp.RequestCtx, req *model.CreateModelRequest) (int, error) {
+func (r *AdminRepository) CreateModel(ctx *fasthttp.RequestCtx, brand_id int, req *model.CreateModelRequest) (int, error) {
 	q := `INSERT INTO models (name, brand_id, popular, updated_at) VALUES ($1, $2, $3, NOW()) RETURNING id`
 	var id int
-	err := r.db.QueryRow(ctx, q, req.Name, req.BrandID, req.Popular).Scan(&id)
+	err := r.db.QueryRow(ctx, q, req.Name, brand_id, req.Popular).Scan(&id)
 	return id, err
 }
 
@@ -168,7 +169,19 @@ func (r *AdminRepository) CreateBodyType(ctx *fasthttp.RequestCtx, req *model.Cr
 	return id, err
 }
 
-func (r *AdminRepository) UpdateBodyType(ctx *fasthttp.RequestCtx, id int, req *model.UpdateBodyTypeRequest) error {
+func (r *AdminRepository) CreateBodyTypeImage(ctx *fasthttp.RequestCtx, id int, paths []string) error {
+	q := `INSERT INTO body_types_images (body_type_id, image) VALUES ($1, $2) RETURNING id`
+	_, err := r.db.Exec(ctx, q, id, paths)
+	return err
+}
+
+func (r *AdminRepository) DeleteBodyTypeImage(ctx *fasthttp.RequestCtx, id int) error {
+	q := `DELETE FROM body_types_images WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id)
+	return err
+}
+
+func (r *AdminRepository) UpdateBodyType(ctx *fasthttp.RequestCtx, id int, req *model.CreateBodyTypeRequest) error {
 	q := `UPDATE body_types SET name = $2, image = $3 WHERE id = $1`
 	_, err := r.db.Exec(ctx, q, id, req.Name, req.Image)
 	return err

@@ -1,5 +1,9 @@
 package model
 
+type UserLoginGoogle struct {
+	TokenID string `json:"token_id" binding:"required"`
+}
+
 type UserEmailConfirmationRequest struct {
 	Email string `json:"email" binding:"required,email"`
 	OTP   string `json:"otp" binding:"required"`
@@ -23,6 +27,7 @@ type UserByEmail struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`
 	OTP      string `json:"otp"`
+	Type     int    `json:"type"`
 }
 
 type UserByPhone struct {
@@ -32,7 +37,7 @@ type UserByPhone struct {
 	OTP      string `json:"otp"`
 }
 
-type LoFiberResponse struct {
+type LoginFiberResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }

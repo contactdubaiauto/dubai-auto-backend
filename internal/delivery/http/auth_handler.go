@@ -8,14 +8,51 @@ import (
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
 	"dubai-auto/internal/utils"
+	"dubai-auto/pkg/auth"
 )
 
 type AuthHandler struct {
-	service *service.AuthService
+	service   *service.AuthService
+	validator *auth.Validator
 }
 
 func NewAuthHandler(service *service.AuthService) *AuthHandler {
-	return &AuthHandler{service}
+	return &AuthHandler{service, auth.NewValidator()}
+}
+
+// UserLoginGoogle godoc
+// @Summary      User login google
+// @Description  Authenticates a user and returns a JWT token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      model.UserLoginGoogle  true  "User login google credentials"
+// @Success      200   {object}  model.LoginFiberResponse
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/auth/user-login-google [post]
+func (h *AuthHandler) UserLoginGoogle(c *fiber.Ctx) error {
+	user := &model.UserLoginGoogle{}
+
+	if err := c.BodyParser(user); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	if err := h.validator.Validate(user); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	data := h.service.UserLoginGoogle(c.Context(), user.TokenID)
+	return utils.FiberResponse(c, &data)
 }
 
 // UserEmail confirmation godoc
@@ -25,7 +62,7 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 // @Accept       json
 // @Produce      json
 // @Param        user  body      model.UserEmailConfirmationRequest  true  "User email confirmation credentials"
-// @Success      200   {object}  model.LoFiberResponse
+// @Success      200   {object}  model.LoginFiberResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  auth.ErrorResponse
 // @Failure      403   {object}  auth.ErrorResponse
@@ -54,7 +91,7 @@ func (h *AuthHandler) UserEmailConfirmation(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Param        user  body      model.UserPhoneConfirmationRequest  true  "User phone confirmation credentials"
-// @Success      200   {object}  model.LoFiberResponse
+// @Success      200   {object}  model.LoginFiberResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  auth.ErrorResponse
 // @Failure      403   {object}  auth.ErrorResponse

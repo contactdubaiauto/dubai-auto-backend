@@ -2,11 +2,14 @@ package service
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
+	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/valyala/fasthttp"
 	"golang.org/x/crypto/bcrypt"
 
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/utils"
@@ -19,6 +22,41 @@ type AuthService struct {
 
 func NewAuthService(repo *repository.AuthRepository) *AuthService {
 	return &AuthService{repo}
+}
+
+func (s *AuthService) UserLoginGoogle(ctx *fasthttp.RequestCtx, tokenID string) model.Response {
+	var claims model.IDTokenClaims
+	provider, err := oidc.NewProvider(ctx, "https://accounts.google.com")
+
+	if err != nil {
+		log.Fatalf("failed to get provider: %v", err)
+	}
+
+	verifier := provider.Verifier(&oidc.Config{ClientID: config.ENV.ClientID})
+	idToken, err := verifier.Verify(ctx, tokenID)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusUnauthorized}
+	}
+
+	if err := idToken.Claims(&claims); err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	u, err := s.repo.UserLoginGoogle(ctx, claims)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, 1)
+
+	return model.Response{
+		Data: model.LoginFiberResponse{
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+		},
+	}
 }
 
 func (s *AuthService) DeleteAccount(ctx *fasthttp.RequestCtx, userID int) *model.Response {
@@ -57,7 +95,7 @@ func (s *AuthService) UserEmailConfirmation(ctx *fasthttp.RequestCtx, user *mode
 	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, 1)
 
 	return model.Response{
-		Data: model.LoFiberResponse{
+		Data: model.LoginFiberResponse{
 			AccessToken:  accessToken,
 			RefreshToken: refreshToken,
 		},
@@ -90,7 +128,7 @@ func (s *AuthService) UserPhoneConfirmation(ctx *fasthttp.RequestCtx, user *mode
 	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, 1)
 
 	return model.Response{
-		Data: model.LoFiberResponse{
+		Data: model.LoginFiberResponse{
 			AccessToken:  accessToken,
 			RefreshToken: refreshToken,
 		},

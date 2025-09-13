@@ -17,6 +17,7 @@ func loadEnvVariable(key string) string {
 }
 
 type Config struct {
+	ClientID             string
 	MIGRATE              string
 	DB_HOST              string
 	DB_PORT              string
@@ -43,6 +44,8 @@ func Init() *Config {
 	godotenv.Load(".env")
 
 	ENV.PORT = loadEnvVariable("PORT")
+
+	ENV.ClientID = loadEnvVariable("GOOGLE_CLIENT_ID")
 
 	ENV.DB_HOST = loadEnvVariable("DB_HOST")
 	ENV.DB_PORT = loadEnvVariable("DB_PORT")

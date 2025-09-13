@@ -87,19 +87,11 @@ type UpdateCityRequest struct {
 
 type CreateBrandRequest struct {
 	Name    string `json:"name" validate:"required,min=2,max=255"`
-	Logo    string `json:"logo" validate:"required"`
-	Popular bool   `json:"popular"`
-}
-
-type UpdateBrandRequest struct {
-	Name    string `json:"name" validate:"required,min=2,max=255"`
-	Logo    string `json:"logo" validate:"required"`
 	Popular bool   `json:"popular"`
 }
 
 type CreateModelRequest struct {
 	Name    string `json:"name" validate:"required,min=2,max=255"`
-	BrandID int    `json:"brand_id" validate:"required"`
 	Popular bool   `json:"popular"`
 }
 
@@ -107,16 +99,6 @@ type UpdateModelRequest struct {
 	Name    string `json:"name" validate:"required,min=2,max=255"`
 	BrandID int    `json:"brand_id" validate:"required"`
 	Popular bool   `json:"popular"`
-}
-
-type CreateBodyTypeRequest struct {
-	Name  string `json:"name" validate:"required,min=2,max=255"`
-	Image string `json:"image" validate:"required"`
-}
-
-type UpdateBodyTypeRequest struct {
-	Name  string `json:"name" validate:"required,min=2,max=255"`
-	Image string `json:"image" validate:"required"`
 }
 
 type AdminCityResponse struct {
