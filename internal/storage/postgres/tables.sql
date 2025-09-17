@@ -55,6 +55,7 @@ create table temp_users (
     "role_id" int not null default 1, -- 1 user, 2 dealer, 3 logistic, 4 broker
     "password" varchar(100) not null,
     "phone" varchar(100),
+    "status" int not null default 1, -- 1 active, 2 inactive
     "registered_by" varchar(20) not null,
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
@@ -65,9 +66,11 @@ create table temp_users (
 create table users (
     "id" serial primary key,
     "email" varchar(100),
+    "username" varchar(100) not null,
     "role_id" int not null default 1, -- 1 user, 2 dealer, 3 logistic, 4 broker
     "password" varchar(100) not null,
     "phone" varchar(100),
+    "status" int not null default 1, -- 1 active, 2 inactive
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
     unique("email"),

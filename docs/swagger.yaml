@@ -117,17 +117,14 @@ definitions:
       image:
         type: string
       name:
-        maxLength: 255
+        maxLength: 50
         minLength: 2
         type: string
     required:
-    - image
     - name
     type: object
   model.CreateBrandRequest:
     properties:
-      logo:
-        type: string
       name:
         maxLength: 255
         minLength: 2
@@ -135,7 +132,6 @@ definitions:
       popular:
         type: boolean
     required:
-    - logo
     - name
     type: object
   model.CreateCarRequest:
@@ -298,8 +294,6 @@ definitions:
     type: object
   model.CreateModelRequest:
     properties:
-      brand_id:
-        type: integer
       name:
         maxLength: 255
         minLength: 2
@@ -307,7 +301,6 @@ definitions:
       popular:
         type: boolean
     required:
-    - brand_id
     - name
     type: object
   model.CreateMotorcycleParameterRequest:
@@ -938,7 +931,7 @@ definitions:
           $ref: '#/definitions/model.GetCarsResponse'
         type: array
     type: object
-  model.LoFiberResponse:
+  model.LoginFiberResponse:
     properties:
       access_token:
         type: string
@@ -1028,32 +1021,6 @@ definitions:
         type: integer
       name:
         type: string
-    type: object
-  model.UpdateBodyTypeRequest:
-    properties:
-      image:
-        type: string
-      name:
-        maxLength: 255
-        minLength: 2
-        type: string
-    required:
-    - image
-    - name
-    type: object
-  model.UpdateBrandRequest:
-    properties:
-      logo:
-        type: string
-      name:
-        maxLength: 255
-        minLength: 2
-        type: string
-      popular:
-        type: boolean
-    required:
-    - logo
-    - name
     type: object
   model.UpdateCarRequest:
     properties:
@@ -1168,6 +1135,13 @@ definitions:
         type: string
     required:
     - email
+    type: object
+  model.UserLoginGoogle:
+    properties:
+      token_id:
+        type: string
+    required:
+    - token_id
     type: object
   model.UserLoginPhone:
     properties:
@@ -1302,6 +1276,49 @@ paths:
       summary: Delete a body type
       tags:
       - admin-body-types
+    post:
+      consumes:
+      - application/json
+      description: Creates a new body type image
+      parameters:
+      - description: Body type ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: body type image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a new body type image
+      tags:
+      - admin-body-types
     put:
       consumes:
       - application/json
@@ -1317,7 +1334,7 @@ paths:
         name: bodyType
         required: true
         schema:
-          $ref: '#/definitions/model.UpdateBodyTypeRequest'
+          $ref: '#/definitions/model.CreateBodyTypeRequest'
       produces:
       - application/json
       responses:
@@ -1344,6 +1361,43 @@ paths:
       security:
       - BearerAuth: []
       summary: Update a body type
+      tags:
+      - admin-body-types
+  /api/v1/admin/body-types/{id}/images:
+    delete:
+      description: Deletes a body type image by ID
+      parameters:
+      - description: Body type image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a body type image
       tags:
       - admin-body-types
   /api/v1/admin/brands:
@@ -1418,6 +1472,159 @@ paths:
       summary: Create a new brand
       tags:
       - admin-brands
+  /api/v1/admin/brands/:brand_id/models:
+    get:
+      description: Returns a list of all models
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminModelResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all models
+      tags:
+      - admin-models
+    post:
+      consumes:
+      - application/json
+      description: Creates a new model
+      parameters:
+      - description: Model data
+        in: body
+        name: model
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateModelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a new model
+      tags:
+      - admin-models
+  /api/v1/admin/brands/:brand_id/models/{id}:
+    delete:
+      description: Deletes a model by ID
+      parameters:
+      - description: Model ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a model
+      tags:
+      - admin-models
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing model
+      parameters:
+      - description: Model ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Model data
+        in: body
+        name: model
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateModelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a model
+      tags:
+      - admin-models
   /api/v1/admin/brands/{id}:
     delete:
       description: Deletes a brand by ID
@@ -1470,7 +1677,7 @@ paths:
         name: brand
         required: true
         schema:
-          $ref: '#/definitions/model.UpdateBrandRequest'
+          $ref: '#/definitions/model.CreateBrandRequest'
       produces:
       - application/json
       responses:
@@ -1652,159 +1859,6 @@ paths:
       summary: Update a city
       tags:
       - admin-cities
-  /api/v1/admin/models:
-    get:
-      description: Returns a list of all models
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.AdminModelResponse'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get all models
-      tags:
-      - admin-models
-    post:
-      consumes:
-      - application/json
-      description: Creates a new model
-      parameters:
-      - description: Model data
-        in: body
-        name: model
-        required: true
-        schema:
-          $ref: '#/definitions/model.CreateModelRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.SuccessWithId'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Create a new model
-      tags:
-      - admin-models
-  /api/v1/admin/models/{id}:
-    delete:
-      description: Deletes a model by ID
-      parameters:
-      - description: Model ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Delete a model
-      tags:
-      - admin-models
-    put:
-      consumes:
-      - application/json
-      description: Updates an existing model
-      parameters:
-      - description: Model ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Model data
-        in: body
-        name: model
-        required: true
-        schema:
-          $ref: '#/definitions/model.UpdateModelRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Update a model
-      tags:
-      - admin-models
   /api/v1/auth/account/{id}:
     delete:
       description: Deletes the authenticated user's account and related data
@@ -1864,7 +1918,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.LoFiberResponse'
+            $ref: '#/definitions/model.LoginFiberResponse'
         "400":
           description: Bad Request
           schema:
@@ -1930,6 +1984,48 @@ paths:
       summary: User login email
       tags:
       - auth
+  /api/v1/auth/user-login-google:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token
+      parameters:
+      - description: User login google credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserLoginGoogle'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.LoginFiberResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: User login google
+      tags:
+      - auth
   /api/v1/auth/user-login-phone:
     post:
       consumes:
@@ -1990,7 +2086,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.LoFiberResponse'
+            $ref: '#/definitions/model.LoginFiberResponse'
         "400":
           description: Bad Request
           schema:

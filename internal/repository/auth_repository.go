@@ -21,12 +21,12 @@ func (r *AuthRepository) UserLoginGoogle(ctx *fasthttp.RequestCtx, claims model.
 		VALUES ($1, 'google')
 		ON CONFLICT (email)
 		DO NOTHING
-		RETURNING id, type;
+		RETURNING id, role_id;
 	`
 	row := r.db.QueryRow(ctx, query, claims.Email)
 
 	var userByEmail model.UserByEmail
-	err := row.Scan(&userByEmail.ID, &userByEmail.Type)
+	err := row.Scan(&userByEmail.ID, &userByEmail.RoleID)
 
 	return userByEmail, err
 }

@@ -27,7 +27,7 @@ type UserByEmail struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`
 	OTP      string `json:"otp"`
-	Type     int    `json:"type"`
+	RoleID   int    `json:"role_id"`
 }
 
 type UserByPhone struct {

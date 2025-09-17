@@ -499,7 +499,7 @@ func (h *AdminHandler) CreateBodyType(c *fiber.Ctx) error {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id        path      int                          true  "Body type ID"
-// @Param        bodyType  body      model.CreateBodyTypeImageRequest  true  "Body type image data"
+// @Param        image     formData  file    true   "body type image"
 // @Success      200       {object}  model.SuccessWithId
 // @Failure      400       {object}  model.ResultMessage
 // @Failure      401       {object}  auth.ErrorResponse
