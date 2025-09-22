@@ -5,7 +5,6 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	_ "dubai-auto/docs"
-	"dubai-auto/pkg/auth"
 )
 
 func Init(r *fiber.App, db *pgxpool.Pool) {
@@ -22,7 +21,7 @@ func Init(r *fiber.App, db *pgxpool.Pool) {
 	comtransRoute := r.Group("/api/v1/comtrans")
 	SetupComtranRoutes(comtransRoute, db)
 
-	adminRoute := r.Group("/api/v1/admin", auth.TokenGuard)
+	adminRoute := r.Group("/api/v1/admin")
 	SetupAdminRoutes(adminRoute, db)
 
 	thirdPartyRoute := r.Group("/api/v1/third-party")

@@ -28,7 +28,7 @@ func (s *AdminService) GetCities(ctx *fasthttp.RequestCtx) *model.Response {
 	return &model.Response{Data: cities}
 }
 
-func (s *AdminService) CreateCity(ctx *fasthttp.RequestCtx, req *model.CreateCityRequest) *model.Response {
+func (s *AdminService) CreateCity(ctx *fasthttp.RequestCtx, req *model.CreateNameRequest) *model.Response {
 	id, err := s.AdminRepository.CreateCity(ctx, req)
 
 	if err != nil {
@@ -38,7 +38,7 @@ func (s *AdminService) CreateCity(ctx *fasthttp.RequestCtx, req *model.CreateCit
 	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "City created successfully"}}
 }
 
-func (s *AdminService) UpdateCity(ctx *fasthttp.RequestCtx, id int, req *model.UpdateCityRequest) *model.Response {
+func (s *AdminService) UpdateCity(ctx *fasthttp.RequestCtx, id int, req *model.CreateNameRequest) *model.Response {
 	err := s.AdminRepository.UpdateCity(ctx, id, req)
 
 	if err != nil {
@@ -359,42 +359,42 @@ func (s *AdminService) DeleteBodyTypeImage(ctx *fasthttp.RequestCtx, id int) *mo
 // 	return &model.Response{Data: model.Success{Message: "Fuel type deleted successfully"}}
 // }
 
-// // Regions service methods
-// func (s *AdminService) GetRegions(ctx *fasthttp.RequestCtx, city_id int) *model.Response {
-// 	regions, err := s.AdminRepository.GetRegions(ctx, city_id)
+// Regions service methods
+func (s *AdminService) GetRegions(ctx *fasthttp.RequestCtx, city_id int) *model.Response {
+	regions, err := s.AdminRepository.GetRegions(ctx, city_id)
 
-// 	if err != nil {
-// 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return &model.Response{Data: regions}
-// }
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: regions}
+}
 
-// func (s *AdminService) CreateRegion(ctx *fasthttp.RequestCtx, city_id int, req *model.CreateRegionRequest) *model.Response {
-// 	id, err := s.AdminRepository.CreateRegion(ctx, city_id, req)
+func (s *AdminService) CreateRegion(ctx *fasthttp.RequestCtx, city_id int, req *model.CreateNameRequest) *model.Response {
+	id, err := s.AdminRepository.CreateRegion(ctx, city_id, req)
 
-// 	if err != nil {
-// 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Region created successfully"}}
-// }
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Region created successfully"}}
+}
 
-// func (s *AdminService) UpdateRegion(ctx *fasthttp.RequestCtx, id int, req *model.UpdateRegionRequest) *model.Response {
-// 	err := s.AdminRepository.UpdateRegion(ctx, id, req)
+func (s *AdminService) UpdateRegion(ctx *fasthttp.RequestCtx, id int, req *model.CreateNameRequest) *model.Response {
+	err := s.AdminRepository.UpdateRegion(ctx, id, req)
 
-// 	if err != nil {
-// 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return &model.Response{Data: model.Success{Message: "Region updated successfully"}}
-// }
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: model.Success{Message: "Region updated successfully"}}
+}
 
-// func (s *AdminService) DeleteRegion(ctx *fasthttp.RequestCtx, id int) *model.Response {
-// 	err := s.AdminRepository.DeleteRegion(ctx, id)
+func (s *AdminService) DeleteRegion(ctx *fasthttp.RequestCtx, id int) *model.Response {
+	err := s.AdminRepository.DeleteRegion(ctx, id)
 
-// 	if err != nil {
-// 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return &model.Response{Data: model.Success{Message: "Region deleted successfully"}}
-// }
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: model.Success{Message: "Region deleted successfully"}}
+}
 
 // // Service Types service methods
 // func (s *AdminService) GetServiceTypes(ctx *fasthttp.RequestCtx) *model.Response {

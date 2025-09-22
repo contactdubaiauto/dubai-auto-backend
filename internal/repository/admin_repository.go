@@ -36,14 +36,14 @@ func (r *AdminRepository) GetCities(ctx *fasthttp.RequestCtx) ([]model.AdminCity
 	return cities, err
 }
 
-func (r *AdminRepository) CreateCity(ctx *fasthttp.RequestCtx, req *model.CreateCityRequest) (int, error) {
+func (r *AdminRepository) CreateCity(ctx *fasthttp.RequestCtx, req *model.CreateNameRequest) (int, error) {
 	q := `INSERT INTO cities (name) VALUES ($1) RETURNING id`
 	var id int
 	err := r.db.QueryRow(ctx, q, req.Name).Scan(&id)
 	return id, err
 }
 
-func (r *AdminRepository) UpdateCity(ctx *fasthttp.RequestCtx, id int, req *model.UpdateCityRequest) error {
+func (r *AdminRepository) UpdateCity(ctx *fasthttp.RequestCtx, id int, req *model.CreateNameRequest) error {
 	q := `UPDATE cities SET name = $2 WHERE id = $1`
 	_, err := r.db.Exec(ctx, q, id, req.Name)
 	return err
@@ -189,6 +189,46 @@ func (r *AdminRepository) UpdateBodyType(ctx *fasthttp.RequestCtx, id int, req *
 
 func (r *AdminRepository) DeleteBodyType(ctx *fasthttp.RequestCtx, id int) error {
 	q := `DELETE FROM body_types WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id)
+	return err
+}
+
+// Regions CRUD operations
+func (r *AdminRepository) GetRegions(ctx *fasthttp.RequestCtx, cityID int) ([]model.AdminCityResponse, error) {
+	regions := make([]model.AdminCityResponse, 0)
+	q := `SELECT id, name, created_at FROM regions where city_id = $1`
+
+	rows, err := r.db.Query(ctx, q, cityID)
+	if err != nil {
+		return regions, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var region model.AdminCityResponse
+		if err := rows.Scan(&region.ID, &region.Name, &region.CreatedAt); err != nil {
+			return regions, err
+		}
+		regions = append(regions, region)
+	}
+	return regions, err
+}
+
+func (r *AdminRepository) CreateRegion(ctx *fasthttp.RequestCtx, city_id int, req *model.CreateNameRequest) (int, error) {
+	q := `INSERT INTO regions (name, city_id) VALUES ($1, $2) RETURNING id`
+	var id int
+	err := r.db.QueryRow(ctx, q, req.Name, city_id).Scan(&id)
+	return id, err
+}
+
+func (r *AdminRepository) UpdateRegion(ctx *fasthttp.RequestCtx, id int, req *model.CreateNameRequest) error {
+	q := `UPDATE regions SET name = $2 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name)
+	return err
+}
+
+func (r *AdminRepository) DeleteRegion(ctx *fasthttp.RequestCtx, id int) error {
+	q := `DELETE FROM regions WHERE id = $1`
 	_, err := r.db.Exec(ctx, q, id)
 	return err
 }

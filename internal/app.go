@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	fb_logger "github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"dubai-auto/internal/config"
@@ -19,7 +20,7 @@ func InitApp(db *pgxpool.Pool, conf *config.Config, logger *logger.Logger) *fibe
 		BodyLimit: 50 * 1024 * 1024,
 	}
 	app := fiber.New(appConfig)
-
+	app.Use(pprof.New())
 	app.Use(auth.Cors)
 
 	if config.ENV.APP_MODE == "release" {

@@ -50,7 +50,7 @@ func (h *AdminHandler) GetCities(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        city  body      model.CreateCityRequest  true  "City data"
+// @Param        city  body      model.CreateNameRequest  true  "City data"
 // @Success      200   {object}  model.SuccessWithId
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  auth.ErrorResponse
@@ -58,7 +58,7 @@ func (h *AdminHandler) GetCities(c *fiber.Ctx) error {
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/admin/cities [post]
 func (h *AdminHandler) CreateCity(c *fiber.Ctx) error {
-	var req model.CreateCityRequest
+	var req model.CreateNameRequest
 	ctx := c.Context()
 
 	if err := c.BodyParser(&req); err != nil {
@@ -87,7 +87,7 @@ func (h *AdminHandler) CreateCity(c *fiber.Ctx) error {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id    path      int                      true  "City ID"
-// @Param        city  body      model.UpdateCityRequest  true  "City data"
+// @Param        city  body      model.CreateNameRequest  true  "City data"
 // @Success      200   {object}  model.Success
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  auth.ErrorResponse
@@ -105,7 +105,7 @@ func (h *AdminHandler) UpdateCity(c *fiber.Ctx) error {
 		})
 	}
 
-	var req model.UpdateCityRequest
+	var req model.CreateNameRequest
 	ctx := c.Context()
 
 	if err := c.BodyParser(&req); err != nil {
@@ -1168,155 +1168,145 @@ func (h *AdminHandler) DeleteBodyTypeImage(c *fiber.Ctx) error {
 // 	return utils.FiberResponse(c, data)
 // }
 
-// // Regions handlers
+// Regions handlers
 
-// // GetRegions godoc
-// // @Summary      Get all regions
-// // @Description  Returns a list of all regions
-// // @Tags         admin-regions
-// // @Produce      json
-// // @Security     BearerAuth
-// // @Param        city_id   path      int  true  "City ID"
-// // @Success      200  {array}  model.AdminRegionResponse
-// // @Failure      400  {object}  model.ResultMessage
-// // @Failure      401  {object}  auth.ErrorResponse
-// // @Failure      403  {object}  auth.ErrorResponse
-// // @Failure      500  {object}  model.ResultMessage
-// // @Router       /api/v1/admin/cities/{city_id}/regions [get]
-// func (h *AdminHandler) GetRegions(c *fiber.Ctx) error {
-// 	cityIdStr := c.Params("city_id")
-// 	cityId, err := strconv.Atoi(cityIdStr)
+// GetRegions godoc
+// @Summary      Get all regions
+// @Description  Returns a list of all regions
+// @Tags         admin-regions
+// @Produce      json
+// @Security     BearerAuth
+// @Param        city_id   path      int  true  "City ID"
+// @Success      200  {array}  model.AdminRegionResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/cities/{city_id}/regions [get]
+func (h *AdminHandler) GetRegions(c *fiber.Ctx) error {
+	cityIdStr := c.Params("city_id")
+	cityId, err := strconv.Atoi(cityIdStr)
 
-// 	if err != nil {
-// 		return utils.FiberResponse(c, &model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("city id must be integer"),
-// 		})
-// 	}
-// 	ctx := c.Context()
-// 	data := h.AdminService.GetRegions(ctx, cityId)
-// 	return utils.FiberResponse(c, data)
-// }
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("city id must be integer"),
+		})
+	}
+	ctx := c.Context()
+	data := h.AdminService.GetRegions(ctx, cityId)
+	return utils.FiberResponse(c, data)
+}
 
-// // CreateRegion godoc
-// // @Summary      Create a new region
-// // @Description  Creates a new region
-// // @Tags         admin-regions
-// // @Accept       json
-// // @Produce      json
-// // @Security     BearerAuth
-// // @Param        city_id   path      int  true  "City ID"
-// // @Param        region  body      model.CreateRegionRequest  true  "Region data"
-// // @Success      200    {object}  model.SuccessWithId
-// // @Failure      400    {object}  model.ResultMessage
-// // @Failure      401    {object}  auth.ErrorResponse
-// // @Failure      403    {object}  auth.ErrorResponse
-// // @Failure      500    {object}  model.ResultMessage
-// // @Router       /api/v1/admin/cities/{city_id}/regions [post]
-// func (h *AdminHandler) CreateRegion(c *fiber.Ctx) error {
-// 	cityIdStr := c.Params("city_id")
-// 	cityId, err := strconv.Atoi(cityIdStr)
+// CreateRegion godoc
+// @Summary      Create a new region
+// @Description  Creates a new region
+// @Tags         admin-regions
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        city_id   path      int  true  "City ID"
+// @Param        region  body      model.CreateNameRequest  true  "Region data"
+// @Success      200    {object}  model.SuccessWithId
+// @Failure      400    {object}  model.ResultMessage
+// @Failure      401    {object}  auth.ErrorResponse
+// @Failure      403    {object}  auth.ErrorResponse
+// @Failure      500    {object}  model.ResultMessage
+// @Router       /api/v1/admin/cities/{city_id}/regions [post]
+func (h *AdminHandler) CreateRegion(c *fiber.Ctx) error {
+	cityIdStr := c.Params("city_id")
+	cityId, err := strconv.Atoi(cityIdStr)
 
-// 	if err != nil {
-// 		return utils.FiberResponse(c, &model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("city id must be integer"),
-// 		})
-// 	}
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("city id must be integer"),
+		})
+	}
 
-// 	var req model.CreateRegionRequest
-// 	if err := c.BodyParser(&req); err != nil {
-// 		return utils.FiberResponse(c, &model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("invalid request body"),
-// 		})
-// 	}
+	var req model.CreateNameRequest
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request body"),
+		})
+	}
 
-// 	ctx := c.Context()
-// 	data := h.AdminService.CreateRegion(ctx, cityId, &req)
-// 	return utils.FiberResponse(c, data)
-// }
+	ctx := c.Context()
+	data := h.AdminService.CreateRegion(ctx, cityId, &req)
+	return utils.FiberResponse(c, data)
+}
 
-// // UpdateRegion godoc
-// // @Summary      Update a region
-// // @Description  Updates an existing region
-// // @Tags         admin-regions
-// // @Accept       json
-// // @Produce      json
-// // @Security     BearerAuth
-// // @Param        city_id   path      int  true  "City ID"
-// // @Param        id        path      int  true  "Region ID"
-// // @Param        region    body      model.CreateRegionRequest  true  "Region data"
-// // @Success      200       {object}  model.Success
-// // @Failure      400       {object}  model.ResultMessage
-// // @Failure      401       {object}  auth.ErrorResponse
-// // @Failure      403       {object}  auth.ErrorResponse
-// // @Failure      500       {object}  model.ResultMessage
-// // @Router       /api/v1/admin/cities/{city_id}/regions/{id} [put]
-// func (h *AdminHandler) UpdateRegion(c *fiber.Ctx) error {
-// 	idStr := c.Params("id")
-// 	id, err := strconv.Atoi(idStr)
+// UpdateRegion godoc
+// @Summary      Update a region
+// @Description  Updates an existing region
+// @Tags         admin-regions
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        city_id   path      int  true  "City ID"
+// @Param        id        path      int  true  "Region ID"
+// @Param        region    body      model.CreateNameRequest  true  "Region data"
+// @Success      200       {object}  model.Success
+// @Failure      400       {object}  model.ResultMessage
+// @Failure      401       {object}  auth.ErrorResponse
+// @Failure      403       {object}  auth.ErrorResponse
+// @Failure      500       {object}  model.ResultMessage
+// @Router       /api/v1/admin/cities/{city_id}/regions/{id} [put]
+func (h *AdminHandler) UpdateRegion(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
 
-// 	if err != nil {
-// 		return utils.FiberResponse(c, &model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("region id must be integer"),
-// 		})
-// 	}
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("region id must be integer"),
+		})
+	}
 
-// 	var req model.CreateRegionRequest
-// 	if err := c.BodyParser(&req); err != nil {
-// 		return utils.FiberResponse(c, &model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("invalid request body"),
-// 		})
-// 	}
+	var req model.CreateNameRequest
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request body"),
+		})
+	}
 
-// 	ctx := c.Context()
-// 	data := h.AdminService.UpdateRegion(ctx, id, &req)
-// 	return utils.FiberResponse(c, data)
-// }
+	ctx := c.Context()
+	data := h.AdminService.UpdateRegion(ctx, id, &req)
+	return utils.FiberResponse(c, data)
+}
 
-// // DeleteRegion godoc
-// // @Summary      Delete a region
-// // @Description  Deletes an existing region
-// // @Tags         admin-regions
-// // @Accept       json
-// // @Produce      json
-// // @Security     BearerAuth
-// // @Param        city_id   path      int  true  "City ID"
-// // @Param        id        path      int  true  "Region ID"
-// // @Success      200       {object}  model.Success
-// // @Failure      400       {object}  model.ResultMessage
-// // @Failure      401       {object}  auth.ErrorResponse
-// // @Failure      403       {object}  auth.ErrorResponse
-// // @Failure      500       {object}  model.ResultMessage
-// // @Router       /api/v1/admin/cities/{city_id}/regions/{id} [delete]
-// func (h *AdminHandler) DeleteRegion(c *fiber.Ctx) error {
-// 	cityIdStr := c.Params("city_id")
-// 	cityId, err := strconv.Atoi(cityIdStr)
+// DeleteRegion godoc
+// @Summary      Delete a region
+// @Description  Deletes an existing region
+// @Tags         admin-regions
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        city_id   path      int  true  "City ID"
+// @Param        id        path      int  true  "Region ID"
+// @Success      200       {object}  model.Success
+// @Failure      400       {object}  model.ResultMessage
+// @Failure      401       {object}  auth.ErrorResponse
+// @Failure      403       {object}  auth.ErrorResponse
+// @Failure      500       {object}  model.ResultMessage
+// @Router       /api/v1/admin/cities/{city_id}/regions/{id} [delete]
+func (h *AdminHandler) DeleteRegion(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
 
-// 	if err != nil {
-// 		return utils.FiberResponse(c, &model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("city id must be integer"),
-// 		})
-// 	}
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("region id must be integer"),
+		})
+	}
 
-// 	idStr := c.Params("id")
-// 	id, err := strconv.Atoi(idStr)
-
-// 	if err != nil {
-// 		return utils.FiberResponse(c, &model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("region id must be integer"),
-// 		})
-// 	}
-
-// 	ctx := c.Context()
-// 	data := h.AdminService.DeleteRegion(ctx, cityId, id)
-// 	return utils.FiberResponse(c, data)
-// }
+	ctx := c.Context()
+	data := h.AdminService.DeleteRegion(ctx, id)
+	return utils.FiberResponse(c, data)
+}
 
 // // Service Types handlers
 

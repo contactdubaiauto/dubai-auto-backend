@@ -23,13 +23,13 @@ func SetupAdminRoutes(r fiber.Router, db *pgxpool.Pool) {
 		cities.Delete("/:id", adminHandler.DeleteCity)
 	}
 
-	// // Regions routes
-	// {
-	// 	cities.Get("/:city_id/regions", adminHandler.GetRegions)
-	// 	cities.Post("/:city_id/regions", adminHandler.CreateRegion)
-	// 	cities.Put("/:city_id/regions/:id", adminHandler.UpdateRegion)
-	// 	cities.Delete("/:city_id/regions/:id", adminHandler.DeleteRegion)
-	// }
+	// Regions routes
+	{
+		cities.Get("/:city_id/regions", adminHandler.GetRegions)
+		cities.Post("/:city_id/regions", adminHandler.CreateRegion)
+		cities.Put("/:city_id/regions/:id", adminHandler.UpdateRegion)
+		cities.Delete("/:city_id/regions/:id", adminHandler.DeleteRegion)
+	}
 
 	// Brands routes
 	brands := r.Group("/brands")

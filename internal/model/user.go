@@ -81,10 +81,6 @@ type CreateCityRequest struct {
 	Name string `json:"name" validate:"required,min=2,max=255"`
 }
 
-type UpdateCityRequest struct {
-	Name string `json:"name" validate:"required,min=2,max=255"`
-}
-
 type CreateBrandRequest struct {
 	Name    string `json:"name" validate:"required,min=2,max=255"`
 	Popular bool   `json:"popular"`
