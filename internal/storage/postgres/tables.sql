@@ -1,15 +1,4 @@
 -- create user da with password '1234';
--- grant all privileges on database da to da;
--- grant all privileges on schema public to da;
--- grant all privileges on all tables in schema public to da;
--- grant all privileges on all sequences in schema public to da;
--- alter default privileges in schema public grant all on tables to da;
--- alter default privileges in schema public grant all on sequences to da;
-
-
-
-
-
 drop table if exists moto_images;
 drop table if exists moto_videos;
 drop table if exists motorcycle_parameters;
@@ -47,7 +36,6 @@ drop table if exists users;
 drop table if exists admins;
 drop table if exists ownership_types;
 
-
 create table temp_users (
     "id" serial primary key,
     "email" varchar(100),
@@ -77,12 +65,49 @@ create table users (
     unique("phone")
 );
 
+create table user_parameters (
+    "id" serial primary key, 
+    "name" varchar(50) not null,
+    "updated_at" timestamp not null default now(),
+    "created_at" timestamp not null default now()
+);
+
+
+
+create table user_parameter_values (
+    "id" serial primary key, 
+    "name" varchar(50) not null,
+    "parameter_id" int not null,
+    "updated_at" timestamp not null default now(),
+    "created_at" timestamp not null default now(),
+    constraint fk_user_parameter_values_parameter_id
+        foreign key ("parameter_id")
+            references user_parameters("id")
+                on delete cascade
+                on update cascade,
+    unique("name", "parameter_id")
+);
+
+create table user_type_parameters (
+    "id" serial primary key, 
+    "user_type" int not null,
+    "parameter_id" int not null,
+    "updated_at" timestamp not null default now(),
+    "created_at" timestamp not null default now(),
+    constraint fk_user_type_parameters_parameter_id
+        foreign key ("parameter_id")
+            references user_parameters("id")
+                on delete cascade
+                on update cascade,
+    unique("name", "parameter_id")
+)
+
 create table messages (
     "id" serial primary key,
     "sender_id" int not null,
     "receiver_id" int not null,
-    "message" text not null,
-    "type" int not null default 1, -- 1-text, 2-image, 3-video, 4-audio, 5-file, 6-item
+    "message" varchar(500) not null, --  it is an id if type "item".
+    "type" int not null default 1, -- 1-text, 2-item
     "created_at" timestamp default now(),
     constraint messages_sender_id_fk
         foreign key (sender_id)
@@ -96,23 +121,11 @@ create table messages (
                 on update cascade
 );
 
-insert into users (email, password, phone, created_at) 
-    values ('user@gmail.com', '$2a$10$Cya9x0xSJSnRknBmJpW.Bu8ukZpVTqzwgrQgAYNPXdrX2HYGRk33W', '01234567890', now()); -- password: 12345678
-
-insert into users (email, password, phone, created_at) 
-    values ('user2@gmail.com', '$2a$10$Cya9x0xSJSnRknBmJpW.Bu8ukZpVTqzwgrQgAYNPXdrX2HYGRk33W', '0111222222', now()); -- password: 12345678
-
-
 create table cities (
     "id" serial primary key,
     "name" varchar(255) not null,
     "created_at" timestamp default now()
 );
-
-insert into cities (name) values ('Dubai');
-insert into cities (name) values ('Abu Dhabi');
-insert into cities (name) values ('Sharjah');
-
 
 create table profiles (
     "id" serial primary key, 
@@ -141,11 +154,6 @@ create table profiles (
     unique (user_id)
 );
 
-insert into profiles(
-    user_id, username, driving_experience, notification, google, birthday, about_me, registered_by
-)values
-( 1, 'user1', 3, false, 'user1@gmail.com', '2025-04-14', 'im a f1 driver with 3 years of experiences', 'email'),
-( 2, 'user2', 2, true, 'user2@gmail.com', '2025-04-14', 'im a truck driver with 2 years of experiences', 'email');
 
 create table admins (
     "id" serial primary key,
@@ -156,8 +164,6 @@ create table admins (
     "created_at" timestamp default now()
 );
 
-insert into admins (username, email, password, last_active_date, created_at) 
-    values ('admin', 'admin@gmail.com', '$2a$10$wPb6//DXtLxpDjZgzVEMuOlqqHUtVmPQMbOhmBlkNlAkzzve..CZe', now(), now()); -- password: admin
 
 create table brands (
     "id" serial primary key,
@@ -169,8 +175,6 @@ create table brands (
     unique("name")
 );
 
--- insert into brands (name, logo, car_count, popular) values ('Toyota', '/images/logo/toyota.png', 12, true);
--- insert into brands (name, logo, car_count, popular) values ('Honda', '/images/logo/honda.png', 8, false);
 
 create table models (
     "id" serial primary key,
@@ -185,17 +189,6 @@ create table models (
                 on update cascade
 );
 
--- toyota
--- insert into models (name, brand_id, popular, car_count) values ('Camry', 1, true, 7);
--- insert into models (name, brand_id, popular, car_count) values ('Corolla', 1, true, 41);
--- insert into models (name, brand_id, popular, car_count) values ('Rav4', 1, false, 73);
--- insert into models (name, brand_id, popular, car_count) values ('Land Cruiser', 1, false, 1);
-
--- -- honda
--- insert into models (name, brand_id, popular, car_count) values ('Civic', 2, true, 34);
--- insert into models (name, brand_id, popular, car_count) values ('Accord', 2, false, 23);
--- insert into models (name, brand_id, popular, car_count) values ('CR-V', 2, false, 65);
-
 
 
 create table body_types (
@@ -205,37 +198,12 @@ create table body_types (
     "created_at" timestamp default now()
 );
 
-insert into body_types (name, image) values ('Sedan','/images/body/sedan.png');
-insert into body_types (name, image) values ('Hatchback', '/images/body/hatchback.png');
-insert into body_types (name, image) values ('Liftback', '/images/body/liftback.png');
-insert into body_types (name, image) values ('SUV', '/images/body/suv.png');
-insert into body_types (name, image) values ('Crossover', '/images/body/crossover.png');
-insert into body_types (name, image) values ('Coupe', '/images/body/coupe.png');
-insert into body_types (name, image) values ('Convertible', '/images/body/convertible.png');
-insert into body_types (name, image) values ('Wagon', '/images/body/wagon.png');
-insert into body_types (name, image) values ('Pickup Truck', '/images/body/pickup.png');
-insert into body_types (name, image) values ('Van', '/images/body/van.png');
-insert into body_types (name, image) values ('Minivan', '/images/body/minivan.png');
-insert into body_types (name, image) values ('Roadster', '/images/body/roadster.png');
-insert into body_types (name, image) values ('Sports Car', '/images/body/sports_car.png');
-insert into body_types (name, image) values ('Off-Road', '/images/body/off_road.png');
-insert into body_types (name, image) values ('Limousine', '/images/body/limousine.png'); 
-insert into body_types (name, image) values ('Utility', '/images/body/utility.png');
-insert into body_types (name, image) values ('Universal', '/images/body/universal.png');
-insert into body_types (name, image) values ('Cabriolet', '/images/body/cabri.webp');
-
-
 create table transmissions (
     "id" serial primary key,
     "name" varchar(255) not null,
     "created_at" timestamp default now(),
     unique("name")
 );
-
-insert into transmissions (name) values ('Automatic');
-insert into transmissions (name) values ('Manual');
-insert into transmissions (name) values ('Semi-Automatic');
-
 
 create table engines (
     "id" serial primary key,
@@ -244,17 +212,6 @@ create table engines (
     unique("value")
 );
 
-insert into engines (value) values ('1.0L');
-insert into engines (value) values ('1.5L');
-insert into engines (value) values ('2.0L');
-insert into engines (value) values ('2.5L');
-insert into engines (value) values ('3.0L');
-insert into engines (value) values ('4.0L');
-insert into engines (value) values ('5.0L');
-insert into engines (value) values ('6.0L');
-insert into engines (value) values ('7.0L');
-
-
 create table drivetrains (
     "id" serial primary key,
     "name" varchar(255) not null,
@@ -262,22 +219,12 @@ create table drivetrains (
     unique("name")
 );
 
-insert into drivetrains (name) values ('Front-Wheel Drive');
-insert into drivetrains (name) values ('Rear-Wheel Drive');
-insert into drivetrains (name) values ('All-Wheel Drive');
-
-
 create table fuel_types (
     "id" serial primary key,
     "name" varchar(255) not null,
     "created_at" timestamp default now(),
     unique("name")
 );
-
-insert into fuel_types (name) values ('Gasoline');
-insert into fuel_types (name) values ('Diesel');
-insert into fuel_types (name) values ('Electric');
-insert into fuel_types (name) values ('Hybrid');
 
 create table regions (
     "id" serial primary key,
@@ -291,34 +238,12 @@ create table regions (
                 on update cascade
 );
 
--- dubai
-insert into regions (name, city_id) values ('Dubai Marina', 1);
-insert into regions (name, city_id) values ('Dubai Mall', 1);
-insert into regions (name, city_id) values ('Dubai Creek', 1);
-insert into regions (name, city_id) values ('Dubai Creek Harbour', 1);
-insert into regions (name, city_id) values ('Dubai Creek Golf Club', 1);
-
--- abu dhabi
-insert into regions (name, city_id) values ('Abu Dhabi Marina', 2);
-insert into regions (name, city_id) values ('Abu Dhabi Mall', 2);
-insert into regions (name, city_id) values ('Abu Dhabi Creek', 2);
-insert into regions (name, city_id) values ('Abu Dhabi Creek Harbour', 2);
-insert into regions (name, city_id) values ('Abu Dhabi Creek Golf Club', 2);
-
--- sharjah
-insert into regions (name, city_id) values ('Sharjah Marina', 3);
-insert into regions (name, city_id) values ('Sharjah Mall', 3);
-insert into regions (name, city_id) values ('Sharjah Creek', 3);
 
 create table service_types (
     "id" serial primary key,
     "name" varchar(255) not null,
     "created_at" timestamp default now()
 );
-
-insert into service_types (name) values ('Car Wash');
-insert into service_types (name) values ('Car Detailing');
-insert into service_types (name) values ('Car Repair');
 
 create table services (
     "id" serial primary key,
@@ -331,28 +256,6 @@ create table services (
                 on delete cascade
                 on update cascade
 );
-
--- car wash
-insert into services (name, service_type_id) values ('Rocket Wash', 1);
-insert into services (name, service_type_id) values ('Premium Wash', 1);
-insert into services (name, service_type_id) values ('Express Wash', 1);
-insert into services (name, service_type_id) values ('Self-Service Wash', 1);
-
--- car detailing
-insert into services (name, service_type_id) values ('Full Detail', 2);
-insert into services (name, service_type_id) values ('Basic Detail', 2);
-insert into services (name, service_type_id) values ('Premium Detail', 2);
-insert into services (name, service_type_id) values ('Express Detail', 2);
-insert into services (name, service_type_id) values ('Self-Service Detail', 2);
-
--- car repair
-insert into services (name, service_type_id) values ('Oil Change', 3);
-insert into services (name, service_type_id) values ('Brake Repair', 3);
-insert into services (name, service_type_id) values ('Tire Repair', 3);
-insert into services (name, service_type_id) values ('Engine Repair', 3);
-insert into services (name, service_type_id) values ('Transmission Repair', 3);
-insert into services (name, service_type_id) values ('Suspension Repair', 3);
-insert into services (name, service_type_id) values ('Electrical Repair', 3);
 
 
 
@@ -371,37 +274,6 @@ create table generations (
                 on delete cascade
 );
 
--- insert into generations (
---     name, model_id, start_year, end_year, image, wheel
--- ) values (
---     '1 generation', 1, 2010, 2020, '/images/gens/1.jpg', true
--- );
-
--- insert into generations (
---     name, model_id, start_year, end_year, image, wheel
--- ) values (
---     '2 generation', 1, 2005, 2025, '/images/gens/2.jpg', true
--- );
-
-
--- insert into generations (
---     name, model_id, start_year, end_year, image, wheel
--- ) values (
---     '2 generation', 1, 2005, 2025, '/images/gens/2.jpg', false
--- );
-
--- insert into generations (
---     name, model_id, start_year, end_year, image, wheel
--- ) values (
---     '3 generation', 2, 2020, 2025, '/images/gens/3.jpg', true
--- );
-
--- insert into generations (
---     name, model_id, start_year, end_year, image, wheel
--- ) values (
---     '3 generation', 2, 2020, 2025, '/images/gens/3.jpg', false
--- );
-
 create table configurations (
     "id" serial primary key,
     "body_type_id" int not null,
@@ -417,7 +289,6 @@ create table configurations (
                 on delete cascade
                 on update cascade
 );
-
 
 create table generation_modifications (
     "id" serial primary key,
@@ -460,25 +331,12 @@ create table generation_modifications (
                 on update cascade
 );
 
--- insert into generation_modifications (
---     generation_id, engine_id, fuel_type_id, drivetrain_id, transmission_id
--- ) 
--- values 
---     (1, 1, 1, 1, 1),
---     (1, 3, 2, 2, 2),
---     (2, 1, 1, 1, 1),
---     (2, 3, 2, 2, 2),
---     (1, 2, 2, 2, 2);
-
-
 create table ownership_types (
     "id" serial primary key,
     "name" varchar(255) not null,
     "created_at" timestamp default now()
 );
 
-insert into ownership_types (name) values ('Dealership');
-insert into ownership_types (name) values ('Private Owner');
 
 create table colors (
     "id" serial primary key,
@@ -486,14 +344,6 @@ create table colors (
     "image" varchar(255) not null,
     "created_at" timestamp default now()
 );
-
-insert into colors (name, image) values ('White', '/images/colors/white.jpg');
-insert into colors (name, image) values ('Red', '/images/colors/red.jpg');
-insert into colors (name, image) values ('Blue', '/images/colors/blue.jpg');
-insert into colors (name, image) values ('Green', '/images/colors/green.jpg');
-insert into colors (name, image) values ('Yellow', '/images/colors/yellow.jpg');
-insert into colors (name, image) values ('Orange', '/images/colors/orange.jpg');
-insert into colors (name, image) values ('Purple', '/images/colors/purple.jpg');
 
 
 create table vehicles (
@@ -565,8 +415,7 @@ create table vehicles (
                 on update cascade
 );
 
--- Insert example vehicle data
-insert into vehicles (user_id, brand_id, model_id, modification_id, region_id, city_id, ownership_type_id, year, odometer, vin_code, crash, owners, credit, phone_numbers, price, new, color_id, trade_in, status) values 
+
 (1, 310, 3232, 1, 1, 1, 1, 2020, 50000, 'VIN1234567890', false, 1, false, ARRAY['123456789'], 25000, false, 1, 1, 3),
 (1, 310, 3232, 1, 1, 1, 1, 2020, 30000, 'VIN1234567891', false, 1, true, ARRAY['123456790'], 28000, false, 2, 1, 3),
 (2, 310, 3232, 1, 1, 2, 1, 2019, 70000, 'VIN1234567892', false, 2, false, ARRAY['123456791'], 22000, false, 3, 2, 3),
@@ -598,8 +447,6 @@ insert into vehicles (user_id, brand_id, model_id, modification_id, region_id, c
 (2, 310, 3234, 1, 1, 3, 1, 2021, 26000, 'VIN1234567918', false, 1, true, ARRAY['123456817'], 35000, false, 2, 1, 3),
 (1, 310, 3234, 1, 1, 1, 1, 2020, 19000, 'VIN1234567919', false, 1, false, ARRAY['123456818'], 41000, false, 3, 5, 3);
 
-
-
 create table images (
     "vehicle_id" int not null,
     "image" varchar(255) not null,
@@ -610,8 +457,6 @@ create table images (
                 on delete cascade
                 on update cascade
 );
-
-
 
 CREATE TABLE user_likes (
     user_id INT NOT NULL,
@@ -629,7 +474,6 @@ CREATE TABLE user_likes (
                 on update cascade
 );
 
-
 create table videos (
     "vehicle_id" int not null,
     "video" varchar(255) not null,
@@ -642,18 +486,11 @@ create table videos (
 );
 
 
-
-
 create table moto_categories (
     "id" serial primary key,
     "name" varchar(100) not null,
     "created_at" timestamp not null default now()
 );
-
-insert into moto_categories (name) values ('Moto');
-insert into moto_categories (name) values ('Skuter');
-insert into moto_categories (name) values ('Motovezdehody');
-insert into moto_categories (name) values ('Snegohody');
 
 create table moto_brands (
     "id" serial primary key,
@@ -668,14 +505,6 @@ create table moto_brands (
                 on update cascade
 );
 
-insert into moto_brands (name, moto_category_id, image) values ('Honda', 1, '/images/logo/honda.png');
-insert into moto_brands (name, moto_category_id, image) values ('Yamaha', 1, '/images/logo/yamaha.png');
-insert into moto_brands (name, moto_category_id, image) values ('Suzuki', 2, '/images/logo/suzuki.png');
-insert into moto_brands (name, moto_category_id, image) values ('Kawasaki', 2, '/images/logo/kawasaki.png');
-insert into moto_brands (name, moto_category_id, image) values ('BMW', 3, '/images/logo/bmw.png');
-insert into moto_brands (name, moto_category_id, image) values ('Ducati', 3, '/images/logo/ducati.png');
-insert into moto_brands (name, moto_category_id, image) values ('BMW', 4, '/images/logo/bmw.png');
-insert into moto_brands (name, moto_category_id, image) values ('Ducati', 4, '/images/logo/ducati.png');
 
 create table moto_models (
     "id" serial primary key,
@@ -688,34 +517,6 @@ create table moto_models (
                 on delete cascade
                 on update cascade
 );
-
-insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 1);
-insert into moto_models (name, moto_brand_id) values ('CBR650R', 1);
-
-insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 2);
-insert into moto_models (name, moto_brand_id) values ('CBR650R', 2);
-
-insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 3);
-insert into moto_models (name, moto_brand_id) values ('CBR650R', 3);
-
-insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 4);
-insert into moto_models (name, moto_brand_id) values ('CBR650R', 4);
-
-insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 5);
-insert into moto_models (name, moto_brand_id) values ('CBR650R', 5);
-
-insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 6);
-insert into moto_models (name, moto_brand_id) values ('CBR650R', 6);
-
-
-insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 7);
-insert into moto_models (name, moto_brand_id) values ('CBR650R', 7);
-
-
-insert into moto_models (name, moto_brand_id) values ('CBR1000RR', 8);
-insert into moto_models (name, moto_brand_id) values ('CBR650R', 8);
-
-
 
 create table moto_parameters (
     "id" serial primary key,
@@ -730,35 +531,6 @@ create table moto_parameters (
     unique("name", "moto_category_id")
 );
 
-insert into moto_parameters (name, moto_category_id) values ('Type', 1);
-insert into moto_parameters (name, moto_category_id) values ('Drivetrain', 1);
-insert into moto_parameters (name, moto_category_id) values ('Transmission', 1);
-insert into moto_parameters (name, moto_category_id) values ('Cylinder Count', 1);
-insert into moto_parameters (name, moto_category_id) values ('Cylinder Arrangement', 1);
-insert into moto_parameters (name, moto_category_id) values ('Equipment', 1);
-
-insert into moto_parameters (name, moto_category_id) values ('Type', 2);
-insert into moto_parameters (name, moto_category_id) values ('Drivetrain', 2);
-insert into moto_parameters (name, moto_category_id) values ('Transmission', 2);
-insert into moto_parameters (name, moto_category_id) values ('Cylinder Count', 2);
-insert into moto_parameters (name, moto_category_id) values ('Cylinder Arrangement', 2);
-insert into moto_parameters (name, moto_category_id) values ('Equipment', 2);
-
-insert into moto_parameters (name, moto_category_id) values ('Type', 3);
-insert into moto_parameters (name, moto_category_id) values ('Drivetrain', 3);
-insert into moto_parameters (name, moto_category_id) values ('Transmission', 3);
-insert into moto_parameters (name, moto_category_id) values ('Cylinder Count', 3);
-insert into moto_parameters (name, moto_category_id) values ('Cylinder Arrangement', 3);
-insert into moto_parameters (name, moto_category_id) values ('Equipment', 3);
-
-insert into moto_parameters (name, moto_category_id) values ('Type', 4);
-insert into moto_parameters (name, moto_category_id) values ('Drivetrain', 4);
-insert into moto_parameters (name, moto_category_id) values ('Transmission', 4);
-insert into moto_parameters (name, moto_category_id) values ('Cylinder Count', 4);
-insert into moto_parameters (name, moto_category_id) values ('Cylinder Arrangement', 4);
-insert into moto_parameters (name, moto_category_id) values ('Equipment', 4);
-
-
 create table moto_parameter_values (
     "id" serial primary key,
     "moto_parameter_id" int not null,
@@ -770,50 +542,6 @@ create table moto_parameter_values (
                 on delete cascade
                 on update cascade
 );
-
-insert into moto_parameter_values (moto_parameter_id, name) values (1, 'Sport');
-insert into moto_parameter_values (moto_parameter_id, name) values (1, 'Touring');
-insert into moto_parameter_values (moto_parameter_id, name) values (1, 'Cruiser');
-insert into moto_parameter_values (moto_parameter_id, name) values (1, 'Sport Touring');
-insert into moto_parameter_values (moto_parameter_id, name) values (1, 'Sport Tourer');
-
-insert into moto_parameter_values (moto_parameter_id, name) values (2, 'Front');
-insert into moto_parameter_values (moto_parameter_id, name) values (2, 'Rear');
-insert into moto_parameter_values (moto_parameter_id, name) values (2, 'All');
-
-insert into moto_parameter_values (moto_parameter_id, name) values (3, 'Automatic');
-insert into moto_parameter_values (moto_parameter_id, name) values (3, 'Manual');
-insert into moto_parameter_values (moto_parameter_id, name) values (3, 'Semi-Automatic');
-
-insert into moto_parameter_values (moto_parameter_id, name) values (4, '4');
-insert into moto_parameter_values (moto_parameter_id, name) values (4, '6');
-insert into moto_parameter_values (moto_parameter_id, name) values (4, '8');
-
-insert into moto_parameter_values (moto_parameter_id, name) values (5, 'V-Twin');
-insert into moto_parameter_values (moto_parameter_id, name) values (5, 'In-Twin');
-
-insert into moto_parameter_values (moto_parameter_id, name) values (6, 'Single');
-insert into moto_parameter_values (moto_parameter_id, name) values (6, 'Twin');
-insert into moto_parameter_values (moto_parameter_id, name) values (6, 'Twin-Cooled');
-
-
-insert into moto_parameter_values (moto_parameter_id, name) values (7, 'Sport');
-insert into moto_parameter_values (moto_parameter_id, name) values (7, 'Touring');
-insert into moto_parameter_values (moto_parameter_id, name) values (7, 'Enduro');
-insert into moto_parameter_values (moto_parameter_id, name) values (7, 'Cross');
-insert into moto_parameter_values (moto_parameter_id, name) values (7, 'Enduro Cross');
-
-insert into moto_parameter_values (moto_parameter_id, name) values (8, 'Sport');
-insert into moto_parameter_values (moto_parameter_id, name) values (8, 'Touring');
-insert into moto_parameter_values (moto_parameter_id, name) values (8, 'Enduro');
-insert into moto_parameter_values (moto_parameter_id, name) values (8, 'Cross');
-insert into moto_parameter_values (moto_parameter_id, name) values (8, 'Enduro Cross');
-
-insert into moto_parameter_values (moto_parameter_id, name) values (9, 'Sport');
-insert into moto_parameter_values (moto_parameter_id, name) values (9, 'Touring');
-insert into moto_parameter_values (moto_parameter_id, name) values (9, 'Enduro');
-insert into moto_parameter_values (moto_parameter_id, name) values (9, 'Cross');
-insert into moto_parameter_values (moto_parameter_id, name) values (9, 'Enduro Cross');
 
 create table moto_category_parameters (
     "moto_category_id" int not null,
@@ -831,26 +559,6 @@ create table moto_category_parameters (
                 on update cascade
 );
 
-insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (1, 1);
-insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (1, 2);
-insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (1, 3);
-insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (1, 5);
-
-insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (2, 3);
-insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (2, 4);
-insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (2, 5);
-insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (2, 6);
-
-insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (3, 1);
-insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (3, 6);
-
-insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (4, 1);
-insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (4, 4);
-insert into moto_category_parameters (moto_category_id, moto_parameter_id) values (4, 5);
-
-
-
--- Create enum type for price currency
 CREATE TYPE price_type_enum AS ENUM ('USD', 'AED', 'RUB', 'EUR');
 
 create table motorcycles (
@@ -926,47 +634,6 @@ create table motorcycles (
                 on update cascade
 );
 
-insert into motorcycles (
-    user_id, moto_category_id, moto_brand_id, moto_model_id, fuel_type_id, 
-    city_id, color_id, engine, power, year, number_of_cycles, odometer, 
-    crash, not_cleared, owners, date_of_purchase, warranty_date, ptc, vin_code, 
-    certificate, description, can_look_coordinate, phone_number, refuse_dealers_calls, 
-    only_chat, protect_spam, verified_buyers, contact_person, email, price, price_type
-) values (
-    1, 1, 1, 1, 1,
-    1, 1, 1, 1, 2020, 1, 10000,
-    true, false, 1, '2020-01-01', '2020-01-01', false, '1234567890',
-    true, 'description', '1234567890', '1234567890', true,
-    true, true, true, 'John Doe', 'john.doe@example.com', 10000, 'USD'
-);
-
-insert into motorcycles (
-    user_id, moto_category_id, moto_brand_id, moto_model_id, fuel_type_id, 
-    city_id, color_id, engine, power, year, number_of_cycles, odometer, 
-    crash, not_cleared, owners, date_of_purchase, warranty_date, ptc, vin_code, 
-    certificate, description, can_look_coordinate, phone_number, refuse_dealers_calls, 
-    only_chat, protect_spam, verified_buyers, contact_person, email, price, price_type
-) values (
-    1, 1, 1, 1, 1,
-    1, 1, 1, 1, 2020, 1, 10000,
-    true, false, 1, '2020-01-01', '2020-01-01', false, '1234567890',
-    true, 'description', '1234567890', '1234567890', true,
-    true, true, true, 'John Doe', 'john.doe@example.com', 10000, 'USD'
-);
-
-insert into motorcycles (
-    user_id, moto_category_id, moto_brand_id, moto_model_id, fuel_type_id, 
-    city_id, color_id, engine, power, year, number_of_cycles, odometer, 
-    crash, not_cleared, owners, date_of_purchase, warranty_date, ptc, vin_code, 
-    certificate, description, can_look_coordinate, phone_number, refuse_dealers_calls, 
-    only_chat, protect_spam, verified_buyers, contact_person, email, price, price_type
-) values (
-    1, 1, 1, 1, 1,
-    1, 1, 1, 1, 2020, 1, 10000,
-    true, false, 1, '2020-01-01', '2020-01-01', false, '1234567890',
-    true, 'description', '1234567890', '1234567890', true,
-    true, true, true, 'John Doe', 'john.doe@example.com', 10000, 'USD'
-);
 
 create table motorcycle_parameters (
     "id" serial primary key,
@@ -992,25 +659,6 @@ create table motorcycle_parameters (
     unique("motorcycle_id", "moto_parameter_id")
 );
 
-insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (1, 1, 1);
-insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (1, 2, 1);
-insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (1, 3, 1);
-insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (1, 4, 1);
-insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (1, 5, 1);
-
-insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (2, 1, 1);
-insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (2, 2, 1);
-insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (2, 3, 1);
-insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (2, 4, 1);
-insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (2, 5, 1);
-
-insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (3, 1, 1);
-insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (3, 2, 1);
-insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (3, 3, 1);
-insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (3, 4, 1);
-insert into motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id) values (3, 5, 1);
-
-
 create table moto_images (
     "id" serial primary key,
     "moto_id" int not null,
@@ -1022,17 +670,6 @@ create table moto_images (
                 on delete cascade
                 on update cascade
 );
-
-insert into moto_images (moto_id, image) values (1, 'https://via.placeholder.com/150');
-insert into moto_images (moto_id, image) values (1, 'https://via.placeholder.com/150');
-insert into moto_images (moto_id, image) values (1, 'https://via.placeholder.com/150');
-insert into moto_images (moto_id, image) values (1, 'https://via.placeholder.com/150');
-
-insert into moto_images (moto_id, image) values (2, 'https://via.placeholder.com/150');
-insert into moto_images (moto_id, image) values (2, 'https://via.placeholder.com/150');
-
-insert into moto_images (moto_id, image) values (3, 'https://via.placeholder.com/150');
-insert into moto_images (moto_id, image) values (3, 'https://via.placeholder.com/150');
 
 
 create table moto_videos (
@@ -1046,18 +683,6 @@ create table moto_videos (
                 on delete cascade
                 on update cascade
 );
-
-insert into moto_videos (moto_id, video) values (1, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-insert into moto_videos (moto_id, video) values (1, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-
-insert into moto_videos (moto_id, video) values (2, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-insert into moto_videos (moto_id, video) values (2, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-
-insert into moto_videos (moto_id, video) values (3, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-insert into moto_videos (moto_id, video) values (3, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-
-
---  comtrans
 
 drop table if exists comtran_videos;
 drop table if exists comtran_images;
@@ -1076,11 +701,6 @@ create table com_categories (
     "created_at" timestamp not null default now()
 );
 
-insert into com_categories (name) values ('Truck');
-insert into com_categories (name) values ('Bus');
-insert into com_categories (name) values ('Trailer');
-insert into com_categories (name) values ('Other');
-
 create table com_brands (
     "id" serial primary key,
     "name" varchar(100) not null,
@@ -1094,31 +714,6 @@ create table com_brands (
                 on update cascade
 );
 
-insert into com_brands (name, image, comtran_category_id) values ('Volvo', 'https://via.placeholder.com/150', 1);
-insert into com_brands (name, image, comtran_category_id) values ('Mercedes-Benz', 'https://via.placeholder.com/150', 1);
-insert into com_brands (name, image, comtran_category_id) values ('MAN', 'https://via.placeholder.com/150', 1);
-insert into com_brands (name, image, comtran_category_id) values ('Scania', 'https://via.placeholder.com/150', 1);
-insert into com_brands (name, image, comtran_category_id) values ('Iveco', 'https://via.placeholder.com/150', 1);
-
-insert into com_brands (name, image, comtran_category_id) values ('Volvo', 'https://via.placeholder.com/150', 2);
-insert into com_brands (name, image, comtran_category_id) values ('Mercedes-Benz', 'https://via.placeholder.com/150', 2);
-insert into com_brands (name, image, comtran_category_id) values ('MAN', 'https://via.placeholder.com/150', 2);
-insert into com_brands (name, image, comtran_category_id) values ('Scania', 'https://via.placeholder.com/150', 2);
-insert into com_brands (name, image, comtran_category_id) values ('Iveco', 'https://via.placeholder.com/150', 2);
-
-insert into com_brands (name, image, comtran_category_id) values ('Volvo', 'https://via.placeholder.com/150', 3);
-insert into com_brands (name, image, comtran_category_id) values ('Mercedes-Benz', 'https://via.placeholder.com/150', 3);
-insert into com_brands (name, image, comtran_category_id) values ('MAN', 'https://via.placeholder.com/150', 3);
-insert into com_brands (name, image, comtran_category_id) values ('Scania', 'https://via.placeholder.com/150', 3);
-insert into com_brands (name, image, comtran_category_id) values ('Iveco', 'https://via.placeholder.com/150', 3);
-
-insert into com_brands (name, image, comtran_category_id) values ('Volvo', 'https://via.placeholder.com/150', 4);
-insert into com_brands (name, image, comtran_category_id) values ('Mercedes-Benz', 'https://via.placeholder.com/150', 4);
-insert into com_brands (name, image, comtran_category_id) values ('MAN', 'https://via.placeholder.com/150', 4);
-insert into com_brands (name, image, comtran_category_id) values ('Scania', 'https://via.placeholder.com/150', 4);
-insert into com_brands (name, image, comtran_category_id) values ('Iveco', 'https://via.placeholder.com/150', 4);
-
-
 create table com_models (
     "id" serial primary key,
     "name" varchar(100) not null,
@@ -1130,70 +725,6 @@ create table com_models (
                 on delete cascade
                 on update cascade
 );
-
-insert into com_models (name, comtran_brand_id) values ('FH', 1);
-insert into com_models (name, comtran_brand_id) values ('FM', 1);
-
-insert into com_models (name, comtran_brand_id) values ('FH', 2);
-insert into com_models (name, comtran_brand_id) values ('FM', 2);
-
-insert into com_models (name, comtran_brand_id) values ('FH', 3);
-insert into com_models (name, comtran_brand_id) values ('FM', 3);
-
-insert into com_models (name, comtran_brand_id) values ('FH', 4);
-insert into com_models (name, comtran_brand_id) values ('FM', 4);
-
-
-insert into com_models (name, comtran_brand_id) values ('FH', 5);
-insert into com_models (name, comtran_brand_id) values ('FM', 5);
-
-
-insert into com_models (name, comtran_brand_id) values ('FH', 6);
-insert into com_models (name, comtran_brand_id) values ('FM', 6);
-
-insert into com_models (name, comtran_brand_id) values ('FH', 7);
-insert into com_models (name, comtran_brand_id) values ('FM', 7);
-
-insert into com_models (name, comtran_brand_id) values ('FH', 8);
-insert into com_models (name, comtran_brand_id) values ('FM', 8);
-
-
-insert into com_models (name, comtran_brand_id) values ('FH', 9);
-insert into com_models (name, comtran_brand_id) values ('FM', 9);
-
-insert into com_models (name, comtran_brand_id) values ('FH', 10);
-insert into com_models (name, comtran_brand_id) values ('FM', 10);
-
-insert into com_models (name, comtran_brand_id) values ('FH', 11);
-insert into com_models (name, comtran_brand_id) values ('FM', 11);
-
-insert into com_models (name, comtran_brand_id) values ('FH', 12);
-insert into com_models (name, comtran_brand_id) values ('FM', 12);
-
-insert into com_models (name, comtran_brand_id) values ('FH', 13);
-insert into com_models (name, comtran_brand_id) values ('FM', 13);
-
-insert into com_models (name, comtran_brand_id) values ('FH', 14);
-insert into com_models (name, comtran_brand_id) values ('FM', 14);
-
-insert into com_models (name, comtran_brand_id) values ('FH', 15);
-
-insert into com_models (name, comtran_brand_id) values ('FM', 15);
-insert into com_models (name, comtran_brand_id) values ('FH', 16);
-insert into com_models (name, comtran_brand_id) values ('FM', 16);
-
-insert into com_models (name, comtran_brand_id) values ('FH', 17);
-insert into com_models (name, comtran_brand_id) values ('FM', 17);
-
-insert into com_models (name, comtran_brand_id) values ('FH', 18);
-insert into com_models (name, comtran_brand_id) values ('FM', 18);
-
-insert into com_models (name, comtran_brand_id) values ('FH', 19);
-insert into com_models (name, comtran_brand_id) values ('FM', 19);
-
-insert into com_models (name, comtran_brand_id) values ('FH', 20);
-insert into com_models (name, comtran_brand_id) values ('FM', 20);
-
 
 create table com_parameters (
     "id" serial primary key,
@@ -1208,20 +739,6 @@ create table com_parameters (
     unique("name", "comtran_category_id")
 );
 
-insert into com_parameters (name, comtran_category_id) values ('Engine', 1);
-
-insert into com_parameters (name, comtran_category_id) values ('Engine', 2);
-insert into com_parameters (name, comtran_category_id) values ('Power', 2);
-insert into com_parameters (name, comtran_category_id) values ('Number of Cycles', 2);
-insert into com_parameters (name, comtran_category_id) values ('Odometer', 2);
-
-insert into com_parameters (name, comtran_category_id) values ('Engine', 3);
-insert into com_parameters (name, comtran_category_id) values ('Crash', 3);
-
-insert into com_parameters (name, comtran_category_id) values ('Engine', 4);
-insert into com_parameters (name, comtran_category_id) values ('Number of Cycles', 4);
-insert into com_parameters (name, comtran_category_id) values ('Crash', 4);
-
 
 create table com_parameter_values (
     "id" serial primary key,
@@ -1234,22 +751,6 @@ create table com_parameter_values (
                 on delete cascade
                 on update cascade
 );
-
-insert into com_parameter_values (comtran_parameter_id, name) values (1, '1000');
-insert into com_parameter_values (comtran_parameter_id, name) values (2, '1000');
-insert into com_parameter_values (comtran_parameter_id, name) values (3, '1000');
-insert into com_parameter_values (comtran_parameter_id, name) values (3, '800');
-insert into com_parameter_values (comtran_parameter_id, name) values (4, '1000');
-insert into com_parameter_values (comtran_parameter_id, name) values (5, '1000');
-insert into com_parameter_values (comtran_parameter_id, name) values (6, '1000');
-insert into com_parameter_values (comtran_parameter_id, name) values (7, '1000');
-insert into com_parameter_values (comtran_parameter_id, name) values (7, '800');
-insert into com_parameter_values (comtran_parameter_id, name) values (8, '1000');
-insert into com_parameter_values (comtran_parameter_id, name) values (8, '200');
-insert into com_parameter_values (comtran_parameter_id, name) values (9, '1000');
-insert into com_parameter_values (comtran_parameter_id, name) values (9, '800');
-insert into com_parameter_values (comtran_parameter_id, name) values (10, '1000');
-insert into com_parameter_values (comtran_parameter_id, name) values (10, '800');
 
 create table com_category_parameters (
     "comtran_category_id" int not null,
@@ -1266,49 +767,6 @@ create table com_category_parameters (
                 on delete cascade
                 on update cascade
 );
-
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 1);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 2);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 3);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 4);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 5);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 6);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 7);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (1, 8);
-
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 1);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 2);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 3);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 4);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 5);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 6);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 7);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 8);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 9);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (2, 10);
-
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 1);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 2);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 3);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 4);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 5);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 6);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 7);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 8);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 9);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (3, 10);
-
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 1);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 2);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 3);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 4);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 5);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 6);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 7);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 8);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 9);
-insert into com_category_parameters (comtran_category_id, comtran_parameter_id) values (4, 10);
-
 
 create table comtrans (
     "id" serial primary key,
@@ -1383,11 +841,6 @@ create table comtrans (
                 on update cascade
 );
 
-insert into comtrans (user_id, comtran_category_id, comtran_brand_id, comtran_model_id, fuel_type_id, city_id, color_id, engine, power, year, number_of_cycles, odometer, crash, not_cleared, owners, date_of_purchase, warranty_date, ptc, vin_code, certificate, description, can_look_coordinate, phone_number, refuse_dealers_calls, only_chat, protect_spam, verified_buyers, contact_person, email, price, price_type, status) values (1, 1, 1, 1, 1, 1, 1, 1000, 1000, 2020, 100000, 0, false, false, 1, '2020-01-01', '2020-01-01', true, '1234567890', '1234567890', 'description', '1234567890', '1234567890', true, true, true, true, 'contact_person', 'email', 10000, 'USD', 1);
-insert into comtrans (user_id, comtran_category_id, comtran_brand_id, comtran_model_id, fuel_type_id, city_id, color_id, engine, power, year, number_of_cycles, odometer, crash, not_cleared, owners, date_of_purchase, warranty_date, ptc, vin_code, certificate, description, can_look_coordinate, phone_number, refuse_dealers_calls, only_chat, protect_spam, verified_buyers, contact_person, email, price, price_type, status) values (1, 2, 1, 1, 1, 1, 1, 1000, 1000, 2020, 100000, 0, false, false, 1, '2020-01-01', '2020-01-01', true, '1234567890', '1234567890', 'description', '1234567890', '1234567890', true, true, true, true, 'contact_person', 'email', 10000, 'USD', 1);
-insert into comtrans (user_id, comtran_category_id, comtran_brand_id, comtran_model_id, fuel_type_id, city_id, color_id, engine, power, year, number_of_cycles, odometer, crash, not_cleared, owners, date_of_purchase, warranty_date, ptc, vin_code, certificate, description, can_look_coordinate, phone_number, refuse_dealers_calls, only_chat, protect_spam, verified_buyers, contact_person, email, price, price_type, status) values (1, 3, 1, 1, 1, 1, 1, 1000, 1000, 2020, 100000, 0, false, false, 1, '2020-01-01', '2020-01-01', true, '1234567890', '1234567890', 'description', '1234567890', '1234567890', true, true, true, true, 'contact_person', 'email', 10000, 'USD', 1);
-insert into comtrans (user_id, comtran_category_id, comtran_brand_id, comtran_model_id, fuel_type_id, city_id, color_id, engine, power, year, number_of_cycles, odometer, crash, not_cleared, owners, date_of_purchase, warranty_date, ptc, vin_code, certificate, description, can_look_coordinate, phone_number, refuse_dealers_calls, only_chat, protect_spam, verified_buyers, contact_person, email, price, price_type, status) values (1, 4, 1, 1, 1, 1, 1, 1000, 1000, 2020, 100000, 0, false, false, 1, '2020-01-01', '2020-01-01', true, '1234567890', '1234567890', 'description', '1234567890', '1234567890', true, true, true, true, 'contact_person', 'email', 10000, 'USD', 1);
-
 
 create table comtran_parameters (
     "id" serial primary key,
@@ -1413,35 +866,6 @@ create table comtran_parameters (
     unique("comtran_id", "comtran_parameter_id")
 );
 
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 1, 1);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 2, 2);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 3, 3);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 4, 4);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 5, 5);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 6, 6);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 7, 7);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (1, 8, 8);
-
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (2, 1, 1);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (2, 2, 2);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (2, 3, 3);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (2, 4, 4);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (2, 5, 5);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (2, 6, 6);
-
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (3, 1, 1);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (3, 2, 2);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (3, 3, 3);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (3, 4, 4);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (3, 5, 5);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (3, 6, 6);
-
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (4, 1, 1);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (4, 2, 2);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (4, 3, 3);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (4, 4, 4);
-insert into comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id) values (4, 5, 5);
-
 
 create table comtran_images (
     "id" serial primary key,
@@ -1455,11 +879,6 @@ create table comtran_images (
                 on update cascade
 );
 
-insert into comtran_images (comtran_id, image) values (1, 'https://via.placeholder.com/150');
-insert into comtran_images (comtran_id, image) values (2, 'https://via.placeholder.com/150');
-insert into comtran_images (comtran_id, image) values (3, 'https://via.placeholder.com/150');
-insert into comtran_images (comtran_id, image) values (4, 'https://via.placeholder.com/150');
-
 
 create table comtran_videos (
     "id" serial primary key,
@@ -1472,14 +891,3 @@ create table comtran_videos (
                 on delete cascade
                 on update cascade
 );
-
-insert into comtran_videos (comtran_id, video) values (1, 'https://via.placeholder.com/150');
-insert into comtran_videos (comtran_id, video) values (2, 'https://via.placeholder.com/150');
-insert into comtran_videos (comtran_id, video) values (3, 'https://via.placeholder.com/150');
-insert into comtran_videos (comtran_id, video) values (4, 'https://via.placeholder.com/150');
-
-insert into comtran_videos (comtran_id, video) values (1, 'https://via.placeholder.com/150');
-insert into comtran_videos (comtran_id, video) values (2, 'https://via.placeholder.com/150');
-insert into comtran_videos (comtran_id, video) values (3, 'https://via.placeholder.com/150');
-insert into comtran_videos (comtran_id, video) values (4, 'https://via.placeholder.com/150');
-

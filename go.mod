@@ -3,6 +3,7 @@ module dubai-auto
 go 1.24.3
 
 require (
+	github.com/coreos/go-oidc/v3 v3.15.0
 	github.com/disintegration/imaging v1.6.2
 	github.com/go-playground/validator/v10 v10.27.0
 	github.com/gofiber/fiber/v2 v2.52.9
@@ -23,7 +24,6 @@ require (
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
-	github.com/coreos/go-oidc/v3 v3.15.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
 	github.com/go-openapi/jsonpointer v0.21.1 // indirect

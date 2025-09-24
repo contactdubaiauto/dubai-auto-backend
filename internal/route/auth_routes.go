@@ -23,4 +23,5 @@ func SetupAuthRoutes(r fiber.Router, db *pgxpool.Pool) {
 		r.Post("/user-phone-confirmation", authHandler.UserPhoneConfirmation)
 		r.Delete("/account/:id", auth.TokenGuard, authHandler.DeleteAccount)
 	}
+
 }

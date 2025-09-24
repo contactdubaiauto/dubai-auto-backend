@@ -1,15 +1,14 @@
 package service
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
-	"log"
 	"net/http"
 
-	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/valyala/fasthttp"
 	"golang.org/x/crypto/bcrypt"
 
-	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/utils"
@@ -25,32 +24,36 @@ func NewAuthService(repo *repository.AuthRepository) *AuthService {
 }
 
 func (s *AuthService) UserLoginGoogle(ctx *fasthttp.RequestCtx, tokenID string) model.Response {
-	var claims model.IDTokenClaims
-	provider, err := oidc.NewProvider(ctx, "https://accounts.google.com")
+
+	req, _ := http.NewRequest("GET", "https://www.googleapis.com/oauth2/v2/userinfo", nil)
+	req.Header.Set("Authorization", "Bearer "+tokenID)
+	client := &http.Client{}
+	resp, err := client.Do(req)
 
 	if err != nil {
-		log.Fatalf("failed to get provider: %v", err)
+		panic(err)
 	}
 
-	verifier := provider.Verifier(&oidc.Config{ClientID: config.ENV.ClientID})
-	idToken, err := verifier.Verify(ctx, tokenID)
+	defer resp.Body.Close()
 
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusUnauthorized}
+	if resp.StatusCode != http.StatusOK {
+		fmt.Println("Failed to get user info")
+		return model.Response{Error: errors.New("failed to get user info"), Status: http.StatusBadRequest}
 	}
 
-	if err := idToken.Claims(&claims); err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	var userInfo model.GoogleUserInfo
+
+	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
+		panic(err)
 	}
 
-	u, err := s.repo.UserLoginGoogle(ctx, claims)
+	u, err := s.repo.UserLoginGoogle(ctx, userInfo)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
 	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, 1)
-
 	return model.Response{
 		Data: model.LoginFiberResponse{
 			AccessToken:  accessToken,

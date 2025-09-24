@@ -15,7 +15,7 @@ func NewAuthRepository(db *pgxpool.Pool) *AuthRepository {
 	return &AuthRepository{db}
 }
 
-func (r *AuthRepository) UserLoginGoogle(ctx *fasthttp.RequestCtx, claims model.IDTokenClaims) (model.UserByEmail, error) {
+func (r *AuthRepository) UserLoginGoogle(ctx *fasthttp.RequestCtx, claims model.GoogleUserInfo) (model.UserByEmail, error) {
 	query := `
 		INSERT INTO users (email, password)
 		VALUES ($1, 'google')
