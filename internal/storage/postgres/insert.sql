@@ -383,3 +383,14 @@ insert into comtran_videos (comtran_id, video) values (1, 'https://via.placehold
 insert into comtran_videos (comtran_id, video) values (2, 'https://via.placeholder.com/150');
 insert into comtran_videos (comtran_id, video) values (3, 'https://via.placeholder.com/150');
 insert into comtran_videos (comtran_id, video) values (4, 'https://via.placeholder.com/150');
+
+
+
+insert into user_parameters (name, type)
+    values 
+        ('Company name', 'text'),
+        ('Company type', 'select'),
+        ('Field of activity', 'select'),
+        ('License issue date', 'date'),
+        ('License expiry date', 'date'),
+        ('VAT number (value added tax)', 'text'),

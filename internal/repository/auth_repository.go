@@ -16,23 +16,59 @@ func NewAuthRepository(db *pgxpool.Pool) *AuthRepository {
 }
 
 func (r *AuthRepository) UserLoginGoogle(ctx *fasthttp.RequestCtx, claims model.GoogleUserInfo) (model.UserByEmail, error) {
-	query := `
-		INSERT INTO users (email, password)
-		VALUES ($1, 'google')
-		ON CONFLICT (email)
-		DO NOTHING
+	var userByEmail model.UserByEmail
+	q := `
+		INSERT INTO users (email, password, username)
+		VALUES ($1, 'google', $2)
+		ON CONFLICT (email) DO UPDATE
+		SET email = EXCLUDED.email
+		RETURNING id, role_id;
+
+	`
+	row := r.db.QueryRow(ctx, q, claims.Email, claims.Name)
+	err := row.Scan(&userByEmail.ID, &userByEmail.RoleID)
+
+	if err != nil {
+		return userByEmail, err
+	}
+
+	q = `
+		INSERT INTO profiles (user_id, username, registered_by)
+		VALUES ($1, $2, $3)
+		ON CONFLICT (user_id) DO NOTHING;
+	`
+	_, err = r.db.Exec(ctx, q, userByEmail.ID, claims.Name, "google")
+
+	return userByEmail, err
+}
+
+func (r *AuthRepository) Application(ctx *fasthttp.RequestCtx, req model.UserApplication) (model.UserByEmail, error) {
+	var userByEmail model.UserByEmail
+	q := `
+		INSERT INTO users (email, username, role_id, phone)
+		VALUES ($1, $2, $3, $4)
+		ON CONFLICT (email) DO UPDATE
+		SET role_id = EXCLUDED.role_id
 		RETURNING id, role_id;
 	`
-	row := r.db.QueryRow(ctx, query, claims.Email)
-
-	var userByEmail model.UserByEmail
+	row := r.db.QueryRow(ctx, q, req.Email, req.FullName, req.RoleID, req.Phone)
 	err := row.Scan(&userByEmail.ID, &userByEmail.RoleID)
+
+	if err != nil {
+		return userByEmail, err
+	}
+
+	q = `
+		INSERT INTO profiles (user_id, username, registered_by)
+		VALUES ($1, $2, $3)
+		ON CONFLICT (user_id) DO NOTHING;
+	`
+	_, err = r.db.Exec(ctx, q, userByEmail.ID, req.CompanyName, "application")
 
 	return userByEmail, err
 }
 
 func (r *AuthRepository) DeleteAccount(ctx *fasthttp.RequestCtx, userID int) error {
-
 	// Delete user
 	_, err := r.db.Exec(ctx, `DELETE FROM users WHERE id = $1`, userID)
 	return err

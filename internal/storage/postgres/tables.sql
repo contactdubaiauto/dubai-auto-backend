@@ -55,52 +55,70 @@ create table users (
     "id" serial primary key,
     "email" varchar(100),
     "username" varchar(100) not null,
-    "role_id" int not null default 1, -- 1 user, 2 dealer, 3 logistic, 4 broker
+    "role_id" int not null default 1, -- 1 user, 2 dealer, 3 logistic, 4 broker, 5 car service
     "password" varchar(100) not null,
     "phone" varchar(100),
-    "status" int not null default 1, -- 1 active, 2 inactive
+    "status" int not null default 1, -- 1 active, 2 pending, 3 inactive
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
     unique("email"),
     unique("phone")
 );
 
-create table user_parameters (
+create table profiles (
     "id" serial primary key, 
-    "name" varchar(50) not null,
-    "updated_at" timestamp not null default now(),
-    "created_at" timestamp not null default now()
+    "user_id" int not null,
+    "city_id" int,
+    "driving_experience" int,
+    "notification" boolean default false,
+    "username" varchar(100) not null,
+    "registered_by" varchar(20) not null,
+    "google" varchar(200),
+    "avatar" varchar(200),
+    "address" varchar(200),
+    "birthday" date,
+    "about_me" varchar(300),
+    "last_active_date" timestamp default now(),
+    "created_at" timestamp default now(),
+    constraint profiles_user_id_fk 
+        foreign key (user_id) 
+            references users(id) 
+                on delete cascade 
+                on update cascade,
+    constraint profiles_city_id_fk 
+        foreign key (city_id) 
+            references cities(id) 
+                on delete cascade 
+                on update cascade,
+    unique (user_id)
 );
 
 
-
-create table user_parameter_values (
-    "id" serial primary key, 
+-- dealer register
+create table company_types (
+    "id" serial primary key,
     "name" varchar(50) not null,
-    "parameter_id" int not null,
-    "updated_at" timestamp not null default now(),
-    "created_at" timestamp not null default now(),
-    constraint fk_user_parameter_values_parameter_id
-        foreign key ("parameter_id")
-            references user_parameters("id")
-                on delete cascade
-                on update cascade,
-    unique("name", "parameter_id")
+    "created_at" timestamp default now()
 );
 
-create table user_type_parameters (
-    "id" serial primary key, 
-    "user_type" int not null,
-    "parameter_id" int not null,
-    "updated_at" timestamp not null default now(),
-    "created_at" timestamp not null default now(),
-    constraint fk_user_type_parameters_parameter_id
-        foreign key ("parameter_id")
-            references user_parameters("id")
-                on delete cascade
-                on update cascade,
-    unique("name", "parameter_id")
-)
+
+create table activity_fields (
+    "id" serial primary key,
+    "name" varchar(50) not null,
+    "created_at" timestamp default now()
+);
+
+create table documents (
+    "id" serial primary key,
+    "copy_of_id_path" varchar(50) not null,
+    "memorandum_path" varchar(50) not null,
+    "licence_path" varchar(50) not null,
+    "licence_issue_date" timestamp not null,
+    "licence_expiry_date" timestamp not null,
+    "created_at" timestamp default now()
+);
+
+
 
 create table messages (
     "id" serial primary key,
@@ -125,33 +143,6 @@ create table cities (
     "id" serial primary key,
     "name" varchar(255) not null,
     "created_at" timestamp default now()
-);
-
-create table profiles (
-    "id" serial primary key, 
-    "user_id" int not null,
-    "city_id" int,
-    "driving_experience" int,
-    "notification" boolean default false,
-    "username" varchar(100) not null,
-    "registered_by" varchar(20) not null,
-    "google" varchar(200),
-    "avatar" varchar(200),
-    "birthday" date,
-    "about_me" varchar(300),
-    "last_active_date" timestamp default now(),
-    "created_at" timestamp default now(),
-    constraint profiles_user_id_fk 
-        foreign key (user_id) 
-            references users(id) 
-                on delete cascade 
-                on update cascade,
-    constraint profiles_city_id_fk 
-        foreign key (city_id) 
-            references cities(id) 
-                on delete cascade 
-                on update cascade,
-    unique (user_id)
 );
 
 

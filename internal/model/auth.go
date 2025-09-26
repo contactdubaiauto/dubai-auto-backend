@@ -4,6 +4,20 @@ type UserLoginGoogle struct {
 	TokenID string `json:"token_id" binding:"required"`
 }
 
+type UserApplication struct {
+	CompanyName       string `json:"company_name" binding:"required"`
+	CompanyTypeID     string `json:"company_type_id" binding:"required"`
+	ActivityFieldID   string `json:"activity_field_id" binding:"required"`
+	LicenseIssueDate  string `json:"licensei_issue_date" binding:"required"`
+	LicenseExpiryDate string `json:"licensei_expiry_date" binding:"required"`
+	FullName          string `json:"full_name" binding:"required"`
+	Email             string `json:"email" binding:"required"`
+	Phone             string `json:"phone" binding:"required"`
+	Address           string `json:"address" binding:"required"`
+	VATNumber         string `json:"vat_number" binding:"required"`
+	RoleID            int    `json:"role_id" binding:"required"`
+}
+
 type UserEmailConfirmationRequest struct {
 	Email string `json:"email" binding:"required,email"`
 	OTP   string `json:"otp" binding:"required"`

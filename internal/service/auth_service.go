@@ -23,15 +23,30 @@ func NewAuthService(repo *repository.AuthRepository) *AuthService {
 	return &AuthService{repo}
 }
 
-func (s *AuthService) UserLoginGoogle(ctx *fasthttp.RequestCtx, tokenID string) model.Response {
+func (s *AuthService) Application(ctx *fasthttp.RequestCtx, req model.UserApplication) model.Response {
+	u, err := s.repo.Application(ctx, req)
 
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, 1)
+	return model.Response{
+		Data: model.LoginFiberResponse{
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+		},
+	}
+}
+
+func (s *AuthService) UserLoginGoogle(ctx *fasthttp.RequestCtx, tokenID string) model.Response {
 	req, _ := http.NewRequest("GET", "https://www.googleapis.com/oauth2/v2/userinfo", nil)
 	req.Header.Set("Authorization", "Bearer "+tokenID)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 
 	if err != nil {
-		panic(err)
+		return model.Response{Error: err, Status: http.StatusBadRequest}
 	}
 
 	defer resp.Body.Close()
@@ -44,7 +59,7 @@ func (s *AuthService) UserLoginGoogle(ctx *fasthttp.RequestCtx, tokenID string) 
 	var userInfo model.GoogleUserInfo
 
 	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
-		panic(err)
+		return model.Response{Error: err, Status: http.StatusBadRequest}
 	}
 
 	u, err := s.repo.UserLoginGoogle(ctx, userInfo)

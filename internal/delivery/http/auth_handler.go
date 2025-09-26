@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -54,6 +55,104 @@ func (h *AuthHandler) UserLoginGoogle(c *fiber.Ctx) error {
 	data := h.service.UserLoginGoogle(c.Context(), user.TokenID)
 	return utils.FiberResponse(c, &data)
 }
+
+// UserLoginGoogle godoc
+// @Summary      User login google
+// @Description  Authenticates a user and returns a JWT token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      model.UserApplication  true  "3rd part users send an application"
+// @Success      200   {object}  model.LoginFiberResponse
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/auth/send-application [post]
+func (h *AuthHandler) Application(c *fiber.Ctx) error {
+	application := model.UserApplication{}
+
+	if err := c.BodyParser(application); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	fmt.Println("application")
+	fmt.Println(application)
+
+	if err := h.validator.Validate(application); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	data := h.service.Application(c.Context(), application)
+	return utils.FiberResponse(c, &data)
+}
+
+// // Send Application Documents godoc
+// // @Summary      Upload car images
+// // @Description  Uploads images for a car (max 10 files)
+// // @Tags         car
+// // @Security     BearerAuth
+// // @Accept       multipart/form-data
+// // @Produce      json
+// // @Param        car_id      path      int     true   "Car CAR_ID"
+// // @Param        licence  formData  file    true   "Licence"
+// // @Success      200     {object}  model.Success
+// // @Failure      400     {object}  model.ResultMessage
+// // @Failure      401     {object}  auth.ErrorResponse
+// // @Failure	 	 403  	 {object}  auth.ErrorResponse
+// // @Failure      404     {object}  model.ResultMessage
+// // @Failure      500     {object}  model.ResultMessage
+// // @Router       /api/v1/auth/send-application-documents [post]
+// func (h *AuthHandler) ApplicationDocuments(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid car ID"),
+// 		})
+
+// 	}
+
+// 	form, _ := c.MultipartForm()
+
+// 	if form == nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("didn't upload the files"),
+// 		})
+// 	}
+
+// 	images := form.File["images"]
+
+// 	if len(images) > 10 {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("must load maximum 10 files"),
+// 		})
+// 	}
+
+// 	paths, status, err := files.SaveFiles(images, config.ENV.STATIC_PATH+"documents/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, &model.Response{
+// 			Status: status,
+// 			Error:  err,
+// 		})
+// 	}
+
+// 	data := h.service.ApplicationDocuments(ctx, id, paths)
+// 	return utils.FiberResponse(c, data)
+// }
 
 // UserEmail confirmation godoc
 // @Summary      User email confirmation
