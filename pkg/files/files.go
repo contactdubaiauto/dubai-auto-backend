@@ -77,6 +77,7 @@ func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]str
 		if files[index].Size > maxFileSize {
 			return nil, 400, fmt.Errorf("file %s is too large", files[index].Filename)
 		}
+
 		splitedFileName := strings.Split(files[index].Filename, ".")
 		extension := splitedFileName[len(splitedFileName)-1]
 		extensionExists := extensions[extension]
@@ -165,12 +166,14 @@ func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]str
 
 func resizeImage(imagePath string, width uint) error {
 	file, err := os.Open(imagePath)
+
 	if err != nil {
 		return fmt.Errorf("failed to open image: %w", err)
 	}
 	defer file.Close()
 
 	img, _, err := image.Decode(file)
+
 	if err != nil {
 		return fmt.Errorf("failed to decode image: %w", err)
 	}
@@ -178,6 +181,7 @@ func resizeImage(imagePath string, width uint) error {
 	// Reopen file to read EXIF
 	file.Seek(0, 0)
 	x, err := exif.Decode(file)
+
 	if err == nil {
 		orientTag, err := x.Get(exif.Orientation)
 		if err == nil {
@@ -195,6 +199,7 @@ func resizeImage(imagePath string, width uint) error {
 
 	outputPath := strings.TrimSuffix(imagePath, filepath.Ext(imagePath)) + "_" + size + ".jpg"
 	outFile, err := os.Create(outputPath)
+
 	if err != nil {
 		return fmt.Errorf("failed to create output file: %w", err)
 	}
@@ -254,7 +259,7 @@ func RemoveFolder(path string) error {
 	return err
 }
 
-func SaveVideosOriginal(file *multipart.FileHeader, folder string) (string, error) {
+func SaveOriginal(file *multipart.FileHeader, folder string) (string, error) {
 	err := CreateFolderIfNotExists("." + folder)
 
 	if err != nil {
@@ -263,6 +268,7 @@ func SaveVideosOriginal(file *multipart.FileHeader, folder string) (string, erro
 
 	// Open the uploaded file
 	src, err := file.Open()
+
 	if err != nil {
 		return "", fmt.Errorf("failed to open uploaded file: %v", err)
 	}
@@ -274,12 +280,14 @@ func SaveVideosOriginal(file *multipart.FileHeader, folder string) (string, erro
 	// Save the uploaded file temporarily
 	tempVideoPath := filepath.Join(folder, outputID+"_upload"+filepath.Ext(file.Filename))
 	dst, err := os.Create("." + tempVideoPath)
+
 	if err != nil {
 		return "", fmt.Errorf("failed to create temp file: %v", err)
 	}
 	defer dst.Close()
 
 	_, err = io.Copy(dst, src)
+
 	if err != nil {
 		return "", fmt.Errorf("failed to copy uploaded file: %v", err)
 	}
@@ -299,6 +307,7 @@ func SaveVideos(file *multipart.FileHeader, folder string) (string, error) {
 
 	// Open the uploaded file
 	src, err := file.Open()
+
 	if err != nil {
 		return "", fmt.Errorf("failed to open uploaded file: %v", err)
 	}
@@ -310,12 +319,14 @@ func SaveVideos(file *multipart.FileHeader, folder string) (string, error) {
 	// Save the uploaded file temporarily
 	tempVideoPath := filepath.Join("."+folder, outputID+"_upload"+filepath.Ext(file.Filename))
 	dst, err := os.Create(tempVideoPath)
+
 	if err != nil {
 		return "", fmt.Errorf("failed to create temp file: %v", err)
 	}
 	defer dst.Close()
 
 	_, err = io.Copy(dst, src)
+
 	if err != nil {
 		return "", fmt.Errorf("failed to copy uploaded file: %v", err)
 	}
@@ -340,6 +351,7 @@ func VideoToHLS(tempVideoPath string, outputPath string) {
 	)
 
 	output, err := cmd.CombinedOutput()
+
 	if err != nil {
 		fmt.Printf("failed to run ffmpeg: %v\nOutput: %s", err, string(output))
 		os.Remove(tempVideoPath)
@@ -347,6 +359,7 @@ func VideoToHLS(tempVideoPath string, outputPath string) {
 
 	// Remove the temp uploaded video
 	err = os.Remove(tempVideoPath)
+
 	if err != nil {
 		fmt.Printf("failed to remove temp file: %v", err)
 	}

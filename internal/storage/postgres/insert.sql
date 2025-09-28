@@ -394,3 +394,17 @@ insert into user_parameters (name, type)
         ('License issue date', 'date'),
         ('License expiry date', 'date'),
         ('VAT number (value added tax)', 'text'),
+
+
+
+insert into activity_fields (name) values ('Transport');
+insert into activity_fields (name) values ('Trade');
+insert into activity_fields (name) values ('Services');
+insert into activity_fields (name) values ('Industry');
+insert into activity_fields (name) values ('Other');
+
+
+
+insert into company_types (name) values ('Private Company');
+insert into company_types (name) values ('Public Company');
+insert into company_types (name) values ('Limited Liability Company');

@@ -9,7 +9,6 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"dubai-auto/internal/config"
-	"dubai-auto/internal/delivery/http/middleware"
 	"dubai-auto/internal/route"
 	"dubai-auto/pkg/auth"
 	"dubai-auto/pkg/logger"
@@ -23,9 +22,7 @@ func InitApp(db *pgxpool.Pool, conf *config.Config, logger *logger.Logger) *fibe
 	app.Use(pprof.New())
 	app.Use(auth.Cors)
 
-	if config.ENV.APP_MODE == "release" {
-		app.Use(middleware.ZerologMiddleware(logger))
-	} else {
+	if config.ENV.APP_MODE != "release" {
 		app.Use(fb_logger.New(fb_logger.Config{
 			Format: "[${time}] ${ip} ${status} - ${method} ${path} ${latency}\n",
 			Output: os.Stdout, // Or to a file: os.OpenFile("fiber.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)

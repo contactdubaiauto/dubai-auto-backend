@@ -36,20 +36,68 @@ drop table if exists users;
 drop table if exists admins;
 drop table if exists ownership_types;
 
+-- dealer register
+create table company_types (
+    "id" serial primary key,
+    "name" varchar(50) not null,
+    "created_at" timestamp default now()
+);
+
+create table activity_fields (
+    "id" serial primary key,
+    "name" varchar(50) not null,
+    "created_at" timestamp default now()
+);
+
+create table documents (
+    "id" serial primary key,
+    "copy_of_id_path" varchar(100) not null,
+    "memorandum_path" varchar(100) not null,
+    "licence_path" varchar(100) not null,
+    "licence_issue_date" timestamp,
+    "licence_expiry_date" timestamp,
+    "created_at" timestamp default now()
+);
+
+
 create table temp_users (
     "id" serial primary key,
+    "company_name" varchar(100),
+    "company_type_id" int,
+    "activity_field_id" int,
+    "vat_number" varchar(100),
+    "address" varchar(100),
+    "licence_issue_date" timestamp,
+    "licence_expiry_date" timestamp,
+    "documents_id" int,
     "email" varchar(100),
-    "username" varchar(100) not null,
-    "role_id" int not null default 1, -- 1 user, 2 dealer, 3 logistic, 4 broker
+    "username" varchar(100),
+    "role_id" int not null default 1, -- 1 user, 2 dealer, 3 logistic, 4 broker, 5 car service
     "password" varchar(100) not null,
     "phone" varchar(100),
     "status" int not null default 1, -- 1 active, 2 inactive
     "registered_by" varchar(20) not null,
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
+    constraint fk_temp_users_company_type_id
+        foreign key (company_type_id)
+            references company_types(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_temp_users_activity_field_id
+        foreign key (activity_field_id)
+            references activity_fields(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_temp_users_documents_id
+        foreign key (documents_id)
+            references documents(id)
+                on delete cascade
+                on update cascade,
     unique("email"),
     unique("phone")
 );
+
 
 create table users (
     "id" serial primary key,
@@ -80,44 +128,18 @@ create table profiles (
     "about_me" varchar(300),
     "last_active_date" timestamp default now(),
     "created_at" timestamp default now(),
-    constraint profiles_user_id_fk 
+    constraint fk_profiles_user_id 
         foreign key (user_id) 
             references users(id) 
                 on delete cascade 
                 on update cascade,
-    constraint profiles_city_id_fk 
+    constraint fk_profiles_city_id 
         foreign key (city_id) 
             references cities(id) 
                 on delete cascade 
                 on update cascade,
     unique (user_id)
 );
-
-
--- dealer register
-create table company_types (
-    "id" serial primary key,
-    "name" varchar(50) not null,
-    "created_at" timestamp default now()
-);
-
-
-create table activity_fields (
-    "id" serial primary key,
-    "name" varchar(50) not null,
-    "created_at" timestamp default now()
-);
-
-create table documents (
-    "id" serial primary key,
-    "copy_of_id_path" varchar(50) not null,
-    "memorandum_path" varchar(50) not null,
-    "licence_path" varchar(50) not null,
-    "licence_issue_date" timestamp not null,
-    "licence_expiry_date" timestamp not null,
-    "created_at" timestamp default now()
-);
-
 
 
 create table messages (
@@ -127,12 +149,12 @@ create table messages (
     "message" varchar(500) not null, --  it is an id if type "item".
     "type" int not null default 1, -- 1-text, 2-item
     "created_at" timestamp default now(),
-    constraint messages_sender_id_fk
+    constraint fk_messages_sender_id
         foreign key (sender_id)
             references users(id)
                 on delete cascade
                 on update cascade,
-    constraint messages_receiver_id_fk
+    constraint fk_messages_receiver_id
         foreign key (receiver_id)
             references users(id)
                 on delete cascade
@@ -173,7 +195,7 @@ create table models (
     "brand_id" int not null,
     "popular" boolean default false,
     "updated_at" timestamp default now(),
-    constraint models_brand_id_fk 
+    constraint fk_models_brand_id 
         foreign key (brand_id) 
             references brands(id)
                 on delete cascade
@@ -222,7 +244,7 @@ create table regions (
     "name" varchar(255) not null,
     "city_id" int not null,
     "created_at" timestamp default now(),
-    constraint regions_city_id_fk
+    constraint fk_regions_city_id
         foreign key (city_id)
             references cities(id)
                 on delete cascade
@@ -241,7 +263,7 @@ create table services (
     "name" varchar(255) not null,
     "service_type_id" int not null,
     "created_at" timestamp default now(),
-    constraint services_service_type_id_fk
+    constraint fk_services_service_type_id
         foreign key (service_type_id)
             references service_types(id)
                 on delete cascade
@@ -259,7 +281,7 @@ create table generations (
     "wheel" boolean not null default true,
     "image" varchar(255) not null,
     "created_at" timestamp default now(),
-    constraint generations_model_id_fk
+    constraint fk_generations_model_id
         foreign key (model_id)
             references models(id)
                 on delete cascade
@@ -269,12 +291,12 @@ create table configurations (
     "id" serial primary key,
     "body_type_id" int not null,
     "generation_id" int not null,
-    constraint configurations_generation_id_fk
+    constraint fk_configurations_generation_id
         foreign key (generation_id)
             references generations(id)
                 on delete cascade
                 on update cascade,
-    constraint configurations_body_type_id_fk
+    constraint fk_configurations_body_type_id
         foreign key (body_type_id)
             references body_types(id)
                 on delete cascade
@@ -290,32 +312,32 @@ create table generation_modifications (
     "drivetrain_id" int not null,
     "transmission_id" int not null, 
     unique(generation_id, body_type_id, engine_id, fuel_type_id, drivetrain_id, transmission_id),
-    constraint generation_modifications_generation_id_fk
+    constraint fk_generation_modifications_generation_id
         foreign key (generation_id)
             references generations(id)
                 on delete cascade
                 on update cascade,
-    constraint generation_modifications_engine_id_fk
+    constraint fk_generation_modifications_engine_id
         foreign key (engine_id)
             references engines(id)
                 on delete cascade
                 on update cascade,
-    constraint generation_modifications_fuel_type_id_fk
+    constraint fk_generation_modifications_fuel_type_id
         foreign key (fuel_type_id)
             references fuel_types(id)
                 on delete cascade
                 on update cascade,
-    constraint generation_modifications_drivetrain_id_fk
+    constraint fk_generation_modifications_drivetrain_id
         foreign key (drivetrain_id)
             references drivetrains(id)
                 on delete cascade
                 on update cascade,
-    constraint generation_modifications_transmission_id_fk
+    constraint fk_generation_modifications_transmission_id
         foreign key (transmission_id)
             references transmissions(id)
                 on delete cascade
                 on update cascade,
-    constraint generation_modifications_body_type_id_fk
+    constraint fk_generation_modifications_body_type_id
         foreign key (body_type_id)
             references body_types(id)
                 on delete cascade
@@ -364,42 +386,42 @@ create table vehicles (
     "status" int not null default 3, -- 1-pending, 2-not sale (my cars), 3-on sale,
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
-    constraint vehicles_color_id_fk
+    constraint fk_vehicles_color_id
         foreign key (color_id)
             references colors(id)
                 on delete set null
                 on update cascade,
-    constraint vehicles_ownership_type_id_fk
+    constraint fk_vehicles_ownership_type_id
         foreign key (ownership_type_id)
             references ownership_types(id)
                 on delete cascade
                 on update cascade,
-    constraint vehicles_user_id_fk
+    constraint fk_vehicles_user_id
         foreign key (user_id)
             references users(id)
                 on delete cascade
                 on update cascade,
-    constraint vehicles_brand_id_fk
+    constraint fk_vehicles_brand_id
         foreign key (brand_id)
             references brands(id)
                 on delete cascade
                 on update cascade,
-    constraint vehicles_model_id_fk
+    constraint fk_vehicles_model_id
         foreign key (model_id)
             references models(id)
                 on delete cascade
                 on update cascade,
-    constraint vehicles_modification_id_fk
+    constraint fk_vehicles_modification_id
         foreign key (modification_id)
             references generation_modifications(id)
                 on delete cascade
                 on update cascade,
-    constraint vehicles_region_id_fk
+    constraint fk_vehicles_region_id
         foreign key (region_id)
             references regions(id)
                 on delete cascade
                 on update cascade,
-    constraint vehicles_city_id_fk
+    constraint fk_vehicles_city_id
         foreign key (city_id)
             references cities(id)
                 on delete cascade
@@ -442,7 +464,7 @@ create table images (
     "vehicle_id" int not null,
     "image" varchar(255) not null,
     "created_at" timestamp not null default now(),
-    constraint images_vehicle_id_fk
+    constraint fk_images_vehicle_id
         foreign key (vehicle_id)
             references vehicles(id)
                 on delete cascade
@@ -453,12 +475,12 @@ CREATE TABLE user_likes (
     user_id INT NOT NULL,
     vehicle_id INT NOT NULL,
     PRIMARY KEY (user_id, vehicle_id),
-    constraint user_likes_vehicle_id_fk
+    constraint fk_user_likes_vehicle_id
         foreign key (vehicle_id)
             references vehicles(id)
                 on delete cascade
                 on update cascade,
-    constraint user_likes_user_id_fk
+    constraint fk_user_likes_user_id
         foreign key (user_id)
             references users(id)
                 on delete cascade
@@ -469,7 +491,7 @@ create table videos (
     "vehicle_id" int not null,
     "video" varchar(255) not null,
     "created_at" timestamp not null default now(),
-    constraint videos_vehicle_id_fk
+    constraint fk_videos_vehicle_id
         foreign key (vehicle_id)
             references vehicles(id)
                 on delete cascade
@@ -489,7 +511,7 @@ create table moto_brands (
     "image" varchar(255) not null,
     "moto_category_id" integer not null,
     "created_at" timestamp not null default now(),
-    constraint moto_brands_moto_category_id_fk
+    constraint fk_moto_brands_moto_category_id
         foreign key (moto_category_id)
             references moto_categories(id)
                 on delete cascade
@@ -502,7 +524,7 @@ create table moto_models (
     "name" varchar(100) not null,
     "moto_brand_id" integer not null,
     "created_at" timestamp not null default now(),
-    constraint moto_brand_models_moto_brand_id_fk
+    constraint fk_moto_brand_models_moto_brand_id
         foreign key (moto_brand_id)
             references moto_brands(id)
                 on delete cascade
@@ -514,7 +536,7 @@ create table moto_parameters (
     "moto_category_id" int not null,
     "name" varchar(100) not null,
     "created_at" timestamp default now(),
-    constraint moto_parameters_moto_category_id_fk
+    constraint fk_moto_parameters_moto_category_id
         foreign key (moto_category_id)
             references moto_categories(id)
                 on delete cascade
@@ -527,7 +549,7 @@ create table moto_parameter_values (
     "moto_parameter_id" int not null,
     "name" varchar(100) not null,
     "created_at" timestamp default now(),
-    constraint moto_parameter_values_moto_parameter_id_fk
+    constraint fk_moto_parameter_values_moto_parameter_id
         foreign key (moto_parameter_id)
             references moto_parameters(id)
                 on delete cascade
@@ -538,12 +560,12 @@ create table moto_category_parameters (
     "moto_category_id" int not null,
     "moto_parameter_id" int not null,
     "created_at" timestamp not null default now(),
-    constraint moto_category_parameters_moto_category_id_fk
+    constraint fk_moto_category_parameters_moto_category_id
         foreign key (moto_category_id)
             references moto_categories(id)
                 on delete cascade
                 on update cascade,
-    constraint moto_category_parameters_moto_parameter_id_fk
+    constraint fk_moto_category_parameters_moto_parameter_id
         foreign key (moto_parameter_id)
             references moto_parameters(id)
                 on delete cascade
@@ -588,37 +610,37 @@ create table motorcycles (
     "status" int not null default 3, -- 1-pending, 2-not sale (my cars), 3-on sale,
     "updated_at" timestamp not null default now(),
     "created_at" timestamp not null default now(),
-    constraint motorcycles_user_id_fk
+    constraint fk_motorcycles_user_id
         foreign key (user_id)
             references users(id)
                 on delete cascade
                 on update cascade,
-    constraint motorcycles_category_id_fk
+    constraint fk_motorcycles_category_id
         foreign key (moto_category_id)
             references moto_categories(id)
                 on delete cascade
                 on update cascade,
-    constraint motorcycles_brand_id_fk
+    constraint fk_motorcycles_brand_id
         foreign key (moto_brand_id)
             references moto_brands(id)
                 on delete cascade
                 on update cascade,
-    constraint motorcycles_model_id_fk
+    constraint fk_motorcycles_model_id
         foreign key (moto_model_id)
             references moto_models(id)
                 on delete cascade
                 on update cascade,
-    constraint motorcycles_fuel_type_id_fk
+    constraint fk_motorcycles_fuel_type_id
         foreign key (fuel_type_id)
             references fuel_types(id)
                 on delete cascade
                 on update cascade,
-    constraint motorcycles_color_id_fk
+    constraint fk_motorcycles_color_id
         foreign key (color_id)
             references colors(id)
                 on delete cascade
                 on update cascade,
-    constraint motorcycles_city_id_fk
+    constraint fk_motorcycles_city_id
         foreign key (city_id)
             references cities(id)
                 on delete cascade
@@ -632,17 +654,17 @@ create table motorcycle_parameters (
     "moto_parameter_id" int not null,
     "moto_parameter_value_id" int not null,
     "created_at" timestamp default now(),
-    constraint motorcycle_parameters_motorcycle_id_fk
+    constraint fk_motorcycle_parameters_motorcycle_id
         foreign key (motorcycle_id)
             references motorcycles(id)
                 on delete cascade
                 on update cascade,
-    constraint motorcycle_parameters_moto_parameter_id_fk
+    constraint fk_motorcycle_parameters_moto_parameter_id
         foreign key (moto_parameter_id)
             references moto_parameters(id)
                 on delete cascade
                 on update cascade,
-    constraint motorcycle_parameters_moto_parameter_value_id_fk
+    constraint fk_motorcycle_parameters_moto_parameter_value_id
         foreign key (moto_parameter_value_id)
             references moto_parameter_values(id)
                 on delete cascade
@@ -655,7 +677,7 @@ create table moto_images (
     "moto_id" int not null,
     "image" varchar(255) not null,
     "created_at" timestamp not null default now(),
-    constraint moto_images_moto_id_fk
+    constraint fk_moto_images_moto_id
         foreign key (moto_id)
             references motorcycles(id)
                 on delete cascade
@@ -668,7 +690,7 @@ create table moto_videos (
     "moto_id" int not null,
     "video" varchar(255) not null,
     "created_at" timestamp not null default now(),
-    constraint moto_videos_moto_id_fk
+    constraint fk_moto_videos_moto_id
         foreign key (moto_id)
             references motorcycles(id)
                 on delete cascade
@@ -698,7 +720,7 @@ create table com_brands (
     "image" varchar(255) not null,
     "comtran_category_id" integer not null,
     "created_at" timestamp not null default now(),
-    constraint com_brands_comtran_category_id_fk
+    constraint fk_com_brands_comtran_category_id
         foreign key (comtran_category_id)
             references com_categories(id)
                 on delete cascade
@@ -710,7 +732,7 @@ create table com_models (
     "name" varchar(100) not null,
     "comtran_brand_id" integer not null,
     "created_at" timestamp not null default now(),
-    constraint com_brand_models_comtran_brand_id_fk
+    constraint fk_com_brand_models_comtran_brand_id
         foreign key (comtran_brand_id)
             references com_brands(id)
                 on delete cascade
@@ -722,7 +744,7 @@ create table com_parameters (
     "comtran_category_id" int not null,
     "name" varchar(100) not null,
     "created_at" timestamp default now(),
-    constraint com_parameters_comtran_category_id_fk
+    constraint fk_com_parameters_comtran_category_id
         foreign key (comtran_category_id)
             references com_categories(id)
                 on delete cascade
@@ -736,7 +758,7 @@ create table com_parameter_values (
     "comtran_parameter_id" int not null,
     "name" varchar(100) not null,
     "created_at" timestamp default now(),
-    constraint com_parameter_values_comtran_parameter_id_fk
+    constraint fk_com_parameter_values_comtran_parameter_id
         foreign key (comtran_parameter_id)
             references com_parameters(id)
                 on delete cascade
@@ -747,12 +769,12 @@ create table com_category_parameters (
     "comtran_category_id" int not null,
     "comtran_parameter_id" int not null,
     "created_at" timestamp not null default now(),
-    constraint com_category_parameters_comtran_category_id_fk
+    constraint fk_com_category_parameters_comtran_category_id
         foreign key (comtran_category_id)
             references com_categories(id)
                 on delete cascade
                 on update cascade,
-    constraint com_category_parameters_comtran_parameter_id_fk
+    constraint fk_com_category_parameters_comtran_parameter_id
         foreign key (comtran_parameter_id)
             references com_parameters(id)
                 on delete cascade
@@ -795,37 +817,37 @@ create table comtrans (
     "status" int not null default 3, -- 1-pending, 2-not sale (my cars), 3-on sale,
     "updated_at" timestamp not null default now(),
     "created_at" timestamp not null default now(),
-    constraint comtrans_user_id_fk
+    constraint fk_comtrans_user_id
         foreign key (user_id)
             references users(id)
                 on delete cascade
                 on update cascade,
-    constraint comtrans_category_id_fk
+    constraint fk_comtrans_category_id
         foreign key (comtran_category_id)
             references com_categories(id)
                 on delete cascade
                 on update cascade,
-    constraint comtrans_brand_id_fk
+    constraint fk_comtrans_brand_id
         foreign key (comtran_brand_id)
             references com_brands(id)
                 on delete cascade
                 on update cascade,
-    constraint comtrans_model_id_fk
+    constraint fk_comtrans_model_id
         foreign key (comtran_model_id)
             references com_models(id)
                 on delete cascade
                 on update cascade,
-    constraint comtrans_fuel_type_id_fk
+    constraint fk_comtrans_fuel_type_id
         foreign key (fuel_type_id)
             references fuel_types(id)
                 on delete cascade
                 on update cascade,
-    constraint comtrans_color_id_fk
+    constraint fk_comtrans_color_id
         foreign key (color_id)
             references colors(id)
                 on delete cascade
                 on update cascade,
-    constraint comtrans_city_id_fk
+    constraint fk_comtrans_city_id
         foreign key (city_id)
             references cities(id)
                 on delete cascade
@@ -839,17 +861,17 @@ create table comtran_parameters (
     "comtran_parameter_id" int not null,
     "comtran_parameter_value_id" int not null,
     "created_at" timestamp default now(),
-    constraint comtran_parameters_comtran_id_fk
+    constraint fk_comtran_parameters_comtran_id
         foreign key (comtran_id)
             references comtrans(id)
                 on delete cascade
                 on update cascade,
-    constraint comtran_parameters_comtran_parameter_id_fk
+    constraint fk_comtran_parameters_comtran_parameter_id
         foreign key (comtran_parameter_id)
             references com_parameters(id)
                 on delete cascade
                 on update cascade,
-    constraint comtran_parameters_comtran_parameter_value_id_fk
+    constraint fk_comtran_parameters_comtran_parameter_value_id
         foreign key (comtran_parameter_value_id)
             references com_parameter_values(id)
                 on delete cascade
@@ -863,7 +885,7 @@ create table comtran_images (
     "comtran_id" int not null,
     "image" varchar(255) not null,
     "created_at" timestamp not null default now(),
-    constraint comtran_images_comtran_id_fk
+    constraint fk_comtran_images_comtran_id
         foreign key (comtran_id)
             references comtrans(id)
                 on delete cascade
@@ -876,7 +898,7 @@ create table comtran_videos (
     "comtran_id" int not null,
     "video" varchar(255) not null,
     "created_at" timestamp not null default now(),
-    constraint comtran_videos_comtran_id_fk
+    constraint fk_comtran_videos_comtran_id
         foreign key (comtran_id)
             references comtrans(id)
                 on delete cascade

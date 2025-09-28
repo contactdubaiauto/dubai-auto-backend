@@ -248,7 +248,7 @@ func (h *MotorcycleHandler) CreateMotorcycleVideos(c *fiber.Ctx) error {
 
 	}
 	// path, err := pkg.SaveVideos(videos[0], config.ENV.STATIC_PATH+"motorcycles/"+idStr+"/videos") // if have ffmpeg on server
-	path, err := files.SaveVideosOriginal(videos[0], config.ENV.STATIC_PATH+"motorcycles/"+idStr+"/videos")
+	path, err := files.SaveOriginal(videos[0], config.ENV.STATIC_PATH+"motorcycles/"+idStr+"/videos")
 
 	if err != nil {
 		return utils.FiberResponse(c, &model.Response{

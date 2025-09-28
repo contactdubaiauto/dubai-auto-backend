@@ -45,27 +45,40 @@ func (r *AuthRepository) UserLoginGoogle(ctx *fasthttp.RequestCtx, claims model.
 func (r *AuthRepository) Application(ctx *fasthttp.RequestCtx, req model.UserApplication) (model.UserByEmail, error) {
 	var userByEmail model.UserByEmail
 	q := `
-		INSERT INTO users (email, username, role_id, phone)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO temp_users (email, username, role_id, phone, password, 
+			registered_by, company_name, company_type_id, activity_field_id, 
+			vat_number, address, license_issue_date, license_expiry_date)
+		VALUES ($1, $2, $3, $4, 'application', 'application', $5, $6, $7, $8, $9, $10, $11)
 		ON CONFLICT (email) DO UPDATE
-		SET role_id = EXCLUDED.role_id
+		SET role_id = EXCLUDED.role_id, company_name = EXCLUDED.company_name, company_type_id = EXCLUDED.company_type_id, activity_field_id = EXCLUDED.activity_field_id, vat_number = EXCLUDED.vat_number, address = EXCLUDED.address, license_issue_date = EXCLUDED.license_issue_date, license_expiry_date = EXCLUDED.license_expiry_date
 		RETURNING id, role_id;
 	`
-	row := r.db.QueryRow(ctx, q, req.Email, req.FullName, req.RoleID, req.Phone)
+	row := r.db.QueryRow(
+		ctx, q, req.Email, req.FullName, req.RoleID, req.Phone, req.CompanyName,
+		req.CompanyTypeID, req.ActivityFieldID, req.VATNumber, req.Address,
+		req.LicenceIssueDate, req.LicenceExpiryDate)
 	err := row.Scan(&userByEmail.ID, &userByEmail.RoleID)
+	return userByEmail, err
+}
+
+func (r *AuthRepository) ApplicationDocuments(ctx *fasthttp.RequestCtx, id int, documents model.UserApplicationDocuments) error {
+	q := `
+		INSERT INTO documents (licence_path, memorandum_path, copy_of_id_path) 
+		VALUES ($1, $2, $3)
+		RETURNING id
+	`
+	var documentID int
+	err := r.db.QueryRow(ctx, q, documents.Licence, documents.Memorandum, documents.CopyOfID).Scan(&documentID)
 
 	if err != nil {
-		return userByEmail, err
+		return err
 	}
 
 	q = `
-		INSERT INTO profiles (user_id, username, registered_by)
-		VALUES ($1, $2, $3)
-		ON CONFLICT (user_id) DO NOTHING;
+		UPDATE temp_users SET documents_id = $1 WHERE id = $2
 	`
-	_, err = r.db.Exec(ctx, q, userByEmail.ID, req.CompanyName, "application")
-
-	return userByEmail, err
+	_, err = r.db.Exec(ctx, q, documentID, id)
+	return err
 }
 
 func (r *AuthRepository) DeleteAccount(ctx *fasthttp.RequestCtx, userID int) error {

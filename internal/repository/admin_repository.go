@@ -15,6 +15,76 @@ func NewAdminRepository(db *pgxpool.Pool) *AdminRepository {
 	return &AdminRepository{db}
 }
 
+// Application CRUD operations
+func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx) ([]model.AdminApplicationResponse, error) {
+	applications := make([]model.AdminApplicationResponse, 0)
+	q := `
+			SELECT 
+				id, 
+				company_name, 
+				licence_issue_date, 
+				licence_expiry_date, 
+				username, 
+				email, 
+				phone, 
+				status, 
+				created_at 
+			FROM temp_users 
+			ORDER BY id DESC
+		`
+	rows, err := r.db.Query(ctx, q)
+
+	if err != nil {
+		return applications, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var application model.AdminApplicationResponse
+
+		if err := rows.Scan(&application.ID, &application.CompanyName, &application.LicenceIssueDate,
+			&application.LicenceExpiryDate, &application.FullName, &application.Email,
+			&application.Phone, &application.Status, &application.CreatedAt); err != nil {
+			return applications, err
+		}
+
+		applications = append(applications, application)
+	}
+	return applications, err
+}
+
+func (r *AdminRepository) GetApplication(ctx *fasthttp.RequestCtx, id int) (model.AdminApplicationResponse, error) {
+
+	q := `SELECT id, company_name, licence_issue_date, licence_expiry_date, username, email, phone, status, created_at FROM temp_users WHERE id = $1`
+	var application model.AdminApplicationResponse
+	rows, err := r.db.Query(ctx, q, id)
+	if err != nil {
+		return model.AdminApplicationResponse{}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var application model.AdminApplicationResponse
+		if err := rows.Scan(&application.ID, &application.CompanyName, &application.LicenceIssueDate, &application.LicenceExpiryDate, &application.FullName, &application.Email, &application.Phone, &application.Status, &application.CreatedAt); err != nil {
+			return model.AdminApplicationResponse{}, err
+		}
+	}
+	return application, nil
+
+}
+
+func (r *AdminRepository) AcceptApplication(ctx *fasthttp.RequestCtx, id int) error {
+	q := `UPDATE temp_users SET status = 1 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id)
+	return err
+}
+
+func (r *AdminRepository) RejectApplication(ctx *fasthttp.RequestCtx, id int) error {
+	q := `UPDATE temp_users SET status = 2 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id)
+	return err
+}
+
 // Cities CRUD operations
 func (r *AdminRepository) GetCities(ctx *fasthttp.RequestCtx) ([]model.AdminCityResponse, error) {
 	cities := make([]model.AdminCityResponse, 0)

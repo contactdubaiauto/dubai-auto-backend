@@ -6,6 +6,27 @@ definitions:
         example: Invalid param ID
         type: string
     type: object
+  model.AdminApplicationResponse:
+    properties:
+      company_name:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+      licence_expiry_date:
+        type: string
+      licence_issue_date:
+        type: string
+      phone:
+        type: string
+      status:
+        type: string
+    type: object
   model.AdminBodyTypeResponse:
     properties:
       created_at:
@@ -188,15 +209,6 @@ definitions:
     - vin_code
     - wheel
     - year
-    type: object
-  model.CreateCityRequest:
-    properties:
-      name:
-        maxLength: 255
-        minLength: 2
-        type: string
-    required:
-    - name
     type: object
   model.CreateComtransParameterRequest:
     properties:
@@ -396,6 +408,15 @@ definitions:
     - price_type
     - vin_code
     - year
+    type: object
+  model.CreateNameRequest:
+    properties:
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
+    - name
     type: object
   model.DeleteCarImageRequest:
     properties:
@@ -1077,15 +1098,6 @@ definitions:
     - wheel
     - year
     type: object
-  model.UpdateCityRequest:
-    properties:
-      name:
-        maxLength: 255
-        minLength: 2
-        type: string
-    required:
-    - name
-    type: object
   model.UpdateModelRequest:
     properties:
       brand_id:
@@ -1118,6 +1130,44 @@ definitions:
         type: string
     required:
     - username
+    type: object
+  model.UserApplication:
+    properties:
+      activity_field_id:
+        type: integer
+      address:
+        type: string
+      company_name:
+        type: string
+      company_type_id:
+        type: integer
+      email:
+        type: string
+      full_name:
+        type: string
+      licence_expiry_date:
+        type: string
+      licence_issue_date:
+        type: string
+      phone:
+        type: string
+      role_id:
+        description: 1 user, 2 dealer, 3 logistic, 4 broker, 5 car service
+        type: integer
+      vat_number:
+        type: string
+    required:
+    - activity_field_id
+    - address
+    - company_name
+    - company_type_id
+    - email
+    - full_name
+    - licence_expiry_date
+    - licence_issue_date
+    - phone
+    - role_id
+    - vat_number
     type: object
   model.UserEmailConfirmationRequest:
     properties:
@@ -1167,6 +1217,150 @@ info:
   title: Project name
   version: "1.0"
 paths:
+  /api/v1/admin/applications:
+    get:
+      description: Returns a list of all applications
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminApplicationResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all applications
+      tags:
+      - admin-applications
+  /api/v1/admin/applications/{id}:
+    get:
+      description: Returns an application by ID
+      parameters:
+      - description: Application ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AdminApplicationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get an application
+      tags:
+      - admin-applications
+  /api/v1/admin/applications/{id}/accept:
+    put:
+      description: Accepts an application by ID
+      parameters:
+      - description: Application ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Accept an application
+      tags:
+      - admin-applications
+  /api/v1/admin/applications/{id}/reject:
+    delete:
+      description: Rejects an application by ID
+      parameters:
+      - description: Application ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Reject an application
+      tags:
+      - admin-applications
   /api/v1/admin/body-types:
     get:
       description: Returns a list of all body types
@@ -1749,7 +1943,7 @@ paths:
         name: city
         required: true
         schema:
-          $ref: '#/definitions/model.CreateCityRequest'
+          $ref: '#/definitions/model.CreateNameRequest'
       produces:
       - application/json
       responses:
@@ -1778,6 +1972,182 @@ paths:
       summary: Create a new city
       tags:
       - admin-cities
+  /api/v1/admin/cities/{city_id}/regions:
+    get:
+      description: Returns a list of all regions
+      parameters:
+      - description: City ID
+        in: path
+        name: city_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminCityResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all regions
+      tags:
+      - admin-regions
+    post:
+      consumes:
+      - application/json
+      description: Creates a new region
+      parameters:
+      - description: City ID
+        in: path
+        name: city_id
+        required: true
+        type: integer
+      - description: Region data
+        in: body
+        name: region
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateNameRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a new region
+      tags:
+      - admin-regions
+  /api/v1/admin/cities/{city_id}/regions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an existing region
+      parameters:
+      - description: City ID
+        in: path
+        name: city_id
+        required: true
+        type: integer
+      - description: Region ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a region
+      tags:
+      - admin-regions
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing region
+      parameters:
+      - description: City ID
+        in: path
+        name: city_id
+        required: true
+        type: integer
+      - description: Region ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Region data
+        in: body
+        name: region
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateNameRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a region
+      tags:
+      - admin-regions
   /api/v1/admin/cities/{id}:
     delete:
       description: Deletes a city by ID
@@ -1830,7 +2200,7 @@ paths:
         name: city
         required: true
         schema:
-          $ref: '#/definitions/model.UpdateCityRequest'
+          $ref: '#/definitions/model.CreateNameRequest'
       produces:
       - application/json
       responses:
@@ -1898,6 +2268,104 @@ paths:
       security:
       - BearerAuth: []
       summary: Delete user account
+      tags:
+      - auth
+  /api/v1/auth/send-application:
+    post:
+      consumes:
+      - application/json
+      description: Sends an application to the database
+      parameters:
+      - description: Application
+        in: body
+        name: application
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserApplication'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.LoginFiberResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Send application
+      tags:
+      - auth
+  /api/v1/auth/send-application-document:
+    post:
+      consumes:
+      - application/json
+      description: Sends application documents to the database
+      parameters:
+      - description: Application ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: A PDF document file
+        in: formData
+        name: licence
+        required: true
+        type: file
+      - description: A PDF document file
+        in: formData
+        name: memorandum
+        required: true
+        type: file
+      - description: A PDF document file
+        in: formData
+        name: copy_of_id
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Application documents
       tags:
       - auth
   /api/v1/auth/user-email-confirmation:

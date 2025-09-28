@@ -17,6 +17,43 @@ func NewAdminService(repo *repository.AdminRepository) *AdminService {
 	return &AdminService{repo}
 }
 
+// Application service methods
+func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx) *model.Response {
+	applications, err := s.AdminRepository.GetApplications(ctx)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: applications}
+}
+
+func (s *AdminService) GetApplication(ctx *fasthttp.RequestCtx, id int) *model.Response {
+	application, err := s.AdminRepository.GetApplication(ctx, id)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: application}
+}
+
+func (s *AdminService) AcceptApplication(ctx *fasthttp.RequestCtx, id int) *model.Response {
+	err := s.AdminRepository.AcceptApplication(ctx, id)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: model.Success{Message: "Application accepted successfully"}}
+}
+
+func (s *AdminService) RejectApplication(ctx *fasthttp.RequestCtx, id int) *model.Response {
+	err := s.AdminRepository.RejectApplication(ctx, id)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: model.Success{Message: "Application rejected successfully"}}
+}
+
 // Cities service methods
 func (s *AdminService) GetCities(ctx *fasthttp.RequestCtx) *model.Response {
 	cities, err := s.AdminRepository.GetCities(ctx)

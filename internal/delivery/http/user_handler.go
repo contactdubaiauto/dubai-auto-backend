@@ -96,6 +96,7 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 			tmp := true
 			new = &tmp
 		}
+
 	}
 
 	if wheelQ != "" {
@@ -106,6 +107,7 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 			tmp := true
 			wheel = &tmp
 		}
+
 	}
 
 	data := h.UserService.GetCars(ctx, userID, brands, models,
@@ -113,7 +115,6 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 		body_types, fuel_types, ownership_types, colors,
 		year_from, year_to, credit, price_from, price_to,
 		tradeIn, owners, crash, odometer, new, wheel)
-
 	return utils.FiberResponse(c, data)
 }
 
@@ -160,7 +161,6 @@ func (h *UserHandler) GetPriceRecommendation(c *fiber.Ctx) error {
 		CityID:         cityID,
 		Odometer:       odometer,
 	})
-
 	return utils.FiberResponse(c, data)
 }
 
@@ -188,12 +188,10 @@ func (h *UserHandler) GetCarByID(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-
 	}
 
 	ctx := c.Context()
 	data := h.UserService.GetCarByID(ctx, id, userID)
-
 	return utils.FiberResponse(c, data)
 }
 
@@ -221,12 +219,10 @@ func (h *UserHandler) GetEditCarByID(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-
 	}
 
 	ctx := c.Context()
 	data := h.UserService.GetEditCarByID(ctx, id, userID)
-
 	return utils.FiberResponse(c, data)
 }
 
@@ -254,7 +250,6 @@ func (h *UserHandler) BuyCar(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-
 	}
 
 	ctx := c.Context()
@@ -287,7 +282,6 @@ func (h *UserHandler) CreateCar(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("invalid request data" + err.Error()),
 		})
-
 	}
 
 	if err := h.validator.Validate(car); err != nil {
@@ -326,7 +320,6 @@ func (h *UserHandler) UpdateCar(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("invalid request data" + err.Error()),
 		})
-
 	}
 
 	if err := h.validator.Validate(car); err != nil {
@@ -366,7 +359,6 @@ func (h *UserHandler) CreateCarImages(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("invalid car ID"),
 		})
-
 	}
 
 	form, _ := c.MultipartForm()
@@ -376,7 +368,6 @@ func (h *UserHandler) CreateCarImages(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("didn't upload the files"),
 		})
-
 	}
 
 	images := form.File["images"]
@@ -386,7 +377,6 @@ func (h *UserHandler) CreateCarImages(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("must load maximum 10 files"),
 		})
-
 	}
 
 	paths, status, err := files.SaveFiles(images, config.ENV.STATIC_PATH+"cars/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
@@ -396,7 +386,6 @@ func (h *UserHandler) CreateCarImages(c *fiber.Ctx) error {
 			Status: status,
 			Error:  err,
 		})
-
 	}
 
 	data := h.UserService.CreateCarImages(ctx, id, paths)
@@ -429,7 +418,6 @@ func (h *UserHandler) CreateCarVideos(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("invalid car ID"),
 		})
-
 	}
 
 	form, _ := c.MultipartForm()
@@ -439,7 +427,6 @@ func (h *UserHandler) CreateCarVideos(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("didn't upload the files"),
 		})
-
 	}
 
 	videos := form.File["videos"]
@@ -449,17 +436,16 @@ func (h *UserHandler) CreateCarVideos(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("must load maximum 1 file(s)"),
 		})
-
 	}
+
 	// path, err := pkg.SaveVideos(videos[0], config.ENV.STATIC_PATH+"cars/"+idStr+"/videos") // if have ffmpeg on server
-	path, err := files.SaveVideosOriginal(videos[0], config.ENV.STATIC_PATH+"cars/"+idStr+"/videos")
+	path, err := files.SaveOriginal(videos[0], config.ENV.STATIC_PATH+"cars/"+idStr+"/videos")
 
 	if err != nil {
 		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  err,
 		})
-
 	}
 
 	data := h.UserService.CreateCarVideos(ctx, id, path)
@@ -491,8 +477,8 @@ func (h *UserHandler) Cancel(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-
 	}
+
 	data := h.UserService.Cancel(ctx, &id, "./images/cars/"+idStr)
 	return utils.FiberResponse(c, data)
 }
@@ -522,8 +508,8 @@ func (h *UserHandler) DontSell(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-
 	}
+
 	data := h.UserService.DontSell(ctx, &id, &userID)
 	return utils.FiberResponse(c, data)
 }
@@ -554,8 +540,8 @@ func (h *UserHandler) Sell(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-
 	}
+
 	data := h.UserService.Sell(ctx, &id, &userID)
 	return utils.FiberResponse(c, data)
 }
@@ -585,8 +571,8 @@ func (h *UserHandler) DeleteCarImage(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-
 	}
+
 	var req model.DeleteCarImageRequest
 
 	if err := c.BodyParser(&req); err != nil || req.Image == "" {
@@ -594,8 +580,8 @@ func (h *UserHandler) DeleteCarImage(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("invalid image path in request body"),
 		})
-
 	}
+
 	if err := h.validator.Validate(req); err != nil {
 		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
@@ -639,7 +625,6 @@ func (h *UserHandler) DeleteCarVideo(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-
 	}
 
 	var video model.DeleteCarVideoRequest
@@ -649,7 +634,6 @@ func (h *UserHandler) DeleteCarVideo(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("invalid video path in request body"),
 		})
-
 	}
 
 	if err := h.validator.Validate(video); err != nil {
@@ -695,8 +679,8 @@ func (h *UserHandler) DeleteCar(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-
 	}
+
 	data := h.UserService.DeleteCar(ctx, &id, "/images/cars/"+idStr)
 	return utils.FiberResponse(c, data)
 }
@@ -785,12 +769,10 @@ func (h *UserHandler) GetModelsByBrandID(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
-
 	}
 
 	ctx := c.Context()
 	data := h.UserService.GetModelsByBrandID(ctx, brandIDInt, text)
-
 	return utils.FiberResponse(c, data)
 }
 
@@ -818,12 +800,10 @@ func (h *UserHandler) GetFilterModelsByBrandID(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
-
 	}
 
 	ctx := c.Context()
 	data := h.UserService.GetFilterModelsByBrandID(ctx, brandIDInt, text)
-
 	return utils.FiberResponse(c, data)
 }
 
@@ -853,6 +833,7 @@ func (h *UserHandler) GetGenerationsByModelID(c *fiber.Ctx) error {
 	if c.Query("wheel", "true") == "false" {
 		wheel = false
 	}
+
 	modelIDInt, err := strconv.Atoi(modelID)
 
 	if err != nil {
@@ -860,12 +841,10 @@ func (h *UserHandler) GetGenerationsByModelID(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
-
 	}
 
 	ctx := c.Context()
 	data := h.UserService.GetGenerationsByModelID(ctx, modelIDInt, wheel, year, bodyTypeID)
-
 	return utils.FiberResponse(c, data)
 }
 
@@ -890,12 +869,10 @@ func (h *UserHandler) GetGenerationsByModels(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  err,
 		})
-
 	}
 
 	ctx := c.Context()
 	data := h.UserService.GetGenerationsByModels(ctx, models)
-
 	return utils.FiberResponse(c, data)
 }
 
@@ -920,6 +897,7 @@ func (h *UserHandler) GetYearsByModelID(c *fiber.Ctx) error {
 	if c.Query("wheel", "true") == "false" {
 		wheel = false
 	}
+
 	modelIDInt, err := strconv.ParseInt(modelID, 10, 64)
 
 	if err != nil {
@@ -927,12 +905,10 @@ func (h *UserHandler) GetYearsByModelID(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
-
 	}
 
 	ctx := c.Context()
 	data := h.UserService.GetYearsByModelID(ctx, modelIDInt, wheel)
-
 	return utils.FiberResponse(c, data)
 }
 
@@ -960,6 +936,7 @@ func (h *UserHandler) GetBodyTypesByModelID(c *fiber.Ctx) error {
 	if c.Query("wheel", "true") == "false" {
 		wheel = false
 	}
+
 	modelIDInt, err := strconv.Atoi(modelID)
 
 	if err != nil {
@@ -967,12 +944,10 @@ func (h *UserHandler) GetBodyTypesByModelID(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
-
 	}
 
 	ctx := c.Context()
 	data := h.UserService.GetBodysByModelID(ctx, modelIDInt, wheel, year)
-
 	return utils.FiberResponse(c, data)
 }
 
@@ -1027,7 +1002,6 @@ func (h *UserHandler) GetTransmissions(c *fiber.Ctx) error {
 func (h *UserHandler) GetEngines(c *fiber.Ctx) error {
 	ctx := c.Context()
 	data := h.UserService.GetEngines(ctx)
-
 	return utils.FiberResponse(c, data)
 }
 
@@ -1046,7 +1020,6 @@ func (h *UserHandler) GetEngines(c *fiber.Ctx) error {
 func (h *UserHandler) GetDrivetrains(c *fiber.Ctx) error {
 	ctx := c.Context()
 	data := h.UserService.GetDrivetrains(ctx)
-
 	return utils.FiberResponse(c, data)
 }
 
@@ -1065,7 +1038,6 @@ func (h *UserHandler) GetDrivetrains(c *fiber.Ctx) error {
 func (h *UserHandler) GetFuelTypes(c *fiber.Ctx) error {
 	ctx := c.Context()
 	data := h.UserService.GetFuelTypes(ctx)
-
 	return utils.FiberResponse(c, data)
 }
 
@@ -1154,7 +1126,6 @@ func (h *UserHandler) CarLike(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-
 	}
 
 	userID := c.Locals("id").(int)
@@ -1164,8 +1135,8 @@ func (h *UserHandler) CarLike(c *fiber.Ctx) error {
 			Status: 401,
 			Error:  errors.New("user_id must be must be bigger than 0"),
 		})
-
 	}
+
 	data := h.UserService.CarLike(ctx, &carID, &userID)
 	return utils.FiberResponse(c, data)
 }
@@ -1195,8 +1166,8 @@ func (h *UserHandler) RemoveLike(c *fiber.Ctx) error {
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
-
 	}
+
 	userID := c.Locals("id").(int)
 
 	data := h.UserService.RemoveLike(ctx, &carID, &userID)
@@ -1220,7 +1191,6 @@ func (h *UserHandler) GetMyCars(c *fiber.Ctx) error {
 	ctx := c.Context()
 	userID := c.Locals("id").(int)
 	data := h.UserService.GetMyCars(ctx, &userID)
-
 	return utils.FiberResponse(c, data)
 }
 
@@ -1241,7 +1211,6 @@ func (h *UserHandler) OnSale(c *fiber.Ctx) error {
 	ctx := c.Context()
 	userID := c.Locals("id").(int)
 	data := h.UserService.OnSale(ctx, &userID)
-
 	return utils.FiberResponse(c, data)
 }
 

@@ -32,7 +32,6 @@ func InitLogger(filePath string, fileName string, mode string) *Logger {
 		}
 		logger = zerolog.New(logFile).With().Timestamp().Logger()
 	} else {
-		// Pretty console output for non-release modes
 		logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 	}
 

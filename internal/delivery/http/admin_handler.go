@@ -23,6 +23,108 @@ func NewAdminHandler(service *service.AdminService) *AdminHandler {
 	return &AdminHandler{service, auth.NewValidator()}
 }
 
+// Application handlers
+
+// GetApplications godoc
+// @Summary      Get all applications
+// @Description  Returns a list of all applications
+// @Tags         admin-applications
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}  model.AdminApplicationResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/applications [get]
+func (h *AdminHandler) GetApplications(c *fiber.Ctx) error {
+	ctx := c.Context()
+	data := h.AdminService.GetApplications(ctx)
+	return utils.FiberResponse(c, data)
+}
+
+// GetApplication godoc
+// @Summary      Get an application
+// @Description  Returns an application by ID
+// @Tags         admin-applications
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Application ID"
+// @Success      200  {object}  model.AdminApplicationResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/applications/{id} [get]
+func (h *AdminHandler) GetApplication(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("application id must be integer"),
+		})
+	}
+	ctx := c.Context()
+	data := h.AdminService.GetApplication(ctx, id)
+	return utils.FiberResponse(c, data)
+}
+
+// AcceptApplication godoc
+// @Summary      Accept an application
+// @Description  Accepts an application by ID
+// @Tags         admin-applications
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Application ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/applications/{id}/accept [put]
+func (h *AdminHandler) AcceptApplication(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("application id must be integer"),
+		})
+	}
+	ctx := c.Context()
+	data := h.AdminService.AcceptApplication(ctx, id)
+	return utils.FiberResponse(c, data)
+}
+
+// RejectApplication godoc
+// @Summary      Reject an application
+// @Description  Rejects an application by ID
+// @Tags         admin-applications
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Application ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/applications/{id}/reject [delete]
+func (h *AdminHandler) RejectApplication(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("application id must be integer"),
+		})
+	}
+	ctx := c.Context()
+	data := h.AdminService.RejectApplication(ctx, id)
+	return utils.FiberResponse(c, data)
+}
+
 // Cities handlers
 
 // GetCities godoc
@@ -1177,7 +1279,7 @@ func (h *AdminHandler) DeleteBodyTypeImage(c *fiber.Ctx) error {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        city_id   path      int  true  "City ID"
-// @Success      200  {array}  model.AdminRegionResponse
+// @Success      200  {array}  model.AdminCityResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse

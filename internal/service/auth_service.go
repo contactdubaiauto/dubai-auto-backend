@@ -4,15 +4,21 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"mime/multipart"
 	"net/http"
+	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/valyala/fasthttp"
 	"golang.org/x/crypto/bcrypt"
 
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/utils"
 	"dubai-auto/pkg/auth"
+	"dubai-auto/pkg/files"
 )
 
 type AuthService struct {
@@ -30,13 +36,76 @@ func (s *AuthService) Application(ctx *fasthttp.RequestCtx, req model.UserApplic
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, 1)
+	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, req.RoleID)
 	return model.Response{
 		Data: model.LoginFiberResponse{
 			AccessToken:  accessToken,
 			RefreshToken: refreshToken,
 		},
 	}
+}
+
+func (s *AuthService) ApplicationDocuments(ctx *fasthttp.RequestCtx, id int, licence, memorandum, copyOfID *multipart.FileHeader) *model.Response {
+	documents := model.UserApplicationDocuments{}
+	ext := strings.ToLower(filepath.Ext(licence.Filename))
+
+	if ext != ".pdf" {
+		return &model.Response{Error: errors.New("only PDF files are allowed"), Status: http.StatusBadRequest}
+	}
+
+	if !utils.IsPDF(licence) {
+		return &model.Response{Error: errors.New("file is not a valid PDF"), Status: http.StatusBadRequest}
+	}
+
+	path, err := files.SaveOriginal(licence, config.ENV.STATIC_PATH+"documents/"+strconv.Itoa(id))
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	documents.Licence = path
+	ext = strings.ToLower(filepath.Ext(memorandum.Filename))
+
+	if ext != ".pdf" {
+		return &model.Response{Error: errors.New("only PDF files are allowed"), Status: http.StatusBadRequest}
+	}
+
+	if !utils.IsPDF(memorandum) {
+		return &model.Response{Error: errors.New("file is not a valid PDF"), Status: http.StatusBadRequest}
+	}
+
+	path, err = files.SaveOriginal(memorandum, config.ENV.STATIC_PATH+"documents/"+strconv.Itoa(id))
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	documents.Memorandum = path
+	ext = strings.ToLower(filepath.Ext(copyOfID.Filename))
+
+	if ext != ".pdf" {
+		return &model.Response{Error: errors.New("only PDF files are allowed"), Status: http.StatusBadRequest}
+	}
+
+	if !utils.IsPDF(copyOfID) {
+		return &model.Response{Error: errors.New("file is not a valid PDF"), Status: http.StatusBadRequest}
+	}
+
+	path, err = files.SaveOriginal(copyOfID, config.ENV.STATIC_PATH+"documents/"+strconv.Itoa(id))
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	documents.CopyOfID = path
+	fmt.Println(documents)
+	err = s.repo.ApplicationDocuments(ctx, id, documents)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.Success{Message: "Application documents sent successfully"}}
 }
 
 func (s *AuthService) UserLoginGoogle(ctx *fasthttp.RequestCtx, tokenID string) model.Response {

@@ -226,3 +226,15 @@ type GoogleUserInfo struct {
 	Picture       string `json:"picture"`
 	Locale        string `json:"locale"`
 }
+
+type AdminApplicationResponse struct {
+	LicenceIssueDate  time.Time `json:"licence_issue_date"`
+	LicenceExpiryDate time.Time `json:"licence_expiry_date"`
+	CreatedAt         time.Time `json:"created_at"`
+	CompanyName       string    `json:"company_name"`
+	FullName          string    `json:"full_name"`
+	Email             string    `json:"email"`
+	Phone             string    `json:"phone"`
+	Status            string    `json:"status"`
+	ID                int       `json:"id"`
+}

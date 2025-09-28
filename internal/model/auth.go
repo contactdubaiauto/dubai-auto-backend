@@ -6,16 +6,22 @@ type UserLoginGoogle struct {
 
 type UserApplication struct {
 	CompanyName       string `json:"company_name" binding:"required"`
-	CompanyTypeID     string `json:"company_type_id" binding:"required"`
-	ActivityFieldID   string `json:"activity_field_id" binding:"required"`
-	LicenseIssueDate  string `json:"licensei_issue_date" binding:"required"`
-	LicenseExpiryDate string `json:"licensei_expiry_date" binding:"required"`
+	LicenceIssueDate  string `json:"licence_issue_date" binding:"required"`
+	LicenceExpiryDate string `json:"licence_expiry_date" binding:"required"`
 	FullName          string `json:"full_name" binding:"required"`
 	Email             string `json:"email" binding:"required"`
 	Phone             string `json:"phone" binding:"required"`
 	Address           string `json:"address" binding:"required"`
 	VATNumber         string `json:"vat_number" binding:"required"`
-	RoleID            int    `json:"role_id" binding:"required"`
+	CompanyTypeID     int    `json:"company_type_id" binding:"required"`
+	ActivityFieldID   int    `json:"activity_field_id" binding:"required"`
+	RoleID            int    `json:"role_id" binding:"required"` // 1 user, 2 dealer, 3 logistic, 4 broker, 5 car service
+}
+
+type UserApplicationDocuments struct {
+	Licence    string `json:"licence" binding:"required"`
+	Memorandum string `json:"memorandum" binding:"required"`
+	CopyOfID   string `json:"copy_of_id" binding:"required"`
 }
 
 type UserEmailConfirmationRequest struct {
