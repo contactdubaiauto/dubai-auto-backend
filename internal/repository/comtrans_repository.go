@@ -169,7 +169,7 @@ func (r *ComtransRepository) CreateComtrans(ctx *fasthttp.RequestCtx, req model.
 			INSERT INTO comtran_parameters (comtran_id, comtran_parameter_id, comtran_parameter_value_id)
 			VALUES ($1, $2, $3)
 		`
-		_, err = r.db.Exec(ctx, q, id, parameters[i].ParameterID, parameters[i].ValueID)
+		_, err = r.db.Exec(ctx, q, id, parameters[i].ComtransCategoryID, parameters[i].Name)
 
 		if err != nil {
 			return data, err

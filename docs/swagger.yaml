@@ -62,6 +62,177 @@ definitions:
       name:
         type: string
     type: object
+  model.AdminColorResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+    type: object
+  model.AdminComtransBrandResponse:
+    properties:
+      comtrans_category_id:
+        type: integer
+      comtrans_category_name:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+    type: object
+  model.AdminComtransCategoryParameterResponse:
+    properties:
+      comtrans_category_id:
+        type: integer
+      comtrans_parameter_id:
+        type: integer
+      comtrans_parameter_name:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+    type: object
+  model.AdminComtransCategoryResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.AdminComtransModelResponse:
+    properties:
+      comtrans_brand_id:
+        type: integer
+      comtrans_brand_name:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.AdminComtransParameterResponse:
+    properties:
+      comtrans_category_id:
+        type: integer
+      comtrans_category_name:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.AdminComtransParameterValueResponse:
+    properties:
+      comtrans_parameter_id:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.AdminConfigurationResponse:
+    properties:
+      body_type_id:
+        type: integer
+      body_type_name:
+        type: string
+      generation_id:
+        type: integer
+      id:
+        type: integer
+    type: object
+  model.AdminDrivetrainResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.AdminEngineResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      value:
+        type: string
+    type: object
+  model.AdminFuelTypeResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.AdminGenerationModificationResponse:
+    properties:
+      body_type_id:
+        type: integer
+      body_type_name:
+        type: string
+      drivetrain_id:
+        type: integer
+      drivetrain_name:
+        type: string
+      engine_id:
+        type: integer
+      engine_value:
+        type: string
+      fuel_type_id:
+        type: integer
+      fuel_type_name:
+        type: string
+      generation_id:
+        type: integer
+      id:
+        type: integer
+      transmission_id:
+        type: integer
+      transmission_name:
+        type: string
+    type: object
+  model.AdminGenerationResponse:
+    properties:
+      created_at:
+        type: string
+      end_year:
+        type: integer
+      id:
+        type: integer
+      image:
+        type: string
+      model_id:
+        type: integer
+      model_name:
+        type: string
+      name:
+        type: string
+      start_year:
+        type: integer
+      wheel:
+        type: boolean
+    type: object
   model.AdminModelResponse:
     properties:
       brand_id:
@@ -75,6 +246,111 @@ definitions:
       popular:
         type: boolean
       updated_at:
+        type: string
+    type: object
+  model.AdminMotoBrandResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      moto_category_id:
+        type: integer
+      moto_category_name:
+        type: string
+      name:
+        type: string
+    type: object
+  model.AdminMotoCategoryParameterResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      moto_category_id:
+        type: integer
+      moto_parameter_id:
+        type: integer
+      moto_parameter_name:
+        type: string
+    type: object
+  model.AdminMotoCategoryResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.AdminMotoModelResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      moto_brand_id:
+        type: integer
+      moto_brand_name:
+        type: string
+      name:
+        type: string
+    type: object
+  model.AdminMotoParameterResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      moto_category_id:
+        type: integer
+      moto_category_name:
+        type: string
+      name:
+        type: string
+    type: object
+  model.AdminMotoParameterValueResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      moto_parameter_id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.AdminServiceResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      service_type_id:
+        type: integer
+      service_type_name:
+        type: string
+    type: object
+  model.AdminServiceTypeResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.AdminTransmissionResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
         type: string
     type: object
   model.BodyType:
@@ -210,15 +486,81 @@ definitions:
     - wheel
     - year
     type: object
-  model.CreateComtransParameterRequest:
+  model.CreateColorRequest:
     properties:
-      parameter_id:
+      image:
+        type: string
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
+    - image
+    - name
+    type: object
+  model.CreateComtransBrandRequest:
+    properties:
+      comtrans_category_id:
         type: integer
-      value_id:
+      image:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - comtrans_category_id
+    - image
+    - name
+    type: object
+  model.CreateComtransCategoryParameterRequest:
+    properties:
+      comtrans_parameter_id:
         type: integer
     required:
-    - parameter_id
-    - value_id
+    - comtrans_parameter_id
+    type: object
+  model.CreateComtransCategoryRequest:
+    properties:
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
+  model.CreateComtransModelRequest:
+    properties:
+      comtrans_brand_id:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - comtrans_brand_id
+    - name
+    type: object
+  model.CreateComtransParameterRequest:
+    properties:
+      comtrans_category_id:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - comtrans_category_id
+    - name
+    type: object
+  model.CreateComtransParameterValueRequest:
+    properties:
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - name
     type: object
   model.CreateComtransRequest:
     properties:
@@ -304,6 +646,84 @@ definitions:
     - vin_code
     - year
     type: object
+  model.CreateConfigurationRequest:
+    properties:
+      body_type_id:
+        type: integer
+      generation_id:
+        type: integer
+    required:
+    - body_type_id
+    - generation_id
+    type: object
+  model.CreateDrivetrainRequest:
+    properties:
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
+  model.CreateEngineRequest:
+    properties:
+      value:
+        maxLength: 255
+        minLength: 1
+        type: string
+    required:
+    - value
+    type: object
+  model.CreateFuelTypeRequest:
+    properties:
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
+  model.CreateGenerationModificationRequest:
+    properties:
+      body_type_id:
+        type: integer
+      drivetrain_id:
+        type: integer
+      engine_id:
+        type: integer
+      fuel_type_id:
+        type: integer
+      transmission_id:
+        type: integer
+    required:
+    - body_type_id
+    - drivetrain_id
+    - engine_id
+    - fuel_type_id
+    - transmission_id
+    type: object
+  model.CreateGenerationRequest:
+    properties:
+      end_year:
+        type: integer
+      image:
+        type: string
+      model_id:
+        type: integer
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      start_year:
+        type: integer
+      wheel:
+        type: boolean
+    required:
+    - end_year
+    - model_id
+    - name
+    - start_year
+    type: object
   model.CreateModelRequest:
     properties:
       name:
@@ -312,6 +732,70 @@ definitions:
         type: string
       popular:
         type: boolean
+    required:
+    - name
+    type: object
+  model.CreateMotoBrandRequest:
+    properties:
+      image:
+        type: string
+      moto_category_id:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - image
+    - moto_category_id
+    - name
+    type: object
+  model.CreateMotoCategoryParameterRequest:
+    properties:
+      moto_parameter_id:
+        type: integer
+    required:
+    - moto_parameter_id
+    type: object
+  model.CreateMotoCategoryRequest:
+    properties:
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
+  model.CreateMotoModelRequest:
+    properties:
+      moto_brand_id:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - moto_brand_id
+    - name
+    type: object
+  model.CreateMotoParameterRequest:
+    properties:
+      moto_category_id:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - moto_category_id
+    - name
+    type: object
+  model.CreateMotoParameterValueRequest:
+    properties:
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
     required:
     - name
     type: object
@@ -410,6 +894,36 @@ definitions:
     - year
     type: object
   model.CreateNameRequest:
+    properties:
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
+  model.CreateServiceRequest:
+    properties:
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      service_type_id:
+        type: integer
+    required:
+    - name
+    - service_type_id
+    type: object
+  model.CreateServiceTypeRequest:
+    properties:
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
+  model.CreateTransmissionRequest:
     properties:
       name:
         maxLength: 255
@@ -1098,6 +1612,133 @@ definitions:
     - wheel
     - year
     type: object
+  model.UpdateColorRequest:
+    properties:
+      image:
+        type: string
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
+    - image
+    - name
+    type: object
+  model.UpdateComtransBrandRequest:
+    properties:
+      comtrans_category_id:
+        type: integer
+      image:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - comtrans_category_id
+    - image
+    - name
+    type: object
+  model.UpdateComtransCategoryParameterRequest:
+    properties:
+      comtrans_parameter_id:
+        type: integer
+    required:
+    - comtrans_parameter_id
+    type: object
+  model.UpdateComtransCategoryRequest:
+    properties:
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
+  model.UpdateComtransModelRequest:
+    properties:
+      comtrans_brand_id:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - comtrans_brand_id
+    - name
+    type: object
+  model.UpdateComtransParameterRequest:
+    properties:
+      comtrans_category_id:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - comtrans_category_id
+    - name
+    type: object
+  model.UpdateComtransParameterValueRequest:
+    properties:
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
+  model.UpdateConfigurationRequest:
+    properties:
+      body_type_id:
+        type: integer
+      generation_id:
+        type: integer
+    required:
+    - body_type_id
+    - generation_id
+    type: object
+  model.UpdateGenerationModificationRequest:
+    properties:
+      body_type_id:
+        type: integer
+      drivetrain_id:
+        type: integer
+      engine_id:
+        type: integer
+      fuel_type_id:
+        type: integer
+      transmission_id:
+        type: integer
+    required:
+    - body_type_id
+    - drivetrain_id
+    - engine_id
+    - fuel_type_id
+    - transmission_id
+    type: object
+  model.UpdateGenerationRequest:
+    properties:
+      end_year:
+        type: integer
+      image:
+        type: string
+      model_id:
+        type: integer
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      start_year:
+        type: integer
+      wheel:
+        type: boolean
+    required:
+    - end_year
+    - model_id
+    - name
+    - start_year
+    type: object
   model.UpdateModelRequest:
     properties:
       brand_id:
@@ -1110,6 +1751,70 @@ definitions:
         type: boolean
     required:
     - brand_id
+    - name
+    type: object
+  model.UpdateMotoBrandRequest:
+    properties:
+      image:
+        type: string
+      moto_category_id:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - image
+    - moto_category_id
+    - name
+    type: object
+  model.UpdateMotoCategoryParameterRequest:
+    properties:
+      moto_parameter_id:
+        type: integer
+    required:
+    - moto_parameter_id
+    type: object
+  model.UpdateMotoCategoryRequest:
+    properties:
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
+  model.UpdateMotoModelRequest:
+    properties:
+      moto_brand_id:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - moto_brand_id
+    - name
+    type: object
+  model.UpdateMotoParameterRequest:
+    properties:
+      moto_category_id:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - moto_category_id
+    - name
+    type: object
+  model.UpdateMotoParameterValueRequest:
+    properties:
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
     - name
     type: object
   model.UpdateProfileRequest:
@@ -1480,7 +2185,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: body type image
+      - description: body type image (max 1)
         in: formData
         name: image
         required: true
@@ -2229,6 +2934,3477 @@ paths:
       summary: Update a city
       tags:
       - admin-cities
+  /api/v1/admin/colors:
+    get:
+      description: Returns a list of all colors
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminColorResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all colors
+      tags:
+      - admin-colors
+    post:
+      consumes:
+      - application/json
+      description: Creates a new color
+      parameters:
+      - description: Color data
+        in: body
+        name: color
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateColorRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a color
+      tags:
+      - admin-colors
+  /api/v1/admin/colors/{id}:
+    delete:
+      description: Deletes a color by ID
+      parameters:
+      - description: Color ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a color
+      tags:
+      - admin-colors
+    put:
+      consumes:
+      - application/json
+      description: Updates a color by ID
+      parameters:
+      - description: Color ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Color data
+        in: body
+        name: color
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateColorRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a color
+      tags:
+      - admin-colors
+  /api/v1/admin/comtrans-brands:
+    get:
+      description: Returns a list of all comtrans brands
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminComtransBrandResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all comtrans brands
+      tags:
+      - admin-comtrans-brands
+    post:
+      consumes:
+      - application/json
+      description: Creates a new comtrans brand
+      parameters:
+      - description: Comtrans brand data
+        in: body
+        name: comtransBrand
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateComtransBrandRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a comtrans brand
+      tags:
+      - admin-comtrans-brands
+  /api/v1/admin/comtrans-brands/{id}:
+    delete:
+      description: Deletes a comtrans brand by ID
+      parameters:
+      - description: Comtrans brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a comtrans brand
+      tags:
+      - admin-comtrans-brands
+    put:
+      consumes:
+      - application/json
+      description: Updates a comtrans brand by ID
+      parameters:
+      - description: Comtrans brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comtrans brand data
+        in: body
+        name: comtransBrand
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateComtransBrandRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a comtrans brand
+      tags:
+      - admin-comtrans-brands
+  /api/v1/admin/comtrans-categories:
+    get:
+      description: Returns a list of all comtrans categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminComtransCategoryResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all comtrans categories
+      tags:
+      - admin-comtrans-categories
+    post:
+      consumes:
+      - application/json
+      description: Creates a new comtrans category
+      parameters:
+      - description: Comtrans category data
+        in: body
+        name: comtransCategory
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateComtransCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a comtrans category
+      tags:
+      - admin-comtrans-categories
+  /api/v1/admin/comtrans-categories/{category_id}/parameters:
+    get:
+      description: Returns a list of comtrans category parameters for a specific category
+      parameters:
+      - description: Comtrans category ID
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminComtransCategoryParameterResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get comtrans category parameters
+      tags:
+      - admin-comtrans-category-parameters
+    post:
+      consumes:
+      - application/json
+      description: Creates a new comtrans category parameter
+      parameters:
+      - description: Comtrans category ID
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      - description: Comtrans category parameter data
+        in: body
+        name: parameter
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateComtransCategoryParameterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a comtrans category parameter
+      tags:
+      - admin-comtrans-category-parameters
+  /api/v1/admin/comtrans-categories/{category_id}/parameters/{id}:
+    delete:
+      description: Deletes a comtrans category parameter by ID
+      parameters:
+      - description: Comtrans category ID
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      - description: Comtrans category parameter ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a comtrans category parameter
+      tags:
+      - admin-comtrans-category-parameters
+    put:
+      consumes:
+      - application/json
+      description: Updates a comtrans category parameter by ID
+      parameters:
+      - description: Comtrans category ID
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      - description: Comtrans category parameter ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comtrans category parameter data
+        in: body
+        name: parameter
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateComtransCategoryParameterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a comtrans category parameter
+      tags:
+      - admin-comtrans-category-parameters
+  /api/v1/admin/comtrans-categories/{id}:
+    delete:
+      description: Deletes a comtrans category by ID
+      parameters:
+      - description: Comtrans category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a comtrans category
+      tags:
+      - admin-comtrans-categories
+    put:
+      consumes:
+      - application/json
+      description: Updates a comtrans category by ID
+      parameters:
+      - description: Comtrans category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comtrans category data
+        in: body
+        name: comtransCategory
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateComtransCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a comtrans category
+      tags:
+      - admin-comtrans-categories
+  /api/v1/admin/comtrans-models:
+    get:
+      description: Returns a list of all comtrans models
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminComtransModelResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all comtrans models
+      tags:
+      - admin-comtrans-models
+    post:
+      consumes:
+      - application/json
+      description: Creates a new comtrans model
+      parameters:
+      - description: Comtrans model data
+        in: body
+        name: comtransModel
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateComtransModelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a comtrans model
+      tags:
+      - admin-comtrans-models
+  /api/v1/admin/comtrans-models/{id}:
+    delete:
+      description: Deletes a comtrans model by ID
+      parameters:
+      - description: Comtrans model ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a comtrans model
+      tags:
+      - admin-comtrans-models
+    put:
+      consumes:
+      - application/json
+      description: Updates a comtrans model by ID
+      parameters:
+      - description: Comtrans model ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comtrans model data
+        in: body
+        name: comtransModel
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateComtransModelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a comtrans model
+      tags:
+      - admin-comtrans-models
+  /api/v1/admin/comtrans-parameters:
+    get:
+      description: Returns a list of all comtrans parameters
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminComtransParameterResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all comtrans parameters
+      tags:
+      - admin-comtrans-parameters
+    post:
+      consumes:
+      - application/json
+      description: Creates a new comtrans parameter
+      parameters:
+      - description: Comtrans parameter data
+        in: body
+        name: comtransParameter
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateComtransParameterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a comtrans parameter
+      tags:
+      - admin-comtrans-parameters
+  /api/v1/admin/comtrans-parameters/{id}:
+    delete:
+      description: Deletes a comtrans parameter by ID
+      parameters:
+      - description: Comtrans parameter ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a comtrans parameter
+      tags:
+      - admin-comtrans-parameters
+    put:
+      consumes:
+      - application/json
+      description: Updates a comtrans parameter by ID
+      parameters:
+      - description: Comtrans parameter ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comtrans parameter data
+        in: body
+        name: comtransParameter
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateComtransParameterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a comtrans parameter
+      tags:
+      - admin-comtrans-parameters
+  /api/v1/admin/comtrans-parameters/{parameter_id}/values:
+    get:
+      description: Returns a list of comtrans parameter values for a specific parameter
+      parameters:
+      - description: Comtrans parameter ID
+        in: path
+        name: parameter_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminComtransParameterValueResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get comtrans parameter values
+      tags:
+      - admin-comtrans-parameter-values
+    post:
+      consumes:
+      - application/json
+      description: Creates a new comtrans parameter value
+      parameters:
+      - description: Comtrans parameter ID
+        in: path
+        name: parameter_id
+        required: true
+        type: integer
+      - description: Comtrans parameter value data
+        in: body
+        name: parameterValue
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateComtransParameterValueRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a comtrans parameter value
+      tags:
+      - admin-comtrans-parameter-values
+  /api/v1/admin/comtrans-parameters/{parameter_id}/values/{id}:
+    delete:
+      description: Deletes a comtrans parameter value by ID
+      parameters:
+      - description: Comtrans parameter ID
+        in: path
+        name: parameter_id
+        required: true
+        type: integer
+      - description: Comtrans parameter value ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a comtrans parameter value
+      tags:
+      - admin-comtrans-parameter-values
+    put:
+      consumes:
+      - application/json
+      description: Updates a comtrans parameter value by ID
+      parameters:
+      - description: Comtrans parameter ID
+        in: path
+        name: parameter_id
+        required: true
+        type: integer
+      - description: Comtrans parameter value ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comtrans parameter value data
+        in: body
+        name: parameterValue
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateComtransParameterValueRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a comtrans parameter value
+      tags:
+      - admin-comtrans-parameter-values
+  /api/v1/admin/configurations:
+    get:
+      description: Returns a list of all configurations
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminConfigurationResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all configurations
+      tags:
+      - admin-configurations
+    post:
+      consumes:
+      - application/json
+      description: Creates a new configuration
+      parameters:
+      - description: Configuration data
+        in: body
+        name: configuration
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateConfigurationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a configuration
+      tags:
+      - admin-configurations
+  /api/v1/admin/configurations/{id}:
+    delete:
+      description: Deletes a configuration by ID
+      parameters:
+      - description: Configuration ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a configuration
+      tags:
+      - admin-configurations
+    put:
+      consumes:
+      - application/json
+      description: Updates a configuration by ID
+      parameters:
+      - description: Configuration ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Configuration data
+        in: body
+        name: configuration
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateConfigurationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a configuration
+      tags:
+      - admin-configurations
+  /api/v1/admin/drivetrains:
+    get:
+      description: Returns a list of all drivetrains
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminDrivetrainResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all drivetrains
+      tags:
+      - admin-drivetrains
+    post:
+      consumes:
+      - application/json
+      description: Creates a new drivetrain
+      parameters:
+      - description: Drivetrain data
+        in: body
+        name: drivetrain
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateDrivetrainRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a drivetrain
+      tags:
+      - admin-drivetrains
+  /api/v1/admin/drivetrains/{id}:
+    delete:
+      description: Deletes a drivetrain by ID
+      parameters:
+      - description: Drivetrain ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a drivetrain
+      tags:
+      - admin-drivetrains
+    put:
+      consumes:
+      - application/json
+      description: Updates a drivetrain by ID
+      parameters:
+      - description: Drivetrain ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Drivetrain data
+        in: body
+        name: drivetrain
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateDrivetrainRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a drivetrain
+      tags:
+      - admin-drivetrains
+  /api/v1/admin/engines:
+    get:
+      description: Returns a list of all engines
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminEngineResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all engines
+      tags:
+      - admin-engines
+    post:
+      consumes:
+      - application/json
+      description: Creates a new engine
+      parameters:
+      - description: Engine data
+        in: body
+        name: engine
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateEngineRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create an engine
+      tags:
+      - admin-engines
+  /api/v1/admin/engines/{id}:
+    delete:
+      description: Deletes an engine by ID
+      parameters:
+      - description: Engine ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete an engine
+      tags:
+      - admin-engines
+    put:
+      consumes:
+      - application/json
+      description: Updates an engine by ID
+      parameters:
+      - description: Engine ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Engine data
+        in: body
+        name: engine
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateEngineRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update an engine
+      tags:
+      - admin-engines
+  /api/v1/admin/fuel-types:
+    get:
+      description: Returns a list of all fuel types
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminFuelTypeResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all fuel types
+      tags:
+      - admin-fuel-types
+    post:
+      consumes:
+      - application/json
+      description: Creates a new fuel type
+      parameters:
+      - description: Fuel type data
+        in: body
+        name: fuelType
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateFuelTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a fuel type
+      tags:
+      - admin-fuel-types
+  /api/v1/admin/fuel-types/{id}:
+    delete:
+      description: Deletes a fuel type by ID
+      parameters:
+      - description: Fuel type ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a fuel type
+      tags:
+      - admin-fuel-types
+    put:
+      consumes:
+      - application/json
+      description: Updates a fuel type by ID
+      parameters:
+      - description: Fuel type ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Fuel type data
+        in: body
+        name: fuelType
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateFuelTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a fuel type
+      tags:
+      - admin-fuel-types
+  /api/v1/admin/generations:
+    get:
+      description: Returns a list of all generations
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminGenerationResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all generations
+      tags:
+      - admin-generations
+    post:
+      consumes:
+      - application/json
+      description: Creates a new generation
+      parameters:
+      - description: Generation data
+        in: body
+        name: generation
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateGenerationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a generation
+      tags:
+      - admin-generations
+  /api/v1/admin/generations/{generation_id}/:
+    get:
+      description: Returns a list of generation modifications for a specific generation
+      parameters:
+      - description: Generation ID
+        in: path
+        name: generation_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminGenerationModificationResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get generation modifications
+      tags:
+      - admin-generation-modifications
+    post:
+      consumes:
+      - application/json
+      description: Creates a new generation modification
+      parameters:
+      - description: Generation ID
+        in: path
+        name: generation_id
+        required: true
+        type: integer
+      - description: Generation modification data
+        in: body
+        name: modification
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateGenerationModificationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a generation modification
+      tags:
+      - admin-generation-modifications
+  /api/v1/admin/generations/{generation_id}/{id}:
+    delete:
+      description: Deletes a generation modification by ID
+      parameters:
+      - description: Generation ID
+        in: path
+        name: generation_id
+        required: true
+        type: integer
+      - description: Generation modification ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a generation modification
+      tags:
+      - admin-generation-modifications
+    put:
+      consumes:
+      - application/json
+      description: Updates a generation modification by ID
+      parameters:
+      - description: Generation ID
+        in: path
+        name: generation_id
+        required: true
+        type: integer
+      - description: Generation modification ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Generation modification data
+        in: body
+        name: modification
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateGenerationModificationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a generation modification
+      tags:
+      - admin-generation-modifications
+  /api/v1/admin/generations/{id}:
+    delete:
+      description: Deletes a generation by ID
+      parameters:
+      - description: Generation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a generation
+      tags:
+      - admin-generations
+    put:
+      consumes:
+      - application/json
+      description: Updates a generation by ID
+      parameters:
+      - description: Generation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Generation data
+        in: body
+        name: generation
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateGenerationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a generation
+      tags:
+      - admin-generations
+  /api/v1/admin/moto-brands:
+    get:
+      description: Returns a list of all moto brands
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminMotoBrandResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all moto brands
+      tags:
+      - admin-moto-brands
+    post:
+      consumes:
+      - application/json
+      description: Creates a new moto brand
+      parameters:
+      - description: Moto brand data
+        in: body
+        name: motoBrand
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateMotoBrandRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a moto brand
+      tags:
+      - admin-moto-brands
+  /api/v1/admin/moto-brands/{id}:
+    delete:
+      description: Deletes a moto brand by ID
+      parameters:
+      - description: Moto brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a moto brand
+      tags:
+      - admin-moto-brands
+    put:
+      consumes:
+      - application/json
+      description: Updates a moto brand by ID
+      parameters:
+      - description: Moto brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Moto brand data
+        in: body
+        name: motoBrand
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateMotoBrandRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a moto brand
+      tags:
+      - admin-moto-brands
+  /api/v1/admin/moto-categories:
+    get:
+      description: Returns a list of all moto categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminMotoCategoryResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all moto categories
+      tags:
+      - admin-moto-categories
+    post:
+      consumes:
+      - application/json
+      description: Creates a new moto category
+      parameters:
+      - description: Moto category data
+        in: body
+        name: motoCategory
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateMotoCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a moto category
+      tags:
+      - admin-moto-categories
+  /api/v1/admin/moto-categories/{category_id}/parameters:
+    get:
+      description: Returns a list of moto category parameters for a specific category
+      parameters:
+      - description: Moto category ID
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminMotoCategoryParameterResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get moto category parameters
+      tags:
+      - admin-moto-category-parameters
+    post:
+      consumes:
+      - application/json
+      description: Creates a new moto category parameter
+      parameters:
+      - description: Moto category ID
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      - description: Moto category parameter data
+        in: body
+        name: parameter
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateMotoCategoryParameterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a moto category parameter
+      tags:
+      - admin-moto-category-parameters
+  /api/v1/admin/moto-categories/{category_id}/parameters/{id}:
+    delete:
+      description: Deletes a moto category parameter by ID
+      parameters:
+      - description: Moto category ID
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      - description: Moto category parameter ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a moto category parameter
+      tags:
+      - admin-moto-category-parameters
+    put:
+      consumes:
+      - application/json
+      description: Updates a moto category parameter by ID
+      parameters:
+      - description: Moto category ID
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      - description: Moto category parameter ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Moto category parameter data
+        in: body
+        name: parameter
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateMotoCategoryParameterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a moto category parameter
+      tags:
+      - admin-moto-category-parameters
+  /api/v1/admin/moto-categories/{id}:
+    delete:
+      description: Deletes a moto category by ID
+      parameters:
+      - description: Moto category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a moto category
+      tags:
+      - admin-moto-categories
+    put:
+      consumes:
+      - application/json
+      description: Updates a moto category by ID
+      parameters:
+      - description: Moto category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Moto category data
+        in: body
+        name: motoCategory
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateMotoCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a moto category
+      tags:
+      - admin-moto-categories
+  /api/v1/admin/moto-models:
+    get:
+      description: Returns a list of all moto models
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminMotoModelResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all moto models
+      tags:
+      - admin-moto-models
+    post:
+      consumes:
+      - application/json
+      description: Creates a new moto model
+      parameters:
+      - description: Moto model data
+        in: body
+        name: motoModel
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateMotoModelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a moto model
+      tags:
+      - admin-moto-models
+  /api/v1/admin/moto-models/{id}:
+    delete:
+      description: Deletes a moto model by ID
+      parameters:
+      - description: Moto model ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a moto model
+      tags:
+      - admin-moto-models
+    put:
+      consumes:
+      - application/json
+      description: Updates a moto model by ID
+      parameters:
+      - description: Moto model ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Moto model data
+        in: body
+        name: motoModel
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateMotoModelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a moto model
+      tags:
+      - admin-moto-models
+  /api/v1/admin/moto-parameters:
+    get:
+      description: Returns a list of all moto parameters
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminMotoParameterResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all moto parameters
+      tags:
+      - admin-moto-parameters
+    post:
+      consumes:
+      - application/json
+      description: Creates a new moto parameter
+      parameters:
+      - description: Moto parameter data
+        in: body
+        name: motoParameter
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateMotoParameterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a moto parameter
+      tags:
+      - admin-moto-parameters
+  /api/v1/admin/moto-parameters/{id}:
+    delete:
+      description: Deletes a moto parameter by ID
+      parameters:
+      - description: Moto parameter ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a moto parameter
+      tags:
+      - admin-moto-parameters
+    put:
+      consumes:
+      - application/json
+      description: Updates a moto parameter by ID
+      parameters:
+      - description: Moto parameter ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Moto parameter data
+        in: body
+        name: motoParameter
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateMotoParameterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a moto parameter
+      tags:
+      - admin-moto-parameters
+  /api/v1/admin/moto-parameters/{moto_param_id}/values:
+    get:
+      description: Returns a list of moto parameter values for a specific parameter
+      parameters:
+      - description: Moto parameter ID
+        in: path
+        name: moto_param_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminMotoParameterValueResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get moto parameter values
+      tags:
+      - admin-moto-parameter-values
+    post:
+      consumes:
+      - application/json
+      description: Creates a new moto parameter value
+      parameters:
+      - description: Moto parameter ID
+        in: path
+        name: moto_param_id
+        required: true
+        type: integer
+      - description: Moto parameter value data
+        in: body
+        name: parameterValue
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateMotoParameterValueRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a moto parameter value
+      tags:
+      - admin-moto-parameter-values
+  /api/v1/admin/moto-parameters/{moto_param_id}/values/{id}:
+    delete:
+      description: Deletes a moto parameter value by ID
+      parameters:
+      - description: Moto parameter ID
+        in: path
+        name: moto_param_id
+        required: true
+        type: integer
+      - description: Moto parameter value ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a moto parameter value
+      tags:
+      - admin-moto-parameter-values
+    put:
+      consumes:
+      - application/json
+      description: Updates a moto parameter value by ID
+      parameters:
+      - description: Moto parameter ID
+        in: path
+        name: moto_param_id
+        required: true
+        type: integer
+      - description: Moto parameter value ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Moto parameter value data
+        in: body
+        name: parameterValue
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateMotoParameterValueRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a moto parameter value
+      tags:
+      - admin-moto-parameter-values
+  /api/v1/admin/service-types:
+    get:
+      description: Returns a list of all service types
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminServiceTypeResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all service types
+      tags:
+      - admin-service-types
+    post:
+      consumes:
+      - application/json
+      description: Creates a new service type
+      parameters:
+      - description: Service type data
+        in: body
+        name: serviceType
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateServiceTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a service type
+      tags:
+      - admin-service-types
+  /api/v1/admin/service-types/{id}:
+    delete:
+      description: Deletes a service type by ID
+      parameters:
+      - description: Service type ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a service type
+      tags:
+      - admin-service-types
+    put:
+      consumes:
+      - application/json
+      description: Updates a service type by ID
+      parameters:
+      - description: Service type ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Service type data
+        in: body
+        name: serviceType
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateServiceTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a service type
+      tags:
+      - admin-service-types
+  /api/v1/admin/services:
+    get:
+      description: Returns a list of all services
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminServiceResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all services
+      tags:
+      - admin-services
+    post:
+      consumes:
+      - application/json
+      description: Creates a new service
+      parameters:
+      - description: Service data
+        in: body
+        name: service
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateServiceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a service
+      tags:
+      - admin-services
+  /api/v1/admin/services/{id}:
+    delete:
+      description: Deletes a service by ID
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a service
+      tags:
+      - admin-services
+    put:
+      consumes:
+      - application/json
+      description: Updates a service by ID
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Service data
+        in: body
+        name: service
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateServiceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a service
+      tags:
+      - admin-services
+  /api/v1/admin/transmissions:
+    get:
+      description: Returns a list of all transmissions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminTransmissionResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all transmissions
+      tags:
+      - admin-transmissions
+    post:
+      consumes:
+      - application/json
+      description: Creates a new transmission
+      parameters:
+      - description: Transmission data
+        in: body
+        name: transmission
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateTransmissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a transmission
+      tags:
+      - admin-transmissions
+  /api/v1/admin/transmissions/{id}:
+    delete:
+      description: Deletes a transmission by ID
+      parameters:
+      - description: Transmission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a transmission
+      tags:
+      - admin-transmissions
+    put:
+      consumes:
+      - application/json
+      description: Updates a transmission by ID
+      parameters:
+      - description: Transmission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Transmission data
+        in: body
+        name: transmission
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateTransmissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a transmission
+      tags:
+      - admin-transmissions
   /api/v1/auth/account/{id}:
     delete:
       description: Deletes the authenticated user's account and related data

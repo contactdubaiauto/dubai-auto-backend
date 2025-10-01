@@ -30,12 +30,6 @@ type GetComtransModelsResponse struct {
 	Name string `json:"name"`
 }
 
-// REQUESTS
-type CreateComtransParameterRequest struct {
-	ParameterID int `json:"parameter_id" validate:"required"`
-	ValueID     int `json:"value_id" validate:"required"`
-}
-
 type CreateComtransRequest struct {
 	ComtranCategoryID  string                           `json:"comtran_category_id" validate:"required"`
 	BrandID            string                           `json:"comtran_brand_id" validate:"required"`
