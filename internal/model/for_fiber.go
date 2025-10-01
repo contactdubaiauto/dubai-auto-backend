@@ -79,9 +79,9 @@ var PaymentRequired = ServerError{
 }
 
 type Response struct {
-	Error  error       `json:"error"`
-	Status int         `json:"status"`
-	Data   interface{} `json:"data"`
+	Error  error `json:"error"`
+	Status int   `json:"status"`
+	Data   any   `json:"data"`
 }
 
 type ResultMessage struct {

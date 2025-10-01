@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func BuildParams(v interface{}) (keys []string, values []string, args []interface{}) {
+func BuildParams(v any) (keys []string, values []string, args []any) {
 	placeHolder := 1
 
 	if v == nil {
@@ -99,7 +99,7 @@ func QueryParamToIntArray(param string) ([]int, error) {
 
 // ToPostgreSQLArray converts a Go slice to a format suitable for PostgreSQL array insertion
 // This is useful when you need to manually construct array values for SQL queries
-func ToPostgreSQLArray(slice interface{}) string {
+func ToPostgreSQLArray(slice any) string {
 	if slice == nil {
 		return "NULL"
 	}

@@ -973,7 +973,7 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 	price_from, price_to, tradeIn, owners, crash, odometer string, new, wheel *bool) ([]model.GetCarsResponse, error) {
 
 	var qWhere string
-	var qValues []interface{}
+	var qValues []any
 	qValues = append(qValues, userID)
 	var i = 1
 
@@ -1522,7 +1522,7 @@ func (r *UserRepository) UpdateCar(ctx *fasthttp.RequestCtx, car *model.UpdateCa
 	keys, _, args := auth.BuildParams(car)
 
 	var updateFields []string
-	var updateArgs []interface{}
+	var updateArgs []any
 	updateArgs = append(updateArgs, car.ID)
 
 	paramIndex := 2

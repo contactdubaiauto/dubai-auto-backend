@@ -16,7 +16,7 @@ func NewValidator() *Validator {
 	}
 }
 
-func (v *Validator) Validate(i interface{}) error {
+func (v *Validator) Validate(i any) error {
 	if err := v.validate.Struct(i); err != nil {
 		var validationErrors []string
 		for _, err := range err.(validator.ValidationErrors) {

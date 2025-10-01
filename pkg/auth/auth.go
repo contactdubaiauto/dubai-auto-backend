@@ -25,7 +25,7 @@ func TokenGuard(c *fiber.Ctx) error {
 
 	_, err := jwt.ParseWithClaims(
 		token, claims,
-		func(t *jwt.Token) (interface{}, error) {
+		func(t *jwt.Token) (any, error) {
 			return []byte(ENV.ACCESS_KEY), nil
 		},
 	)
@@ -59,7 +59,7 @@ func UserGuardOrDefault(c *fiber.Ctx) error {
 
 	_, err := jwt.ParseWithClaims(
 		token, claims,
-		func(t *jwt.Token) (interface{}, error) {
+		func(t *jwt.Token) (any, error) {
 			return []byte(ENV.ACCESS_KEY), nil
 		},
 	)

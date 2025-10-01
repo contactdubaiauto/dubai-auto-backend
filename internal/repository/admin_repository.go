@@ -37,6 +37,7 @@ func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx) ([]model.Adm
 	if err != nil {
 		return applications, err
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
@@ -50,6 +51,7 @@ func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx) ([]model.Adm
 
 		applications = append(applications, application)
 	}
+
 	return applications, err
 }
 
@@ -58,9 +60,11 @@ func (r *AdminRepository) GetApplication(ctx *fasthttp.RequestCtx, id int) (mode
 	q := `SELECT id, company_name, licence_issue_date, licence_expiry_date, username, email, phone, status, created_at FROM temp_users WHERE id = $1`
 	var application model.AdminApplicationResponse
 	rows, err := r.db.Query(ctx, q, id)
+
 	if err != nil {
 		return model.AdminApplicationResponse{}, err
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
@@ -69,6 +73,7 @@ func (r *AdminRepository) GetApplication(ctx *fasthttp.RequestCtx, id int) (mode
 			return model.AdminApplicationResponse{}, err
 		}
 	}
+
 	return application, nil
 
 }
@@ -91,9 +96,11 @@ func (r *AdminRepository) GetCities(ctx *fasthttp.RequestCtx) ([]model.AdminCity
 	q := `SELECT id, name, created_at FROM cities ORDER BY id DESC`
 
 	rows, err := r.db.Query(ctx, q)
+
 	if err != nil {
 		return cities, err
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
@@ -103,6 +110,7 @@ func (r *AdminRepository) GetCities(ctx *fasthttp.RequestCtx) ([]model.AdminCity
 		}
 		cities = append(cities, city)
 	}
+
 	return cities, err
 }
 
@@ -131,9 +139,11 @@ func (r *AdminRepository) GetBrands(ctx *fasthttp.RequestCtx) ([]model.AdminBran
 	q := `SELECT id, name, logo, model_count, popular, updated_at FROM brands ORDER BY id DESC`
 
 	rows, err := r.db.Query(ctx, q)
+
 	if err != nil {
 		return brands, err
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
@@ -143,6 +153,7 @@ func (r *AdminRepository) GetBrands(ctx *fasthttp.RequestCtx) ([]model.AdminBran
 		}
 		brands = append(brands, brand)
 	}
+
 	return brands, err
 }
 
@@ -177,9 +188,11 @@ func (r *AdminRepository) GetModels(ctx *fasthttp.RequestCtx, brand_id int) ([]m
 	`
 
 	rows, err := r.db.Query(ctx, q)
+
 	if err != nil {
 		return models, err
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
@@ -189,6 +202,7 @@ func (r *AdminRepository) GetModels(ctx *fasthttp.RequestCtx, brand_id int) ([]m
 		}
 		models = append(models, modelItem)
 	}
+
 	return models, err
 }
 
@@ -217,9 +231,11 @@ func (r *AdminRepository) GetBodyTypes(ctx *fasthttp.RequestCtx) ([]model.AdminB
 	q := `SELECT id, name, image, created_at FROM body_types ORDER BY id DESC`
 
 	rows, err := r.db.Query(ctx, q)
+
 	if err != nil {
 		return bodyTypes, err
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
@@ -229,6 +245,7 @@ func (r *AdminRepository) GetBodyTypes(ctx *fasthttp.RequestCtx) ([]model.AdminB
 		}
 		bodyTypes = append(bodyTypes, bodyType)
 	}
+
 	return bodyTypes, err
 }
 
@@ -269,9 +286,11 @@ func (r *AdminRepository) GetRegions(ctx *fasthttp.RequestCtx, cityID int) ([]mo
 	q := `SELECT id, name, created_at FROM regions where city_id = $1`
 
 	rows, err := r.db.Query(ctx, q, cityID)
+
 	if err != nil {
 		return regions, err
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
@@ -281,6 +300,7 @@ func (r *AdminRepository) GetRegions(ctx *fasthttp.RequestCtx, cityID int) ([]mo
 		}
 		regions = append(regions, region)
 	}
+
 	return regions, err
 }
 

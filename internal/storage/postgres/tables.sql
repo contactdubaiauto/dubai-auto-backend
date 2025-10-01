@@ -59,7 +59,6 @@ create table documents (
     "created_at" timestamp default now()
 );
 
-
 create table temp_users (
     "id" serial primary key,
     "company_name" varchar(100),

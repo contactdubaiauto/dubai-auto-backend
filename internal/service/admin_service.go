@@ -24,6 +24,7 @@ func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx) *model.Response
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
 	return &model.Response{Data: applications}
 }
 
@@ -33,6 +34,7 @@ func (s *AdminService) GetApplication(ctx *fasthttp.RequestCtx, id int) *model.R
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
 	return &model.Response{Data: application}
 }
 
@@ -42,6 +44,7 @@ func (s *AdminService) AcceptApplication(ctx *fasthttp.RequestCtx, id int) *mode
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
 	return &model.Response{Data: model.Success{Message: "Application accepted successfully"}}
 }
 
@@ -51,6 +54,7 @@ func (s *AdminService) RejectApplication(ctx *fasthttp.RequestCtx, id int) *mode
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
 	return &model.Response{Data: model.Success{Message: "Application rejected successfully"}}
 }
 
@@ -204,6 +208,7 @@ func (s *AdminService) CreateBodyTypeImage(ctx *fasthttp.RequestCtx, id int, pat
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
 	return &model.Response{Data: model.Success{Message: "Body type image created successfully"}}
 }
 
@@ -233,6 +238,7 @@ func (s *AdminService) DeleteBodyTypeImage(ctx *fasthttp.RequestCtx, id int) *mo
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
 	return &model.Response{Data: model.Success{Message: "Body type image deleted successfully"}}
 }
 
@@ -403,6 +409,7 @@ func (s *AdminService) GetRegions(ctx *fasthttp.RequestCtx, city_id int) *model.
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
 	return &model.Response{Data: regions}
 }
 
@@ -412,6 +419,7 @@ func (s *AdminService) CreateRegion(ctx *fasthttp.RequestCtx, city_id int, req *
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
 	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Region created successfully"}}
 }
 
@@ -421,6 +429,7 @@ func (s *AdminService) UpdateRegion(ctx *fasthttp.RequestCtx, id int, req *model
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
 	return &model.Response{Data: model.Success{Message: "Region updated successfully"}}
 }
 
@@ -430,6 +439,7 @@ func (s *AdminService) DeleteRegion(ctx *fasthttp.RequestCtx, id int) *model.Res
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
 	return &model.Response{Data: model.Success{Message: "Region deleted successfully"}}
 }
 
