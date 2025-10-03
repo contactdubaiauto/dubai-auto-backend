@@ -126,7 +126,7 @@ const docTemplate = `{
             }
         },
         "/api/v1/admin/applications/{id}/accept": {
-            "put": {
+            "post": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -147,6 +147,15 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Application request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AcceptApplicationRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -184,7 +193,7 @@ const docTemplate = `{
             }
         },
         "/api/v1/admin/applications/{id}/reject": {
-            "delete": {
+            "post": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -7212,6 +7221,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/auth/third-party-login": {
+            "post": {
+                "description": "Authenticates a user and returns a JWT token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Third party login",
+                "parameters": [
+                    {
+                        "description": "Third party login credentials",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ThirdPartyLoginReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/auth/user-email-confirmation": {
             "post": {
                 "description": "Authenticates a user and returns a JWT token",
@@ -7497,6 +7570,180 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.LoginFiberResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/third-party/profile": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns a profile",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "third-party"
+                ],
+                "summary": "Get profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.ThirdPartyGetProfileRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns a profile",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "third-party"
+                ],
+                "summary": "Profile",
+                "parameters": [
+                    {
+                        "description": "Profile",
+                        "name": "profile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ThirdPartyProfileReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/third-party/registration-data": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns registration data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "third-party"
+                ],
+                "summary": "Get registration data",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.ThirdPartyGetRegistrationDataRes"
                         }
                     },
                     "400": {
@@ -11282,7 +11529,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "motorcycle"
+                    "motorcycles"
                 ],
                 "summary": "Get motorcycle by ID",
                 "parameters": [
@@ -11344,7 +11591,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "motorcycle"
+                    "motorcycles"
                 ],
                 "summary": "Delete motorcycle",
                 "parameters": [
@@ -11408,7 +11655,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "motorcycle"
+                    "motorcycles"
                 ],
                 "summary": "Buy motorcycle",
                 "parameters": [
@@ -11472,7 +11719,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "motorcycle"
+                    "motorcycles"
                 ],
                 "summary": "Set motorcycle as not for sale",
                 "parameters": [
@@ -11536,7 +11783,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "motorcycle"
+                    "motorcycles"
                 ],
                 "summary": "Get Edit motorcycle by ID",
                 "parameters": [
@@ -11600,7 +11847,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "motorcycle"
+                    "motorcycles"
                 ],
                 "summary": "Set motorcycle for sale",
                 "parameters": [
@@ -11667,7 +11914,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "motorcycle"
+                    "motorcycles"
                 ],
                 "summary": "Upload motorcycle images",
                 "parameters": [
@@ -11741,7 +11988,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "motorcycle"
+                    "motorcycles"
                 ],
                 "summary": "Delete motorcycle image",
                 "parameters": [
@@ -11815,7 +12062,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "motorcycle"
+                    "motorcycles"
                 ],
                 "summary": "Upload motorcycle videos",
                 "parameters": [
@@ -11889,7 +12136,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "motorcycle"
+                    "motorcycles"
                 ],
                 "summary": "Delete motorcycle video",
                 "parameters": [
@@ -11956,6 +12203,14 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "Invalid param ID"
+                }
+            }
+        },
+        "model.AcceptApplicationRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
                 }
             }
         },
@@ -12634,7 +12889,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "city_id": {
-                    "description": "new\nBodyTypeID     int      ` + "`" + `json:\"body_type_id\" validate:\"required\"` + "`" + `",
                     "type": "integer"
                 },
                 "color_id": {
@@ -12662,6 +12916,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "phone_numbers": {
+                    "description": "new\nBodyTypeID     int      ` + "`" + `json:\"body_type_id\" validate:\"required\"` + "`" + `",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -14145,6 +14400,9 @@ const docTemplate = `{
                 "access_token": {
                     "type": "string"
                 },
+                "first_time_login": {
+                    "type": "boolean"
+                },
                 "refresh_token": {
                     "type": "string"
                 }
@@ -14266,6 +14524,104 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ThirdPartyGetProfileRes": {
+            "type": "object",
+            "properties": {
+                "about_us": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "avatar": {
+                    "type": "string"
+                },
+                "banner": {
+                    "type": "string"
+                },
+                "coordinates": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "registered": {
+                    "type": "string"
+                },
+                "telegram": {
+                    "type": "string"
+                },
+                "whatsapp": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ThirdPartyGetRegistrationDataRes": {
+            "type": "object",
+            "properties": {
+                "activity_fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Model"
+                    }
+                },
+                "company_types": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Model"
+                    }
+                }
+            }
+        },
+        "model.ThirdPartyLoginReq": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ThirdPartyProfileReq": {
+            "type": "object",
+            "required": [
+                "email",
+                "phone"
+            ],
+            "properties": {
+                "about_us": {
+                    "type": "string",
+                    "maxLength": 300
+                },
+                "address": {
+                    "type": "string"
+                },
+                "coordinates": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "telegram": {
+                    "type": "string"
+                },
+                "whatsapp": {
                     "type": "string"
                 }
             }

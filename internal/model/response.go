@@ -441,3 +441,21 @@ type AdminComtransCategoryParameterResponse struct {
 	ComtransCategoryID    int       `json:"comtrans_category_id"`
 	ComtransParameterID   int       `json:"comtrans_parameter_id"`
 }
+
+type ThirdPartyGetProfileRes struct {
+	Registered  *time.Time `json:"registered"`
+	AboutUs     *string    `json:"about_us"`
+	Email       *string    `json:"email"`
+	Whatsapp    *string    `json:"whatsapp"`
+	Telegram    *string    `json:"telegram"`
+	Phone       *string    `json:"phone"`
+	Address     *string    `json:"address"`
+	Coordinates *string    `json:"coordinates"`
+	Avatar      *string    `json:"avatar"`
+	Banner      *string    `json:"banner"`
+}
+
+type ThirdPartyGetRegistrationDataRes struct {
+	CompanyTypes   []Model `json:"company_types"`
+	ActivityFields []Model `json:"activity_fields"`
+}

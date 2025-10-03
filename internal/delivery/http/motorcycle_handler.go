@@ -139,7 +139,7 @@ func (h *MotorcycleHandler) CreateMotorcycle(c *fiber.Ctx) error {
 // CreateMotorcycleImages godoc
 // @Summary      Upload motorcycle images
 // @Description  Uploads images for a motorcycle (max 10 files)
-// @Tags         motorcycle
+// @Tags         motorcycles
 // @Security     BearerAuth
 // @Accept       multipart/form-data
 // @Produce      json
@@ -202,7 +202,7 @@ func (h *MotorcycleHandler) CreateMotorcycleImages(c *fiber.Ctx) error {
 // CreateMotorcycleVideos godoc
 // @Summary      Upload motorcycle videos
 // @Description  Uploads videos for a motorcycle (max 1 files)
-// @Tags         motorcycle
+// @Tags         motorcycles
 // @Security     BearerAuth
 // @Accept       multipart/form-data
 // @Produce      json
@@ -265,7 +265,7 @@ func (h *MotorcycleHandler) CreateMotorcycleVideos(c *fiber.Ctx) error {
 // DeleteMotorcycleImage godoc
 // @Summary      Delete motorcycle image
 // @Description  Deletes an image from a motorcycle
-// @Tags         motorcycle
+// @Tags         motorcycles
 // @Security     BearerAuth
 // @Accept       json
 // @Produce      json
@@ -308,7 +308,7 @@ func (h *MotorcycleHandler) DeleteMotorcycleImage(c *fiber.Ctx) error {
 // DeleteMotorcycleVideo godoc
 // @Summary      Delete motorcycle video
 // @Description  Deletes a video from a motorcycle
-// @Tags         motorcycle
+// @Tags         motorcycles
 // @Security     BearerAuth
 // @Accept       json
 // @Produce      json
@@ -351,7 +351,7 @@ func (h *MotorcycleHandler) DeleteMotorcycleVideo(c *fiber.Ctx) error {
 // GetMotorcycleByID godoc
 // @Summary      Get motorcycle by ID
 // @Description  Returns a motorcycle by its ID
-// @Tags         motorcycle
+// @Tags         motorcycles
 // @Security     BearerAuth
 // @Produce      json
 // @Param        id   path      int  true  "Motorcycle ID"
@@ -382,7 +382,7 @@ func (h *MotorcycleHandler) GetMotorcycleByID(c *fiber.Ctx) error {
 // GetEditMotorcycleByID godoc
 // @Summary      Get Edit motorcycle by ID
 // @Description  Returns a motorcycle by its ID for editing
-// @Tags         motorcycle
+// @Tags         motorcycles
 // @Security     BearerAuth
 // @Produce      json
 // @Param        id   path      int  true  "Motorcycle ID"
@@ -413,7 +413,7 @@ func (h *MotorcycleHandler) GetEditMotorcycleByID(c *fiber.Ctx) error {
 // BuyMotorcycle godoc
 // @Summary      Buy motorcycle
 // @Description  Returns a status response message
-// @Tags         motorcycle
+// @Tags         motorcycles
 // @Security     BearerAuth
 // @Produce      json
 // @Param        id   path      int  true  "Motorcycle ID"
@@ -444,7 +444,7 @@ func (h *MotorcycleHandler) BuyMotorcycle(c *fiber.Ctx) error {
 // DontSellMotorcycle godoc
 // @Summary      Set motorcycle as not for sale
 // @Description  Updates motorcycle status to not for sale
-// @Tags         motorcycle
+// @Tags         motorcycles
 // @Security     BearerAuth
 // @Produce      json
 // @Param        id   path      int  true  "Motorcycle ID"
@@ -475,7 +475,7 @@ func (h *MotorcycleHandler) DontSellMotorcycle(c *fiber.Ctx) error {
 // SellMotorcycle godoc
 // @Summary      Set motorcycle for sale
 // @Description  Updates motorcycle status to for sale
-// @Tags         motorcycle
+// @Tags         motorcycles
 // @Security     BearerAuth
 // @Produce      json
 // @Param        id   path      int  true  "Motorcycle ID"
@@ -506,7 +506,7 @@ func (h *MotorcycleHandler) SellMotorcycle(c *fiber.Ctx) error {
 // DeleteMotorcycle godoc
 // @Summary      Delete motorcycle
 // @Description  Deletes a motorcycle and its associated files
-// @Tags         motorcycle
+// @Tags         motorcycles
 // @Security     BearerAuth
 // @Produce      json
 // @Param        id   path      int  true  "Motorcycle ID"

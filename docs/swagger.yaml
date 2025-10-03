@@ -6,6 +6,11 @@ definitions:
         example: Invalid param ID
         type: string
     type: object
+  model.AcceptApplicationRequest:
+    properties:
+      password:
+        type: string
+    type: object
   model.AdminApplicationResponse:
     properties:
       company_name:
@@ -436,9 +441,6 @@ definitions:
       brand_id:
         type: integer
       city_id:
-        description: |-
-          new
-          BodyTypeID     int      `json:"body_type_id" validate:"required"`
         type: integer
       color_id:
         type: integer
@@ -457,6 +459,9 @@ definitions:
       owners:
         type: integer
       phone_numbers:
+        description: |-
+          new
+          BodyTypeID     int      `json:"body_type_id" validate:"required"`
         items:
           type: string
         type: array
@@ -1470,6 +1475,8 @@ definitions:
     properties:
       access_token:
         type: string
+      first_time_login:
+        type: boolean
       refresh_token:
         type: string
     type: object
@@ -1549,6 +1556,71 @@ definitions:
         type: integer
       message:
         type: string
+    type: object
+  model.ThirdPartyGetProfileRes:
+    properties:
+      about_us:
+        type: string
+      address:
+        type: string
+      avatar:
+        type: string
+      banner:
+        type: string
+      coordinates:
+        type: string
+      email:
+        type: string
+      phone:
+        type: string
+      registered:
+        type: string
+      telegram:
+        type: string
+      whatsapp:
+        type: string
+    type: object
+  model.ThirdPartyGetRegistrationDataRes:
+    properties:
+      activity_fields:
+        items:
+          $ref: '#/definitions/model.Model'
+        type: array
+      company_types:
+        items:
+          $ref: '#/definitions/model.Model'
+        type: array
+    type: object
+  model.ThirdPartyLoginReq:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  model.ThirdPartyProfileReq:
+    properties:
+      about_us:
+        maxLength: 300
+        type: string
+      address:
+        type: string
+      coordinates:
+        type: string
+      email:
+        type: string
+      phone:
+        type: string
+      telegram:
+        type: string
+      whatsapp:
+        type: string
+    required:
+    - email
+    - phone
     type: object
   model.Transmission:
     properties:
@@ -1993,7 +2065,7 @@ paths:
       tags:
       - admin-applications
   /api/v1/admin/applications/{id}/accept:
-    put:
+    post:
       description: Accepts an application by ID
       parameters:
       - description: Application ID
@@ -2001,6 +2073,12 @@ paths:
         name: id
         required: true
         type: integer
+      - description: Application request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/model.AcceptApplicationRequest'
       produces:
       - application/json
       responses:
@@ -2030,7 +2108,7 @@ paths:
       tags:
       - admin-applications
   /api/v1/admin/applications/{id}/reject:
-    delete:
+    post:
       description: Rejects an application by ID
       parameters:
       - description: Application ID
@@ -6544,6 +6622,48 @@ paths:
       summary: Application documents
       tags:
       - auth
+  /api/v1/auth/third-party-login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token
+      parameters:
+      - description: Third party login credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.ThirdPartyLoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Third party login
+      tags:
+      - auth
   /api/v1/auth/user-email-confirmation:
     post:
       consumes:
@@ -6754,6 +6874,117 @@ paths:
       summary: User phone confirmation
       tags:
       - auth
+  /api/v1/third-party/profile:
+    get:
+      description: Returns a profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ThirdPartyGetProfileRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get profile
+      tags:
+      - third-party
+    post:
+      description: Returns a profile
+      parameters:
+      - description: Profile
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/model.ThirdPartyProfileReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Profile
+      tags:
+      - third-party
+  /api/v1/third-party/registration-data:
+    get:
+      description: Returns registration data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ThirdPartyGetRegistrationDataRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get registration data
+      tags:
+      - third-party
   /api/v1/users/body-types:
     get:
       description: Returns a list of car body types
@@ -9139,7 +9370,7 @@ paths:
       - BearerAuth: []
       summary: Delete motorcycle
       tags:
-      - motorcycle
+      - motorcycles
     get:
       description: Returns a motorcycle by its ID
       parameters:
@@ -9179,7 +9410,7 @@ paths:
       - BearerAuth: []
       summary: Get motorcycle by ID
       tags:
-      - motorcycle
+      - motorcycles
   /motorcycles/{id}/buy:
     post:
       description: Returns a status response message
@@ -9220,7 +9451,7 @@ paths:
       - BearerAuth: []
       summary: Buy motorcycle
       tags:
-      - motorcycle
+      - motorcycles
   /motorcycles/{id}/dont-sell:
     post:
       description: Updates motorcycle status to not for sale
@@ -9261,7 +9492,7 @@ paths:
       - BearerAuth: []
       summary: Set motorcycle as not for sale
       tags:
-      - motorcycle
+      - motorcycles
   /motorcycles/{id}/edit:
     get:
       description: Returns a motorcycle by its ID for editing
@@ -9302,7 +9533,7 @@ paths:
       - BearerAuth: []
       summary: Get Edit motorcycle by ID
       tags:
-      - motorcycle
+      - motorcycles
   /motorcycles/{id}/sell:
     post:
       description: Updates motorcycle status to for sale
@@ -9343,7 +9574,7 @@ paths:
       - BearerAuth: []
       summary: Set motorcycle for sale
       tags:
-      - motorcycle
+      - motorcycles
   /motorcycles/{motorcycle_id}/images:
     post:
       consumes:
@@ -9391,7 +9622,7 @@ paths:
       - BearerAuth: []
       summary: Upload motorcycle images
       tags:
-      - motorcycle
+      - motorcycles
   /motorcycles/{motorcycle_id}/images/{image_id}:
     delete:
       consumes:
@@ -9439,7 +9670,7 @@ paths:
       - BearerAuth: []
       summary: Delete motorcycle image
       tags:
-      - motorcycle
+      - motorcycles
   /motorcycles/{motorcycle_id}/videos:
     post:
       consumes:
@@ -9487,7 +9718,7 @@ paths:
       - BearerAuth: []
       summary: Upload motorcycle videos
       tags:
-      - motorcycle
+      - motorcycles
   /motorcycles/{motorcycle_id}/videos/{video_id}:
     delete:
       consumes:
@@ -9535,7 +9766,7 @@ paths:
       - BearerAuth: []
       summary: Delete motorcycle video
       tags:
-      - motorcycle
+      - motorcycles
   /motorcycles/categories/{category_id}/brands:
     get:
       consumes:

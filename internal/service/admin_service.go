@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/valyala/fasthttp"
@@ -43,7 +44,7 @@ func (s *AdminService) GetApplication(ctx *fasthttp.RequestCtx, id int) *model.R
 func (s *AdminService) AcceptApplication(ctx *fasthttp.RequestCtx, id int, req model.AcceptApplicationRequest) *model.Response {
 
 	if req.Password == "" {
-		req.Password = "random&assw0rd"
+		req.Password = fmt.Sprintf("%d", utils.RandomOTP())
 	}
 
 	cryptedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -58,11 +59,14 @@ func (s *AdminService) AcceptApplication(ctx *fasthttp.RequestCtx, id int, req m
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	err = utils.SendEmail("Application accepted", "Your application has been accepted. Please login to your account to continue. Your password is: "+req.Password, email)
+	go func() {
+		err = utils.SendEmail("Application accepted", "Your application has been accepted. Please login to your account to continue. Your password is: "+req.Password, email)
 
-	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}()
 
 	return &model.Response{Data: model.Success{Message: "Application accepted successfully"}}
 }

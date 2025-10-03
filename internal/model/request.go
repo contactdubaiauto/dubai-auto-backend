@@ -248,3 +248,13 @@ type UpdateComtransCategoryParameterRequest struct {
 type AcceptApplicationRequest struct {
 	Password string `json:"password"`
 }
+
+type ThirdPartyProfileReq struct {
+	AboutUs     string `json:"about_us" validate:"max=300"`
+	Email       string `json:"email" validate:"required"`
+	Whatsapp    string `json:"whatsapp"`
+	Telegram    string `json:"telegram"`
+	Phone       string `json:"phone" validate:"required"`
+	Address     string `json:"address"`
+	Coordinates string `json:"coordinates"`
+}

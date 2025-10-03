@@ -207,13 +207,14 @@ func (s *AuthService) UserPhoneConfirmation(ctx *fasthttp.RequestCtx, user *mode
 			Status: http.StatusBadRequest,
 		}
 	}
+
 	u.ID, err = s.repo.UserPhoneGetOrRegister(ctx, u.Username, user.Phone, u.OTP)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, 1)
 
+	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, 1)
 	return model.Response{
 		Data: model.LoginFiberResponse{
 			AccessToken:  accessToken,
@@ -224,8 +225,15 @@ func (s *AuthService) UserPhoneConfirmation(ctx *fasthttp.RequestCtx, user *mode
 
 func (s *AuthService) UserLoginEmail(ctx *fasthttp.RequestCtx, user *model.UserLoginEmail) model.Response {
 	otp := utils.RandomOTP()
-	// todo: send otp to the mail
-	otp = 123456
+	err := utils.SendEmail("OTP", fmt.Sprintf("Your OTP is: %d", otp), user.Email)
+
+	if err != nil {
+		return model.Response{
+			Error:  err,
+			Status: http.StatusInternalServerError,
+		}
+	}
+
 	username := utils.RandomUsername()
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%d", otp)), bcrypt.DefaultCost)
 
@@ -281,8 +289,15 @@ func (s *AuthService) ThirdPartyLogin(ctx *fasthttp.RequestCtx, user *model.Thir
 
 func (s *AuthService) UserLoginPhone(ctx *fasthttp.RequestCtx, user *model.UserLoginPhone) model.Response {
 	otp := utils.RandomOTP()
-	// todo: send otp to the mail
-	otp = 123456
+	err := utils.SendEmail("OTP", fmt.Sprintf("Your OTP is: %d", otp), user.Phone)
+
+	if err != nil {
+		return model.Response{
+			Error:  err,
+			Status: http.StatusInternalServerError,
+		}
+	}
+
 	username := utils.RandomUsername()
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%d", otp)), bcrypt.DefaultCost)
 
