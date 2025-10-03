@@ -4,9 +4,11 @@ import (
 	"net/http"
 
 	"github.com/valyala/fasthttp"
+	"golang.org/x/crypto/bcrypt"
 
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
+	"dubai-auto/internal/utils"
 )
 
 type AdminService struct {
@@ -38,8 +40,25 @@ func (s *AdminService) GetApplication(ctx *fasthttp.RequestCtx, id int) *model.R
 	return &model.Response{Data: application}
 }
 
-func (s *AdminService) AcceptApplication(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.AcceptApplication(ctx, id)
+func (s *AdminService) AcceptApplication(ctx *fasthttp.RequestCtx, id int, req model.AcceptApplicationRequest) *model.Response {
+
+	if req.Password == "" {
+		req.Password = "random&assw0rd"
+	}
+
+	cryptedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	email, err := s.AdminRepository.AcceptApplication(ctx, id, string(cryptedPassword))
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	err = utils.SendEmail("Application accepted", "Your application has been accepted. Please login to your account to continue. Your password is: "+req.Password, email)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}

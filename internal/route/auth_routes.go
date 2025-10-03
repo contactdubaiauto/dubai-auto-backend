@@ -20,6 +20,7 @@ func SetupAuthRoutes(r fiber.Router, db *pgxpool.Pool) {
 		r.Post("/send-application-document", auth.TokenGuard, authHandler.ApplicationDocuments)
 		r.Post("/user-login-google", authHandler.UserLoginGoogle)
 		r.Post("/user-login-email", authHandler.UserLoginEmail)
+		r.Post("/third-party-login", authHandler.ThirdPartyLogin)
 		r.Post("/user-email-confirmation", authHandler.UserEmailConfirmation)
 		r.Post("/user-login-phone", authHandler.UserLoginPhone)
 		r.Post("/user-phone-confirmation", authHandler.UserPhoneConfirmation)

@@ -58,23 +58,28 @@ type CreateServiceRequest struct {
 	ServiceTypeID int    `json:"service_type_id" validate:"required"`
 }
 
+type ThirdPartyLoginReq struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+}
+
 // Generation requests
 type CreateGenerationRequest struct {
 	Name      string `json:"name" validate:"required,min=2,max=255"`
+	Image     string `json:"image"`
 	ModelID   int    `json:"model_id" validate:"required"`
 	StartYear int    `json:"start_year" validate:"required"`
 	EndYear   int    `json:"end_year" validate:"required"`
 	Wheel     bool   `json:"wheel"`
-	Image     string `json:"image"`
 }
 
 type UpdateGenerationRequest struct {
 	Name      string `json:"name" validate:"required,min=2,max=255"`
+	Image     string `json:"image"`
 	ModelID   int    `json:"model_id" validate:"required"`
 	StartYear int    `json:"start_year" validate:"required"`
 	EndYear   int    `json:"end_year" validate:"required"`
 	Wheel     bool   `json:"wheel"`
-	Image     string `json:"image"`
 }
 
 // Generation Modification requests
@@ -238,4 +243,8 @@ type CreateComtransCategoryParameterRequest struct {
 
 type UpdateComtransCategoryParameterRequest struct {
 	ComtransParameterID int `json:"comtrans_parameter_id" validate:"required"`
+}
+
+type AcceptApplicationRequest struct {
+	Password string `json:"password"`
 }

@@ -18,8 +18,8 @@ func SetupAdminRoutes(r fiber.Router, db *pgxpool.Pool) {
 	{
 		r.Get("/applications", adminHandler.GetApplications)
 		r.Get("/applications/:id", adminHandler.GetApplication)
-		r.Put("/applications/:id/accept", adminHandler.AcceptApplication)
-		r.Delete("/applications/:id/reject", adminHandler.RejectApplication)
+		r.Post("/applications/:id/accept", adminHandler.AcceptApplication)
+		r.Post("/applications/:id/reject", adminHandler.RejectApplication)
 	}
 
 	// Cities routes

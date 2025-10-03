@@ -244,8 +244,38 @@ func (s *AuthService) UserLoginEmail(ctx *fasthttp.RequestCtx, user *model.UserL
 			Status: http.StatusInternalServerError,
 		}
 	}
+
 	return model.Response{
 		Data: model.Success{Message: "Successfully created the user"},
+	}
+}
+
+func (s *AuthService) ThirdPartyLogin(ctx *fasthttp.RequestCtx, user *model.ThirdPartyLoginReq) model.Response {
+	u, err := s.repo.ThirdPartyLogin(ctx, user.Email)
+
+	if err != nil {
+		return model.Response{
+			Error:  err,
+			Status: http.StatusNotFound,
+		}
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(user.Password))
+
+	if err != nil {
+		return model.Response{
+			Error:  err,
+			Status: http.StatusBadRequest,
+		}
+	}
+
+	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, u.RoleID)
+	return model.Response{
+		Data: model.LoginFiberResponse{
+			AccessToken:    accessToken,
+			RefreshToken:   refreshToken,
+			FirstTimeLogin: u.FirstTimeLogin,
+		},
 	}
 }
 

@@ -69,19 +69,102 @@ func (r *AdminRepository) GetApplication(ctx *fasthttp.RequestCtx, id int) (mode
 
 	for rows.Next() {
 		var application model.AdminApplicationResponse
+
 		if err := rows.Scan(&application.ID, &application.CompanyName, &application.LicenceIssueDate, &application.LicenceExpiryDate, &application.FullName, &application.Email, &application.Phone, &application.Status, &application.CreatedAt); err != nil {
 			return model.AdminApplicationResponse{}, err
 		}
 	}
 
 	return application, nil
-
 }
 
-func (r *AdminRepository) AcceptApplication(ctx *fasthttp.RequestCtx, id int) error {
-	q := `UPDATE temp_users SET status = 1 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id)
-	return err
+func (r *AdminRepository) AcceptApplication(ctx *fasthttp.RequestCtx, id int, password string) (string, error) {
+	tx, err := r.db.Begin(ctx)
+
+	if err != nil {
+		return "", err
+	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
+
+	tempUser := model.TempUser{}
+	q := `
+		select 
+			company_name,
+			company_type_id,
+			activity_field_id,
+			vat_number,
+			address,
+			licence_issue_date,
+			licence_expiry_date,
+			documents_id,
+			email,
+			username,
+			role_id,
+			phone
+		from temp_users
+		where id = $1
+	`
+	err = tx.QueryRow(ctx, q, id).Scan(
+		&tempUser.CompanyName, &tempUser.CompanyTypeID, &tempUser.ActivityFieldID,
+		&tempUser.VATNumber, &tempUser.Address, &tempUser.LicenceIssueDate,
+		&tempUser.LicenceExpiryDate, &tempUser.DocumentsID, &tempUser.Email, &tempUser.FullName,
+		&tempUser.RoleID, &tempUser.Phone)
+
+	if err != nil {
+		return "", err
+	}
+
+	q = `
+		insert into users (email, password, username, role_id, phone)
+		values ($1, $2, $3, $4, $5) returning id
+	`
+	var userID int
+	err = tx.QueryRow(ctx, q, tempUser.Email, password, tempUser.FullName, tempUser.RoleID, tempUser.Phone).Scan(&userID)
+
+	if err != nil {
+		return "", err
+	}
+
+	q = `
+		insert into profiles (user_id, username, registered_by)
+		values ($1, $2, $3)
+		on conflict (user_id)
+		do nothing
+	`
+	_, err = tx.Exec(ctx, q, userID, tempUser.FullName, "application")
+
+	if err != nil {
+		return "", err
+	}
+
+	q = `
+		update documents set
+			licence_issue_date = $1,
+			licence_expiry_date = $2
+		where id = $3
+	`
+	_, err = tx.Exec(ctx, q, tempUser.LicenceIssueDate, tempUser.LicenceExpiryDate, tempUser.DocumentsID)
+
+	if err != nil {
+		return "", err
+	}
+
+	q = `
+		delete from temp_users where id = $1
+	`
+	_, err = tx.Exec(ctx, q, id)
+
+	if err != nil {
+		return "", err
+	}
+
+	err = tx.Commit(ctx)
+	return tempUser.Email, err
 }
 
 func (r *AdminRepository) RejectApplication(ctx *fasthttp.RequestCtx, id int) error {
@@ -105,6 +188,7 @@ func (r *AdminRepository) GetCities(ctx *fasthttp.RequestCtx) ([]model.AdminCity
 
 	for rows.Next() {
 		var city model.AdminCityResponse
+
 		if err := rows.Scan(&city.ID, &city.Name, &city.CreatedAt); err != nil {
 			return cities, err
 		}

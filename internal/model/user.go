@@ -1,10 +1,10 @@
 package model
 
 type User struct {
-	ID       int64
 	Name     string
 	Email    string
 	Password string
+	ID       int64
 }
 
 type DeleteCarImageRequest struct {
@@ -14,22 +14,22 @@ type DeleteCarImageRequest struct {
 type CreateCarRequest struct {
 	// new
 	// BodyTypeID     int      `json:"body_type_id" validate:"required"`
+	PhoneNumbers   []string `json:"phone_numbers" validate:"required"`
+	Wheel          *bool    `json:"wheel" validate:"required"` // left true, right false
+	VinCode        string   `json:"vin_code" validate:"required"`
+	Description    string   `json:"description"`
 	CityID         int      `json:"city_id" validate:"required"`
 	BrandID        int      `json:"brand_id" validate:"required"`
 	ModelID        int      `json:"model_id" validate:"required"`
-	Wheel          *bool    `json:"wheel" validate:"required"` // left true, right false
 	ModificationID int      `json:"modification_id" validate:"required"`
 	Year           int      `json:"year" validate:"required"`
 	Odometer       int      `json:"odometer" validate:"required"`
-	VinCode        string   `json:"vin_code" validate:"required"`
-	PhoneNumbers   []string `json:"phone_numbers" validate:"required"`
 	Price          int      `json:"price" validate:"required"`
-	New            bool     `json:"new"`
-	Crash          bool     `json:"crash"`
-	Description    string   `json:"description"`
 	ColorID        int      `json:"color_id" validate:"required"`
 	Owners         int      `json:"owners" validate:"required"`
 	TradeIn        int      `json:"trade_in" validate:"required"`
+	New            bool     `json:"new"`
+	Crash          bool     `json:"crash"`
 
 	//
 	// OwnershipTypeId int    `json:"ownership_type_id"`
@@ -47,32 +47,32 @@ type DeleteCarVideoRequest struct {
 }
 
 type UpdateCarRequest struct {
+	PhoneNumbers   []string `json:"phone_numbers" validate:"required"`
+	Wheel          *bool    `json:"wheel" validate:"required"` // left true, right false
+	VinCode        string   `json:"vin_code" validate:"required"`
+	Description    string   `json:"description"`
 	ID             int      `json:"id" validate:"required"`
 	CityID         int      `json:"city_id" validate:"required"`
 	BrandID        int      `json:"brand_id" validate:"required"`
 	ModificationID int      `json:"modification_id" validate:"required"`
 	ModelID        int      `json:"model_id" validate:"required"`
-	Wheel          *bool    `json:"wheel" validate:"required"` // left true, right false
 	Year           int      `json:"year" validate:"required"`
 	Odometer       int      `json:"odometer" validate:"required"`
-	VinCode        string   `json:"vin_code" validate:"required"`
-	PhoneNumbers   []string `json:"phone_numbers" validate:"required"`
 	Price          int      `json:"price" validate:"required"`
-	New            bool     `json:"new"`
-	Crash          bool     `json:"crash"`
 	ColorID        int      `json:"color_id" validate:"required"`
 	Owners         int      `json:"owners" validate:"required"`
-	Description    string   `json:"description"`
 	TradeIn        int      `json:"trade_in" validate:"required"`
+	New            bool     `json:"new"`
+	Crash          bool     `json:"crash"`
 }
 
 type UpdateProfileRequest struct {
-	DrivingExperience int    `json:"driving_experience"`
-	Notification      bool   `json:"notification"`
 	Username          string `json:"username" validate:"required,min=3,max=20"`
 	Google            string `json:"google"`
 	Birthday          string `json:"birthday"`
 	AboutMe           string `json:"about_me"`
+	DrivingExperience int    `json:"driving_experience"`
+	Notification      bool   `json:"notification"`
 	// todo: add city
 }
 

@@ -227,6 +227,34 @@ func (h *AuthHandler) UserLoginEmail(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, &data)
 }
 
+// ThirdPartyLogin godoc
+// @Summary      Third party login
+// @Description  Authenticates a user and returns a JWT token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      model.ThirdPartyLoginReq  true  "Third party login credentials"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/auth/third-party-login [post]
+func (h *AuthHandler) ThirdPartyLogin(c *fiber.Ctx) error {
+	user := &model.ThirdPartyLoginReq{}
+
+	if err := c.BodyParser(user); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	data := h.service.ThirdPartyLogin(c.Context(), user)
+	return utils.FiberResponse(c, &data)
+}
+
 // UserLoginPhone godoc
 // @Summary      User login
 // @Description  Authenticates a user and returns a JWT token
@@ -273,14 +301,17 @@ func (h *AuthHandler) DeleteAccount(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
 	userID, err := strconv.Atoi(idStr)
+
 	if err != nil {
 		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  err,
 		})
 	}
+
 	// Optionally, you can check if the user is deleting their own account:
 	authUserID := c.Locals("id").(int)
+
 	if userID != authUserID {
 		return utils.FiberResponse(c, &model.Response{
 			Status: 403,

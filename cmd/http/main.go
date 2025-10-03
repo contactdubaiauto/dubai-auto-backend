@@ -50,7 +50,7 @@ func main() {
 
 	go func() {
 		log.Printf("Fiber server listening on %s", conf.PORT)
-		if err := app.Listen(conf.PORT); err != nil && err != nil {
+		if err := app.Listen(conf.PORT); err != nil {
 			log.Fatalf("Fiber listen error: %v", err)
 		}
 	}()

@@ -80,8 +80,8 @@ var PaymentRequired = ServerError{
 
 type Response struct {
 	Error  error `json:"error"`
-	Status int   `json:"status"`
 	Data   any   `json:"data"`
+	Status int   `json:"status"`
 }
 
 type ResultMessage struct {

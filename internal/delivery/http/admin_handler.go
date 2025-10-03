@@ -78,15 +78,31 @@ func (h *AdminHandler) GetApplication(c *fiber.Ctx) error {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id   path      int  true  "Application ID"
+// @Param        req  body      model.AcceptApplicationRequest  true  "Application request"
 // @Success      200  {object}  model.Success
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/applications/{id}/accept [put]
+// @Router       /api/v1/admin/applications/{id}/accept [post]
 func (h *AdminHandler) AcceptApplication(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
+	var req model.AcceptApplicationRequest
+
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	if err := h.validator.Validate(req); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
 
 	if err != nil {
 		return utils.FiberResponse(c, &model.Response{
@@ -94,8 +110,9 @@ func (h *AdminHandler) AcceptApplication(c *fiber.Ctx) error {
 			Error:  errors.New("application id must be integer"),
 		})
 	}
+
 	ctx := c.Context()
-	data := h.AdminService.AcceptApplication(ctx, id)
+	data := h.AdminService.AcceptApplication(ctx, id, req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -111,7 +128,7 @@ func (h *AdminHandler) AcceptApplication(c *fiber.Ctx) error {
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/applications/{id}/reject [delete]
+// @Router       /api/v1/admin/applications/{id}/reject [post]
 func (h *AdminHandler) RejectApplication(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)

@@ -311,7 +311,7 @@ func Complectations(filePath string, db *pgxpool.Pool) error {
 		for i := range data.TechInfoMain.Entity {
 
 			if data.TechInfoMain.Entity[i].ID == "displacement" {
-				err = db.QueryRow(context.Background(), `
+				_ = db.QueryRow(context.Background(), `
 					insert into engines (value) values ($1)
 					on conflict(value)
 					DO UPDATE SET value = EXCLUDED.value

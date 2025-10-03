@@ -47,10 +47,10 @@ func (r *AuthRepository) Application(ctx *fasthttp.RequestCtx, req model.UserApp
 	q := `
 		INSERT INTO temp_users (email, username, role_id, phone, password, 
 			registered_by, company_name, company_type_id, activity_field_id, 
-			vat_number, address, license_issue_date, license_expiry_date)
+			vat_number, address, licence_issue_date, licence_expiry_date)
 		VALUES ($1, $2, $3, $4, 'application', 'application', $5, $6, $7, $8, $9, $10, $11)
 		ON CONFLICT (email) DO UPDATE
-		SET role_id = EXCLUDED.role_id, company_name = EXCLUDED.company_name, company_type_id = EXCLUDED.company_type_id, activity_field_id = EXCLUDED.activity_field_id, vat_number = EXCLUDED.vat_number, address = EXCLUDED.address, license_issue_date = EXCLUDED.license_issue_date, license_expiry_date = EXCLUDED.license_expiry_date
+		SET role_id = EXCLUDED.role_id, company_name = EXCLUDED.company_name, company_type_id = EXCLUDED.company_type_id, activity_field_id = EXCLUDED.activity_field_id, vat_number = EXCLUDED.vat_number, address = EXCLUDED.address, licence_issue_date = EXCLUDED.licence_issue_date, licence_expiry_date = EXCLUDED.licence_expiry_date
 		RETURNING id, role_id;
 	`
 	row := r.db.QueryRow(
@@ -126,6 +126,24 @@ func (r *AuthRepository) TempUserEmailGetOrRegister(ctx *fasthttp.RequestCtx, us
 	err := r.db.QueryRow(ctx, q, email, password, username).Scan(&userID)
 
 	return err
+}
+
+func (r *AuthRepository) ThirdPartyLogin(ctx *fasthttp.RequestCtx, email string) (model.ThirdPartyLogin, error) {
+	var u model.ThirdPartyLogin
+	query := `
+		SELECT 
+			id, 
+			password,
+			CASE 
+				WHEN created_at = updated_at 
+				THEN true 
+				ELSE false 
+			END as first_time_login
+		FROM users 
+		WHERE email = $1
+	`
+	err := r.db.QueryRow(ctx, query, email).Scan(&u.ID, &u.Password, &u.FirstTimeLogin)
+	return u, err
 }
 
 func (r *AuthRepository) TempUserPhoneGetOrRegister(ctx *fasthttp.RequestCtx, username, phone, password string) error {
