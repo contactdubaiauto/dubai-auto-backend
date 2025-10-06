@@ -126,6 +126,7 @@ create table profiles (
     "telegram" varchar(100),
     "address" varchar(200),
     "coordinates" varchar(200),
+    "message" varchar(300),
     "birthday" date,
     "about_me" varchar(300),
     "last_active_date" timestamp default now(),

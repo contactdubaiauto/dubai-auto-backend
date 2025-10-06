@@ -23,17 +23,34 @@ func (r *ThirdPartyRepository) Profile(ctx *fasthttp.RequestCtx, id int, profile
 			whatsapp = $2,
 			telegram = $3,
 			address = $4,
-			coordinates = $5 
-		where user_id = $6
+			coordinates = $5,
+			message = $6
+
+		where user_id = $7
 	`
 	_, err := r.db.Exec(ctx, q, profile.AboutUs, profile.Whatsapp,
-		profile.Telegram, profile.Address, profile.Coordinates, id)
+		profile.Telegram, profile.Address, profile.Coordinates, profile.Message, id)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
 	return model.Response{Data: model.Success{Message: "Profile updated successfully"}}
+}
+
+func (r *ThirdPartyRepository) FirstLogin(ctx *fasthttp.RequestCtx, id int, profile model.ThirdPartyFirstLoginReq) model.Response {
+	q := `
+		update profiles set
+			message = $1
+		where user_id = $2
+	`
+	_, err := r.db.Exec(ctx, q, profile.Message, id)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "First login updated successfully"}}
 }
 
 func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) model.Response {
@@ -46,14 +63,15 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) mode
 			coordinates,
 			avatar,
 			banner,
-			created_at
+			created_at,
+			message
 		from profiles where user_id = $1
 	`
 	var profile model.ThirdPartyGetProfileRes
 	err := r.db.QueryRow(ctx, q, id).Scan(
 		&profile.AboutUs, &profile.Whatsapp,
 		&profile.Telegram, &profile.Address,
-		&profile.Coordinates, &profile.Avatar, &profile.Banner, &profile.Registered)
+		&profile.Coordinates, &profile.Avatar, &profile.Banner, &profile.Registered, &profile.Message)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}

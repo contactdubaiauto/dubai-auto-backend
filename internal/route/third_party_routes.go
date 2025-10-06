@@ -20,5 +20,6 @@ func SetupThirdPartyRoutes(r fiber.Router, db *pgxpool.Pool) {
 		r.Get("/registration-data", thirdPartyHandler.GetRegistrationData)
 		r.Post("/profile", auth.TokenGuard, thirdPartyHandler.Profile)
 		r.Post("/profile/images", auth.TokenGuard, thirdPartyHandler.AvatarImages)
+		r.Post("/first-login", auth.TokenGuard, thirdPartyHandler.FirstLogin)
 	}
 }

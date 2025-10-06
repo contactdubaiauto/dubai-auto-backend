@@ -7605,6 +7605,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/third-party/first-login": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns a first login",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "third-party"
+                ],
+                "summary": "First login",
+                "parameters": [
+                    {
+                        "description": "First login",
+                        "name": "profile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ThirdPartyFirstLoginReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/third-party/profile": {
             "get": {
                 "security": [
@@ -14595,6 +14661,18 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ThirdPartyFirstLoginReq": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "maxLength": 300
+                }
+            }
+        },
         "model.ThirdPartyGetProfileRes": {
             "type": "object",
             "properties": {
@@ -14614,6 +14692,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "email": {
+                    "type": "string"
+                },
+                "message": {
                     "type": "string"
                 },
                 "phone": {
@@ -14680,6 +14761,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "email": {
+                    "type": "string"
+                },
+                "message": {
                     "type": "string"
                 },
                 "phone": {

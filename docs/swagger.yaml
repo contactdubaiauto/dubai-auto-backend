@@ -1557,6 +1557,14 @@ definitions:
       message:
         type: string
     type: object
+  model.ThirdPartyFirstLoginReq:
+    properties:
+      message:
+        maxLength: 300
+        type: string
+    required:
+    - message
+    type: object
   model.ThirdPartyGetProfileRes:
     properties:
       about_us:
@@ -1570,6 +1578,8 @@ definitions:
       coordinates:
         type: string
       email:
+        type: string
+      message:
         type: string
       phone:
         type: string
@@ -1611,6 +1621,8 @@ definitions:
       coordinates:
         type: string
       email:
+        type: string
+      message:
         type: string
       phone:
         type: string
@@ -6874,6 +6886,48 @@ paths:
       summary: User phone confirmation
       tags:
       - auth
+  /api/v1/third-party/first-login:
+    post:
+      description: Returns a first login
+      parameters:
+      - description: First login
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/model.ThirdPartyFirstLoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: First login
+      tags:
+      - third-party
   /api/v1/third-party/profile:
     get:
       description: Returns a profile

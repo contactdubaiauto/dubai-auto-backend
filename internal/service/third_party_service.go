@@ -24,6 +24,10 @@ func (s *ThirdPartyService) Profile(ctx *fasthttp.RequestCtx, id int, profile mo
 	return s.repo.Profile(ctx, id, profile)
 }
 
+func (s *ThirdPartyService) FirstLogin(ctx *fasthttp.RequestCtx, id int, profile model.ThirdPartyFirstLoginReq) model.Response {
+	return s.repo.FirstLogin(ctx, id, profile)
+}
+
 func (s *ThirdPartyService) GetProfile(ctx *fasthttp.RequestCtx, id int) model.Response {
 	return s.repo.GetProfile(ctx, id)
 }

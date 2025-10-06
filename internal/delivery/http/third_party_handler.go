@@ -46,6 +46,36 @@ func (h *ThirdPartyHandler) Profile(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, &data)
 }
 
+// Profile godoc
+// @Summary      First login
+// @Description  Returns a first login
+// @Tags         third-party
+// @Produce      json
+// @Security     BearerAuth
+// @Param        profile  body      model.ThirdPartyFirstLoginReq  true  "First login"
+// @Success      200      {object}  model.Success
+// @Failure      400      {object}  model.ResultMessage
+// @Failure      401      {object}  auth.ErrorResponse
+// @Failure      403      {object}  auth.ErrorResponse
+// @Failure      404      {object}  model.ResultMessage
+// @Failure      500      {object}  model.ResultMessage
+// @Router       /api/v1/third-party/first-login [post]
+func (h *ThirdPartyHandler) FirstLogin(c *fiber.Ctx) error {
+	ctx := c.Context()
+	id := c.Locals("id").(int)
+	profile := &model.ThirdPartyFirstLoginReq{}
+
+	if err := c.BodyParser(profile); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	data := h.service.FirstLogin(ctx, id, *profile)
+	return utils.FiberResponse(c, &data)
+}
+
 // GetProfile godoc
 // @Summary      Get profile
 // @Description  Returns a profile

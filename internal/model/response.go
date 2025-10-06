@@ -453,6 +453,7 @@ type ThirdPartyGetProfileRes struct {
 	Coordinates *string    `json:"coordinates"`
 	Avatar      *string    `json:"avatar"`
 	Banner      *string    `json:"banner"`
+	Message     *string    `json:"message"`
 }
 
 type ThirdPartyGetRegistrationDataRes struct {
