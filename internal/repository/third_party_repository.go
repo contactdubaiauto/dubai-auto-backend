@@ -127,3 +127,12 @@ func (r *ThirdPartyRepository) GetRegistrationData(ctx *fasthttp.RequestCtx) mod
 		ActivityFields: activityFields,
 	}}
 }
+
+func (r *ThirdPartyRepository) CreateAvatarImages(ctx *fasthttp.RequestCtx, id int, paths []string) error {
+	q := `
+		update profiles set avatar = $1 where user_id = $2
+	`
+	_, err := r.db.Exec(ctx, q, paths[0], id)
+
+	return err
+}

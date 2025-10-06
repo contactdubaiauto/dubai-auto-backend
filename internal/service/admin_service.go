@@ -72,6 +72,8 @@ func (s *AdminService) AcceptApplication(ctx *fasthttp.RequestCtx, id int, req m
 }
 
 func (s *AdminService) RejectApplication(ctx *fasthttp.RequestCtx, id int) *model.Response {
+	// todo: remove files/folders after reject
+	// todo: send email to user
 	err := s.AdminRepository.RejectApplication(ctx, id)
 
 	if err != nil {

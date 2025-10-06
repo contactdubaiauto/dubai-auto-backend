@@ -84,3 +84,26 @@ func (h *ThirdPartyHandler) GetRegistrationData(c *fiber.Ctx) error {
 	data := h.service.GetRegistrationData(ctx)
 	return utils.FiberResponse(c, &data)
 }
+
+// AvatarImages godoc
+// @Summary      Upload avatar images
+// @Description  Uploads avatar images
+// @Tags         third-party
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        avatar_image  formData  file    true   "Avatar image required"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure      403     {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/third-party/profile/images [post]
+func (h *ThirdPartyHandler) AvatarImages(c *fiber.Ctx) error {
+	ctx := c.Context()
+	id := c.Locals("id").(int)
+	form, _ := c.MultipartForm()
+	data := h.service.CreateAvatarImages(ctx, form, id)
+	return utils.FiberResponse(c, &data)
+}

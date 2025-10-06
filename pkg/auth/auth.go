@@ -11,11 +11,13 @@ import (
 
 func TokenGuard(c *fiber.Ctx) error {
 	authorization := c.Get("Authorization")
+
 	if authorization == "" {
 		return c.Status(http.StatusUnauthorized).JSON(ErrorResponse{Message: "not found any token there!"})
 	}
 
 	bearer := strings.Split(authorization, "Bearer ")
+
 	if len(bearer) < 2 {
 		return c.Status(http.StatusUnauthorized).JSON(ErrorResponse{Message: "not found any token there!"})
 	}
@@ -29,6 +31,7 @@ func TokenGuard(c *fiber.Ctx) error {
 			return []byte(ENV.ACCESS_KEY), nil
 		},
 	)
+
 	if err != nil {
 		log.Println("Error:", err.Error())
 		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: err.Error()})

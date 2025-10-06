@@ -7,7 +7,8 @@ user-da vin code required
 admin - zayawkalar, cansel (send mail, delete user), accept, users can write message to admin
 3rd part users - forgot password, dealer (loginregister, first launch, garage)
 
-1. admin accept/decline applications send email
-2. edit profile
-3. images/videos not found with paths
+1. profile image,
+2. admin generation image,
+3. first login message, image,
+4. 
 
