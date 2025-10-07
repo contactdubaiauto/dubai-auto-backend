@@ -154,3 +154,12 @@ func (r *ThirdPartyRepository) CreateAvatarImages(ctx *fasthttp.RequestCtx, id i
 
 	return err
 }
+
+func (r *ThirdPartyRepository) CreateBannerImage(ctx *fasthttp.RequestCtx, id int, paths []string) error {
+	q := `
+		update profiles set banner = $1 where user_id = $2
+	`
+	_, err := r.db.Exec(ctx, q, paths[0], id)
+
+	return err
+}

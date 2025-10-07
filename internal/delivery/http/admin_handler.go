@@ -332,6 +332,38 @@ func (h *AdminHandler) CreateBrand(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
+// CreateBrandImage godoc
+// @Summary      Create a new brand image
+// @Description  Creates a new brand image
+// @Tags         admin-brands
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Brand ID"
+// @Param        image  formData  file  true  "Brand image"
+// @Success      200  {object}  model.SuccessWithId
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/brands/{id}/images [post]
+func (h *AdminHandler) CreateBrandImage(c *fiber.Ctx) error {
+	ctx := c.Context()
+	form, _ := c.MultipartForm()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("brand id must be integer"),
+		})
+	}
+
+	data := h.AdminService.CreateBrandImage(ctx, form, id)
+	return utils.FiberResponse(c, data)
+}
+
 // UpdateBrand godoc
 // @Summary      Update a brand
 // @Description  Updates an existing brand
@@ -3601,7 +3633,6 @@ func (h *AdminHandler) CreateGenerationImage(c *fiber.Ctx) error {
 	}
 
 	form, _ := c.MultipartForm()
-
 	data := h.AdminService.CreateGenerationImage(ctx, form, id)
 	return utils.FiberResponse(c, data)
 }
@@ -3996,6 +4027,38 @@ func (h *AdminHandler) CreateColor(c *fiber.Ctx) error {
 
 	ctx := c.Context()
 	data := h.AdminService.CreateColor(ctx, &req)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateColorImage godoc
+// @Summary      Create a color image
+// @Description  Creates a new color image
+// @Tags         admin-colors
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id     path      int                   true  "Color ID"
+// @Param        image  formData  file    true   "Color image"
+// @Success      200  {object}  model.SuccessWithId
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/colors/{id}/images [post]
+func (h *AdminHandler) CreateColorImage(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+	ctx := c.Context()
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("color id must be integer"),
+		})
+	}
+
+	form, _ := c.MultipartForm()
+	data := h.AdminService.CreateColorImage(ctx, form, id)
 	return utils.FiberResponse(c, data)
 }
 

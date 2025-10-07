@@ -18,7 +18,7 @@ import (
 )
 
 type AdminService struct {
-	AdminRepository *repository.AdminRepository
+	repo *repository.AdminRepository
 }
 
 func NewAdminService(repo *repository.AdminRepository) *AdminService {
@@ -27,7 +27,7 @@ func NewAdminService(repo *repository.AdminRepository) *AdminService {
 
 // Application service methods
 func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx) *model.Response {
-	applications, err := s.AdminRepository.GetApplications(ctx)
+	applications, err := s.repo.GetApplications(ctx)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -37,7 +37,7 @@ func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx) *model.Response
 }
 
 func (s *AdminService) GetApplication(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	application, err := s.AdminRepository.GetApplication(ctx, id)
+	application, err := s.repo.GetApplication(ctx, id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -58,7 +58,7 @@ func (s *AdminService) AcceptApplication(ctx *fasthttp.RequestCtx, id int, req m
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	email, err := s.AdminRepository.AcceptApplication(ctx, id, string(cryptedPassword))
+	email, err := s.repo.AcceptApplication(ctx, id, string(cryptedPassword))
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -79,7 +79,7 @@ func (s *AdminService) AcceptApplication(ctx *fasthttp.RequestCtx, id int, req m
 func (s *AdminService) RejectApplication(ctx *fasthttp.RequestCtx, id int) *model.Response {
 	// todo: remove files/folders after reject
 	// todo: send email to user
-	err := s.AdminRepository.RejectApplication(ctx, id)
+	err := s.repo.RejectApplication(ctx, id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -90,7 +90,7 @@ func (s *AdminService) RejectApplication(ctx *fasthttp.RequestCtx, id int) *mode
 
 // Cities service methods
 func (s *AdminService) GetCities(ctx *fasthttp.RequestCtx) *model.Response {
-	cities, err := s.AdminRepository.GetCities(ctx)
+	cities, err := s.repo.GetCities(ctx)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -100,7 +100,7 @@ func (s *AdminService) GetCities(ctx *fasthttp.RequestCtx) *model.Response {
 }
 
 func (s *AdminService) CreateCity(ctx *fasthttp.RequestCtx, req *model.CreateNameRequest) *model.Response {
-	id, err := s.AdminRepository.CreateCity(ctx, req)
+	id, err := s.repo.CreateCity(ctx, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -110,7 +110,7 @@ func (s *AdminService) CreateCity(ctx *fasthttp.RequestCtx, req *model.CreateNam
 }
 
 func (s *AdminService) UpdateCity(ctx *fasthttp.RequestCtx, id int, req *model.CreateNameRequest) *model.Response {
-	err := s.AdminRepository.UpdateCity(ctx, id, req)
+	err := s.repo.UpdateCity(ctx, id, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -120,7 +120,7 @@ func (s *AdminService) UpdateCity(ctx *fasthttp.RequestCtx, id int, req *model.C
 }
 
 func (s *AdminService) DeleteCity(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteCity(ctx, id)
+	err := s.repo.DeleteCity(ctx, id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -131,7 +131,7 @@ func (s *AdminService) DeleteCity(ctx *fasthttp.RequestCtx, id int) *model.Respo
 
 // Brands service methods
 func (s *AdminService) GetBrands(ctx *fasthttp.RequestCtx) *model.Response {
-	brands, err := s.AdminRepository.GetBrands(ctx)
+	brands, err := s.repo.GetBrands(ctx)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -141,7 +141,7 @@ func (s *AdminService) GetBrands(ctx *fasthttp.RequestCtx) *model.Response {
 }
 
 func (s *AdminService) CreateBrand(ctx *fasthttp.RequestCtx, req *model.CreateBrandRequest) *model.Response {
-	id, err := s.AdminRepository.CreateBrand(ctx, req)
+	id, err := s.repo.CreateBrand(ctx, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -150,8 +150,44 @@ func (s *AdminService) CreateBrand(ctx *fasthttp.RequestCtx, req *model.CreateBr
 	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Brand created successfully"}}
 }
 
+func (s *AdminService) CreateBrandImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) *model.Response {
+
+	if form == nil {
+		return &model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the files"),
+		}
+	}
+
+	image := form.File["image"]
+
+	if len(image) > 1 {
+		return &model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 1 file"),
+		}
+	}
+
+	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"cars/logos/"+strconv.Itoa(id))
+
+	if err != nil {
+		return &model.Response{
+			Status: 400,
+			Error:  err,
+		}
+	}
+
+	err = s.repo.CreateBrandImage(ctx, id, path)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Brand image created successfully"}}
+}
+
 func (s *AdminService) UpdateBrand(ctx *fasthttp.RequestCtx, id int, req *model.CreateBrandRequest) *model.Response {
-	err := s.AdminRepository.UpdateBrand(ctx, id, req)
+	err := s.repo.UpdateBrand(ctx, id, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -161,7 +197,7 @@ func (s *AdminService) UpdateBrand(ctx *fasthttp.RequestCtx, id int, req *model.
 }
 
 func (s *AdminService) DeleteBrand(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteBrand(ctx, id)
+	err := s.repo.DeleteBrand(ctx, id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -172,7 +208,7 @@ func (s *AdminService) DeleteBrand(ctx *fasthttp.RequestCtx, id int) *model.Resp
 
 // Models service methods
 func (s *AdminService) GetModels(ctx *fasthttp.RequestCtx, brand_id int) *model.Response {
-	models, err := s.AdminRepository.GetModels(ctx, brand_id)
+	models, err := s.repo.GetModels(ctx, brand_id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -182,7 +218,7 @@ func (s *AdminService) GetModels(ctx *fasthttp.RequestCtx, brand_id int) *model.
 }
 
 func (s *AdminService) CreateModel(ctx *fasthttp.RequestCtx, brand_id int, req *model.CreateModelRequest) *model.Response {
-	id, err := s.AdminRepository.CreateModel(ctx, brand_id, req)
+	id, err := s.repo.CreateModel(ctx, brand_id, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -192,7 +228,7 @@ func (s *AdminService) CreateModel(ctx *fasthttp.RequestCtx, brand_id int, req *
 }
 
 func (s *AdminService) UpdateModel(ctx *fasthttp.RequestCtx, id int, req *model.UpdateModelRequest) *model.Response {
-	err := s.AdminRepository.UpdateModel(ctx, id, req)
+	err := s.repo.UpdateModel(ctx, id, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -202,7 +238,7 @@ func (s *AdminService) UpdateModel(ctx *fasthttp.RequestCtx, id int, req *model.
 }
 
 func (s *AdminService) DeleteModel(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteModel(ctx, id)
+	err := s.repo.DeleteModel(ctx, id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -213,7 +249,7 @@ func (s *AdminService) DeleteModel(ctx *fasthttp.RequestCtx, id int) *model.Resp
 
 // Body Types service methods
 func (s *AdminService) GetBodyTypes(ctx *fasthttp.RequestCtx) *model.Response {
-	bodyTypes, err := s.AdminRepository.GetBodyTypes(ctx)
+	bodyTypes, err := s.repo.GetBodyTypes(ctx)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -223,7 +259,7 @@ func (s *AdminService) GetBodyTypes(ctx *fasthttp.RequestCtx) *model.Response {
 }
 
 func (s *AdminService) CreateBodyType(ctx *fasthttp.RequestCtx, req *model.CreateBodyTypeRequest) *model.Response {
-	id, err := s.AdminRepository.CreateBodyType(ctx, req)
+	id, err := s.repo.CreateBodyType(ctx, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -233,7 +269,7 @@ func (s *AdminService) CreateBodyType(ctx *fasthttp.RequestCtx, req *model.Creat
 }
 
 func (s *AdminService) CreateBodyTypeImage(ctx *fasthttp.RequestCtx, id int, paths []string) *model.Response {
-	err := s.AdminRepository.CreateBodyTypeImage(ctx, id, paths)
+	err := s.repo.CreateBodyTypeImage(ctx, id, paths)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -243,7 +279,7 @@ func (s *AdminService) CreateBodyTypeImage(ctx *fasthttp.RequestCtx, id int, pat
 }
 
 func (s *AdminService) UpdateBodyType(ctx *fasthttp.RequestCtx, id int, req *model.CreateBodyTypeRequest) *model.Response {
-	err := s.AdminRepository.UpdateBodyType(ctx, id, req)
+	err := s.repo.UpdateBodyType(ctx, id, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -253,7 +289,7 @@ func (s *AdminService) UpdateBodyType(ctx *fasthttp.RequestCtx, id int, req *mod
 }
 
 func (s *AdminService) DeleteBodyType(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteBodyType(ctx, id)
+	err := s.repo.DeleteBodyType(ctx, id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -263,7 +299,7 @@ func (s *AdminService) DeleteBodyType(ctx *fasthttp.RequestCtx, id int) *model.R
 }
 
 func (s *AdminService) DeleteBodyTypeImage(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteBodyTypeImage(ctx, id)
+	err := s.repo.DeleteBodyTypeImage(ctx, id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -274,7 +310,7 @@ func (s *AdminService) DeleteBodyTypeImage(ctx *fasthttp.RequestCtx, id int) *mo
 
 // Transmissions service methods
 func (s *AdminService) GetTransmissions(ctx *fasthttp.RequestCtx) *model.Response {
-	transmissions, err := s.AdminRepository.GetTransmissions(ctx)
+	transmissions, err := s.repo.GetTransmissions(ctx)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -284,7 +320,7 @@ func (s *AdminService) GetTransmissions(ctx *fasthttp.RequestCtx) *model.Respons
 }
 
 func (s *AdminService) CreateTransmission(ctx *fasthttp.RequestCtx, req *model.CreateTransmissionRequest) *model.Response {
-	id, err := s.AdminRepository.CreateTransmission(ctx, req)
+	id, err := s.repo.CreateTransmission(ctx, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -294,7 +330,7 @@ func (s *AdminService) CreateTransmission(ctx *fasthttp.RequestCtx, req *model.C
 }
 
 func (s *AdminService) UpdateTransmission(ctx *fasthttp.RequestCtx, id int, req *model.CreateTransmissionRequest) *model.Response {
-	err := s.AdminRepository.UpdateTransmission(ctx, id, req)
+	err := s.repo.UpdateTransmission(ctx, id, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -304,7 +340,7 @@ func (s *AdminService) UpdateTransmission(ctx *fasthttp.RequestCtx, id int, req 
 }
 
 func (s *AdminService) DeleteTransmission(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteTransmission(ctx, id)
+	err := s.repo.DeleteTransmission(ctx, id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -315,7 +351,7 @@ func (s *AdminService) DeleteTransmission(ctx *fasthttp.RequestCtx, id int) *mod
 
 // Engines service methods
 func (s *AdminService) GetEngines(ctx *fasthttp.RequestCtx) *model.Response {
-	engines, err := s.AdminRepository.GetEngines(ctx)
+	engines, err := s.repo.GetEngines(ctx)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -325,7 +361,7 @@ func (s *AdminService) GetEngines(ctx *fasthttp.RequestCtx) *model.Response {
 }
 
 func (s *AdminService) CreateEngine(ctx *fasthttp.RequestCtx, req *model.CreateEngineRequest) *model.Response {
-	id, err := s.AdminRepository.CreateEngine(ctx, req)
+	id, err := s.repo.CreateEngine(ctx, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -335,7 +371,7 @@ func (s *AdminService) CreateEngine(ctx *fasthttp.RequestCtx, req *model.CreateE
 }
 
 func (s *AdminService) UpdateEngine(ctx *fasthttp.RequestCtx, id int, req *model.CreateEngineRequest) *model.Response {
-	err := s.AdminRepository.UpdateEngine(ctx, id, req)
+	err := s.repo.UpdateEngine(ctx, id, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -345,7 +381,7 @@ func (s *AdminService) UpdateEngine(ctx *fasthttp.RequestCtx, id int, req *model
 }
 
 func (s *AdminService) DeleteEngine(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteEngine(ctx, id)
+	err := s.repo.DeleteEngine(ctx, id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -356,7 +392,7 @@ func (s *AdminService) DeleteEngine(ctx *fasthttp.RequestCtx, id int) *model.Res
 
 // Regions service methods
 func (s *AdminService) GetRegions(ctx *fasthttp.RequestCtx, city_id int) *model.Response {
-	regions, err := s.AdminRepository.GetRegions(ctx, city_id)
+	regions, err := s.repo.GetRegions(ctx, city_id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -366,7 +402,7 @@ func (s *AdminService) GetRegions(ctx *fasthttp.RequestCtx, city_id int) *model.
 }
 
 func (s *AdminService) CreateRegion(ctx *fasthttp.RequestCtx, city_id int, req *model.CreateNameRequest) *model.Response {
-	id, err := s.AdminRepository.CreateRegion(ctx, city_id, req)
+	id, err := s.repo.CreateRegion(ctx, city_id, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -376,7 +412,7 @@ func (s *AdminService) CreateRegion(ctx *fasthttp.RequestCtx, city_id int, req *
 }
 
 func (s *AdminService) UpdateRegion(ctx *fasthttp.RequestCtx, id int, req *model.CreateNameRequest) *model.Response {
-	err := s.AdminRepository.UpdateRegion(ctx, id, req)
+	err := s.repo.UpdateRegion(ctx, id, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -386,7 +422,7 @@ func (s *AdminService) UpdateRegion(ctx *fasthttp.RequestCtx, id int, req *model
 }
 
 func (s *AdminService) DeleteRegion(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteRegion(ctx, id)
+	err := s.repo.DeleteRegion(ctx, id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -397,7 +433,7 @@ func (s *AdminService) DeleteRegion(ctx *fasthttp.RequestCtx, id int) *model.Res
 
 // Drivetrains service methods
 func (s *AdminService) GetDrivetrains(ctx *fasthttp.RequestCtx) *model.Response {
-	drivetrains, err := s.AdminRepository.GetDrivetrains(ctx)
+	drivetrains, err := s.repo.GetDrivetrains(ctx)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -407,7 +443,7 @@ func (s *AdminService) GetDrivetrains(ctx *fasthttp.RequestCtx) *model.Response 
 }
 
 func (s *AdminService) CreateDrivetrain(ctx *fasthttp.RequestCtx, req *model.CreateDrivetrainRequest) *model.Response {
-	id, err := s.AdminRepository.CreateDrivetrain(ctx, req)
+	id, err := s.repo.CreateDrivetrain(ctx, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -417,7 +453,7 @@ func (s *AdminService) CreateDrivetrain(ctx *fasthttp.RequestCtx, req *model.Cre
 }
 
 func (s *AdminService) UpdateDrivetrain(ctx *fasthttp.RequestCtx, id int, req *model.CreateDrivetrainRequest) *model.Response {
-	err := s.AdminRepository.UpdateDrivetrain(ctx, id, req)
+	err := s.repo.UpdateDrivetrain(ctx, id, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -427,7 +463,7 @@ func (s *AdminService) UpdateDrivetrain(ctx *fasthttp.RequestCtx, id int, req *m
 }
 
 func (s *AdminService) DeleteDrivetrain(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteDrivetrain(ctx, id)
+	err := s.repo.DeleteDrivetrain(ctx, id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -438,7 +474,7 @@ func (s *AdminService) DeleteDrivetrain(ctx *fasthttp.RequestCtx, id int) *model
 
 // Fuel Types service methods
 func (s *AdminService) GetFuelTypes(ctx *fasthttp.RequestCtx) *model.Response {
-	fuelTypes, err := s.AdminRepository.GetFuelTypes(ctx)
+	fuelTypes, err := s.repo.GetFuelTypes(ctx)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -447,7 +483,7 @@ func (s *AdminService) GetFuelTypes(ctx *fasthttp.RequestCtx) *model.Response {
 }
 
 func (s *AdminService) CreateFuelType(ctx *fasthttp.RequestCtx, req *model.CreateFuelTypeRequest) *model.Response {
-	id, err := s.AdminRepository.CreateFuelType(ctx, req)
+	id, err := s.repo.CreateFuelType(ctx, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -456,7 +492,7 @@ func (s *AdminService) CreateFuelType(ctx *fasthttp.RequestCtx, req *model.Creat
 }
 
 func (s *AdminService) UpdateFuelType(ctx *fasthttp.RequestCtx, id int, req *model.CreateFuelTypeRequest) *model.Response {
-	err := s.AdminRepository.UpdateFuelType(ctx, id, req)
+	err := s.repo.UpdateFuelType(ctx, id, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -465,7 +501,7 @@ func (s *AdminService) UpdateFuelType(ctx *fasthttp.RequestCtx, id int, req *mod
 }
 
 func (s *AdminService) DeleteFuelType(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteFuelType(ctx, id)
+	err := s.repo.DeleteFuelType(ctx, id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -475,7 +511,7 @@ func (s *AdminService) DeleteFuelType(ctx *fasthttp.RequestCtx, id int) *model.R
 
 // Service Types service methods
 func (s *AdminService) GetServiceTypes(ctx *fasthttp.RequestCtx) *model.Response {
-	serviceTypes, err := s.AdminRepository.GetServiceTypes(ctx)
+	serviceTypes, err := s.repo.GetServiceTypes(ctx)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -484,7 +520,7 @@ func (s *AdminService) GetServiceTypes(ctx *fasthttp.RequestCtx) *model.Response
 }
 
 func (s *AdminService) CreateServiceType(ctx *fasthttp.RequestCtx, req *model.CreateServiceTypeRequest) *model.Response {
-	id, err := s.AdminRepository.CreateServiceType(ctx, req)
+	id, err := s.repo.CreateServiceType(ctx, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -493,7 +529,7 @@ func (s *AdminService) CreateServiceType(ctx *fasthttp.RequestCtx, req *model.Cr
 }
 
 func (s *AdminService) UpdateServiceType(ctx *fasthttp.RequestCtx, id int, req *model.CreateServiceTypeRequest) *model.Response {
-	err := s.AdminRepository.UpdateServiceType(ctx, id, req)
+	err := s.repo.UpdateServiceType(ctx, id, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -502,7 +538,7 @@ func (s *AdminService) UpdateServiceType(ctx *fasthttp.RequestCtx, id int, req *
 }
 
 func (s *AdminService) DeleteServiceType(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteServiceType(ctx, id)
+	err := s.repo.DeleteServiceType(ctx, id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -512,7 +548,7 @@ func (s *AdminService) DeleteServiceType(ctx *fasthttp.RequestCtx, id int) *mode
 
 // Services service methods
 func (s *AdminService) GetServices(ctx *fasthttp.RequestCtx) *model.Response {
-	services, err := s.AdminRepository.GetServices(ctx)
+	services, err := s.repo.GetServices(ctx)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -521,7 +557,7 @@ func (s *AdminService) GetServices(ctx *fasthttp.RequestCtx) *model.Response {
 }
 
 func (s *AdminService) CreateService(ctx *fasthttp.RequestCtx, req *model.CreateServiceRequest) *model.Response {
-	id, err := s.AdminRepository.CreateService(ctx, req)
+	id, err := s.repo.CreateService(ctx, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -530,7 +566,7 @@ func (s *AdminService) CreateService(ctx *fasthttp.RequestCtx, req *model.Create
 }
 
 func (s *AdminService) UpdateService(ctx *fasthttp.RequestCtx, id int, req *model.CreateServiceRequest) *model.Response {
-	err := s.AdminRepository.UpdateService(ctx, id, req)
+	err := s.repo.UpdateService(ctx, id, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -539,7 +575,7 @@ func (s *AdminService) UpdateService(ctx *fasthttp.RequestCtx, id int, req *mode
 }
 
 func (s *AdminService) DeleteService(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteService(ctx, id)
+	err := s.repo.DeleteService(ctx, id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -549,7 +585,7 @@ func (s *AdminService) DeleteService(ctx *fasthttp.RequestCtx, id int) *model.Re
 
 // Generations service methods
 func (s *AdminService) GetGenerations(ctx *fasthttp.RequestCtx) *model.Response {
-	generations, err := s.AdminRepository.GetGenerations(ctx)
+	generations, err := s.repo.GetGenerations(ctx)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -558,7 +594,7 @@ func (s *AdminService) GetGenerations(ctx *fasthttp.RequestCtx) *model.Response 
 }
 
 func (s *AdminService) CreateGeneration(ctx *fasthttp.RequestCtx, req *model.CreateGenerationRequest) *model.Response {
-	id, err := s.AdminRepository.CreateGeneration(ctx, req)
+	id, err := s.repo.CreateGeneration(ctx, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -567,7 +603,7 @@ func (s *AdminService) CreateGeneration(ctx *fasthttp.RequestCtx, req *model.Cre
 }
 
 func (s *AdminService) UpdateGeneration(ctx *fasthttp.RequestCtx, id int, req *model.UpdateGenerationRequest) *model.Response {
-	err := s.AdminRepository.UpdateGeneration(ctx, id, req)
+	err := s.repo.UpdateGeneration(ctx, id, req)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -576,7 +612,7 @@ func (s *AdminService) UpdateGeneration(ctx *fasthttp.RequestCtx, id int, req *m
 }
 
 func (s *AdminService) DeleteGeneration(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteGeneration(ctx, id)
+	err := s.repo.DeleteGeneration(ctx, id)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -614,7 +650,7 @@ func (s *AdminService) CreateGenerationImage(ctx *fasthttp.RequestCtx, form *mul
 	}
 
 	// todo: delete old image if exists
-	err = s.AdminRepository.CreateGenerationImage(ctx, id, paths)
+	err = s.repo.CreateGenerationImage(ctx, id, paths)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -625,7 +661,7 @@ func (s *AdminService) CreateGenerationImage(ctx *fasthttp.RequestCtx, form *mul
 
 // Generation Modifications service methods
 func (s *AdminService) GetGenerationModifications(ctx *fasthttp.RequestCtx, generationId int) *model.Response {
-	generationModifications, err := s.AdminRepository.GetGenerationModifications(ctx, generationId)
+	generationModifications, err := s.repo.GetGenerationModifications(ctx, generationId)
 
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -634,7 +670,7 @@ func (s *AdminService) GetGenerationModifications(ctx *fasthttp.RequestCtx, gene
 }
 
 func (s *AdminService) CreateGenerationModification(ctx *fasthttp.RequestCtx, generationId int, req *model.CreateGenerationModificationRequest) *model.Response {
-	id, err := s.AdminRepository.CreateGenerationModification(ctx, generationId, req)
+	id, err := s.repo.CreateGenerationModification(ctx, generationId, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -642,7 +678,7 @@ func (s *AdminService) CreateGenerationModification(ctx *fasthttp.RequestCtx, ge
 }
 
 func (s *AdminService) UpdateGenerationModification(ctx *fasthttp.RequestCtx, generationId int, id int, req *model.UpdateGenerationModificationRequest) *model.Response {
-	err := s.AdminRepository.UpdateGenerationModification(ctx, generationId, id, req)
+	err := s.repo.UpdateGenerationModification(ctx, generationId, id, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -650,7 +686,7 @@ func (s *AdminService) UpdateGenerationModification(ctx *fasthttp.RequestCtx, ge
 }
 
 func (s *AdminService) DeleteGenerationModification(ctx *fasthttp.RequestCtx, generationId int, id int) *model.Response {
-	err := s.AdminRepository.DeleteGenerationModification(ctx, generationId, id)
+	err := s.repo.DeleteGenerationModification(ctx, generationId, id)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -659,7 +695,7 @@ func (s *AdminService) DeleteGenerationModification(ctx *fasthttp.RequestCtx, ge
 
 // Configurations service methods
 func (s *AdminService) GetConfigurations(ctx *fasthttp.RequestCtx) *model.Response {
-	configurations, err := s.AdminRepository.GetConfigurations(ctx)
+	configurations, err := s.repo.GetConfigurations(ctx)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -667,7 +703,7 @@ func (s *AdminService) GetConfigurations(ctx *fasthttp.RequestCtx) *model.Respon
 }
 
 func (s *AdminService) CreateConfiguration(ctx *fasthttp.RequestCtx, req *model.CreateConfigurationRequest) *model.Response {
-	id, err := s.AdminRepository.CreateConfiguration(ctx, req)
+	id, err := s.repo.CreateConfiguration(ctx, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -675,7 +711,7 @@ func (s *AdminService) CreateConfiguration(ctx *fasthttp.RequestCtx, req *model.
 }
 
 func (s *AdminService) UpdateConfiguration(ctx *fasthttp.RequestCtx, id int, req *model.UpdateConfigurationRequest) *model.Response {
-	err := s.AdminRepository.UpdateConfiguration(ctx, id, req)
+	err := s.repo.UpdateConfiguration(ctx, id, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -683,7 +719,7 @@ func (s *AdminService) UpdateConfiguration(ctx *fasthttp.RequestCtx, id int, req
 }
 
 func (s *AdminService) DeleteConfiguration(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteConfiguration(ctx, id)
+	err := s.repo.DeleteConfiguration(ctx, id)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -692,7 +728,7 @@ func (s *AdminService) DeleteConfiguration(ctx *fasthttp.RequestCtx, id int) *mo
 
 // Colors service methods
 func (s *AdminService) GetColors(ctx *fasthttp.RequestCtx) *model.Response {
-	colors, err := s.AdminRepository.GetColors(ctx)
+	colors, err := s.repo.GetColors(ctx)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -700,15 +736,51 @@ func (s *AdminService) GetColors(ctx *fasthttp.RequestCtx) *model.Response {
 }
 
 func (s *AdminService) CreateColor(ctx *fasthttp.RequestCtx, req *model.CreateColorRequest) *model.Response {
-	id, err := s.AdminRepository.CreateColor(ctx, req)
+	id, err := s.repo.CreateColor(ctx, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Color created successfully"}}
 }
 
+func (s *AdminService) CreateColorImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) *model.Response {
+
+	if form == nil {
+		return &model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the files"),
+		}
+	}
+
+	image := form.File["image"]
+
+	if len(image) > 1 {
+		return &model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 1 file"),
+		}
+	}
+
+	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"colors/"+strconv.Itoa(id))
+
+	if err != nil {
+		return &model.Response{
+			Status: 400,
+			Error:  err,
+		}
+	}
+
+	err = s.repo.CreateColorImage(ctx, id, path)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Color image created successfully"}}
+}
+
 func (s *AdminService) UpdateColor(ctx *fasthttp.RequestCtx, id int, req *model.UpdateColorRequest) *model.Response {
-	err := s.AdminRepository.UpdateColor(ctx, id, req)
+	err := s.repo.UpdateColor(ctx, id, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -716,7 +788,7 @@ func (s *AdminService) UpdateColor(ctx *fasthttp.RequestCtx, id int, req *model.
 }
 
 func (s *AdminService) DeleteColor(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteColor(ctx, id)
+	err := s.repo.DeleteColor(ctx, id)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -725,7 +797,7 @@ func (s *AdminService) DeleteColor(ctx *fasthttp.RequestCtx, id int) *model.Resp
 
 // Moto Categories service methods
 func (s *AdminService) GetMotoCategories(ctx *fasthttp.RequestCtx) *model.Response {
-	motoCategories, err := s.AdminRepository.GetMotoCategories(ctx)
+	motoCategories, err := s.repo.GetMotoCategories(ctx)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -733,7 +805,7 @@ func (s *AdminService) GetMotoCategories(ctx *fasthttp.RequestCtx) *model.Respon
 }
 
 func (s *AdminService) CreateMotoCategory(ctx *fasthttp.RequestCtx, req *model.CreateMotoCategoryRequest) *model.Response {
-	id, err := s.AdminRepository.CreateMotoCategory(ctx, req)
+	id, err := s.repo.CreateMotoCategory(ctx, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -741,7 +813,7 @@ func (s *AdminService) CreateMotoCategory(ctx *fasthttp.RequestCtx, req *model.C
 }
 
 func (s *AdminService) UpdateMotoCategory(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoCategoryRequest) *model.Response {
-	err := s.AdminRepository.UpdateMotoCategory(ctx, id, req)
+	err := s.repo.UpdateMotoCategory(ctx, id, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -749,7 +821,7 @@ func (s *AdminService) UpdateMotoCategory(ctx *fasthttp.RequestCtx, id int, req 
 }
 
 func (s *AdminService) DeleteMotoCategory(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteMotoCategory(ctx, id)
+	err := s.repo.DeleteMotoCategory(ctx, id)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -758,7 +830,7 @@ func (s *AdminService) DeleteMotoCategory(ctx *fasthttp.RequestCtx, id int) *mod
 
 // Moto Brands service methods
 func (s *AdminService) GetMotoBrands(ctx *fasthttp.RequestCtx) *model.Response {
-	motoBrands, err := s.AdminRepository.GetMotoBrands(ctx)
+	motoBrands, err := s.repo.GetMotoBrands(ctx)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -766,7 +838,7 @@ func (s *AdminService) GetMotoBrands(ctx *fasthttp.RequestCtx) *model.Response {
 }
 
 func (s *AdminService) CreateMotoBrand(ctx *fasthttp.RequestCtx, req *model.CreateMotoBrandRequest) *model.Response {
-	id, err := s.AdminRepository.CreateMotoBrand(ctx, req)
+	id, err := s.repo.CreateMotoBrand(ctx, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -774,7 +846,7 @@ func (s *AdminService) CreateMotoBrand(ctx *fasthttp.RequestCtx, req *model.Crea
 }
 
 func (s *AdminService) UpdateMotoBrand(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoBrandRequest) *model.Response {
-	err := s.AdminRepository.UpdateMotoBrand(ctx, id, req)
+	err := s.repo.UpdateMotoBrand(ctx, id, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -782,7 +854,7 @@ func (s *AdminService) UpdateMotoBrand(ctx *fasthttp.RequestCtx, id int, req *mo
 }
 
 func (s *AdminService) DeleteMotoBrand(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteMotoBrand(ctx, id)
+	err := s.repo.DeleteMotoBrand(ctx, id)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -791,7 +863,7 @@ func (s *AdminService) DeleteMotoBrand(ctx *fasthttp.RequestCtx, id int) *model.
 
 // Moto Models service methods
 func (s *AdminService) GetMotoModels(ctx *fasthttp.RequestCtx) *model.Response {
-	motoModels, err := s.AdminRepository.GetMotoModels(ctx)
+	motoModels, err := s.repo.GetMotoModels(ctx)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -799,7 +871,7 @@ func (s *AdminService) GetMotoModels(ctx *fasthttp.RequestCtx) *model.Response {
 }
 
 func (s *AdminService) CreateMotoModel(ctx *fasthttp.RequestCtx, req *model.CreateMotoModelRequest) *model.Response {
-	id, err := s.AdminRepository.CreateMotoModel(ctx, req)
+	id, err := s.repo.CreateMotoModel(ctx, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -807,7 +879,7 @@ func (s *AdminService) CreateMotoModel(ctx *fasthttp.RequestCtx, req *model.Crea
 }
 
 func (s *AdminService) UpdateMotoModel(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoModelRequest) *model.Response {
-	err := s.AdminRepository.UpdateMotoModel(ctx, id, req)
+	err := s.repo.UpdateMotoModel(ctx, id, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -815,7 +887,7 @@ func (s *AdminService) UpdateMotoModel(ctx *fasthttp.RequestCtx, id int, req *mo
 }
 
 func (s *AdminService) DeleteMotoModel(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteMotoModel(ctx, id)
+	err := s.repo.DeleteMotoModel(ctx, id)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -824,7 +896,7 @@ func (s *AdminService) DeleteMotoModel(ctx *fasthttp.RequestCtx, id int) *model.
 
 // Moto Parameters service methods
 func (s *AdminService) GetMotoParameters(ctx *fasthttp.RequestCtx) *model.Response {
-	motoParameters, err := s.AdminRepository.GetMotoParameters(ctx)
+	motoParameters, err := s.repo.GetMotoParameters(ctx)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -832,7 +904,7 @@ func (s *AdminService) GetMotoParameters(ctx *fasthttp.RequestCtx) *model.Respon
 }
 
 func (s *AdminService) CreateMotoParameter(ctx *fasthttp.RequestCtx, req *model.CreateMotoParameterRequest) *model.Response {
-	id, err := s.AdminRepository.CreateMotoParameter(ctx, req)
+	id, err := s.repo.CreateMotoParameter(ctx, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -840,7 +912,7 @@ func (s *AdminService) CreateMotoParameter(ctx *fasthttp.RequestCtx, req *model.
 }
 
 func (s *AdminService) UpdateMotoParameter(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoParameterRequest) *model.Response {
-	err := s.AdminRepository.UpdateMotoParameter(ctx, id, req)
+	err := s.repo.UpdateMotoParameter(ctx, id, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -848,7 +920,7 @@ func (s *AdminService) UpdateMotoParameter(ctx *fasthttp.RequestCtx, id int, req
 }
 
 func (s *AdminService) DeleteMotoParameter(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteMotoParameter(ctx, id)
+	err := s.repo.DeleteMotoParameter(ctx, id)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -857,7 +929,7 @@ func (s *AdminService) DeleteMotoParameter(ctx *fasthttp.RequestCtx, id int) *mo
 
 // Moto Parameter Values service methods
 func (s *AdminService) GetMotoParameterValues(ctx *fasthttp.RequestCtx, motoParamId int) *model.Response {
-	motoParameterValues, err := s.AdminRepository.GetMotoParameterValues(ctx, motoParamId)
+	motoParameterValues, err := s.repo.GetMotoParameterValues(ctx, motoParamId)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -865,7 +937,7 @@ func (s *AdminService) GetMotoParameterValues(ctx *fasthttp.RequestCtx, motoPara
 }
 
 func (s *AdminService) CreateMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, req *model.CreateMotoParameterValueRequest) *model.Response {
-	id, err := s.AdminRepository.CreateMotoParameterValue(ctx, motoParamId, req)
+	id, err := s.repo.CreateMotoParameterValue(ctx, motoParamId, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -873,7 +945,7 @@ func (s *AdminService) CreateMotoParameterValue(ctx *fasthttp.RequestCtx, motoPa
 }
 
 func (s *AdminService) UpdateMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, id int, req *model.UpdateMotoParameterValueRequest) *model.Response {
-	err := s.AdminRepository.UpdateMotoParameterValue(ctx, motoParamId, id, req)
+	err := s.repo.UpdateMotoParameterValue(ctx, motoParamId, id, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -881,7 +953,7 @@ func (s *AdminService) UpdateMotoParameterValue(ctx *fasthttp.RequestCtx, motoPa
 }
 
 func (s *AdminService) DeleteMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, id int) *model.Response {
-	err := s.AdminRepository.DeleteMotoParameterValue(ctx, motoParamId, id)
+	err := s.repo.DeleteMotoParameterValue(ctx, motoParamId, id)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -890,7 +962,7 @@ func (s *AdminService) DeleteMotoParameterValue(ctx *fasthttp.RequestCtx, motoPa
 
 // Moto Category Parameters service methods
 func (s *AdminService) GetMotoCategoryParameters(ctx *fasthttp.RequestCtx, categoryId int) *model.Response {
-	motoCategoryParameters, err := s.AdminRepository.GetMotoCategoryParameters(ctx, categoryId)
+	motoCategoryParameters, err := s.repo.GetMotoCategoryParameters(ctx, categoryId)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -898,7 +970,7 @@ func (s *AdminService) GetMotoCategoryParameters(ctx *fasthttp.RequestCtx, categ
 }
 
 func (s *AdminService) CreateMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, req *model.CreateMotoCategoryParameterRequest) *model.Response {
-	id, err := s.AdminRepository.CreateMotoCategoryParameter(ctx, categoryId, req)
+	id, err := s.repo.CreateMotoCategoryParameter(ctx, categoryId, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -906,7 +978,7 @@ func (s *AdminService) CreateMotoCategoryParameter(ctx *fasthttp.RequestCtx, cat
 }
 
 func (s *AdminService) UpdateMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, id int, req *model.UpdateMotoCategoryParameterRequest) *model.Response {
-	err := s.AdminRepository.UpdateMotoCategoryParameter(ctx, categoryId, id, req)
+	err := s.repo.UpdateMotoCategoryParameter(ctx, categoryId, id, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -914,7 +986,7 @@ func (s *AdminService) UpdateMotoCategoryParameter(ctx *fasthttp.RequestCtx, cat
 }
 
 func (s *AdminService) DeleteMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, id int) *model.Response {
-	err := s.AdminRepository.DeleteMotoCategoryParameter(ctx, categoryId, id)
+	err := s.repo.DeleteMotoCategoryParameter(ctx, categoryId, id)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -923,7 +995,7 @@ func (s *AdminService) DeleteMotoCategoryParameter(ctx *fasthttp.RequestCtx, cat
 
 // Comtrans Categories service methods
 func (s *AdminService) GetComtransCategories(ctx *fasthttp.RequestCtx) *model.Response {
-	comtransCategories, err := s.AdminRepository.GetComtransCategories(ctx)
+	comtransCategories, err := s.repo.GetComtransCategories(ctx)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -931,7 +1003,7 @@ func (s *AdminService) GetComtransCategories(ctx *fasthttp.RequestCtx) *model.Re
 }
 
 func (s *AdminService) CreateComtransCategory(ctx *fasthttp.RequestCtx, req *model.CreateComtransCategoryRequest) *model.Response {
-	id, err := s.AdminRepository.CreateComtransCategory(ctx, req)
+	id, err := s.repo.CreateComtransCategory(ctx, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -939,7 +1011,7 @@ func (s *AdminService) CreateComtransCategory(ctx *fasthttp.RequestCtx, req *mod
 }
 
 func (s *AdminService) UpdateComtransCategory(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransCategoryRequest) *model.Response {
-	err := s.AdminRepository.UpdateComtransCategory(ctx, id, req)
+	err := s.repo.UpdateComtransCategory(ctx, id, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -947,7 +1019,7 @@ func (s *AdminService) UpdateComtransCategory(ctx *fasthttp.RequestCtx, id int, 
 }
 
 func (s *AdminService) DeleteComtransCategory(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteComtransCategory(ctx, id)
+	err := s.repo.DeleteComtransCategory(ctx, id)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -956,7 +1028,7 @@ func (s *AdminService) DeleteComtransCategory(ctx *fasthttp.RequestCtx, id int) 
 
 // Comtrans Brands service methods
 func (s *AdminService) GetComtransBrands(ctx *fasthttp.RequestCtx) *model.Response {
-	comtransBrands, err := s.AdminRepository.GetComtransBrands(ctx)
+	comtransBrands, err := s.repo.GetComtransBrands(ctx)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -964,7 +1036,7 @@ func (s *AdminService) GetComtransBrands(ctx *fasthttp.RequestCtx) *model.Respon
 }
 
 func (s *AdminService) CreateComtransBrand(ctx *fasthttp.RequestCtx, req *model.CreateComtransBrandRequest) *model.Response {
-	id, err := s.AdminRepository.CreateComtransBrand(ctx, req)
+	id, err := s.repo.CreateComtransBrand(ctx, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -972,7 +1044,7 @@ func (s *AdminService) CreateComtransBrand(ctx *fasthttp.RequestCtx, req *model.
 }
 
 func (s *AdminService) UpdateComtransBrand(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransBrandRequest) *model.Response {
-	err := s.AdminRepository.UpdateComtransBrand(ctx, id, req)
+	err := s.repo.UpdateComtransBrand(ctx, id, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -980,7 +1052,7 @@ func (s *AdminService) UpdateComtransBrand(ctx *fasthttp.RequestCtx, id int, req
 }
 
 func (s *AdminService) DeleteComtransBrand(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteComtransBrand(ctx, id)
+	err := s.repo.DeleteComtransBrand(ctx, id)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -989,7 +1061,7 @@ func (s *AdminService) DeleteComtransBrand(ctx *fasthttp.RequestCtx, id int) *mo
 
 // Comtrans Models service methods
 func (s *AdminService) GetComtransModels(ctx *fasthttp.RequestCtx) *model.Response {
-	comtransModels, err := s.AdminRepository.GetComtransModels(ctx)
+	comtransModels, err := s.repo.GetComtransModels(ctx)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -997,7 +1069,7 @@ func (s *AdminService) GetComtransModels(ctx *fasthttp.RequestCtx) *model.Respon
 }
 
 func (s *AdminService) CreateComtransModel(ctx *fasthttp.RequestCtx, req *model.CreateComtransModelRequest) *model.Response {
-	id, err := s.AdminRepository.CreateComtransModel(ctx, req)
+	id, err := s.repo.CreateComtransModel(ctx, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -1005,7 +1077,7 @@ func (s *AdminService) CreateComtransModel(ctx *fasthttp.RequestCtx, req *model.
 }
 
 func (s *AdminService) UpdateComtransModel(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransModelRequest) *model.Response {
-	err := s.AdminRepository.UpdateComtransModel(ctx, id, req)
+	err := s.repo.UpdateComtransModel(ctx, id, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -1013,7 +1085,7 @@ func (s *AdminService) UpdateComtransModel(ctx *fasthttp.RequestCtx, id int, req
 }
 
 func (s *AdminService) DeleteComtransModel(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteComtransModel(ctx, id)
+	err := s.repo.DeleteComtransModel(ctx, id)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -1022,7 +1094,7 @@ func (s *AdminService) DeleteComtransModel(ctx *fasthttp.RequestCtx, id int) *mo
 
 // Comtrans Parameters service methods
 func (s *AdminService) GetComtransParameters(ctx *fasthttp.RequestCtx) *model.Response {
-	comtransParameters, err := s.AdminRepository.GetComtransParameters(ctx)
+	comtransParameters, err := s.repo.GetComtransParameters(ctx)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -1030,7 +1102,7 @@ func (s *AdminService) GetComtransParameters(ctx *fasthttp.RequestCtx) *model.Re
 }
 
 func (s *AdminService) CreateComtransParameter(ctx *fasthttp.RequestCtx, req *model.CreateComtransParameterRequest) *model.Response {
-	id, err := s.AdminRepository.CreateComtransParameter(ctx, req)
+	id, err := s.repo.CreateComtransParameter(ctx, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -1038,7 +1110,7 @@ func (s *AdminService) CreateComtransParameter(ctx *fasthttp.RequestCtx, req *mo
 }
 
 func (s *AdminService) UpdateComtransParameter(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransParameterRequest) *model.Response {
-	err := s.AdminRepository.UpdateComtransParameter(ctx, id, req)
+	err := s.repo.UpdateComtransParameter(ctx, id, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -1046,7 +1118,7 @@ func (s *AdminService) UpdateComtransParameter(ctx *fasthttp.RequestCtx, id int,
 }
 
 func (s *AdminService) DeleteComtransParameter(ctx *fasthttp.RequestCtx, id int) *model.Response {
-	err := s.AdminRepository.DeleteComtransParameter(ctx, id)
+	err := s.repo.DeleteComtransParameter(ctx, id)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -1055,7 +1127,7 @@ func (s *AdminService) DeleteComtransParameter(ctx *fasthttp.RequestCtx, id int)
 
 // Comtrans Parameter Values service methods
 func (s *AdminService) GetComtransParameterValues(ctx *fasthttp.RequestCtx, parameterId int) *model.Response {
-	comtransParameterValues, err := s.AdminRepository.GetComtransParameterValues(ctx, parameterId)
+	comtransParameterValues, err := s.repo.GetComtransParameterValues(ctx, parameterId)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -1063,7 +1135,7 @@ func (s *AdminService) GetComtransParameterValues(ctx *fasthttp.RequestCtx, para
 }
 
 func (s *AdminService) CreateComtransParameterValue(ctx *fasthttp.RequestCtx, parameterId int, req *model.CreateComtransParameterValueRequest) *model.Response {
-	id, err := s.AdminRepository.CreateComtransParameterValue(ctx, parameterId, req)
+	id, err := s.repo.CreateComtransParameterValue(ctx, parameterId, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -1071,7 +1143,7 @@ func (s *AdminService) CreateComtransParameterValue(ctx *fasthttp.RequestCtx, pa
 }
 
 func (s *AdminService) UpdateComtransParameterValue(ctx *fasthttp.RequestCtx, parameterId int, id int, req *model.UpdateComtransParameterValueRequest) *model.Response {
-	err := s.AdminRepository.UpdateComtransParameterValue(ctx, parameterId, id, req)
+	err := s.repo.UpdateComtransParameterValue(ctx, parameterId, id, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -1079,7 +1151,7 @@ func (s *AdminService) UpdateComtransParameterValue(ctx *fasthttp.RequestCtx, pa
 }
 
 func (s *AdminService) DeleteComtransParameterValue(ctx *fasthttp.RequestCtx, parameterId int, id int) *model.Response {
-	err := s.AdminRepository.DeleteComtransParameterValue(ctx, parameterId, id)
+	err := s.repo.DeleteComtransParameterValue(ctx, parameterId, id)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -1088,7 +1160,7 @@ func (s *AdminService) DeleteComtransParameterValue(ctx *fasthttp.RequestCtx, pa
 
 // Comtrans Category Parameters service methods
 func (s *AdminService) GetComtransCategoryParameters(ctx *fasthttp.RequestCtx, categoryId int) *model.Response {
-	comtransCategoryParameters, err := s.AdminRepository.GetComtransCategoryParameters(ctx, categoryId)
+	comtransCategoryParameters, err := s.repo.GetComtransCategoryParameters(ctx, categoryId)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -1096,7 +1168,7 @@ func (s *AdminService) GetComtransCategoryParameters(ctx *fasthttp.RequestCtx, c
 }
 
 func (s *AdminService) CreateComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, req *model.CreateComtransCategoryParameterRequest) *model.Response {
-	id, err := s.AdminRepository.CreateComtransCategoryParameter(ctx, categoryId, req)
+	id, err := s.repo.CreateComtransCategoryParameter(ctx, categoryId, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -1104,7 +1176,7 @@ func (s *AdminService) CreateComtransCategoryParameter(ctx *fasthttp.RequestCtx,
 }
 
 func (s *AdminService) UpdateComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, id int, req *model.UpdateComtransCategoryParameterRequest) *model.Response {
-	err := s.AdminRepository.UpdateComtransCategoryParameter(ctx, categoryId, id, req)
+	err := s.repo.UpdateComtransCategoryParameter(ctx, categoryId, id, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -1112,7 +1184,7 @@ func (s *AdminService) UpdateComtransCategoryParameter(ctx *fasthttp.RequestCtx,
 }
 
 func (s *AdminService) DeleteComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, id int) *model.Response {
-	err := s.AdminRepository.DeleteComtransCategoryParameter(ctx, categoryId, id)
+	err := s.repo.DeleteComtransCategoryParameter(ctx, categoryId, id)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}

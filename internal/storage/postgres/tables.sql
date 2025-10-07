@@ -122,6 +122,7 @@ create table profiles (
     "registered_by" varchar(20) not null,
     "google" varchar(200),
     "avatar" varchar(200),
+    "banner" varchar(200),
     "whatsapp" varchar(100),
     "telegram" varchar(100),
     "address" varchar(200),
@@ -143,7 +144,6 @@ create table profiles (
                 on update cascade,
     unique (user_id)
 );
-
 
 
 create table messages (

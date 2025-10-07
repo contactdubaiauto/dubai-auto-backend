@@ -1065,7 +1065,7 @@ func (h *UserHandler) GetColors(c *fiber.Ctx) error {
 // @Tags         filter
 // @Produce      json
 // @Security 	 BearerAuth
-// @Success      200  {array}  model.Home
+// @Success      200  {object}  model.Home
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure		 403  {object} auth.ErrorResponse
@@ -1114,7 +1114,7 @@ func (h *UserHandler) Likes(c *fiber.Ctx) error {
 // @Failure		 403  {object} auth.ErrorResponse
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
-// @Router       /api/v1/users/like/{car_id} [post]
+// @Router       /api/v1/users/likes/{car_id} [post]
 func (h *UserHandler) CarLike(c *fiber.Ctx) error {
 	// todo: delete images if exist
 	ctx := c.Context()
@@ -1154,7 +1154,7 @@ func (h *UserHandler) CarLike(c *fiber.Ctx) error {
 // @Failure		 403  {object} auth.ErrorResponse
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
-// @Router       /api/v1/users/like/{car_id} [delete]
+// @Router       /api/v1/users/likes/{car_id} [delete]
 func (h *UserHandler) RemoveLike(c *fiber.Ctx) error {
 	// todo: delete images if exist
 	ctx := c.Context()

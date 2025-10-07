@@ -248,6 +248,12 @@ func (r *AdminRepository) CreateBrand(ctx *fasthttp.RequestCtx, req *model.Creat
 	return id, err
 }
 
+func (r *AdminRepository) CreateBrandImage(ctx *fasthttp.RequestCtx, id int, path string) error {
+	q := `UPDATE brands SET logo = $2 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, path)
+	return err
+}
+
 func (r *AdminRepository) UpdateBrand(ctx *fasthttp.RequestCtx, id int, req *model.CreateBrandRequest) error {
 	q := `UPDATE brands SET name = $2, popular = $3, updated_at = NOW() WHERE id = $1`
 	_, err := r.db.Exec(ctx, q, id, req.Name, req.Popular)
@@ -271,7 +277,7 @@ func (r *AdminRepository) GetModels(ctx *fasthttp.RequestCtx, brand_id int) ([]m
 		ORDER BY m.id DESC
 	`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(ctx, q, brand_id)
 
 	if err != nil {
 		return models, err
@@ -841,6 +847,12 @@ func (r *AdminRepository) CreateColor(ctx *fasthttp.RequestCtx, req *model.Creat
 	var id int
 	err := r.db.QueryRow(ctx, q, req.Name, req.Image).Scan(&id)
 	return id, err
+}
+
+func (r *AdminRepository) CreateColorImage(ctx *fasthttp.RequestCtx, id int, path string) error {
+	q := `UPDATE colors SET image = $2 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, path)
+	return err
 }
 
 func (r *AdminRepository) UpdateColor(ctx *fasthttp.RequestCtx, id int, req *model.UpdateColorRequest) error {

@@ -2695,6 +2695,50 @@ paths:
       summary: Update a brand
       tags:
       - admin-brands
+  /api/v1/admin/brands/{id}/images:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new brand image
+      parameters:
+      - description: Brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Brand image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a new brand image
+      tags:
+      - admin-brands
   /api/v1/admin/cities:
     get:
       description: Returns a list of all cities
@@ -3175,6 +3219,50 @@ paths:
       security:
       - BearerAuth: []
       summary: Update a color
+      tags:
+      - admin-colors
+  /api/v1/admin/colors/{id}/images:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new color image
+      parameters:
+      - description: Color ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Color image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a color image
       tags:
       - admin-colors
   /api/v1/admin/comtrans-brands:
@@ -7048,6 +7136,49 @@ paths:
       summary: Profile
       tags:
       - third-party
+  /api/v1/third-party/profile/banner:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads banner images
+      parameters:
+      - description: Banner image required
+        in: formData
+        name: banner_image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload banner images
+      tags:
+      - third-party
   /api/v1/third-party/profile/images:
     post:
       consumes:
@@ -8445,9 +8576,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/model.Home'
-            type: array
+            $ref: '#/definitions/model.Home'
         "400":
           description: Bad Request
           schema:
@@ -8473,7 +8602,44 @@ paths:
       summary: Get home
       tags:
       - filter
-  /api/v1/users/like/{car_id}:
+  /api/v1/users/likes:
+    get:
+      description: Liked cars
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetCarsResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: My liked cars
+      tags:
+      - like
+  /api/v1/users/likes/{car_id}:
     delete:
       description: User like a car
       parameters:
@@ -8552,43 +8718,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Crate liked car
-      tags:
-      - like
-  /api/v1/users/likes:
-    get:
-      description: Liked cars
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.GetCarsResponse'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: My liked cars
       tags:
       - like
   /api/v1/users/models/generations:

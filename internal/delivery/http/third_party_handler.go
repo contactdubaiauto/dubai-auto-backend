@@ -137,3 +137,26 @@ func (h *ThirdPartyHandler) AvatarImages(c *fiber.Ctx) error {
 	data := h.service.CreateAvatarImages(ctx, form, id)
 	return utils.FiberResponse(c, &data)
 }
+
+// BannerImage godoc
+// @Summary      Upload banner images
+// @Description  Uploads banner images
+// @Tags         third-party
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        banner_image  formData  file    true   "Banner image required"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure      403     {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/third-party/profile/banner [post]
+func (h *ThirdPartyHandler) BannerImage(c *fiber.Ctx) error {
+	ctx := c.Context()
+	id := c.Locals("id").(int)
+	form, _ := c.MultipartForm()
+	data := h.service.CreateBannerImage(ctx, form, id)
+	return utils.FiberResponse(c, &data)
+}

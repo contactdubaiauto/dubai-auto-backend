@@ -74,3 +74,42 @@ func (s *ThirdPartyService) CreateAvatarImages(ctx *fasthttp.RequestCtx, form *m
 
 	return model.Response{Data: model.Success{Message: "Avatar images updated successfully"}}
 }
+
+func (s *ThirdPartyService) CreateBannerImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) model.Response {
+
+	if form == nil {
+		return model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the file"),
+		}
+	}
+
+	images := form.File["banner_image"]
+
+	if len(images) > 1 {
+		return model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 1 file"),
+		}
+	}
+
+	paths, status, err := files.SaveFiles(images, config.ENV.STATIC_PATH+"users/"+strconv.Itoa(id)+"/banner", config.ENV.DEFAULT_IMAGE_WIDTHS)
+
+	if err != nil {
+		return model.Response{
+			Status: status,
+			Error:  err,
+		}
+	}
+
+	err = s.repo.CreateBannerImage(ctx, id, paths)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{Data: model.Success{Message: "Banner image updated successfully"}}
+}

@@ -272,11 +272,10 @@ func SaveOriginal(file *multipart.FileHeader, folder string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to open uploaded file: %v", err)
 	}
-	defer src.Close()
 
+	defer src.Close()
 	// Generate a UUID for the output file name
 	outputID := uuid.New().String()
-
 	// Save the uploaded file temporarily
 	tempVideoPath := filepath.Join(folder, outputID+"_upload"+filepath.Ext(file.Filename))
 	dst, err := os.Create("." + tempVideoPath)
@@ -284,8 +283,8 @@ func SaveOriginal(file *multipart.FileHeader, folder string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to create temp file: %v", err)
 	}
-	defer dst.Close()
 
+	defer dst.Close()
 	_, err = io.Copy(dst, src)
 
 	if err != nil {

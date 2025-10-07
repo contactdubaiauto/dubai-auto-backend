@@ -44,6 +44,7 @@ func SetupAdminRoutes(r fiber.Router, db *pgxpool.Pool) {
 	{
 		brands.Get("/", adminHandler.GetBrands)
 		brands.Post("/", adminHandler.CreateBrand)
+		brands.Post("/:id/images", adminHandler.CreateBrandImage)
 		brands.Put("/:id", adminHandler.UpdateBrand)
 		brands.Delete("/:id", adminHandler.DeleteBrand)
 	}
@@ -154,6 +155,7 @@ func SetupAdminRoutes(r fiber.Router, db *pgxpool.Pool) {
 	{
 		colors.Get("/", adminHandler.GetColors)
 		colors.Post("/", adminHandler.CreateColor)
+		colors.Post("/:id/images", adminHandler.CreateColorImage)
 		colors.Put("/:id", adminHandler.UpdateColor)
 		colors.Delete("/:id", adminHandler.DeleteColor)
 	}
