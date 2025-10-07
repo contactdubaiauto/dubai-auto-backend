@@ -1,15 +1,20 @@
 package service
 
 import (
+	"errors"
 	"fmt"
+	"mime/multipart"
 	"net/http"
+	"strconv"
 
 	"github.com/valyala/fasthttp"
 	"golang.org/x/crypto/bcrypt"
 
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/utils"
+	"dubai-auto/pkg/files"
 )
 
 type AdminService struct {
@@ -576,12 +581,52 @@ func (s *AdminService) DeleteGeneration(ctx *fasthttp.RequestCtx, id int) *model
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
+	// todo: delete image if exists
 	return &model.Response{Data: model.Success{Message: "Generation deleted successfully"}}
+}
+
+func (s *AdminService) CreateGenerationImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) *model.Response {
+
+	if form == nil {
+		return &model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the files"),
+		}
+	}
+
+	image := form.File["image"]
+
+	if len(image) > 1 {
+		return &model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 1 file"),
+		}
+	}
+
+	paths, status, err := files.SaveFiles(image, config.ENV.STATIC_PATH+"cars/generations/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
+
+	if err != nil {
+		return &model.Response{
+			Status: status,
+			Error:  err,
+		}
+	}
+
+	// todo: delete old image if exists
+	err = s.AdminRepository.CreateGenerationImage(ctx, id, paths)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Generation image created successfully"}}
 }
 
 // Generation Modifications service methods
 func (s *AdminService) GetGenerationModifications(ctx *fasthttp.RequestCtx, generationId int) *model.Response {
 	generationModifications, err := s.AdminRepository.GetGenerationModifications(ctx, generationId)
+
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}

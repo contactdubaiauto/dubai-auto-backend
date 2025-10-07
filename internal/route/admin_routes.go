@@ -127,7 +127,7 @@ func SetupAdminRoutes(r fiber.Router, db *pgxpool.Pool) {
 		generations.Get("/", adminHandler.GetGenerations)
 		generations.Post("/", adminHandler.CreateGeneration)
 		generations.Put("/:id", adminHandler.UpdateGeneration)
-		// generations.Post("/:id/images", adminHandler.CreateGenerationImage)
+		generations.Post("/:id/images", adminHandler.CreateGenerationImage)
 		generations.Delete("/:id", adminHandler.DeleteGeneration)
 		// generations.Delete("/:id/images", adminHandler.DeleteGenerationImage)
 	}

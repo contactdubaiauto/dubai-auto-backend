@@ -3526,64 +3526,6 @@ func (h *AdminHandler) CreateGeneration(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
-// // CreateGenerationImage godoc
-// // @Summary      Create a generation image
-// // @Description  Creates a new generation image
-// // @Tags         admin-generations
-// // @Accept       json
-// // @Produce      json
-// // @Security     BearerAuth
-// // @Param        id          path      int                        true  "Generation ID"
-// // @Param        image       formData  file    true   "Generation image (max 1)"
-// // @Success      200  {object}  model.SuccessWithId
-// // @Failure      400  {object}  model.ResultMessage
-// // @Failure      401  {object}  auth.ErrorResponse
-// // @Failure      403  {object}  auth.ErrorResponse
-// // @Failure      500  {object}  model.ResultMessage
-// // @Router       /api/v1/admin/generations/{id}/images [post]
-// func (h *AdminHandler) CreateGenerationImage(c *fiber.Ctx) error {
-// 	ctx := c.Context()
-// 	idStr := c.Params("id")
-// 	id, err := strconv.Atoi(idStr)
-
-// 	if err != nil {
-// 		return utils.FiberResponse(c, &model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("generation id must be integer"),
-// 		})
-// 	}
-
-// 	form, _ := c.MultipartForm()
-
-// 	if form == nil {
-// 		return utils.FiberResponse(c, &model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("didn't upload the files"),
-// 		})
-// 	}
-
-// 	image := form.File["image"]
-
-// 	if len(image) > 1 {
-// 		return utils.FiberResponse(c, &model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("must load maximum 1 file"),
-// 		})
-// 	}
-
-// 	paths, status, err := files.SaveFiles(image, config.ENV.STATIC_PATH+"cars/generations/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
-
-// 	if err != nil {
-// 		return utils.FiberResponse(c, &model.Response{
-// 			Status: status,
-// 			Error:  err,
-// 		})
-// 	}
-
-// 	data := h.AdminService.CreateGenerationImage(ctx, id, paths)
-// 	return utils.FiberResponse(c, data)
-// }
-
 // UpdateGeneration godoc
 // @Summary      Update a generation
 // @Description  Updates a generation by ID
@@ -3628,6 +3570,39 @@ func (h *AdminHandler) UpdateGeneration(c *fiber.Ctx) error {
 
 	ctx := c.Context()
 	data := h.AdminService.UpdateGeneration(ctx, id, &req)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateGenerationImage godoc
+// @Summary      Create a new generation image
+// @Description  Creates a new generation image
+// @Tags         admin-generations
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id        path      int     true  "Generation ID"
+// @Param        image     formData  file    true   "generation image (max 1)"
+// @Success      200       {object}  model.SuccessWithId
+// @Failure      400       {object}  model.ResultMessage
+// @Failure      401       {object}  auth.ErrorResponse
+// @Failure      403       {object}  auth.ErrorResponse
+// @Failure      500       {object}  model.ResultMessage
+// @Router       /api/v1/admin/generations/{id}/images [post]
+func (h *AdminHandler) CreateGenerationImage(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("generation id must be integer"),
+		})
+	}
+
+	form, _ := c.MultipartForm()
+
+	data := h.AdminService.CreateGenerationImage(ctx, form, id)
 	return utils.FiberResponse(c, data)
 }
 
