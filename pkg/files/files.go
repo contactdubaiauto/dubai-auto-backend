@@ -128,7 +128,7 @@ func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]str
 				return
 			}
 		}()
-		filePaths = append(filePaths, base+"/"+fileNames[index])
+		filePaths = append(filePaths, "/api/v1"+base+"/"+fileNames[index])
 	}
 	return filePaths, 0, nil
 }
@@ -294,7 +294,7 @@ func SaveOriginal(file *multipart.FileHeader, folder string) (string, error) {
 	// Define output path for the HLS
 	// outputPath := filepath.Join(folder, outputID+".m3u8")
 	// go VideoToHLS(tempVideoPath, outputPath)
-	return tempVideoPath, nil
+	return "/api/v1" + tempVideoPath, nil
 }
 
 func SaveVideos(file *multipart.FileHeader, folder string) (string, error) {

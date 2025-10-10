@@ -53,6 +53,7 @@ func SetupAdminRoutes(r fiber.Router, db *pgxpool.Pool) {
 	{
 		brands.Get("/:brand_id/models", adminHandler.GetModels)
 		brands.Post("/:brand_id/models", adminHandler.CreateModel)
+		brands.Get("/:brand_id/models/:model_id/generations", adminHandler.GetGenerationsByModel)
 		brands.Put("/:brand_id/models/:id", adminHandler.UpdateModel)
 		brands.Delete("/:brand_id/models/:id", adminHandler.DeleteModel)
 	}

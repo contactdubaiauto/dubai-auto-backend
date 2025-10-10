@@ -185,12 +185,14 @@ create table admins (
 create table brands (
     "id" serial primary key,
     "name" varchar(255) not null,
-    "logo" varchar(255) not null,
+    "logo" varchar(255),
     "model_count" int not null default 0,
     "popular" boolean default false,
     "updated_at" timestamp default now(),
     unique("name")
 );
+-- remove not null constraint from logo
+alter table brands alter column logo drop not null;
 
 
 create table models (

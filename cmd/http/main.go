@@ -50,6 +50,7 @@ func main() {
 
 	go func() {
 		log.Printf("Fiber server listening on %s", conf.PORT)
+
 		if err := app.Listen(conf.PORT); err != nil {
 			log.Fatalf("Fiber listen error: %v", err)
 		}
@@ -61,13 +62,13 @@ func main() {
 	defer shutdownCtx.Stop()
 
 	// Shutdown gracefully shuts down the server without interrupting any active connections.
-	err := app.Shutdown()
+	// err := app.Shutdown()
 
-	if err != nil {
-		log.Printf("Fiber graceful shutdown error: %v", err)
-	} else {
-		log.Println("Fiber server gracefully stopped.")
-	}
+	// if err != nil {
+	// 	log.Printf("Fiber graceful shutdown error: %v", err)
+	// } else {
+	// 	log.Println("Fiber server gracefully stopped.")
+	// }
 
 	log.Println("Application exited.")
 }

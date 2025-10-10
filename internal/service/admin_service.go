@@ -593,6 +593,28 @@ func (s *AdminService) GetGenerations(ctx *fasthttp.RequestCtx) *model.Response 
 	return &model.Response{Data: generations}
 }
 
+func (s *AdminService) GetGenerationsByModel(ctx *fasthttp.RequestCtx, brandId, modelId int) *model.Response {
+	// First validate that the model belongs to the specified brand
+	isValid, err := s.repo.ValidateModelBelongsToBrand(ctx, modelId, brandId)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	if !isValid {
+		return &model.Response{
+			Error:  errors.New("model does not belong to the specified brand"),
+			Status: http.StatusBadRequest,
+		}
+	}
+
+	generations, err := s.repo.GetGenerationsByModel(ctx, modelId)
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: generations}
+}
+
 func (s *AdminService) CreateGeneration(ctx *fasthttp.RequestCtx, req *model.CreateGenerationRequest) *model.Response {
 	id, err := s.repo.CreateGeneration(ctx, req)
 

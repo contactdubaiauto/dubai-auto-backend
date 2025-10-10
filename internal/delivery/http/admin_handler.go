@@ -3522,6 +3522,45 @@ func (h *AdminHandler) GetGenerations(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
+// GetGenerationsByModel godoc
+// @Summary      Get generations by model ID
+// @Description  Returns a list of generations for a given model ID within a specific brand
+// @Tags         admin-generations
+// @Produce      json
+// @Security     BearerAuth
+// @Param        brand_id  path  int  true  "Brand ID"
+// @Param        model_id  path  int  true  "Model ID"
+// @Success      200  {array}  model.AdminGenerationResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/brands/{brand_id}/models/{model_id}/generations [get]
+func (h *AdminHandler) GetGenerationsByModel(c *fiber.Ctx) error {
+	brandIdStr := c.Params("brand_id")
+	modelIdStr := c.Params("model_id")
+
+	brandId, err := strconv.Atoi(brandIdStr)
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("brand id must be integer"),
+		})
+	}
+
+	modelId, err := strconv.Atoi(modelIdStr)
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("model id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.AdminService.GetGenerationsByModel(ctx, brandId, modelId)
+	return utils.FiberResponse(c, data)
+}
+
 // CreateGeneration godoc
 // @Summary      Create a generation
 // @Description  Creates a new generation

@@ -692,6 +692,56 @@ func (r *AdminRepository) GetGenerations(ctx *fasthttp.RequestCtx) ([]model.Admi
 	return generations, err
 }
 
+// ValidateModelBelongsToBrand checks if a model belongs to a specific brand
+func (r *AdminRepository) ValidateModelBelongsToBrand(ctx *fasthttp.RequestCtx, modelId, brandId int) (bool, error) {
+	var count int
+	q := `SELECT COUNT(*) FROM models WHERE id = $1 AND brand_id = $2`
+
+	err := r.db.QueryRow(ctx, q, modelId, brandId).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
+func (r *AdminRepository) GetGenerationsByModel(ctx *fasthttp.RequestCtx, modelId int) ([]model.AdminGenerationResponse, error) {
+	generations := make([]model.AdminGenerationResponse, 0)
+	q := `
+		SELECT 
+			g.id, g.name, 
+			g.model_id, 
+			m.name as model_name, 
+			g.start_year, 
+			g.end_year, 
+			g.wheel, 
+			g.image, 
+			g.created_at 
+		FROM generations g
+		LEFT JOIN models m ON g.model_id = m.id
+		WHERE g.model_id = $1
+		ORDER BY g.id DESC
+	`
+	rows, err := r.db.Query(ctx, q, modelId)
+
+	if err != nil {
+		return generations, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var generation model.AdminGenerationResponse
+		if err := rows.Scan(&generation.ID, &generation.Name, &generation.ModelID, &generation.ModelName,
+			&generation.StartYear, &generation.EndYear, &generation.Wheel, &generation.Image, &generation.CreatedAt); err != nil {
+			return generations, err
+		}
+		generations = append(generations, generation)
+	}
+
+	return generations, err
+}
+
 func (r *AdminRepository) CreateGeneration(ctx *fasthttp.RequestCtx, req *model.CreateGenerationRequest) (int, error) {
 	q := `INSERT INTO generations (name, model_id, start_year, end_year, wheel, image) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
 	var id int
