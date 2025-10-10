@@ -220,7 +220,17 @@ func (r *AdminRepository) DeleteCity(ctx *fasthttp.RequestCtx, id int) error {
 // Brands CRUD operations
 func (r *AdminRepository) GetBrands(ctx *fasthttp.RequestCtx) ([]model.AdminBrandResponse, error) {
 	brands := make([]model.AdminBrandResponse, 0)
-	q := `SELECT id, name, logo, model_count, popular, updated_at FROM brands ORDER BY id DESC`
+	q := `
+			SELECT 
+				id, 
+				name, 
+				logo, 
+				model_count, 
+				popular, 
+				updated_at 
+			FROM brands 
+			ORDER BY id DESC
+		`
 
 	rows, err := r.db.Query(ctx, q)
 
@@ -347,13 +357,21 @@ func (r *AdminRepository) CreateBodyType(ctx *fasthttp.RequestCtx, req *model.Cr
 }
 
 func (r *AdminRepository) CreateBodyTypeImage(ctx *fasthttp.RequestCtx, id int, paths []string) error {
-	q := `INSERT INTO body_types_images (body_type_id, image) VALUES ($1, $2)`
+	q := `
+		UPDATE body_types 
+		SET image = $2 
+		WHERE id = $1
+	`
 	_, err := r.db.Exec(ctx, q, id, paths[0])
 	return err
 }
 
 func (r *AdminRepository) DeleteBodyTypeImage(ctx *fasthttp.RequestCtx, id int) error {
-	q := `DELETE FROM body_types_images WHERE id = $1`
+	q := `
+		UPDATE body_types 
+		SET image = NULL 
+		WHERE id = $1
+	`
 	_, err := r.db.Exec(ctx, q, id)
 	return err
 }

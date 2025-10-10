@@ -247,12 +247,12 @@ type AdminCityResponse struct {
 }
 
 type AdminBrandResponse struct {
-	UpdatedAt  time.Time `json:"updated_at"`
-	Name       string    `json:"name"`
-	Logo       string    `json:"logo"`
-	ID         int       `json:"id"`
-	ModelCount int       `json:"model_count"`
-	Popular    bool      `json:"popular"`
+	UpdatedAt  *time.Time `json:"updated_at"`
+	Name       *string    `json:"name"`
+	Logo       *string    `json:"logo"`
+	ID         *int       `json:"id"`
+	ModelCount *int       `json:"model_count"`
+	Popular    *bool      `json:"popular"`
 }
 
 type AdminModelResponse struct {
