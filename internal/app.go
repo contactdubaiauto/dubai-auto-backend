@@ -14,7 +14,6 @@ import (
 	fb_logger "github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	socketio "github.com/googollee/go-socket.io"
 	"github.com/googollee/go-socket.io/engineio"
 	"github.com/googollee/go-socket.io/engineio/transport"
@@ -56,6 +55,7 @@ var (
 
 // JWT validation for Socket.IO connections
 func validateSocketJWT(tokenString string) (*SocketUser, error) {
+
 	if tokenString == "" {
 		return nil, fmt.Errorf("missing token")
 	}
@@ -131,14 +131,17 @@ func setupSocketIO(app *fiber.App) {
 
 	// Handle connection events
 	socketServer.OnConnect("/", func(conn socketio.Conn) error {
+		fmt.Printf("🔄 Connection from socket %s: %v\n", conn.ID(), conn.URL())
 		// Get JWT token from query parameters
 		url := conn.URL()
 		token := url.Query().Get("token")
+
 		if token == "" {
 			token = url.Query().Get("auth") // Alternative parameter name
 		}
 
 		user, err := validateSocketJWT(token)
+
 		if err != nil {
 			log.Printf("❌ Authentication failed: %v", err)
 			conn.Emit("error", map[string]string{
@@ -152,7 +155,6 @@ func setupSocketIO(app *fiber.App) {
 		// Store user info
 		socketID := conn.ID()
 		user.SocketID = socketID
-
 		socketMutex.Lock()
 		socketClients[socketID] = user
 		socketUserSockets[user.ID] = append(socketUserSockets[user.ID], socketID)
@@ -206,64 +208,9 @@ func setupSocketIO(app *fiber.App) {
 		}
 	})
 
-	// Handle message events
-	socketServer.OnEvent("/", "message", func(conn socketio.Conn, data map[string]any) {
-		socketID := conn.ID()
-
-		socketMutex.RLock()
-		user, exists := socketClients[socketID]
-		socketMutex.RUnlock()
-
-		if !exists {
-			log.Printf("❌ Message from unknown socket: %s", socketID)
-			return
-		}
-
-		if msgText, ok := data["message"].(string); ok {
-			chatMessage := SocketMessage{
-				ID:        uuid.New().String(),
-				UserID:    user.ID,
-				Username:  user.Username,
-				Message:   msgText,
-				Timestamp: time.Now(),
-			}
-
-			log.Printf("💬 Message from user %d: %s", user.ID, msgText)
-			broadcastMessage("message", chatMessage)
-		}
-	})
-
-	// Handle private message events
-	socketServer.OnEvent("/", "private_message", func(conn socketio.Conn, data map[string]any) {
-		socketID := conn.ID()
-
-		socketMutex.RLock()
-		user, exists := socketClients[socketID]
-		socketMutex.RUnlock()
-
-		if !exists {
-			log.Printf("❌ Private message from unknown socket: %s", socketID)
-			return
-		}
-
-		if targetUserID, ok := data["target_user_id"].(float64); ok {
-			if msgText, ok := data["message"].(string); ok {
-				privateMessage := SocketMessage{
-					ID:        uuid.New().String(),
-					UserID:    user.ID,
-					Username:  user.Username,
-					Message:   msgText,
-					Timestamp: time.Now(),
-				}
-
-				log.Printf("📩 Private message from user %d to user %d: %s", user.ID, int(targetUserID), msgText)
-				sendToUser(int(targetUserID), "private_message", privateMessage)
-			}
-		}
-	})
-
 	// Handle ping events
-	socketServer.OnEvent("/", "ping", func(conn socketio.Conn) {
+	socketServer.OnEvent("/", "ping", func(conn socketio.Conn, data map[string]any) {
+		fmt.Printf("🔄 Ping from socket %s: %v\n", conn.ID(), data)
 		conn.Emit("pong", map[string]any{
 			"timestamp": time.Now(),
 		})
@@ -278,91 +225,6 @@ func setupSocketIO(app *fiber.App) {
 
 	// Mount Socket.IO routes using Fiber adaptor
 	app.Get("/socket.io/*", adaptor.HTTPHandler(socketServer))
-
-	// Add HTTP API 		endpoints for Socket.IO
-	socketGroup := app.Group("/api/v1/socket")
-
-	// Public info endpoint
-	socketGroup.Get("/info", func(c *fiber.Ctx) error {
-		info := map[string]any{
-			"service":     "Socket.IO Messaging Service",
-			"version":     "1.0.0",
-			"endpoint":    "/socket.io/",
-			"auth_method": "JWT Token",
-			"events": []string{
-				"message",
-				"private_message",
-				"join_room",
-				"get_online_users",
-			},
-			"auth_examples": map[string]string{
-				"query_param": "?token=your_jwt_token",
-				"alt_param":   "?auth=your_jwt_token",
-			},
-			"message_format": map[string]any{
-				"simple_message			": `{"message": "Hello world!"}`,
-				"event_message":     `{"event": "message", "message": "Hello world!"}`,
-				"private_message":   `{"event": "private_message", "target_user_id": 123, "message": "Hello!"}`,
-				"join_room":         `{"event": "join_room", "room_id": "general"}`,
-				"get_users":         `{"event":		 "get_online_users"}`,
-			},
-			"note": "This is a demonstration implementation. For full functionality, you may need to use a different Socket.IO library or implement custom WebSocket handling.",
-		}
-		return c.JSON(map[string]any{
-			"event": "info",
-			"data":  info,
-		})
-	})
-
-	// Protected stats endpoint
-	socketGroup.Get("/stats", auth.TokenGuard, func(c *fiber.Ctx) error {
-		socketMutex.RLock()
-		connectedUsers := len(socketClients)
-		userList := make([]SocketUser, 0, len(socketClients))
-		for _, user := range socketClients {
-			userList = append(userList, *user)
-		}
-		socketMutex.RUnlock()
-
-		stats := map[string]any{
-			"connected_users": connectedUsers,
-			"users":           userList,
-		}
-		return c.JSON(map[string]any{
-			"event": "stats",
-			"data":  stats,
-		})
-	})
-
-	// System message endpoint (admin only)
-	socketGroup.Post("/system-message", auth.TokenGuard, func(c *fiber.Ctx) error {
-		var req struct {
-			Message string `json:"message"`
-		}
-
-		if err := c.BodyParser(&req); err != nil {
-			return c.Status(400).JSON(map[string]string{
-				"error": "Invalid request body",
-			})
-		}
-
-		systemMessage := SocketMessage{
-			ID:        "system",
-			UserID:    0,
-			Username:  "System",
-			Message:   req.Message,
-			Timestamp: time.Now(),
-		}
-
-		// Broadcast system message
-		broadcastMessage("system_message", systemMessage)
-
-		return c.JSON(map[string]any{
-			"event": "system_message_sent",
-			"data":  systemMessage,
-		})
-	})
-
 	log.Println("🔌 Socket.IO messaging service initialized")
 	log.Println("📖 Get service info:GET /api/v1/socket/info")
 	log.Println("📊 Get stats: GET /api/v1/sockt/stats (requires JWT)")
@@ -406,24 +268,24 @@ func broadcastUserStatus(userID int, status string) {
 func sendToUser(userID int, event string, data any) {
 	socketMutex.RLock()
 	userSockets, exists := socketUserSockets[userID]
+
 	if !exists || len(userSockets) == 0 {
 		socketMutex.RUnlock()
 		log.Printf("❌ User %d not connected", userID)
 		return
 	}
 
-	// Get connections for this user
 	userConnections := make([]socketio.Conn, 0, len(userSockets))
+
 	for _, socketID := range userSockets {
 		if conn, connExists := socketConnections[socketID]; connExists {
 			userConnections = append(userConnections, conn)
 		}
 	}
-	socketMutex.RUnlock()
 
+	socketMutex.RUnlock()
 	log.Printf("📤 Sending %s to user %d (%d sockets)", event, userID, len(userConnections))
 
-	// Send to all user's connections
 	for _, conn := range userConnections {
 		go func(c socketio.Conn) {
 			c.Emit(event, data)

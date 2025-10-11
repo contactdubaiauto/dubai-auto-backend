@@ -234,7 +234,7 @@ func (h *AuthHandler) UserLoginEmail(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Param        user  body      model.ThirdPartyLoginReq  true  "Third party login credentials"
-// @Success      200   {object}  model.Success
+// @Success      200   {object}  model.ThirdPartyLoginFiberResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  auth.ErrorResponse
 // @Failure      403   {object}  auth.ErrorResponse
@@ -321,4 +321,32 @@ func (h *AuthHandler) DeleteAccount(c *fiber.Ctx) error {
 
 	data := h.service.DeleteAccount(ctx, userID)
 	return utils.FiberResponse(c, data)
+}
+
+// AdminLogin godoc
+// @Summary      Admin login
+// @Description  Authenticates a user and returns a JWT token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      model.AdminLoginReq  true  "Admin login credentials"
+// @Success      200   {object}  model.LoginFiberResponse
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/auth/admin-login [post]
+func (h *AuthHandler) AdminLogin(c *fiber.Ctx) error {
+	user := &model.AdminLoginReq{}
+
+	if err := c.BodyParser(user); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	data := h.service.AdminLogin(c.Context(), user)
+	return utils.FiberResponse(c, &data)
 }

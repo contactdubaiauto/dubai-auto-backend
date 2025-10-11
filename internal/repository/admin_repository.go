@@ -121,7 +121,10 @@ func (r *AdminRepository) AcceptApplication(ctx *fasthttp.RequestCtx, id int, pa
 
 	q = `
 		insert into users (email, password, username, role_id, phone)
-		values ($1, $2, $3, $4, $5) returning id
+		values ($1, $2, $3, $4, $5) 
+		ON CONFLICT (email) DO UPDATE
+		SET password = EXCLUDED.password
+		returning id
 	`
 	var userID int
 	err = tx.QueryRow(ctx, q, tempUser.Email, password, tempUser.FullName, tempUser.RoleID, tempUser.Phone).Scan(&userID)
@@ -1011,6 +1014,12 @@ func (r *AdminRepository) CreateMotoBrand(ctx *fasthttp.RequestCtx, req *model.C
 	return id, err
 }
 
+func (r *AdminRepository) CreateMotoBrandImage(ctx *fasthttp.RequestCtx, id int, path string) error {
+	q := `UPDATE moto_brands SET image = $2 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, path)
+	return err
+}
+
 func (r *AdminRepository) UpdateMotoBrand(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoBrandRequest) error {
 	q := `UPDATE moto_brands SET name = $2, image = $3, moto_category_id = $4 WHERE id = $1`
 	_, err := r.db.Exec(ctx, q, id, req.Name, req.Image, req.MotoCategoryID)
@@ -1329,6 +1338,12 @@ func (r *AdminRepository) CreateComtransBrand(ctx *fasthttp.RequestCtx, req *mod
 	var id int
 	err := r.db.QueryRow(ctx, q, req.Name, req.Image, req.ComtransCategoryID).Scan(&id)
 	return id, err
+}
+
+func (r *AdminRepository) CreateComtransBrandImage(ctx *fasthttp.RequestCtx, id int, path string) error {
+	q := `UPDATE com_brands SET image = $2 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, path)
+	return err
 }
 
 func (r *AdminRepository) UpdateComtransBrand(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransBrandRequest) error {

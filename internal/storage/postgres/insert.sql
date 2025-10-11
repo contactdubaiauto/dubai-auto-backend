@@ -4,7 +4,9 @@ insert into cities (name) values ('Dubai');
 insert into cities (name) values ('Abu Dhabi');
 insert into cities (name) values ('Sharjah');
 insert into profiles(
-insert into admins (username, email, password, last_active_date, created_at) 
+insert into admins (username, email, password, last_active_date, created_at) values ('admin', 'admin@admin.com', '$2a$10$kSbU49.c9JX0wal1lTZhmunPVLLjPioqzLzZ3r5TS/YyJd89OtppS', now(), now()); --123456
+
+
 insert into body_types (name, image) values ('Sedan','/images/body/sedan.png');
 insert into body_types (name, image) values ('Hatchback', '/images/body/hatchback.png');
 insert into body_types (name, image) values ('Liftback', '/images/body/liftback.png');

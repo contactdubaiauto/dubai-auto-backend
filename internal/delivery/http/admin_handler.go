@@ -1666,6 +1666,38 @@ func (h *AdminHandler) CreateMotoBrand(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
+// CreateMotoBrandImage godoc
+// @Summary      Create a new brand image
+// @Description  Creates a new brand image
+// @Tags         admin-moto-brands
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Moto brand ID"
+// @Param        image  formData  file  true  "Moto brand image"
+// @Success      200  {object}  model.SuccessWithId
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/moto-brands/{id}/images [post]
+func (h *AdminHandler) CreateMotoBrandImage(c *fiber.Ctx) error {
+	ctx := c.Context()
+	form, _ := c.MultipartForm()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("brand id must be integer"),
+		})
+	}
+
+	data := h.AdminService.CreateMotoBrandImage(ctx, form, id)
+	return utils.FiberResponse(c, data)
+}
+
 // UpdateMotoBrand godoc
 // @Summary      Update a moto brand
 // @Description  Updates a moto brand by ID
@@ -2719,6 +2751,38 @@ func (h *AdminHandler) CreateComtransBrand(c *fiber.Ctx) error {
 
 	ctx := c.Context()
 	data := h.AdminService.CreateComtransBrand(ctx, &req)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateComtransBrandImage godoc
+// @Summary      Create a new comtrans brand image
+// @Description  Creates a new brand image
+// @Tags         admin-comtrans-brands
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Comtrans brand ID"
+// @Param        image  formData  file  true  "Comtrans brand image"
+// @Success      200  {object}  model.SuccessWithId
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/comtrans-brands/{id}/images [post]
+func (h *AdminHandler) CreateComtransBrandImage(c *fiber.Ctx) error {
+	ctx := c.Context()
+	form, _ := c.MultipartForm()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("brand id must be integer"),
+		})
+	}
+
+	data := h.AdminService.CreateComtransBrandImage(ctx, form, id)
 	return utils.FiberResponse(c, data)
 }
 

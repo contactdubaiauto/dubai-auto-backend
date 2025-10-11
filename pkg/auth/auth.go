@@ -78,8 +78,9 @@ func UserGuardOrDefault(c *fiber.Ctx) error {
 }
 
 func AdminGuard(c *fiber.Ctx) error {
-	role, ok := c.Locals("role").(string)
-	if !ok || role != "admin" {
+	role, ok := c.Locals("role_id").(float64)
+
+	if !ok || role != 100 {
 		return c.SendStatus(fiber.StatusForbidden)
 	}
 	return c.Next()

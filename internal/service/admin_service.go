@@ -861,10 +861,48 @@ func (s *AdminService) GetMotoBrands(ctx *fasthttp.RequestCtx) *model.Response {
 
 func (s *AdminService) CreateMotoBrand(ctx *fasthttp.RequestCtx, req *model.CreateMotoBrandRequest) *model.Response {
 	id, err := s.repo.CreateMotoBrand(ctx, req)
+
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
 	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto brand created successfully"}}
+}
+
+func (s *AdminService) CreateMotoBrandImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) *model.Response {
+
+	if form == nil {
+		return &model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the files"),
+		}
+	}
+
+	image := form.File["image"]
+
+	if len(image) > 1 {
+		return &model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 1 file"),
+		}
+	}
+
+	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"moto/logos/"+strconv.Itoa(id))
+
+	if err != nil {
+		return &model.Response{
+			Status: 400,
+			Error:  err,
+		}
+	}
+
+	err = s.repo.CreateMotoBrandImage(ctx, id, path)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto brand image created successfully"}}
 }
 
 func (s *AdminService) UpdateMotoBrand(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoBrandRequest) *model.Response {
@@ -1059,10 +1097,47 @@ func (s *AdminService) GetComtransBrands(ctx *fasthttp.RequestCtx) *model.Respon
 
 func (s *AdminService) CreateComtransBrand(ctx *fasthttp.RequestCtx, req *model.CreateComtransBrandRequest) *model.Response {
 	id, err := s.repo.CreateComtransBrand(ctx, req)
+
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans brand created successfully"}}
+}
+
+func (s *AdminService) CreateComtransBrandImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) *model.Response {
+
+	if form == nil {
+		return &model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the files"),
+		}
+	}
+
+	image := form.File["image"]
+
+	if len(image) > 1 {
+		return &model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 1 file"),
+		}
+	}
+
+	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"comtrans/logos/"+strconv.Itoa(id))
+
+	if err != nil {
+		return &model.Response{
+			Status: 400,
+			Error:  err,
+		}
+	}
+
+	err = s.repo.CreateComtransBrandImage(ctx, id, path)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans brand image created successfully"}}
 }
 
 func (s *AdminService) UpdateComtransBrand(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransBrandRequest) *model.Response {

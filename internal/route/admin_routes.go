@@ -183,6 +183,7 @@ func SetupAdminRoutes(r fiber.Router, db *pgxpool.Pool) {
 	{
 		motoBrands.Get("/", adminHandler.GetMotoBrands)
 		motoBrands.Post("/", adminHandler.CreateMotoBrand)
+		motoBrands.Post("/:id/images", adminHandler.CreateMotoBrandImage)
 		motoBrands.Put("/:id", adminHandler.UpdateMotoBrand)
 		motoBrands.Delete("/:id", adminHandler.DeleteMotoBrand)
 	}
@@ -235,6 +236,7 @@ func SetupAdminRoutes(r fiber.Router, db *pgxpool.Pool) {
 	{
 		comtransBrands.Get("/", adminHandler.GetComtransBrands)
 		comtransBrands.Post("/", adminHandler.CreateComtransBrand)
+		comtransBrands.Post("/:id/images", adminHandler.CreateComtransBrandImage)
 		comtransBrands.Put("/:id", adminHandler.UpdateComtransBrand)
 		comtransBrands.Delete("/:id", adminHandler.DeleteComtransBrand)
 	}

@@ -146,6 +146,19 @@ func (r *AuthRepository) ThirdPartyLogin(ctx *fasthttp.RequestCtx, email string)
 	return u, err
 }
 
+func (r *AuthRepository) AdminLogin(ctx *fasthttp.RequestCtx, email string) (model.ThirdPartyLogin, error) {
+	var u model.ThirdPartyLogin
+	query := `
+		SELECT 
+			id, 
+			password
+		FROM admins 
+		WHERE email = $1
+	`
+	err := r.db.QueryRow(ctx, query, email).Scan(&u.ID, &u.Password)
+	return u, err
+}
+
 func (r *AuthRepository) TempUserPhoneGetOrRegister(ctx *fasthttp.RequestCtx, username, phone, password string) error {
 	var userID int
 	q := `

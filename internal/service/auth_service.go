@@ -279,7 +279,7 @@ func (s *AuthService) ThirdPartyLogin(ctx *fasthttp.RequestCtx, user *model.Thir
 
 	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, u.RoleID)
 	return model.Response{
-		Data: model.LoginFiberResponse{
+		Data: model.ThirdPartyLoginFiberResponse{
 			AccessToken:    accessToken,
 			RefreshToken:   refreshToken,
 			FirstTimeLogin: u.FirstTimeLogin,
@@ -320,5 +320,33 @@ func (s *AuthService) UserLoginPhone(ctx *fasthttp.RequestCtx, user *model.UserL
 
 	return model.Response{
 		Data: model.Success{Message: "Successfully created the user."},
+	}
+}
+
+func (s *AuthService) AdminLogin(ctx *fasthttp.RequestCtx, userReq *model.AdminLoginReq) model.Response {
+	u, err := s.repo.AdminLogin(ctx, userReq.Email)
+
+	if err != nil {
+		return model.Response{
+			Error:  err,
+			Status: http.StatusNotFound,
+		}
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(userReq.Password))
+
+	if err != nil {
+		return model.Response{
+			Error:  err,
+			Status: http.StatusBadRequest,
+		}
+	}
+
+	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, 100)
+	return model.Response{
+		Data: model.LoginFiberResponse{
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+		},
 	}
 }

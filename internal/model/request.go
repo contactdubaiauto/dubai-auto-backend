@@ -63,6 +63,11 @@ type ThirdPartyLoginReq struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type AdminLoginReq struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+}
+
 // Generation requests
 type CreateGenerationRequest struct {
 	Name      string `json:"name" validate:"required,min=2,max=255"`

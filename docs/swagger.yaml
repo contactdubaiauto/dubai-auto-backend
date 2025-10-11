@@ -3463,6 +3463,50 @@ paths:
       summary: Update a comtrans brand
       tags:
       - admin-comtrans-brands
+  /api/v1/admin/comtrans-brands/{id}/images:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new brand image
+      parameters:
+      - description: Comtrans brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comtrans brand image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a new comtrans brand image
+      tags:
+      - admin-comtrans-brands
   /api/v1/admin/comtrans-categories:
     get:
       description: Returns a list of all comtrans categories
@@ -5404,6 +5448,50 @@ paths:
       security:
       - BearerAuth: []
       summary: Update a moto brand
+      tags:
+      - admin-moto-brands
+  /api/v1/admin/moto-brands/{id}/images:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new brand image
+      parameters:
+      - description: Moto brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Moto brand image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a new brand image
       tags:
       - admin-moto-brands
   /api/v1/admin/moto-categories:

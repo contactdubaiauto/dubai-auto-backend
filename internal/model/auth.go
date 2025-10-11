@@ -89,6 +89,10 @@ type UserByPhone struct {
 }
 
 type LoginFiberResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+type ThirdPartyLoginFiberResponse struct {
 	AccessToken    string `json:"access_token"`
 	RefreshToken   string `json:"refresh_token"`
 	FirstTimeLogin bool   `json:"first_time_login"`
