@@ -85,3 +85,35 @@ func AdminGuard(c *fiber.Ctx) error {
 	}
 	return c.Next()
 }
+
+func DealerGuard(c *fiber.Ctx) error {
+	role, ok := c.Locals("role_id").(float64)
+	if !ok || role != 2 {
+		return c.SendStatus(fiber.StatusForbidden)
+	}
+	return c.Next()
+}
+
+func LogistGuard(c *fiber.Ctx) error {
+	role, ok := c.Locals("role_id").(float64)
+	if !ok || role != 3 {
+		return c.SendStatus(fiber.StatusForbidden)
+	}
+	return c.Next()
+}
+
+func BrokerGuard(c *fiber.Ctx) error {
+	role, ok := c.Locals("role_id").(float64)
+	if !ok || role != 4 {
+		return c.SendStatus(fiber.StatusForbidden)
+	}
+	return c.Next()
+}
+
+func CarServiceGuard(c *fiber.Ctx) error {
+	role, ok := c.Locals("role_id").(float64)
+	if !ok || role != 5 {
+		return c.SendStatus(fiber.StatusForbidden)
+	}
+	return c.Next()
+}

@@ -163,6 +163,17 @@ definitions:
       id:
         type: integer
     type: object
+  model.AdminCountryResponse:
+    properties:
+      created_at:
+        type: string
+      flag:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   model.AdminDrivetrainResponse:
     properties:
       created_at:
@@ -237,6 +248,16 @@ definitions:
         type: integer
       wheel:
         type: boolean
+    type: object
+  model.AdminLoginReq:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
     type: object
   model.AdminModelResponse:
     properties:
@@ -414,6 +435,15 @@ definitions:
       parameter_value_id:
         type: integer
     type: object
+  model.Country:
+    properties:
+      flag:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   model.CreateBodyTypeRequest:
     properties:
       image:
@@ -469,8 +499,6 @@ definitions:
         type: integer
       trade_in:
         type: integer
-      vin_code:
-        type: string
       wheel:
         description: left true, right false
         type: boolean
@@ -487,7 +515,6 @@ definitions:
     - phone_numbers
     - price
     - trade_in
-    - vin_code
     - wheel
     - year
     type: object
@@ -728,6 +755,16 @@ definitions:
     - model_id
     - name
     - start_year
+    type: object
+  model.CreateLogistDestinationRequest:
+    properties:
+      from_id:
+        type: integer
+      to_id:
+        type: integer
+    required:
+    - from_id
+    - to_id
     type: object
   model.CreateModelRequest:
     properties:
@@ -1475,10 +1512,19 @@ definitions:
     properties:
       access_token:
         type: string
-      first_time_login:
-        type: boolean
       refresh_token:
         type: string
+    type: object
+  model.LogistDestinationResponse:
+    properties:
+      created_at:
+        type: string
+      from:
+        $ref: '#/definitions/model.Country'
+      id:
+        type: integer
+      to:
+        $ref: '#/definitions/model.Country'
     type: object
   model.Model:
     properties:
@@ -1600,6 +1646,15 @@ definitions:
         items:
           $ref: '#/definitions/model.Model'
         type: array
+    type: object
+  model.ThirdPartyLoginFiberResponse:
+    properties:
+      access_token:
+        type: string
+      first_time_login:
+        type: boolean
+      refresh_token:
+        type: string
     type: object
   model.ThirdPartyLoginReq:
     properties:
@@ -4467,6 +4522,203 @@ paths:
       summary: Update a configuration
       tags:
       - admin-configurations
+  /api/v1/admin/countries:
+    get:
+      description: Returns a list of all countries
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminCountryResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all countries
+      tags:
+      - admin-countries
+    post:
+      consumes:
+      - application/json
+      description: Creates a new country
+      parameters:
+      - description: Country data
+        in: body
+        name: country
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateNameRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a new country
+      tags:
+      - admin-countries
+  /api/v1/admin/countries/{id}:
+    delete:
+      description: Deletes a country by ID
+      parameters:
+      - description: Country ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a country
+      tags:
+      - admin-countries
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing country
+      parameters:
+      - description: Country ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Country data
+        in: body
+        name: country
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateNameRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a country
+      tags:
+      - admin-countries
+  /api/v1/admin/countries/{id}/images:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads a flag image for a country
+      parameters:
+      - description: Country ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Country flag image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload country flag image
+      tags:
+      - admin-countries
   /api/v1/admin/drivetrains:
     get:
       description: Returns a list of all drivetrains
@@ -6801,6 +7053,48 @@ paths:
       summary: Delete user account
       tags:
       - auth
+  /api/v1/auth/admin-login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token
+      parameters:
+      - description: Admin login credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.AdminLoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.LoginFiberResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Admin login
+      tags:
+      - auth
   /api/v1/auth/send-application:
     post:
       consumes:
@@ -6917,7 +7211,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Success'
+            $ref: '#/definitions/model.ThirdPartyLoginFiberResponse'
         "400":
           description: Bad Request
           schema:
@@ -7151,6 +7445,221 @@ paths:
       summary: User phone confirmation
       tags:
       - auth
+  /api/v1/third-party/dealer/car:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new car for the authenticated dealer
+      parameters:
+      - description: Car data
+        in: body
+        name: car
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateCarRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a dealer car
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/car/{id}:
+    delete:
+      description: Deletes a dealer car
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete dealer car
+      tags:
+      - dealer
+    post:
+      consumes:
+      - application/json
+      description: Updates an existing car for the authenticated dealer
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Car data
+        in: body
+        name: car
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateCarRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a dealer car
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/car/{id}/dont-sell:
+    post:
+      description: Changes the status of a dealer car (sell/dont-sell)
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Change dealer car status
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/car/{id}/sell:
+    post:
+      description: Changes the status of a dealer car (sell/dont-sell)
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Change dealer car status
+      tags:
+      - dealer
   /api/v1/third-party/first-login:
     post:
       description: Returns a first login
@@ -7193,6 +7702,127 @@ paths:
       summary: First login
       tags:
       - third-party
+  /api/v1/third-party/logist/destinations:
+    get:
+      description: Returns a list of logist destinations (routes)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.LogistDestinationResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get logist destinations
+      tags:
+      - logist
+    post:
+      consumes:
+      - application/json
+      description: Creates a new logist destination (route)
+      parameters:
+      - description: Destination data
+        in: body
+        name: destination
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateLogistDestinationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create logist destination
+      tags:
+      - logist
+  /api/v1/third-party/logist/destinations/{id}:
+    delete:
+      description: Deletes a logist destination (route) by ID
+      parameters:
+      - description: Destination ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete logist destination
+      tags:
+      - logist
   /api/v1/third-party/profile:
     get:
       description: Returns a profile
@@ -8555,6 +9185,41 @@ paths:
           schema:
             $ref: '#/definitions/model.ResultMessage'
       summary: Get colors
+      tags:
+      - filter
+  /api/v1/users/countries:
+    get:
+      description: Returns a list of countries
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Country'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get countries
       tags:
       - filter
   /api/v1/users/drivetrains:

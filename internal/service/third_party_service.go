@@ -113,3 +113,115 @@ func (s *ThirdPartyService) CreateBannerImage(ctx *fasthttp.RequestCtx, form *mu
 
 	return model.Response{Data: model.Success{Message: "Banner image updated successfully"}}
 }
+
+func (s *ThirdPartyService) CreateDealerCar(ctx *fasthttp.RequestCtx, car *model.CreateCarRequest, dealerID int) model.Response {
+	id, err := s.repo.CreateDealerCar(ctx, car, dealerID)
+
+	if err != nil {
+		return model.Response{
+			Status: 400,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: model.SuccessWithId{Id: id, Message: "Car created successfully"},
+	}
+}
+
+func (s *ThirdPartyService) UpdateDealerCar(ctx *fasthttp.RequestCtx, car *model.UpdateCarRequest, dealerID int) model.Response {
+	err := s.repo.UpdateDealerCar(ctx, car, dealerID)
+
+	if err != nil {
+		return model.Response{
+			Status: 400,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: model.Success{Message: "Car updated successfully"},
+	}
+}
+
+func (s *ThirdPartyService) DealerDontSell(ctx *fasthttp.RequestCtx, carID, dealerID *int) model.Response {
+	err := s.repo.DealerDontSell(ctx, carID, dealerID)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{Data: model.Success{Message: "successfully updated status"}}
+}
+
+func (s *ThirdPartyService) DealerSell(ctx *fasthttp.RequestCtx, carID, dealerID *int) model.Response {
+	err := s.repo.DealerSell(ctx, carID, dealerID)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{Data: model.Success{Message: "successfully updated status"}}
+}
+
+func (s *ThirdPartyService) DeleteDealerCar(ctx *fasthttp.RequestCtx, id int) model.Response {
+	err := s.repo.DeleteDealerCar(ctx, id)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	// delete files
+
+	return model.Response{Data: model.Success{Message: "Car deleted successfully"}}
+}
+
+func (s *ThirdPartyService) GetLogistDestinations(ctx *fasthttp.RequestCtx) model.Response {
+	destinations, err := s.repo.GetLogistDestinations(ctx)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{Data: destinations}
+}
+
+func (s *ThirdPartyService) CreateLogistDestination(ctx *fasthttp.RequestCtx, req model.CreateLogistDestinationRequest) model.Response {
+	id, err := s.repo.CreateLogistDestination(ctx, req)
+
+	if err != nil {
+		return model.Response{
+			Status: 400,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: model.SuccessWithId{Id: id, Message: "Destination created successfully"},
+	}
+}
+
+func (s *ThirdPartyService) DeleteLogistDestination(ctx *fasthttp.RequestCtx, id int) model.Response {
+	err := s.repo.DeleteLogistDestination(ctx, id)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{Data: model.Success{Message: "Destination deleted successfully"}}
+}

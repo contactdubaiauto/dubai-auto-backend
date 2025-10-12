@@ -4240,3 +4240,166 @@ func (h *AdminHandler) DeleteColor(c *fiber.Ctx) error {
 	data := h.AdminService.DeleteColor(ctx, id)
 	return utils.FiberResponse(c, data)
 }
+
+// Countries CRUD operations
+
+// GetCountries godoc
+// @Summary      Get all countries
+// @Description  Returns a list of all countries
+// @Tags         admin-countries
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}  model.AdminCountryResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/countries [get]
+func (h *AdminHandler) GetCountries(c *fiber.Ctx) error {
+	ctx := c.Context()
+	data := h.AdminService.GetCountries(ctx)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateCountry godoc
+// @Summary      Create a new country
+// @Description  Creates a new country
+// @Tags         admin-countries
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        country  body      model.CreateNameRequest  true  "Country data"
+// @Success      200      {object}  model.SuccessWithId
+// @Failure      400      {object}  model.ResultMessage
+// @Failure      401      {object}  auth.ErrorResponse
+// @Failure      403      {object}  auth.ErrorResponse
+// @Failure      500      {object}  model.ResultMessage
+// @Router       /api/v1/admin/countries [post]
+func (h *AdminHandler) CreateCountry(c *fiber.Ctx) error {
+	var req model.CreateNameRequest
+	ctx := c.Context()
+
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	if err := h.validator.Validate(req); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	data := h.AdminService.CreateCountry(ctx, &req)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateCountryImage godoc
+// @Summary      Upload country flag image
+// @Description  Uploads a flag image for a country
+// @Tags         admin-countries
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        id     path      int   true   "Country ID"
+// @Param        image  formData  file  true   "Country flag image"
+// @Success      200    {object}  model.SuccessWithId
+// @Failure      400    {object}  model.ResultMessage
+// @Failure      401    {object}  auth.ErrorResponse
+// @Failure      403    {object}  auth.ErrorResponse
+// @Failure      500    {object}  model.ResultMessage
+// @Router       /api/v1/admin/countries/{id}/images [post]
+func (h *AdminHandler) CreateCountryImage(c *fiber.Ctx) error {
+	ctx := c.Context()
+	form, _ := c.MultipartForm()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("country id must be integer"),
+		})
+	}
+
+	data := h.AdminService.CreateCountryImage(ctx, form, id)
+	return utils.FiberResponse(c, data)
+}
+
+// UpdateCountry godoc
+// @Summary      Update a country
+// @Description  Updates an existing country
+// @Tags         admin-countries
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id       path      int                      true  "Country ID"
+// @Param        country  body      model.CreateNameRequest  true  "Country data"
+// @Success      200      {object}  model.Success
+// @Failure      400      {object}  model.ResultMessage
+// @Failure      401      {object}  auth.ErrorResponse
+// @Failure      403      {object}  auth.ErrorResponse
+// @Failure      500      {object}  model.ResultMessage
+// @Router       /api/v1/admin/countries/{id} [put]
+func (h *AdminHandler) UpdateCountry(c *fiber.Ctx) error {
+	var req model.CreateNameRequest
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("country id must be integer"),
+		})
+	}
+
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	if err := h.validator.Validate(req); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.AdminService.UpdateCountry(ctx, id, &req)
+	return utils.FiberResponse(c, data)
+}
+
+// DeleteCountry godoc
+// @Summary      Delete a country
+// @Description  Deletes a country by ID
+// @Tags         admin-countries
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Country ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/countries/{id} [delete]
+func (h *AdminHandler) DeleteCountry(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("country id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.AdminService.DeleteCountry(ctx, id)
+	return utils.FiberResponse(c, data)
+}

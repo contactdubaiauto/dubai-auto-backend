@@ -268,3 +268,9 @@ type ThirdPartyProfileReq struct {
 type ThirdPartyFirstLoginReq struct {
 	Message string `json:"message" validate:"required,max=300"`
 }
+
+// Logist Destination requests
+type CreateLogistDestinationRequest struct {
+	FromID int `json:"from_id" validate:"required"`
+	ToID   int `json:"to_id" validate:"required"`
+}

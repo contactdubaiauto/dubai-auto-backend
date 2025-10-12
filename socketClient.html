@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> - Socket.IO Client</title>
-    <!-- i need v2 version of socket.io -->
-    <!-- <script src="https://cdn.socket.io/2.4.2/socket.io.min.js"></script>  -->
-    <!-- <script src="https://cdn.socket.io/3.1.2/socket.io.min.js"></script>  -->
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script> 
+    <title>WebSocket Client</title>
     <style>
         * {
             margin: 0;
@@ -286,7 +282,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1> - Socket.IO Client</h1>
+            <h1>WebSocket Client</h1>
             <div class="status disconnected" id="connectionStatus">Disconnected</div>
         </div>
 
@@ -379,7 +375,7 @@
             messages.scrollTop = messages.scrollHeight;
         }
 
-        // Connect to Socket.IO server
+        // Connect to WebSocket server
         function connect() {
             const serverUrl = document.getElementById('serverUrl').value;
             const token = document.getElementById('jwtToken').value.trim();
@@ -390,78 +386,53 @@
             }
 
             if (socket) {
-                socket.disconnect();
+                socket.close();
             }
 
             updateStatus('Connecting...', 'connecting');
             document.getElementById('connectBtn').disabled = true;
 
             try {
-                // Connect with JWT token as query parameter
-                socket = io(serverUrl, {
-                    query: {
-                        token: token
-                    },
-                    transports: ['websocket', 'polling']
-                });
+                // Build WebSocket URL with token
+                const wsUrl = serverUrl.replace('http://', 'ws://').replace('https://', 'wss://');
+                socket = new WebSocket(`${wsUrl}/ws?token=${encodeURIComponent(token)}`);
 
-                // Connection successful
-                socket.on('connect', () => {
+                // Connection opened
+                socket.onopen = () => {
                     isConnected = true;
                     updateStatus('Connected', 'connected');
                     document.getElementById('connectBtn').disabled = true;
                     document.getElementById('disconnectBtn').disabled = false;
                     document.getElementById('onlineUsers').style.display = 'block';
-                    addMessage('✅ Connected to  messaging service', 'system');
-                });
+                    addMessage('✅ Connected to WebSocket messaging service', 'system');
+                };
 
-                // Handle messages from server
-                socket.on('message', (data) => {
+                // Listen for messages
+                socket.onmessage = (event) => {
                     try {
-                        const parsed = typeof data === 'string' ? JSON.parse(data) : data;
-                        handleServerMessage(parsed);
+                        const data = JSON.parse(event.data);
+                        handleServerMessage(data);
                     } catch (e) {
-                        addMessage(`📨 Raw message: ${data}`, 'info');
+                        addMessage(`📨 Raw message: ${event.data}`, 'info');
                     }
-                });
+                };
 
-                // Handle connection errors
-                socket.on('connect_error', (error) => {
-                    addMessage(`❌ Connection error: ${error.message}`, 'error');
+                // Connection error
+                socket.onerror = (error) => {
+                    addMessage(`❌ WebSocket error`, 'error');
                     updateStatus('Connection Failed', 'disconnected');
                     document.getElementById('connectBtn').disabled = false;
-                });
+                };
 
-                // Handle disconnection
-                socket.on('disconnect', (reason) => {
+                // Connection closed
+                socket.onclose = (event) => {
                     isConnected = false;
                     updateStatus('Disconnected', 'disconnected');
                     document.getElementById('connectBtn').disabled = false;
                     document.getElementById('disconnectBtn').disabled = true;
                     document.getElementById('onlineUsers').style.display = 'none';
-                    addMessage(`🔌 Disconnected: ${reason}`, 'system');
-                });
-
-                // Handle custom events
-                socket.on('connected', (data) => {
-                    addMessage(`🎉 Welcome! Socket ID: ${data.socket_id}`, 'system');
-                });
-
-                socket.on('error', (data) => {
-                    addMessage(`❌ Server error: ${data.message || data}`, 'error');
-                });
-
-                socket.on('system_message', (data) => {
-                    addMessage(`📢 System: ${data.message}`, 'system');
-                });
-
-                socket.on('private_message', (data) => {
-                    addMessage(`📩 Private from ${data.username}: ${data.message}`, 'user');
-                });
-
-                socket.on('user_status', (data) => {
-                    addMessage(`👤 ${data.username} is now ${data.status}`, 'info');
-                });
+                    addMessage(`🔌 Disconnected: ${event.reason || 'Connection closed'}`, 'system');
+                };
 
             } catch (error) {
                 addMessage(`❌ Connection failed: ${error.message}`, 'error');
@@ -472,38 +443,41 @@
 
         // Handle server messages
         function handleServerMessage(data) {
-            if (data.event) {
-                switch (data.event) {
-                    case 'connected':
-                        addMessage(`✅ ${data.data.message}`, 'system');
-                        break;
-                    case 'message':
-                        addMessage(`💬 ${data.data.username}: ${data.data.message}`, 'user');
-                        break;
-                    case 'private_message':
-                        addMessage(`📩 Private from ${data.data.username}: ${data.data.message}`, 'user');
-                        break;
-                    case 'error':
-                        addMessage(`❌ Error: ${data.data.message}`, 'error');
-                        break;
-                    case 'online_users':
-                        updateOnlineUsers(data.data.users);
-                        break;
-                    case 'info':
-                        displayServerInfo(data.data);
-                        break;
-                    default:
-                        addMessage(`📨 ${data.event}: ${JSON.stringify(data.data)}`, 'info');
-                }
-            } else {
-                addMessage(`📨 ${JSON.stringify(data)}`, 'info');
+            switch (data.event) {
+                case 'connected':
+                    addMessage(`🎉 ${data.data.message}`, 'system');
+                    break;
+                case 'message':
+                    addMessage(`💬 ${data.data.username}: ${data.data.message}`, 'user');
+                    break;
+                case 'error':
+                    addMessage(`❌ Error: ${data.data.message || data.data.error}`, 'error');
+                    break;
+                case 'online_users':
+                    updateOnlineUsers(data.data.users);
+                    break;
+                case 'user_status':
+                    addMessage(`👤 ${data.data.username} is now ${data.data.status}`, 'info');
+                    break;
+                case 'pong':
+                    addMessage(`🏓 Pong received at ${new Date(data.data.timestamp).toLocaleTimeString()}`, 'system');
+                    break;
+                default:
+                    addMessage(`📨 ${data.event}: ${JSON.stringify(data.data)}`, 'info');
+            }
+        }
+
+        // Send message via WebSocket
+        function sendWS(messageData) {
+            if (socket && isConnected) {
+                socket.send(JSON.stringify(messageData));
             }
         }
 
         // Disconnect from server
         function disconnect() {
             if (socket) {
-                socket.disconnect();
+                socket.close();
                 socket = null;
             }
         }
@@ -520,12 +494,12 @@
                 message: message
             };
 
-            socket.emit('message', JSON.stringify(messageData));
+            sendWS(messageData);
             addMessage(`💬 You: ${message}`, 'user');
             messageInput.value = '';
         }
 
-        // Send a private message
+        // Send a private message (not implemented in server yet)
         function sendPrivateMessage() {
             const targetUserId = document.getElementById('targetUserId').value;
             const messageInput = document.getElementById('privateMessageInput');
@@ -539,12 +513,12 @@
                 message: message
             };
 
-            socket.emit('message', JSON.stringify(messageData));
+            sendWS(messageData);
             addMessage(`📩 Private to User ${targetUserId}: ${message}`, 'user');
             messageInput.value = '';
         }
 
-        // Join a room
+        // Join a room (not implemented in server yet)
         function joinRoom() {
             const roomInput = document.getElementById('roomInput');
             const roomId = roomInput.value.trim();
@@ -556,8 +530,8 @@
                 room_id: roomId
             };
 
-            socket.emit('message', JSON.stringify(messageData));
-            addMessage(`🏠 Joined room: ${roomId}`, 'system');
+            sendWS(messageData);
+            addMessage(`🏠 Joining room: ${roomId}`, 'system');
             roomInput.value = '';
         }
 
@@ -569,32 +543,26 @@
                 event: 'get_online_users'
             };
 
-            socket.emit('message', JSON.stringify(messageData));
+            sendWS(messageData);
         }
 
-        // Get server info via HTTP API
+        // Send ping
+        function sendPing() {
+            if (!isConnected) return;
+
+            const messageData = {
+                event: 'ping'
+            };
+
+            sendWS(messageData);
+            addMessage('🏓 Ping sent...', 'info');
+        }
+
+        // Get server info via HTTP API (mock function)
         async function getServerInfo() {
-            const serverUrl = document.getElementById('serverUrl').value.replace('ws://', 'http://').replace('wss://', 'https://');
-            
-            try {
-                const response = await fetch(`${serverUrl}/api/v1/socket/info`);
-                const data = await response.json();
-                displayServerInfo(data.data);
-            } catch (error) {
-                addMessage(`❌ Failed to get server info: ${error.message}`, 'error');
-            }
-        }
-
-        // Display server info
-        function displayServerInfo(info) {
-            addMessage(`
-                📋 Server Info:<br>
-                • Service: ${info.service}<br>
-                • Version: ${info.version}<br>
-                • Endpoint: ${info.endpoint}<br>
-                • Auth Method: ${info.auth_method}<br>
-                • Events: ${info.events.join(', ')}
-            `, 'info');
+            addMessage('ℹ️ Server Info: WebSocket endpoint at /ws', 'info');
+            addMessage('• Events: ping, message, get_online_users', 'info');
+            addMessage('• Auth: JWT token via query parameter', 'info');
         }
 
         // Update online users list
@@ -636,9 +604,9 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            addMessage(' Welcome to  Socket.IO Client!', 'system');
+            addMessage('🚀 Welcome to WebSocket Client!', 'system');
             addMessage('📝 Enter your JWT token and click Connect to start messaging.', 'info');
-            addMessage('💡 You can get server info and test the connection without authentication.', 'info');
+            addMessage('💡 Connect to ws://localhost:8080/ws', 'info');
         });
     </script>
 </body>

@@ -16,7 +16,6 @@ type CreateCarRequest struct {
 	// BodyTypeID     int      `json:"body_type_id" validate:"required"`
 	PhoneNumbers   []string `json:"phone_numbers" validate:"required"`
 	Wheel          *bool    `json:"wheel" validate:"required"` // left true, right false
-	VinCode        string   `json:"vin_code" validate:"required"`
 	Description    string   `json:"description"`
 	CityID         int      `json:"city_id" validate:"required"`
 	BrandID        int      `json:"brand_id" validate:"required"`

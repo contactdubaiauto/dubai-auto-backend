@@ -246,6 +246,19 @@ type AdminCityResponse struct {
 	ID        int       `json:"id"`
 }
 
+type AdminCountryResponse struct {
+	CreatedAt time.Time `json:"created_at"`
+	Name      string    `json:"name"`
+	Flag      string    `json:"flag"`
+	ID        int       `json:"id"`
+}
+
+type Country struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+	Flag string `json:"flag"`
+}
+
 type AdminBrandResponse struct {
 	UpdatedAt  *time.Time `json:"updated_at"`
 	Name       *string    `json:"name"`
@@ -459,4 +472,11 @@ type ThirdPartyGetProfileRes struct {
 type ThirdPartyGetRegistrationDataRes struct {
 	CompanyTypes   []Model `json:"company_types"`
 	ActivityFields []Model `json:"activity_fields"`
+}
+
+type LogistDestinationResponse struct {
+	ID        int      `json:"id"`
+	From      *Country `json:"from"`
+	To        *Country `json:"to"`
+	CreatedAt string   `json:"created_at"`
 }

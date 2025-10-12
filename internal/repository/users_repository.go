@@ -884,6 +884,31 @@ func (r *UserRepository) GetColors(ctx *fasthttp.RequestCtx) ([]model.Color, err
 	return colors, err
 }
 
+func (r *UserRepository) GetCountries(ctx *fasthttp.RequestCtx) ([]model.Country, error) {
+	q := `
+		SELECT id, name, flag FROM countries
+	`
+
+	rows, err := r.db.Query(ctx, q)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	countries := make([]model.Country, 0)
+
+	for rows.Next() {
+		var country model.Country
+
+		if err := rows.Scan(&country.ID, &country.Name, &country.Flag); err != nil {
+			return nil, err
+		}
+		countries = append(countries, country)
+	}
+	return countries, err
+}
+
 func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int) (model.Home, error) {
 	home := model.Home{}
 	cars := make([]model.GetCarsResponse, 0)

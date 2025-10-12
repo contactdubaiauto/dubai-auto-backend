@@ -16,6 +16,10 @@ func SetupUserRoutes(r fiber.Router, db *pgxpool.Pool) {
 	userHandler := http.NewUserHandler(userService)
 
 	{
+
+		// countries
+		r.Get("/countries", userHandler.GetCountries)
+
 		// profile
 		r.Get("/profile/my-cars/:id", auth.TokenGuard, userHandler.GetMyCars)
 		r.Get("/profile/my-cars", auth.TokenGuard, userHandler.GetMyCars)

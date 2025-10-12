@@ -287,6 +287,15 @@ func (s *UserService) GetColors(ctx *fasthttp.RequestCtx) *model.Response {
 	return &model.Response{Data: data}
 }
 
+func (s *UserService) GetCountries(ctx *fasthttp.RequestCtx) *model.Response {
+	data, err := s.UserRepository.GetCountries(ctx)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: data}
+}
+
 func (s *UserService) GetHome(ctx *fasthttp.RequestCtx, userID int) *model.Response {
 	data, err := s.UserRepository.GetHome(ctx, userID)
 

@@ -1059,6 +1059,24 @@ func (h *UserHandler) GetColors(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
+// GetCountries godoc
+// @Summary      Get countries
+// @Description  Returns a list of countries
+// @Tags         filter
+// @Produce      json
+// @Success      200  {array}  model.Country
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/countries [get]
+func (h *UserHandler) GetCountries(c *fiber.Ctx) error {
+	ctx := c.Context()
+	data := h.UserService.GetCountries(ctx)
+	return utils.FiberResponse(c, data)
+}
+
 // GetHome godoc
 // @Summary      Get home
 // @Description  Returns a list of car home

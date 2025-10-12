@@ -36,6 +36,13 @@ drop table if exists users;
 drop table if exists admins;
 drop table if exists ownership_types;
 
+create table countries (
+    "id" serial primary key,
+    "name" varchar(50) not null,
+    "flag" varchar(200) not null,
+    "created_at" timestamp default now()
+);
+
 -- dealer register
 create table company_types (
     "id" serial primary key,
@@ -110,6 +117,23 @@ create table users (
     "created_at" timestamp default now(),
     unique("email"),
     unique("phone")
+);
+
+create table destinations (
+    "id" serial primary key,
+    "from_id" int not null,
+    "to_id" int not null,
+    "created_at" timestamp default now(),
+    constraint fk_destinations_from_id
+        foreign key ("from_id")
+            references countries(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_destinations_to_id
+        foreign key ("to_id")
+            references countries(id)
+                on delete cascade
+                on update cascade
 );
 
 create table profiles (
@@ -383,7 +407,7 @@ create table vehicles (
     "wheel" boolean not null default true, -- true left, false right
     "crash" boolean not null default false,
     "odometer" int not null default 0,
-    "vin_code" varchar(255) not null,
+    "vin_code" varchar(255),
     "phone_numbers" varchar(255)[] not null,
     "price" int not null,
     "new" boolean not null default false,
@@ -433,6 +457,8 @@ create table vehicles (
                 on delete cascade
                 on update cascade
 );
+
+
 
 create table images (
     "vehicle_id" int not null,

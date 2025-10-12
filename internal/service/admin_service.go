@@ -1287,3 +1287,80 @@ func (s *AdminService) DeleteComtransCategoryParameter(ctx *fasthttp.RequestCtx,
 	}
 	return &model.Response{Data: model.Success{Message: "Comtrans category parameter deleted successfully"}}
 }
+
+// Countries service methods
+func (s *AdminService) GetCountries(ctx *fasthttp.RequestCtx) *model.Response {
+	countries, err := s.repo.GetCountries(ctx)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: countries}
+}
+
+func (s *AdminService) CreateCountry(ctx *fasthttp.RequestCtx, req *model.CreateNameRequest) *model.Response {
+	id, err := s.repo.CreateCountry(ctx, req)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Country created successfully"}}
+}
+
+func (s *AdminService) CreateCountryImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) *model.Response {
+
+	if form == nil {
+		return &model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the files"),
+		}
+	}
+
+	image := form.File["image"]
+
+	if len(image) > 1 {
+		return &model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 1 file"),
+		}
+	}
+
+	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"countries/"+strconv.Itoa(id))
+
+	if err != nil {
+		return &model.Response{
+			Status: 400,
+			Error:  err,
+		}
+	}
+
+	err = s.repo.CreateCountryImage(ctx, id, path)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Country flag image created successfully"}}
+}
+
+func (s *AdminService) UpdateCountry(ctx *fasthttp.RequestCtx, id int, req *model.CreateNameRequest) *model.Response {
+	err := s.repo.UpdateCountry(ctx, id, req)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.Success{Message: "Country updated successfully"}}
+}
+
+func (s *AdminService) DeleteCountry(ctx *fasthttp.RequestCtx, id int) *model.Response {
+	err := s.repo.DeleteCountry(ctx, id)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.Success{Message: "Country deleted successfully"}}
+}

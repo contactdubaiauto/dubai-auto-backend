@@ -3,22 +3,16 @@ package internal
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	fb_logger "github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"github.com/golang-jwt/jwt/v5"
-	socketio "github.com/googollee/go-socket.io"
-	"github.com/googollee/go-socket.io/engineio"
-	"github.com/googollee/go-socket.io/engineio/transport"
-	"github.com/googollee/go-socket.io/engineio/transport/polling"
-	"github.com/googollee/go-socket.io/engineio/transport/websocket"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"dubai-auto/internal/config"
@@ -27,35 +21,29 @@ import (
 	"dubai-auto/pkg/logger"
 )
 
-// Message structures for Socket.IO
-type SocketMessage struct {
-	ID        string    `json:"id"`
-	UserID    int       `json:"user_id"`
-	Username  string    `json:"username"`
-	Message   string    `json:"message"`
-	Timestamp time.Time `json:"timestamp"`
-	RoomID    string    `json:"room_id,omitempty"`
+// Message structures for WebSocket
+type WSMessage struct {
+	Event   string `json:"event"`
+	Message string `json:"message,omitempty"`
+	Data    any    `json:"data,omitempty"`
 }
 
-type SocketUser struct {
-	ID       int    `json:"id"`
-	Username string `json:"username"`
-	RoleID   int    `json:"role_id"`
-	SocketID string `json:"socket_id"`
+type WSUser struct {
+	ID       int             `json:"id"`
+	Username string          `json:"username"`
+	RoleID   int             `json:"role_id"`
+	Conn     *websocket.Conn `json:"-"`
 }
 
-// Global variables for Socket.IO messaging
+// Global variables for WebSocket messaging
 var (
-	socketClients     = make(map[string]*SocketUser)   // socketID -> user
-	socketUserSockets = make(map[int][]string)         // userID -> []socketID
-	socketConnections = make(map[string]socketio.Conn) // socketID -> connection
-	socketMutex       = sync.RWMutex{}
-	socketServer      *socketio.Server
+	wsClients   = make(map[*websocket.Conn]*WSUser) // connection -> user
+	wsUserConns = make(map[int][]*websocket.Conn)   // userID -> []connections
+	wsMutex     = sync.RWMutex{}
 )
 
-// JWT validation for Socket.IO connections
-func validateSocketJWT(tokenString string) (*SocketUser, error) {
-
+// JWT validation for WebSocket connections
+func validateWSJWT(tokenString string) (*WSUser, error) {
 	if tokenString == "" {
 		return nil, fmt.Errorf("missing token")
 	}
@@ -78,7 +66,7 @@ func validateSocketJWT(tokenString string) (*SocketUser, error) {
 	userID := int(claims["id"].(float64))
 	roleID := int(claims["role_id"].(float64))
 
-	return &SocketUser{
+	return &WSUser{
 		ID:       userID,
 		Username: fmt.Sprintf("User_%d", userID),
 		RoleID:   roleID,
@@ -103,150 +91,155 @@ func InitApp(db *pgxpool.Pool, conf *config.Config, logger *logger.Logger) *fibe
 
 	app.Static("api/v1/images", "."+conf.STATIC_PATH)
 
-	// Initialize Socket.IO messaging service
-	setupSocketIO(app)
+	// Initialize WebSocket messaging service
+	setupWebSocket(app)
 
 	// Initialize routes
 	route.Init(app, db)
 	return app
 }
 
-// setupSocketIO initializes the Socket.IO messaging service
-func setupSocketIO(app *fiber.App) {
-	// Create Socket.IO server with proper transports
-	socketServer = socketio.NewServer(&engineio.Options{
-		Transports: []transport.Transport{
-			&polling.Transport{
-				CheckOrigin: func(r *http.Request) bool {
-					return true // Allow all origins for development
-				},
-			},
-			&websocket.Transport{
-				CheckOrigin: func(r *http.Request) bool {
-					return true // Allow all origins for development
-				},
-			},
-		},
+// setupWebSocket initializes the WebSocket messaging service
+func setupWebSocket(app *fiber.App) {
+	// WebSocket upgrade middleware
+	app.Use("/ws", func(c *fiber.Ctx) error {
+		if websocket.IsWebSocketUpgrade(c) {
+			c.Locals("allowed", true)
+			return c.Next()
+		}
+		return fiber.ErrUpgradeRequired
 	})
 
-	// Handle connection events
-	socketServer.OnConnect("/", func(conn socketio.Conn) error {
-		fmt.Printf("🔄 Connection from socket %s: %v\n", conn.ID(), conn.URL())
+	// WebSocket handler
+	app.Get("/ws", websocket.New(func(c *websocket.Conn) {
 		// Get JWT token from query parameters
-		url := conn.URL()
-		token := url.Query().Get("token")
-
+		token := c.Query("token")
 		if token == "" {
-			token = url.Query().Get("auth") // Alternative parameter name
+			token = c.Query("auth")
 		}
 
-		user, err := validateSocketJWT(token)
-
+		user, err := validateWSJWT(token)
 		if err != nil {
 			log.Printf("❌ Authentication failed: %v", err)
-			conn.Emit("error", map[string]string{
-				"error":   "authentication_failed",
-				"message": err.Error(),
-			})
-			conn.Close()
-			return err
+			errMsg := WSMessage{
+				Event: "error",
+				Data: map[string]string{
+					"error":   "authentication_failed",
+					"message": err.Error(),
+				},
+			}
+			c.WriteJSON(errMsg)
+			c.Close()
+			return
 		}
 
-		// Store user info
-		socketID := conn.ID()
-		user.SocketID = socketID
-		socketMutex.Lock()
-		socketClients[socketID] = user
-		socketUserSockets[user.ID] = append(socketUserSockets[user.ID], socketID)
-		socketConnections[socketID] = conn
-		socketMutex.Unlock()
+		user.Conn = c
 
-		log.Printf("✅ User %d connected with socket %s", user.ID, socketID)
+		// Store user connection
+		wsMutex.Lock()
+		wsClients[c] = user
+		wsUserConns[user.ID] = append(wsUserConns[user.ID], c)
+		wsMutex.Unlock()
+
+		log.Printf("✅ User %d connected via WebSocket", user.ID)
 
 		// Send welcome message
-		conn.Emit("connected", map[string]any{
-			"message":   "Successfully connected to messaging service",
-			"user_id":   user.ID,
-			"socket_id": socketID,
-		})
+		welcomeMsg := WSMessage{
+			Event: "connected",
+			Data: map[string]any{
+				"message": "Successfully connected to messaging service",
+				"user_id": user.ID,
+			},
+		}
+		c.WriteJSON(welcomeMsg)
 
-		// Broadcast user online status to all clients
+		// Broadcast user online status
 		broadcastUserStatus(user.ID, "online")
 
-		return nil
-	})
-
-	// Handle disconnection events
-	socketServer.OnDisconnect("/", func(conn socketio.Conn, reason string) {
-		socketID := conn.ID()
-
-		socketMutex.Lock()
-		user, exists := socketClients[socketID]
-		if exists {
-			delete(socketClients, socketID)
-			delete(socketConnections, socketID)
-
-			if sockets, userExists := socketUserSockets[user.ID]; userExists {
-				// Remove this socket from user's socket list
-				for i, sid := range sockets {
-					if sid == socketID {
-						socketUserSockets[user.ID] = append(sockets[:i], sockets[i+1:]...)
+		// Handle incoming messages
+		defer func() {
+			// Cleanup on disconnect
+			wsMutex.Lock()
+			delete(wsClients, c)
+			if conns, exists := wsUserConns[user.ID]; exists {
+				for i, conn := range conns {
+					if conn == c {
+						wsUserConns[user.ID] = append(conns[:i], conns[i+1:]...)
 						break
 					}
 				}
-				// If no more sockets for this user, remove the user entry
-				if len(socketUserSockets[user.ID]) == 0 {
-					delete(socketUserSockets, user.ID)
+				if len(wsUserConns[user.ID]) == 0 {
+					delete(wsUserConns, user.ID)
 				}
 			}
-		}
-		socketMutex.Unlock()
+			wsMutex.Unlock()
 
-		if exists {
-			log.Printf("🔌 User %d disconnected (socket %s): %s", user.ID, socketID, reason)
+			log.Printf("🔌 User %d disconnected", user.ID)
 			broadcastUserStatus(user.ID, "offline")
+			c.Close()
+		}()
+
+		// Read messages
+		for {
+			var msg WSMessage
+			if err := c.ReadJSON(&msg); err != nil {
+				log.Printf("❌ Read error: %v", err)
+				break
+			}
+
+			log.Printf("📨 Received message from user %d: %s", user.ID, msg.Event)
+
+			// Handle different message types
+			switch msg.Event {
+			case "ping":
+				pongMsg := WSMessage{
+					Event: "pong",
+					Data: map[string]any{
+						"timestamp": time.Now(),
+					},
+				}
+				c.WriteJSON(pongMsg)
+
+			case "message":
+				// Handle regular message (broadcast to all)
+				handleMessage(user, msg.Message)
+
+			case "get_online_users":
+				sendOnlineUsers(c)
+
+			default:
+				log.Printf("⚠️ Unknown event: %s", msg.Event)
+			}
 		}
-	})
+	}))
 
-	// Handle ping events
-	socketServer.OnEvent("/", "ping", func(conn socketio.Conn, data map[string]any) {
-		fmt.Printf("🔄 Ping from socket %s: %v\n", conn.ID(), data)
-		conn.Emit("pong", map[string]any{
-			"timestamp": time.Now(),
-		})
-	})
-
-	// Start the Socket.IO server
-	go func() {
-		if err := socketServer.Serve(); err != nil {
-			log.Fatalf("❌ Socket.IO server error: %v", err)
-		}
-	}()
-
-	// Mount Socket.IO routes using Fiber adaptor
-	app.Get("/socket.io/*", adaptor.HTTPHandler(socketServer))
-	log.Println("🔌 Socket.IO messaging service initialized")
-	log.Println("📖 Get service info:GET /api/v1/socket/info")
-	log.Println("📊 Get stats: GET /api/v1/sockt/stats (requires JWT)")
-	log.Println("📢 Send system message: POST /api/v1/socket/system-message (requires JWT)")
+	log.Println("🔌 WebSocket messaging service initialized at /ws")
+	log.Println("📖 Connect with: ws://localhost:8080/ws?token=YOUR_JWT_TOKEN")
 }
 
 // Helper functions
 func broadcastMessage(event string, data any) {
-	socketMutex.RLock()
-	connections := make(map[string]socketio.Conn)
-	for k, v := range socketConnections {
-		connections[k] = v
+	wsMutex.RLock()
+	connections := make([]*websocket.Conn, 0, len(wsClients))
+	for conn := range wsClients {
+		connections = append(connections, conn)
 	}
-	socketMutex.RUnlock()
+	wsMutex.RUnlock()
 
 	log.Printf("📡 Broadcasting %s to %d users", event, len(connections))
 
+	msg := WSMessage{
+		Event: event,
+		Data:  data,
+	}
+
 	// Send to all connected clients
-	for socketID, conn := range connections {
-		go func(sid string, c socketio.Conn) {
-			c.Emit(event, data)
-		}(socketID, conn)
+	for _, conn := range connections {
+		go func(c *websocket.Conn) {
+			if err := c.WriteJSON(msg); err != nil {
+				log.Printf("❌ Broadcast error: %v", err)
+			}
+		}(conn)
 	}
 }
 
@@ -257,38 +250,72 @@ func broadcastUserStatus(userID int, status string) {
 		"status":   status,
 	}
 
-	socketMutex.RLock()
-	connectedCount := len(socketClients)
-	socketMutex.RUnlock()
+	wsMutex.RLock()
+	connectedCount := len(wsClients)
+	wsMutex.RUnlock()
 
 	log.Printf("📡 Broadcasting user %d status: %s to %d users", userID, status, connectedCount)
 	broadcastMessage("user_status", statusMessage)
 }
 
 func sendToUser(userID int, event string, data any) {
-	socketMutex.RLock()
-	userSockets, exists := socketUserSockets[userID]
+	wsMutex.RLock()
+	userConns, exists := wsUserConns[userID]
 
-	if !exists || len(userSockets) == 0 {
-		socketMutex.RUnlock()
+	if !exists || len(userConns) == 0 {
+		wsMutex.RUnlock()
 		log.Printf("❌ User %d not connected", userID)
 		return
 	}
 
-	userConnections := make([]socketio.Conn, 0, len(userSockets))
+	connections := make([]*websocket.Conn, len(userConns))
+	copy(connections, userConns)
+	wsMutex.RUnlock()
 
-	for _, socketID := range userSockets {
-		if conn, connExists := socketConnections[socketID]; connExists {
-			userConnections = append(userConnections, conn)
-		}
+	log.Printf("📤 Sending %s to user %d (%d connections)", event, userID, len(connections))
+
+	msg := WSMessage{
+		Event: event,
+		Data:  data,
 	}
 
-	socketMutex.RUnlock()
-	log.Printf("📤 Sending %s to user %d (%d sockets)", event, userID, len(userConnections))
-
-	for _, conn := range userConnections {
-		go func(c socketio.Conn) {
-			c.Emit(event, data)
+	for _, conn := range connections {
+		go func(c *websocket.Conn) {
+			if err := c.WriteJSON(msg); err != nil {
+				log.Printf("❌ Send error: %v", err)
+			}
 		}(conn)
+	}
+}
+
+func handleMessage(user *WSUser, message string) {
+	broadcastMessage("message", map[string]any{
+		"user_id":  user.ID,
+		"username": user.Username,
+		"message":  message,
+	})
+}
+
+func sendOnlineUsers(conn *websocket.Conn) {
+	wsMutex.RLock()
+	users := make([]map[string]any, 0, len(wsClients))
+	for _, user := range wsClients {
+		users = append(users, map[string]any{
+			"id":       user.ID,
+			"username": user.Username,
+		})
+	}
+	wsMutex.RUnlock()
+
+	msg := WSMessage{
+		Event: "online_users",
+		Data: map[string]any{
+			"users": users,
+			"count": len(users),
+		},
+	}
+
+	if err := conn.WriteJSON(msg); err != nil {
+		log.Printf("❌ Send online users error: %v", err)
 	}
 }

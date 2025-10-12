@@ -1493,3 +1493,51 @@ func (r *AdminRepository) DeleteComtransParameterValue(ctx *fasthttp.RequestCtx,
 	_, err := r.db.Exec(ctx, q, parameterID, id)
 	return err
 }
+
+// Countries CRUD operations
+func (r *AdminRepository) GetCountries(ctx *fasthttp.RequestCtx) ([]model.AdminCountryResponse, error) {
+	q := `SELECT id, name, flag, created_at FROM countries ORDER BY id`
+	rows, err := r.db.Query(ctx, q)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	var countries []model.AdminCountryResponse
+
+	for rows.Next() {
+		var country model.AdminCountryResponse
+		if err := rows.Scan(&country.ID, &country.Name, &country.Flag, &country.CreatedAt); err != nil {
+			return nil, err
+		}
+		countries = append(countries, country)
+	}
+
+	return countries, nil
+}
+
+func (r *AdminRepository) CreateCountry(ctx *fasthttp.RequestCtx, req *model.CreateNameRequest) (int, error) {
+	q := `INSERT INTO countries (name, flag) VALUES ($1, '') RETURNING id`
+	var id int
+	err := r.db.QueryRow(ctx, q, req.Name).Scan(&id)
+	return id, err
+}
+
+func (r *AdminRepository) CreateCountryImage(ctx *fasthttp.RequestCtx, id int, path string) error {
+	q := `UPDATE countries SET flag = $2 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, path)
+	return err
+}
+
+func (r *AdminRepository) UpdateCountry(ctx *fasthttp.RequestCtx, id int, req *model.CreateNameRequest) error {
+	q := `UPDATE countries SET name = $2 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name)
+	return err
+}
+
+func (r *AdminRepository) DeleteCountry(ctx *fasthttp.RequestCtx, id int) error {
+	q := `DELETE FROM countries WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id)
+	return err
+}
