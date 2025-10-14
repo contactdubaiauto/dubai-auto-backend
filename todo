@@ -7,9 +7,9 @@ user-da vin code required
 admin - zayawkalar, cansel (send mail, delete user), accept, users can write message to admin
 3rd part users - forgot password, dealer (loginregister, first launch, garage)
 
-1. 
+1. simple message emit/send/receive with websocket
 2. 
-3. insert into logist_destinations (from, to)
+3. 
 4. 
 chat (simple test for Dani)
 

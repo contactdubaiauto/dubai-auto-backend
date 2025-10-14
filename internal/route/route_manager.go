@@ -8,24 +8,26 @@ import (
 	"dubai-auto/pkg/auth"
 )
 
-func Init(r *fiber.App, db *pgxpool.Pool) {
+func Init(app *fiber.App, db *pgxpool.Pool) {
 
-	userRoute := r.Group("/api/v1/users")
+	userRoute := app.Group("/api/v1/users")
 	SetupUserRoutes(userRoute, db)
 
-	authRoute := r.Group("/api/v1/auth")
+	authRoute := app.Group("/api/v1/auth")
 	SetupAuthRoutes(authRoute, db)
 
-	motorcycleRoute := r.Group("/api/v1/motorcycles")
+	motorcycleRoute := app.Group("/api/v1/motorcycles")
 	SetupMotorcycleRoutes(motorcycleRoute, db)
 
-	comtransRoute := r.Group("/api/v1/comtrans")
+	comtransRoute := app.Group("/api/v1/comtrans")
 	SetupComtranRoutes(comtransRoute, db)
 
-	adminRoute := r.Group("/api/v1/admin", auth.AdminGuard)
+	adminRoute := app.Group("/api/v1/admin", auth.AdminGuard)
 	SetupAdminRoutes(adminRoute, db)
 
-	thirdPartyRoute := r.Group("/api/v1/third-party")
+	thirdPartyRoute := app.Group("/api/v1/third-party")
 	SetupThirdPartyRoutes(thirdPartyRoute, db)
+
+	SetupWebSocketRoutes(app, db)
 
 }
