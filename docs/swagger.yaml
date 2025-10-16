@@ -293,8 +293,6 @@ definitions:
     properties:
       created_at:
         type: string
-      id:
-        type: integer
       moto_category_id:
         type: integer
       moto_parameter_id:
@@ -537,15 +535,12 @@ definitions:
     properties:
       comtrans_category_id:
         type: integer
-      image:
-        type: string
       name:
         maxLength: 100
         minLength: 2
         type: string
     required:
     - comtrans_category_id
-    - image
     - name
     type: object
   model.CreateComtransCategoryParameterRequest:
@@ -782,8 +777,6 @@ definitions:
     type: object
   model.CreateMotoBrandRequest:
     properties:
-      image:
-        type: string
       moto_category_id:
         type: integer
       name:
@@ -791,7 +784,6 @@ definitions:
         minLength: 2
         type: string
     required:
-    - image
     - moto_category_id
     - name
     type: object
@@ -1824,15 +1816,12 @@ definitions:
     properties:
       comtrans_category_id:
         type: integer
-      image:
-        type: string
       name:
         maxLength: 100
         minLength: 2
         type: string
     required:
     - comtrans_category_id
-    - image
     - name
     type: object
   model.UpdateComtransCategoryParameterRequest:
@@ -5958,7 +5947,7 @@ paths:
       summary: Create a moto category parameter
       tags:
       - admin-moto-category-parameters
-  /api/v1/admin/moto-categories/{category_id}/parameters/{id}:
+  /api/v1/admin/moto-categories/{category_id}/parameters/{parameter_id}:
     delete:
       description: Deletes a moto category parameter by ID
       parameters:
@@ -5967,9 +5956,9 @@ paths:
         name: category_id
         required: true
         type: integer
-      - description: Moto category parameter ID
+      - description: Moto parameter ID
         in: path
-        name: id
+        name: parameter_id
         required: true
         type: integer
       produces:
@@ -6010,9 +5999,9 @@ paths:
         name: category_id
         required: true
         type: integer
-      - description: Moto category parameter ID
+      - description: Moto parameter ID
         in: path
-        name: id
+        name: parameter_id
         required: true
         type: integer
       - description: Moto category parameter data
@@ -7546,6 +7535,102 @@ paths:
       summary: Create a dealer car
       tags:
       - dealer
+  /api/v1/third-party/dealer/car/{car_id}/images:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads images for a car (max 10 files)
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Car images (max 10)
+        in: formData
+        name: images
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload car images
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/car/{car_id}/videos:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads videos for a car (max 1 files)
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Car videos (max 10)
+        in: formData
+        name: videos
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload car videos
+      tags:
+      - dealer
   /api/v1/third-party/dealer/car/{id}:
     delete:
       description: Deletes a dealer car
@@ -8040,6 +8125,80 @@ paths:
       security:
       - BearerAuth: []
       summary: Upload avatar images
+      tags:
+      - third-party
+  /api/v1/third-party/profile/my-cars:
+    get:
+      description: Returns my cars
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetCarsResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get my cars
+      tags:
+      - third-party
+  /api/v1/third-party/profile/on-sale:
+    get:
+      description: Returns on sale cars
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetCarsResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: On sale
       tags:
       - third-party
   /api/v1/third-party/registration-data:

@@ -292,11 +292,11 @@
                     <h3>🔐 Authentication</h3>
                     <div class="form-group">
                         <label for="serverUrl">Server URL:</label>
-                        <input type="text" id="serverUrl" value="ws://localhost:8080" placeholder="ws://localhost:8080">
+                        <input type="text" id="serverUrl" value="ws://84.200.87.48:8080" placeholder="ws://84.200.87.48:8080">
                     </div>
                     <div class="form-group">
                         <label for="jwtToken">JWT Token:</label>
-                        <textarea id="jwtToken" rows="3" placeholder="Enter your JWT token here..."></textarea>
+                        <textarea id="jwtToken" rows="3" placeholder="Enter your JWT token here...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjQxNDE1MjUsImlkIjo0NCwicm9sZV9pZCI6MH0.pFHb7iZKI3U6UV6VTeOfD3daWsuZUB4JFHJTwklMhoM</textarea>
                     </div>
                     <button class="btn" id="connectBtn" onclick="connect()">Connect</button>
                     <button class="btn danger" id="disconnectBtn" onclick="disconnect()" disabled>Disconnect</button>
@@ -619,7 +619,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             addMessage('🚀 Welcome to WebSocket Client!', 'system');
             addMessage('📝 Enter your JWT token and click Connect to start messaging.', 'info');
-            addMessage('💡 Connect to ws://localhost:8080/ws', 'info');
+            addMessage('💡 Connect to ws://84.200.87.48:8080/ws', 'info');
         });
     </script>
 </body>

@@ -905,3 +905,35 @@ create table comtran_videos (
                 on delete cascade
                 on update cascade
 );
+
+
+
+
+create table users (
+    "id" serial primary key,
+    "username" varchar(100) not null,
+    "avatar" varchar(255),
+    "last_message_id" int,
+    "unread_messages_count" int not null default 0,
+    "status" int not null default 1 -- 1 active, 2 inactive
+);
+
+create table messages (
+    "id" serial primary key,
+    "sender_id" int not null,
+    "receiver_id" int not null,
+    "message" varchar(500) not null,
+    "status" int not null default 1 -- 1 read, 2 unread
+    "created_at" timestamp default now(),
+    constraint fk_messages_sender_id
+        foreign key (sender_id)
+            references users(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_messages_receiver_id
+        foreign key (receiver_id)
+            references users(id)
+                on delete cascade
+                on update cascade
+);
+

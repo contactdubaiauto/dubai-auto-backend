@@ -27,6 +27,8 @@ func SetupThirdPartyRoutes(r fiber.Router, db *pgxpool.Pool) {
 		// dealer routes
 		r.Post("/dealer/car", auth.DealerGuard, thirdPartyHandler.CreateDealerCar)
 		r.Post("/dealer/car/:id", auth.DealerGuard, thirdPartyHandler.UpdateDealerCar)
+		r.Post("/dealer/car/:id/images", auth.DealerGuard, thirdPartyHandler.CreateDealerCarImages)
+		r.Post("/dealer/car/:id/videos", auth.DealerGuard, thirdPartyHandler.CreateDealerCarVideos)
 		r.Post("/dealer/car/:id/sell", auth.DealerGuard, thirdPartyHandler.StatusDealer)
 		r.Post("/dealer/car/:id/dont-sell", auth.DealerGuard, thirdPartyHandler.StatusDealer)
 		r.Delete("/dealer/car/:id", auth.DealerGuard, thirdPartyHandler.DeleteDealerCar)

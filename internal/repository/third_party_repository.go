@@ -419,6 +419,40 @@ func (r *ThirdPartyRepository) UpdateDealerCar(ctx *fasthttp.RequestCtx, car *mo
 	return err
 }
 
+func (r *ThirdPartyRepository) CreateDealerCarImages(ctx *fasthttp.RequestCtx, carID int, images []string) error {
+
+	if len(images) == 0 {
+		return nil
+	}
+
+	q := `
+		INSERT INTO images (vehicle_id, image) VALUES ($1, $2)
+	`
+
+	for i := range images {
+		_, err := r.db.Exec(ctx, q, carID, images[i])
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *ThirdPartyRepository) CreateDealerCarVideos(ctx *fasthttp.RequestCtx, carID int, video string) error {
+
+	q := `
+		INSERT INTO videos (vehicle_id, video) VALUES ($1, $2)
+	`
+
+	_, err := r.db.Exec(ctx, q, carID, video)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 func (r *ThirdPartyRepository) DealerDontSell(ctx *fasthttp.RequestCtx, carID, dealerID *int) error {
 	q := `
 		update vehicles 

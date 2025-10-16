@@ -5995,7 +5995,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/admin/moto-categories/{category_id}/parameters/{id}": {
+        "/api/v1/admin/moto-categories/{category_id}/parameters/{parameter_id}": {
             "put": {
                 "security": [
                     {
@@ -6023,8 +6023,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Moto category parameter ID",
-                        "name": "id",
+                        "description": "Moto parameter ID",
+                        "name": "parameter_id",
                         "in": "path",
                         "required": true
                     },
@@ -6095,8 +6095,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Moto category parameter ID",
-                        "name": "id",
+                        "description": "Moto parameter ID",
+                        "name": "parameter_id",
                         "in": "path",
                         "required": true
                     }
@@ -8453,6 +8453,154 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/third-party/dealer/car/{car_id}/images": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Uploads images for a car (max 10 files)",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dealer"
+                ],
+                "summary": "Upload car images",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Car ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Car images (max 10)",
+                        "name": "images",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/third-party/dealer/car/{car_id}/videos": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Uploads videos for a car (max 1 files)",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dealer"
+                ],
+                "summary": "Upload car videos",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Car ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Car videos (max 10)",
+                        "name": "videos",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/third-party/dealer/car/{id}": {
             "post": {
                 "security": [
@@ -9192,6 +9340,122 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/third-party/profile/my-cars": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns my cars",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "third-party"
+                ],
+                "summary": "Get my cars",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.GetCarsResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/third-party/profile/on-sale": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns on sale cars",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "third-party"
+                ],
+                "summary": "On sale",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.GetCarsResponse"
+                            }
                         }
                     },
                     "400": {
@@ -14200,9 +14464,6 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
                 "moto_category_id": {
                     "type": "integer"
                 },
@@ -14560,15 +14821,11 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "comtrans_category_id",
-                "image",
                 "name"
             ],
             "properties": {
                 "comtrans_category_id": {
                     "type": "integer"
-                },
-                "image": {
-                    "type": "string"
                 },
                 "name": {
                     "type": "string",
@@ -14914,14 +15171,10 @@ const docTemplate = `{
         "model.CreateMotoBrandRequest": {
             "type": "object",
             "required": [
-                "image",
                 "moto_category_id",
                 "name"
             ],
             "properties": {
-                "image": {
-                    "type": "string"
-                },
                 "moto_category_id": {
                     "type": "integer"
                 },
@@ -16466,15 +16719,11 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "comtrans_category_id",
-                "image",
                 "name"
             ],
             "properties": {
                 "comtrans_category_id": {
                     "type": "integer"
-                },
-                "image": {
-                    "type": "string"
                 },
                 "name": {
                     "type": "string",

@@ -8,7 +8,18 @@ admin - zayawkalar, cansel (send mail, delete user), accept, users can write mes
 3rd part users - forgot password, dealer (loginregister, first launch, garage)
 
 1. simple message emit/send/receive with websocket
-2. third part get cars/garage, onsale
+2. third part image/video upload
 3. 
 4. 
 chat (simple test for Dani)
+
+
+1) moto brand create image da oshibka bar diyya
+2) moto brand getda category_id filter gerek params da 
+3) moto models brand_id filter gerek paramsda
+4) comtrans category update islenok
+5) comtrans brand create image da oshibka bar diyya
+6) comtrans brand getda catetgori_id filter gerek params da
+7) comtrans models brand_id filter gerek paramsda 
+8) comtrans model create, update oshibka bar 
+validation failed: Key: 'CreateComtransModelRequest.ComtransBrandID' Error:Field validation for 'ComtransBrandID' failed on the 'required' tag

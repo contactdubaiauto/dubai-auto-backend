@@ -98,6 +98,7 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 
 		for {
 			var msg model.WSMessage
+
 			if err := c.ReadJSON(&msg); err != nil {
 				log.Printf("❌ Read error: %v", err)
 				break

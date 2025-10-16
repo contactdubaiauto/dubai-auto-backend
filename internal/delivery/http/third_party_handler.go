@@ -5,9 +5,11 @@ import (
 	"strconv"
 	"strings"
 
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
 	"dubai-auto/internal/utils"
+	"dubai-auto/pkg/files"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -276,6 +278,125 @@ func (h *ThirdPartyHandler) UpdateDealerCar(c *fiber.Ctx) error {
 	car.ID = id
 	data := h.service.UpdateDealerCar(ctx, &car, dealerID)
 	return utils.FiberResponse(c, &data)
+}
+
+// CreateCarImages godoc
+// @Summary      Upload car images
+// @Description  Uploads images for a car (max 10 files)
+// @Tags         dealer
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        id      path      int     true   "Car ID"
+// @Param        images  formData  file    true   "Car images (max 10)"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure	 	 403  	 {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/car/{car_id}/images [post]
+func (h *ThirdPartyHandler) CreateDealerCarImages(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid dealer car ID"),
+		})
+	}
+
+	form, _ := c.MultipartForm()
+
+	if form == nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the dealer car images"),
+		})
+	}
+
+	images := form.File["images"]
+
+	if len(images) > 10 {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 10 dealer car images"),
+		})
+	}
+
+	paths, status, err := files.SaveFiles(images, config.ENV.STATIC_PATH+"cars/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: status,
+			Error:  err,
+		})
+	}
+
+	data := h.service.CreateDealerCarImages(ctx, id, paths)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateCarVideos godoc
+// @Summary      Upload car videos
+// @Description  Uploads videos for a car (max 1 files)
+// @Tags         dealer
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        id      path      int     true   "Car ID"
+// @Param        videos  formData  file    true   "Car videos (max 10)"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure	 	 403  	 {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/car/{car_id}/videos [post]
+func (h *ThirdPartyHandler) CreateDealerCarVideos(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid dealer car ID"),
+		})
+	}
+
+	form, _ := c.MultipartForm()
+
+	if form == nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the dealer car videos"),
+		})
+	}
+
+	videos := form.File["videos"]
+
+	if len(videos) > 1 {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 1 dealer car video(s)"),
+		})
+	}
+
+	// path, err := pkg.SaveVideos(videos[0], config.ENV.STATIC_PATH+"cars/"+idStr+"/videos") // if have ffmpeg on server
+	path, err := files.SaveOriginal(videos[0], config.ENV.STATIC_PATH+"dealer-cars/"+idStr+"/videos")
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	data := h.service.CreateDealerCarVideos(ctx, id, path)
+	return utils.FiberResponse(c, data)
 }
 
 // StatusDealer godoc

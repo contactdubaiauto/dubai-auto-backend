@@ -165,6 +165,36 @@ func (s *ThirdPartyService) UpdateDealerCar(ctx *fasthttp.RequestCtx, car *model
 	}
 }
 
+func (s *ThirdPartyService) CreateDealerCarImages(ctx *fasthttp.RequestCtx, carID int, images []string) *model.Response {
+	err := s.repo.CreateDealerCarImages(ctx, carID, images)
+
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return &model.Response{
+		Data: model.Success{Message: "Dealer car images created successfully"},
+	}
+}
+
+func (s *ThirdPartyService) CreateDealerCarVideos(ctx *fasthttp.RequestCtx, carID int, video string) *model.Response {
+	err := s.repo.CreateDealerCarVideos(ctx, carID, video)
+
+	if err != nil {
+		return &model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return &model.Response{
+		Data: model.Success{Message: "Dealer car videos created successfully"},
+	}
+}
+
 func (s *ThirdPartyService) DealerDontSell(ctx *fasthttp.RequestCtx, carID, dealerID *int) model.Response {
 	err := s.repo.DealerDontSell(ctx, carID, dealerID)
 
