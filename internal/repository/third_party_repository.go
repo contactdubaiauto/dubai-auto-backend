@@ -476,6 +476,18 @@ func (r *ThirdPartyRepository) DealerSell(ctx *fasthttp.RequestCtx, carID, deale
 	return err
 }
 
+func (r *ThirdPartyRepository) DeleteDealerCarImage(ctx *fasthttp.RequestCtx, carID int, imagePath string) error {
+	q := `DELETE FROM images WHERE vehicle_id = $1 AND image = $2`
+	_, err := r.db.Exec(ctx, q, carID, imagePath)
+	return err
+}
+
+func (r *ThirdPartyRepository) DeleteDealerCarVideo(ctx *fasthttp.RequestCtx, carID int, videoPath string) error {
+	q := `DELETE FROM videos WHERE vehicle_id = $1 AND video = $2`
+	_, err := r.db.Exec(ctx, q, carID, videoPath)
+	return err
+}
+
 func (r *ThirdPartyRepository) DeleteDealerCar(ctx *fasthttp.RequestCtx, id int) error {
 	q := `
 		delete from vehicles where id = $1

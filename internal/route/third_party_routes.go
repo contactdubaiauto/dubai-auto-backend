@@ -13,7 +13,7 @@ import (
 func SetupThirdPartyRoutes(r fiber.Router, db *pgxpool.Pool) {
 	thirdPartyRepository := repository.NewThirdPartyRepository(db)
 	thirdPartyService := service.NewThirdPartyService(thirdPartyRepository)
-	thirdPartyHandler := http.NewThirdPartyHandler(thirdPartyService)
+	thirdPartyHandler := http.NewThirdPartyHandler(thirdPartyService, auth.NewValidator())
 
 	{
 		r.Get("/registration-data", thirdPartyHandler.GetRegistrationData)
@@ -31,6 +31,8 @@ func SetupThirdPartyRoutes(r fiber.Router, db *pgxpool.Pool) {
 		r.Post("/dealer/car/:id/videos", auth.DealerGuard, thirdPartyHandler.CreateDealerCarVideos)
 		r.Post("/dealer/car/:id/sell", auth.DealerGuard, thirdPartyHandler.StatusDealer)
 		r.Post("/dealer/car/:id/dont-sell", auth.DealerGuard, thirdPartyHandler.StatusDealer)
+		r.Delete("/dealer/car/:id/images", auth.DealerGuard, thirdPartyHandler.DeleteDealerCarImage)
+		r.Delete("/dealer/car/:id/videos", auth.DealerGuard, thirdPartyHandler.DeleteDealerCarVideo)
 		r.Delete("/dealer/car/:id", auth.DealerGuard, thirdPartyHandler.DeleteDealerCar)
 		// logist routes
 		r.Get("/logist/destinations", auth.LogistGuard, thirdPartyHandler.GetLogistDestinations)

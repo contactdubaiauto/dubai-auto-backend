@@ -221,6 +221,26 @@ func (s *ThirdPartyService) DealerSell(ctx *fasthttp.RequestCtx, carID, dealerID
 	return model.Response{Data: model.Success{Message: "successfully updated status"}}
 }
 
+func (s *ThirdPartyService) DeleteDealerCarImage(ctx *fasthttp.RequestCtx, carID int, imagePath string) *model.Response {
+	err := s.repo.DeleteDealerCarImage(ctx, carID, imagePath)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.Success{Message: "Dealer car image deleted successfully"}}
+}
+
+func (s *ThirdPartyService) DeleteDealerCarVideo(ctx *fasthttp.RequestCtx, carID int, videoPath string) *model.Response {
+	err := s.repo.DeleteDealerCarVideo(ctx, carID, videoPath)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: model.Success{Message: "Dealer car video deleted successfully"}}
+}
+
 func (s *ThirdPartyService) DeleteDealerCar(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteDealerCar(ctx, id)
 

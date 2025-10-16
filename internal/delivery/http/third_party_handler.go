@@ -9,17 +9,19 @@ import (
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
 	"dubai-auto/internal/utils"
+	"dubai-auto/pkg/auth"
 	"dubai-auto/pkg/files"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 type ThirdPartyHandler struct {
-	service *service.ThirdPartyService
+	service   *service.ThirdPartyService
+	validator *auth.Validator
 }
 
-func NewThirdPartyHandler(service *service.ThirdPartyService) *ThirdPartyHandler {
-	return &ThirdPartyHandler{service}
+func NewThirdPartyHandler(service *service.ThirdPartyService, validator *auth.Validator) *ThirdPartyHandler {
+	return &ThirdPartyHandler{service: service, validator: validator}
 }
 
 // Profile godoc
@@ -386,7 +388,7 @@ func (h *ThirdPartyHandler) CreateDealerCarVideos(c *fiber.Ctx) error {
 	}
 
 	// path, err := pkg.SaveVideos(videos[0], config.ENV.STATIC_PATH+"cars/"+idStr+"/videos") // if have ffmpeg on server
-	path, err := files.SaveOriginal(videos[0], config.ENV.STATIC_PATH+"dealer-cars/"+idStr+"/videos")
+	path, err := files.SaveOriginal(videos[0], config.ENV.STATIC_PATH+"cars/"+idStr+"/videos")
 
 	if err != nil {
 		return utils.FiberResponse(c, &model.Response{
@@ -437,6 +439,115 @@ func (h *ThirdPartyHandler) StatusDealer(c *fiber.Ctx) error {
 
 	data := h.service.DealerSell(ctx, &id, &dealerID)
 	return utils.FiberResponse(c, &data)
+}
+
+// DeleteDealerCarImage godoc
+// @Summary      Delete dealer car image
+// @Description  Deletes a dealer car image by car ID and image path
+// @Tags         dealer
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id    path      int     true   "Dealer Car ID"
+// @Param        image body      model.DeleteCarImageRequest true "Image path"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/car/{id}/images [delete]
+func (h *ThirdPartyHandler) DeleteDealerCarImage(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	dealerCarID, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("dealer car id must be integer"),
+		})
+	}
+
+	var req model.DeleteCarImageRequest
+
+	if err := c.BodyParser(&req); err != nil || req.Image == "" {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid image path in request body"),
+		})
+	}
+
+	if err := h.validator.Validate(req); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	ctx := c.Context()
+	// Remove from DB
+	resp := h.service.DeleteDealerCarImage(ctx, dealerCarID, req.Image)
+
+	if resp.Error == nil {
+		// Remove from disk (ignore error, as file may not exist)
+		_ = files.RemoveFile(req.Image)
+	}
+	return utils.FiberResponse(c, resp)
+}
+
+// DeleteDealerCarVideo godoc
+// @Summary      Delete dealer car video
+// @Description  Deletes a dealer car video by car ID and video path
+// @Tags         dealer
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id    path      int     true   "Dealer Car ID"
+// @Param        video body      model.DeleteCarVideoRequest true "Video path"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/car/{id}/videos [delete]
+func (h *ThirdPartyHandler) DeleteDealerCarVideo(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	dealerCarID, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("dealer car id must be integer"),
+		})
+	}
+
+	var video model.DeleteCarVideoRequest
+
+	if err := c.BodyParser(&video); err != nil || video.Video == "" {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid video path in request body"),
+		})
+	}
+
+	if err := h.validator.Validate(video); err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	ctx := c.Context()
+	// Remove from DB
+	resp := h.service.DeleteDealerCarVideo(ctx, dealerCarID, video.Video)
+
+	if resp.Error == nil {
+		// pkg.RemoveFile(req.Video[:5]) // use it if have car's multiple videos
+		files.RemoveFolder(config.ENV.STATIC_PATH + "cars/" + idStr + "/videos")
+
+	}
+	return utils.FiberResponse(c, resp)
 }
 
 // DeleteDealerCar godoc

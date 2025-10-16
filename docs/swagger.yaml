@@ -7761,6 +7761,55 @@ paths:
       summary: Change dealer car status
       tags:
       - dealer
+  /api/v1/third-party/dealer/car/{id}/images:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a dealer car image by car ID and image path
+      parameters:
+      - description: Dealer Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Image path
+        in: body
+        name: image
+        required: true
+        schema:
+          $ref: '#/definitions/model.DeleteCarImageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete dealer car image
+      tags:
+      - dealer
   /api/v1/third-party/dealer/car/{id}/sell:
     post:
       description: Changes the status of a dealer car (sell/dont-sell)
@@ -7800,6 +7849,55 @@ paths:
       security:
       - BearerAuth: []
       summary: Change dealer car status
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/car/{id}/videos:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a dealer car video by car ID and video path
+      parameters:
+      - description: Dealer Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Video path
+        in: body
+        name: video
+        required: true
+        schema:
+          $ref: '#/definitions/model.DeleteCarVideoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete dealer car video
       tags:
       - dealer
   /api/v1/third-party/first-login:
