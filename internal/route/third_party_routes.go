@@ -17,12 +17,13 @@ func SetupThirdPartyRoutes(r fiber.Router, db *pgxpool.Pool) {
 
 	{
 		r.Get("/registration-data", thirdPartyHandler.GetRegistrationData)
-		r.Post("/first-login", auth.TokenGuard, thirdPartyHandler.FirstLogin)
 		r.Get("/profile", auth.TokenGuard, thirdPartyHandler.GetProfile)
-		r.Post("/profile", auth.TokenGuard, thirdPartyHandler.Profile)
+		r.Get("/profile/my-cars", auth.TokenGuard, thirdPartyHandler.GetMyCars)
+		r.Get("/profile/on-sale", auth.TokenGuard, thirdPartyHandler.OnSale)
+		r.Post("/first-login", auth.TokenGuard, thirdPartyHandler.FirstLogin)
 		r.Post("/profile/banner", auth.TokenGuard, thirdPartyHandler.BannerImage)
 		r.Post("/profile/images", auth.TokenGuard, thirdPartyHandler.AvatarImages)
-
+		r.Post("/profile", auth.TokenGuard, thirdPartyHandler.Profile)
 		// dealer routes
 		r.Post("/dealer/car", auth.DealerGuard, thirdPartyHandler.CreateDealerCar)
 		r.Post("/dealer/car/:id", auth.DealerGuard, thirdPartyHandler.UpdateDealerCar)

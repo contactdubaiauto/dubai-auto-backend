@@ -1,17 +1,16 @@
 package http
 
 import (
+	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
 	"dubai-auto/pkg/auth"
 	"fmt"
 	"log"
-	"strings"
 	"sync"
 	"time"
 
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 type SocketHandler struct {
@@ -22,55 +21,13 @@ func NewSocketHandler(service *service.SocketService) *SocketHandler {
 	return &SocketHandler{service}
 }
 
-type WSMessage struct {
-	Event   string `json:"event"`
-	Message string `json:"message,omitempty"`
-	Data    any    `json:"data,omitempty"`
-}
-
-type WSUser struct {
-	ID       int             `json:"id"`
-	Username string          `json:"username"`
-	RoleID   int             `json:"role_id"`
-	Conn     *websocket.Conn `json:"-"`
-}
-
 var (
-	wsClients   = make(map[*websocket.Conn]*WSUser) // connection -> user
-	wsUserConns = make(map[int][]*websocket.Conn)   // userID -> []connections
+	wsClients   = make(map[*websocket.Conn]*model.WSUser) // connection -> user
+	wsUserConns = make(map[int][]*websocket.Conn)         // userID -> []connections
 	wsMutex     = sync.RWMutex{}
 )
 
-func validateWSJWT(tokenString string) (*WSUser, error) {
-	if tokenString == "" {
-		return nil, fmt.Errorf("missing token")
-	}
-
-	tokenString = strings.TrimPrefix(tokenString, "Bearer ")
-
-	claims := jwt.MapClaims{}
-	_, err := jwt.ParseWithClaims(
-		tokenString, claims,
-		func(t *jwt.Token) (any, error) {
-			return []byte(auth.ENV.ACCESS_KEY), nil
-		},
-	)
-
-	if err != nil {
-		return nil, fmt.Errorf("invalid token: %v", err)
-	}
-
-	userID := int(claims["id"].(float64))
-	roleID := int(claims["role_id"].(float64))
-
-	return &WSUser{
-		ID:       userID,
-		Username: fmt.Sprintf("User_%d", userID),
-		RoleID:   roleID,
-	}, nil
-}
-
-func SetupWebSocket(app *fiber.App) {
+func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 
 	app.Get("/ws", websocket.New(func(c *websocket.Conn) {
 		token := c.Query("token")
@@ -79,11 +36,11 @@ func SetupWebSocket(app *fiber.App) {
 			token = c.Query("auth")
 		}
 
-		user, err := validateWSJWT(token)
+		user, err := auth.ValidateWSJWT(token)
 
 		if err != nil {
 			log.Printf("❌ Authentication failed: %v", err)
-			errMsg := WSMessage{
+			errMsg := model.WSMessage{
 				Event: "error",
 				Data: map[string]string{
 					"error":   "authentication_failed",
@@ -104,7 +61,7 @@ func SetupWebSocket(app *fiber.App) {
 
 		log.Printf("✅ User %d connected via WebSocket", user.ID)
 
-		welcomeMsg := WSMessage{
+		welcomeMsg := model.WSMessage{
 			Event: "connected",
 			Data: map[string]any{
 				"message": "Successfully connected to messaging service",
@@ -140,7 +97,7 @@ func SetupWebSocket(app *fiber.App) {
 		}()
 
 		for {
-			var msg WSMessage
+			var msg model.WSMessage
 			if err := c.ReadJSON(&msg); err != nil {
 				log.Printf("❌ Read error: %v", err)
 				break
@@ -150,7 +107,7 @@ func SetupWebSocket(app *fiber.App) {
 
 			switch msg.Event {
 			case "ping":
-				pongMsg := WSMessage{
+				pongMsg := model.WSMessage{
 					Event: "pong",
 					Data: map[string]any{
 						"timestamp": time.Now(),
@@ -187,7 +144,7 @@ func broadcastMessage(event string, data any) {
 
 	log.Printf("📡 Broadcasting %s to %d users", event, len(connections))
 
-	msg := WSMessage{
+	msg := model.WSMessage{
 		Event: event,
 		Data:  data,
 	}
@@ -232,7 +189,7 @@ func sendToUser(userID int, event string, data any) {
 
 	log.Printf("📤 Sending %s to user %d (%d connections)", event, userID, len(connections))
 
-	msg := WSMessage{
+	msg := model.WSMessage{
 		Event: event,
 		Data:  data,
 	}
@@ -246,7 +203,7 @@ func sendToUser(userID int, event string, data any) {
 	}
 }
 
-func handleMessage(user *WSUser, message string) {
+func handleMessage(user *model.WSUser, message string) {
 	broadcastMessage("message", map[string]any{
 		"user_id":  user.ID,
 		"username": user.Username,
@@ -266,7 +223,7 @@ func sendOnlineUsers(conn *websocket.Conn) {
 	}
 	wsMutex.RUnlock()
 
-	msg := WSMessage{
+	msg := model.WSMessage{
 		Event: "online_users",
 		Data: map[string]any{
 			"users": users,
@@ -279,14 +236,16 @@ func sendOnlineUsers(conn *websocket.Conn) {
 	}
 }
 
-func handlePrivateMessage(sender *WSUser, msg WSMessage) {
+func handlePrivateMessage(sender *model.WSUser, msg model.WSMessage) {
 	data, ok := msg.Data.(map[string]any)
+
 	if !ok {
 		log.Printf("❌ Invalid private message data format")
 		return
 	}
 
 	targetUserIDFloat, exists := data["target_user_id"]
+
 	if !exists {
 		log.Printf("❌ Missing target_user_id in private message")
 		return

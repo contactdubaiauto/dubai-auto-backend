@@ -184,8 +184,8 @@ func SetupAdminRoutes(r fiber.Router, db *pgxpool.Pool) {
 	{
 		motoCategories.Get("/:category_id/parameters", adminHandler.GetMotoCategoryParameters)
 		motoCategories.Post("/:category_id/parameters", adminHandler.CreateMotoCategoryParameter)
-		motoCategories.Put("/:category_id/parameters/:id", adminHandler.UpdateMotoCategoryParameter)
-		motoCategories.Delete("/:category_id/parameters/:id", adminHandler.DeleteMotoCategoryParameter)
+		motoCategories.Put("/:category_id/parameters/:parameter_id", adminHandler.UpdateMotoCategoryParameter)
+		motoCategories.Delete("/:category_id/parameters/:parameter_id", adminHandler.DeleteMotoCategoryParameter)
 	}
 
 	// Moto Brands routes

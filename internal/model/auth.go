@@ -21,18 +21,18 @@ type UserApplication struct {
 }
 
 type TempUser struct {
-	LicenceIssueDate  time.Time `json:"licence_issue_date" binding:"required"`
-	LicenceExpiryDate time.Time `json:"licence_expiry_date" binding:"required"`
-	CompanyName       string    `json:"company_name" binding:"required"`
-	FullName          string    `json:"full_name" binding:"required"`
-	Email             string    `json:"email" binding:"required"`
-	Phone             string    `json:"phone" binding:"required"`
-	Address           string    `json:"address" binding:"required"`
-	VATNumber         string    `json:"vat_number" binding:"required"`
-	CompanyTypeID     int       `json:"company_type_id" binding:"required"`
-	ActivityFieldID   int       `json:"activity_field_id" binding:"required"`
-	RoleID            int       `json:"role_id" binding:"required"` // 1 user, 2 dealer, 3 logistic, 4 broker, 5 car service
-	DocumentsID       int       `json:"documents_id"`
+	LicenceIssueDate  *time.Time `json:"licence_issue_date" binding:"required"`
+	LicenceExpiryDate *time.Time `json:"licence_expiry_date" binding:"required"`
+	CompanyName       *string    `json:"company_name" binding:"required"`
+	FullName          *string    `json:"full_name" binding:"required"`
+	Email             *string    `json:"email" binding:"required"`
+	Phone             *string    `json:"phone" binding:"required"`
+	Address           *string    `json:"address" binding:"required"`
+	VATNumber         *string    `json:"vat_number" binding:"required"`
+	CompanyTypeID     *int       `json:"company_type_id" binding:"required"`
+	ActivityFieldID   *int       `json:"activity_field_id" binding:"required"`
+	RoleID            *int       `json:"role_id" binding:"required"` // 1 user, 2 dealer, 3 logistic, 4 broker, 5 car service
+	DocumentsID       *int       `json:"documents_id"`
 }
 
 type UserApplicationDocuments struct {

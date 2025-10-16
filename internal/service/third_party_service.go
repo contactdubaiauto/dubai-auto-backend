@@ -7,6 +7,7 @@ import (
 	"dubai-auto/pkg/files"
 	"errors"
 	"mime/multipart"
+	"net/http"
 	"strconv"
 
 	"github.com/valyala/fasthttp"
@@ -30,6 +31,26 @@ func (s *ThirdPartyService) FirstLogin(ctx *fasthttp.RequestCtx, id int, profile
 
 func (s *ThirdPartyService) GetProfile(ctx *fasthttp.RequestCtx, id int) model.Response {
 	return s.repo.GetProfile(ctx, id)
+}
+
+func (s *ThirdPartyService) GetMyCars(ctx *fasthttp.RequestCtx, userID int) model.Response {
+	cars, err := s.repo.GetMyCars(ctx, userID)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: cars}
+}
+
+func (s *ThirdPartyService) OnSale(ctx *fasthttp.RequestCtx, userID int) model.Response {
+	cars, err := s.repo.OnSale(ctx, userID)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: cars}
 }
 
 func (s *ThirdPartyService) GetRegistrationData(ctx *fasthttp.RequestCtx) model.Response {
@@ -114,7 +135,7 @@ func (s *ThirdPartyService) CreateBannerImage(ctx *fasthttp.RequestCtx, form *mu
 	return model.Response{Data: model.Success{Message: "Banner image updated successfully"}}
 }
 
-func (s *ThirdPartyService) CreateDealerCar(ctx *fasthttp.RequestCtx, car *model.CreateCarRequest, dealerID int) model.Response {
+func (s *ThirdPartyService) CreateDealerCar(ctx *fasthttp.RequestCtx, car *model.ThirdPartyCreateCarRequest, dealerID int) model.Response {
 	id, err := s.repo.CreateDealerCar(ctx, car, dealerID)
 
 	if err != nil {

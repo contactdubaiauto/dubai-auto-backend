@@ -146,6 +146,7 @@ create table profiles (
     "registered_by" varchar(20) not null,
     "google" varchar(200),
     "avatar" varchar(200),
+    "company_name" varchar(200),
     "banner" varchar(200),
     "whatsapp" varchar(100),
     "telegram" varchar(100),

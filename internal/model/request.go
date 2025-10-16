@@ -138,7 +138,6 @@ type UpdateMotoCategoryRequest struct {
 // Moto Brand requests
 type CreateMotoBrandRequest struct {
 	Name           string `json:"name" validate:"required,min=2,max=100"`
-	Image          string `json:"image" validate:"required"`
 	MotoCategoryID int    `json:"moto_category_id" validate:"required"`
 }
 
@@ -200,13 +199,11 @@ type UpdateComtransCategoryRequest struct {
 // Comtrans Brand requests
 type CreateComtransBrandRequest struct {
 	Name               string `json:"name" validate:"required,min=2,max=100"`
-	Image              string `json:"image" validate:"required"`
 	ComtransCategoryID int    `json:"comtrans_category_id" validate:"required"`
 }
 
 type UpdateComtransBrandRequest struct {
 	Name               string `json:"name" validate:"required,min=2,max=100"`
-	Image              string `json:"image" validate:"required"`
 	ComtransCategoryID int    `json:"comtrans_category_id" validate:"required"`
 }
 

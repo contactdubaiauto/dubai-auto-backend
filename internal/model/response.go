@@ -404,7 +404,6 @@ type AdminMotoParameterValueResponse struct {
 type AdminMotoCategoryParameterResponse struct {
 	CreatedAt         time.Time `json:"created_at"`
 	MotoParameterName string    `json:"moto_parameter_name"`
-	ID                int       `json:"id"`
 	MotoCategoryID    int       `json:"moto_category_id"`
 	MotoParameterID   int       `json:"moto_parameter_id"`
 }
@@ -457,6 +456,7 @@ type AdminComtransCategoryParameterResponse struct {
 
 type ThirdPartyGetProfileRes struct {
 	Registered  *time.Time `json:"registered"`
+	CompanyName *string    `json:"company_name"`
 	AboutUs     *string    `json:"about_us"`
 	Email       *string    `json:"email"`
 	Whatsapp    *string    `json:"whatsapp"`

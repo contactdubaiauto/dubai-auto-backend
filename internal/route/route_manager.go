@@ -22,7 +22,7 @@ func Init(app *fiber.App, db *pgxpool.Pool) {
 	comtransRoute := app.Group("/api/v1/comtrans")
 	SetupComtranRoutes(comtransRoute, db)
 
-	adminRoute := app.Group("/api/v1/admin", auth.AdminGuard)
+	adminRoute := app.Group("/api/v1/admin", auth.TokenGuard, auth.AdminGuard)
 	SetupAdminRoutes(adminRoute, db)
 
 	thirdPartyRoute := app.Group("/api/v1/third-party")

@@ -2300,14 +2300,14 @@ func (h *AdminHandler) CreateMotoCategoryParameter(c *fiber.Ctx) error {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        category_id   path      int                                     true  "Moto category ID"
-// @Param        id            path      int                                     true  "Moto category parameter ID"
+// @Param        parameter_id  path      int                                     true  "Moto parameter ID"
 // @Param        parameter     body      model.UpdateMotoCategoryParameterRequest  true  "Moto category parameter data"
 // @Success      200  {object}  model.Success
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/moto-categories/{category_id}/parameters/{id} [put]
+// @Router       /api/v1/admin/moto-categories/{category_id}/parameters/{parameter_id} [put]
 func (h *AdminHandler) UpdateMotoCategoryParameter(c *fiber.Ctx) error {
 	categoryIdStr := c.Params("category_id")
 	categoryId, err := strconv.Atoi(categoryIdStr)
@@ -2319,13 +2319,13 @@ func (h *AdminHandler) UpdateMotoCategoryParameter(c *fiber.Ctx) error {
 		})
 	}
 
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
+	parameterIdStr := c.Params("parameter_id")
+	parameterId, err := strconv.Atoi(parameterIdStr)
 
 	if err != nil {
 		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
-			Error:  errors.New("moto category parameter id must be integer"),
+			Error:  errors.New("moto parameter id must be integer"),
 		})
 	}
 
@@ -2346,7 +2346,7 @@ func (h *AdminHandler) UpdateMotoCategoryParameter(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateMotoCategoryParameter(ctx, categoryId, id, &req)
+	data := h.AdminService.UpdateMotoCategoryParameter(ctx, categoryId, parameterId, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2357,13 +2357,13 @@ func (h *AdminHandler) UpdateMotoCategoryParameter(c *fiber.Ctx) error {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        category_id   path      int  true  "Moto category ID"
-// @Param        id            path      int  true  "Moto category parameter ID"
+// @Param        parameter_id  path      int  true  "Moto parameter ID"
 // @Success      200  {object}  model.Success
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/moto-categories/{category_id}/parameters/{id} [delete]
+// @Router       /api/v1/admin/moto-categories/{category_id}/parameters/{parameter_id} [delete]
 func (h *AdminHandler) DeleteMotoCategoryParameter(c *fiber.Ctx) error {
 	categoryIdStr := c.Params("category_id")
 	categoryId, err := strconv.Atoi(categoryIdStr)
@@ -2375,18 +2375,18 @@ func (h *AdminHandler) DeleteMotoCategoryParameter(c *fiber.Ctx) error {
 		})
 	}
 
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
+	parameterIdStr := c.Params("parameter_id")
+	parameterId, err := strconv.Atoi(parameterIdStr)
 
 	if err != nil {
 		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
-			Error:  errors.New("moto category parameter id must be integer"),
+			Error:  errors.New("moto parameter id must be integer"),
 		})
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteMotoCategoryParameter(ctx, categoryId, id)
+	data := h.AdminService.DeleteMotoCategoryParameter(ctx, categoryId, parameterId)
 	return utils.FiberResponse(c, data)
 }
 

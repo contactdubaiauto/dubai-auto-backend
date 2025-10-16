@@ -1030,23 +1030,24 @@ func (s *AdminService) GetMotoCategoryParameters(ctx *fasthttp.RequestCtx, categ
 }
 
 func (s *AdminService) CreateMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, req *model.CreateMotoCategoryParameterRequest) *model.Response {
-	id, err := s.repo.CreateMotoCategoryParameter(ctx, categoryId, req)
+	parameterId, err := s.repo.CreateMotoCategoryParameter(ctx, categoryId, req)
+
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto category parameter created successfully"}}
+	return &model.Response{Data: model.SuccessWithId{Id: parameterId, Message: "Moto category parameter created successfully"}}
 }
 
-func (s *AdminService) UpdateMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, id int, req *model.UpdateMotoCategoryParameterRequest) *model.Response {
-	err := s.repo.UpdateMotoCategoryParameter(ctx, categoryId, id, req)
+func (s *AdminService) UpdateMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, parameterId int, req *model.UpdateMotoCategoryParameterRequest) *model.Response {
+	err := s.repo.UpdateMotoCategoryParameter(ctx, categoryId, parameterId, req)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 	return &model.Response{Data: model.Success{Message: "Moto category parameter updated successfully"}}
 }
 
-func (s *AdminService) DeleteMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, id int) *model.Response {
-	err := s.repo.DeleteMotoCategoryParameter(ctx, categoryId, id)
+func (s *AdminService) DeleteMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, parameterId int) *model.Response {
+	err := s.repo.DeleteMotoCategoryParameter(ctx, categoryId, parameterId)
 	if err != nil {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}

@@ -21,7 +21,7 @@ func SetupUserRoutes(r fiber.Router, db *pgxpool.Pool) {
 		r.Get("/countries", userHandler.GetCountries)
 
 		// profile
-		r.Get("/profile/my-cars/:id", auth.TokenGuard, userHandler.GetMyCars)
+		r.Get("/profile/my-cars/:id", auth.TokenGuard, userHandler.GetMyCars) //todo: write GetMyCarsByID
 		r.Get("/profile/my-cars", auth.TokenGuard, userHandler.GetMyCars)
 		r.Get("/profile/on-sale", auth.TokenGuard, userHandler.OnSale)
 		r.Get("/profile", auth.TokenGuard, userHandler.GetProfile)

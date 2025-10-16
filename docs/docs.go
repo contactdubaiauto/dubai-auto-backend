@@ -8409,7 +8409,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.CreateCarRequest"
+                            "$ref": "#/definitions/model.ThirdPartyCreateCarRequest"
                         }
                     }
                 ],
@@ -14479,6 +14479,7 @@ const docTemplate = `{
                 "phone_numbers",
                 "price",
                 "trade_in",
+                "vin_code",
                 "wheel",
                 "year"
             ],
@@ -14525,6 +14526,9 @@ const docTemplate = `{
                 },
                 "trade_in": {
                     "type": "integer"
+                },
+                "vin_code": {
+                    "type": "string"
                 },
                 "wheel": {
                     "description": "left true, right false",
@@ -16152,6 +16156,75 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ThirdPartyCreateCarRequest": {
+            "type": "object",
+            "required": [
+                "brand_id",
+                "city_id",
+                "color_id",
+                "model_id",
+                "modification_id",
+                "odometer",
+                "owners",
+                "phone_numbers",
+                "price",
+                "trade_in",
+                "wheel",
+                "year"
+            ],
+            "properties": {
+                "brand_id": {
+                    "type": "integer"
+                },
+                "city_id": {
+                    "type": "integer"
+                },
+                "color_id": {
+                    "type": "integer"
+                },
+                "crash": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "model_id": {
+                    "type": "integer"
+                },
+                "modification_id": {
+                    "type": "integer"
+                },
+                "new": {
+                    "type": "boolean"
+                },
+                "odometer": {
+                    "type": "integer"
+                },
+                "owners": {
+                    "type": "integer"
+                },
+                "phone_numbers": {
+                    "description": "new\nBodyTypeID     int      ` + "`" + `json:\"body_type_id\" validate:\"required\"` + "`" + `",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "trade_in": {
+                    "type": "integer"
+                },
+                "wheel": {
+                    "description": "left true, right false",
+                    "type": "boolean"
+                },
+                "year": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.ThirdPartyFirstLoginReq": {
             "type": "object",
             "required": [
@@ -16177,6 +16250,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "banner": {
+                    "type": "string"
+                },
+                "company_name": {
                     "type": "string"
                 },
                 "coordinates": {

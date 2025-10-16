@@ -130,7 +130,7 @@ func (r *AuthRepository) TempUserEmailGetOrRegister(ctx *fasthttp.RequestCtx, us
 
 func (r *AuthRepository) ThirdPartyLogin(ctx *fasthttp.RequestCtx, email string) (model.ThirdPartyLogin, error) {
 	var u model.ThirdPartyLogin
-	query := `
+	q := `
 		SELECT 
 			id, 
 			password,
@@ -142,7 +142,19 @@ func (r *AuthRepository) ThirdPartyLogin(ctx *fasthttp.RequestCtx, email string)
 		FROM users 
 		WHERE email = $1
 	`
-	err := r.db.QueryRow(ctx, query, email).Scan(&u.ID, &u.Password, &u.FirstTimeLogin)
+	err := r.db.QueryRow(ctx, q, email).Scan(&u.ID, &u.Password, &u.FirstTimeLogin)
+
+	if err != nil {
+		return u, err
+	}
+
+	q = `
+		update users set
+			updated_at = now()
+		where id = $1
+	`
+	_, err = r.db.Exec(ctx, q, u.ID)
+
 	return u, err
 }
 

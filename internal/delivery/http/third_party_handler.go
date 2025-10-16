@@ -100,6 +100,46 @@ func (h *ThirdPartyHandler) GetProfile(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, &data)
 }
 
+// GetMyCars godoc
+// @Summary      Get my cars
+// @Description  Returns my cars
+// @Tags         third-party
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200      {array}  model.GetCarsResponse
+// @Failure      400      {object}  model.ResultMessage
+// @Failure      401      {object}  auth.ErrorResponse
+// @Failure      403      {object}  auth.ErrorResponse
+// @Failure      404      {object}  model.ResultMessage
+// @Failure      500      {object}  model.ResultMessage
+// @Router       /api/v1/third-party/profile/my-cars [get]
+func (h *ThirdPartyHandler) GetMyCars(c *fiber.Ctx) error {
+	ctx := c.Context()
+	id := c.Locals("id").(int)
+	data := h.service.GetMyCars(ctx, id)
+	return utils.FiberResponse(c, &data)
+}
+
+// OnSale godoc
+// @Summary      On sale
+// @Description  Returns on sale cars
+// @Tags         third-party
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200      {array}  model.GetCarsResponse
+// @Failure      400      {object}  model.ResultMessage
+// @Failure      401      {object}  auth.ErrorResponse
+// @Failure      403      {object}  auth.ErrorResponse
+// @Failure      404      {object}  model.ResultMessage
+// @Failure      500      {object}  model.ResultMessage
+// @Router       /api/v1/third-party/profile/on-sale [get]
+func (h *ThirdPartyHandler) OnSale(c *fiber.Ctx) error {
+	ctx := c.Context()
+	id := c.Locals("id").(int)
+	data := h.service.OnSale(ctx, id)
+	return utils.FiberResponse(c, &data)
+}
+
 // GetRegistrationData godoc
 // @Summary      Get registration data
 // @Description  Returns registration data
@@ -172,7 +212,7 @@ func (h *ThirdPartyHandler) BannerImage(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        car  body      model.CreateCarRequest  true  "Car data"
+// @Param        car  body      model.ThirdPartyCreateCarRequest  true  "Car data"
 // @Success      200  {object}  model.SuccessWithId
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -181,7 +221,7 @@ func (h *ThirdPartyHandler) BannerImage(c *fiber.Ctx) error {
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/third-party/dealer/car [post]
 func (h *ThirdPartyHandler) CreateDealerCar(c *fiber.Ctx) error {
-	var car model.CreateCarRequest
+	var car model.ThirdPartyCreateCarRequest
 	dealerID := c.Locals("id").(int)
 	ctx := c.Context()
 
@@ -268,14 +308,13 @@ func (h *ThirdPartyHandler) StatusDealer(c *fiber.Ctx) error {
 
 	// Determine if this is sell or dont-sell based on the path
 	path := string(c.Context().Path())
-	var data model.Response
 
 	if strings.Contains(path, "dont-sell") {
-		data = h.service.DealerDontSell(ctx, &id, &dealerID)
-	} else {
-		data = h.service.DealerSell(ctx, &id, &dealerID)
+		data := h.service.DealerDontSell(ctx, &id, &dealerID)
+		return utils.FiberResponse(c, &data)
 	}
 
+	data := h.service.DealerSell(ctx, &id, &dealerID)
 	return utils.FiberResponse(c, &data)
 }
 
