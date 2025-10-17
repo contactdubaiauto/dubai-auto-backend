@@ -16919,6 +16919,9 @@ const docTemplate = `{
                 "about_us": {
                     "type": "string"
                 },
+                "activity_field": {
+                    "type": "string"
+                },
                 "address": {
                     "type": "string"
                 },
@@ -16929,6 +16932,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "company_name": {
+                    "type": "string"
+                },
+                "company_type": {
                     "type": "string"
                 },
                 "coordinates": {
@@ -16947,6 +16953,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "telegram": {
+                    "type": "string"
+                },
+                "vat_number": {
                     "type": "string"
                 },
                 "whatsapp": {

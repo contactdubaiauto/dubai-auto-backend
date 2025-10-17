@@ -134,6 +134,7 @@ func (r *AuthRepository) ThirdPartyLogin(ctx *fasthttp.RequestCtx, email string)
 		SELECT 
 			id, 
 			password,
+			role_id,
 			CASE 
 				WHEN created_at = updated_at 
 				THEN true 
@@ -142,7 +143,7 @@ func (r *AuthRepository) ThirdPartyLogin(ctx *fasthttp.RequestCtx, email string)
 		FROM users 
 		WHERE email = $1
 	`
-	err := r.db.QueryRow(ctx, q, email).Scan(&u.ID, &u.Password, &u.FirstTimeLogin)
+	err := r.db.QueryRow(ctx, q, email).Scan(&u.ID, &u.Password, &u.RoleID, &u.FirstTimeLogin)
 
 	if err != nil {
 		return u, err

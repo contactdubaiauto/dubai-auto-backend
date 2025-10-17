@@ -455,18 +455,21 @@ type AdminComtransCategoryParameterResponse struct {
 }
 
 type ThirdPartyGetProfileRes struct {
-	Registered  *time.Time `json:"registered"`
-	CompanyName *string    `json:"company_name"`
-	AboutUs     *string    `json:"about_us"`
-	Email       *string    `json:"email"`
-	Whatsapp    *string    `json:"whatsapp"`
-	Telegram    *string    `json:"telegram"`
-	Phone       *string    `json:"phone"`
-	Address     *string    `json:"address"`
-	Coordinates *string    `json:"coordinates"`
-	Avatar      *string    `json:"avatar"`
-	Banner      *string    `json:"banner"`
-	Message     *string    `json:"message"`
+	Registered    *time.Time `json:"registered"`
+	CompanyName   *string    `json:"company_name"`
+	AboutUs       *string    `json:"about_us"`
+	Email         *string    `json:"email"`
+	Whatsapp      *string    `json:"whatsapp"`
+	Telegram      *string    `json:"telegram"`
+	Phone         *string    `json:"phone"`
+	Address       *string    `json:"address"`
+	Coordinates   *string    `json:"coordinates"`
+	Avatar        *string    `json:"avatar"`
+	Banner        *string    `json:"banner"`
+	Message       *string    `json:"message"`
+	VATNumber     *string    `json:"vat_number"`
+	CompanyType   *string    `json:"company_type"`
+	ActivityField *string    `json:"activity_field"`
 }
 
 type ThirdPartyGetRegistrationDataRes struct {

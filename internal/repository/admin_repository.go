@@ -123,7 +123,7 @@ func (r *AdminRepository) AcceptApplication(ctx *fasthttp.RequestCtx, id int, pa
 		insert into users (email, password, username, role_id, phone)
 		values ($1, $2, $3, $4, $5) 
 		ON CONFLICT (email) DO UPDATE
-		SET password = EXCLUDED.password, created_at = now(), updated_at = now()
+		SET password = EXCLUDED.password, created_at = now(), updated_at = now(), role_id = EXCLUDED.role_id, phone = EXCLUDED.phone
 		RETURNING id
 	`
 	var userID int
@@ -134,13 +134,28 @@ func (r *AdminRepository) AcceptApplication(ctx *fasthttp.RequestCtx, id int, pa
 	}
 
 	q = `
-		insert into profiles (user_id, username, company_name, registered_by)
-		values ($1, $2, $3, $4)
+		insert into profiles (
+			user_id, 
+			username, 
+			company_name, 
+			registered_by,
+			address,
+			company_type_id,
+			activity_field_id,
+			vat_number
+		)
+		values ($1, $2, $3, $4, $5, $6, $7, $8)
 		on conflict (user_id)
-		do nothing
+		do update set
+			username = EXCLUDED.username,
+			company_name = EXCLUDED.company_name,
+			registered_by = EXCLUDED.registered_by,
+			address = EXCLUDED.address,
+			company_type_id = EXCLUDED.company_type_id,
+			activity_field_id = EXCLUDED.activity_field_id,
+			vat_number = EXCLUDED.vat_number
 	`
-	_, err = tx.Exec(ctx, q, userID, tempUser.FullName, tempUser.CompanyName, "application")
-
+	_, err = tx.Exec(ctx, q, userID, tempUser.FullName, tempUser.CompanyName, "application", tempUser.Address, tempUser.CompanyTypeID, tempUser.ActivityFieldID, tempUser.VATNumber)
 	if err != nil {
 		return "", err
 	}

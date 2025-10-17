@@ -140,6 +140,9 @@ create table profiles (
     "id" serial primary key, 
     "user_id" int not null,
     "city_id" int,
+    "company_type_id" int,
+    "activity_field_id" int,
+    "vat_number" varchar(100),
     "driving_experience" int,
     "notification" boolean default false,
     "username" varchar(100) not null,
@@ -166,6 +169,16 @@ create table profiles (
         foreign key (city_id) 
             references cities(id) 
                 on delete cascade 
+                on update cascade,
+    constraint fk_profiles_company_type_id
+        foreign key (company_type_id)
+            references company_types(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_profiles_activity_field_id
+        foreign key (activity_field_id)
+            references activity_fields(id)
+                on delete cascade
                 on update cascade,
     unique (user_id)
 );
@@ -909,17 +922,6 @@ create table comtran_videos (
                 on update cascade
 );
 
-
-
-
-create table users (
-    "id" serial primary key,
-    "username" varchar(100) not null,
-    "avatar" varchar(255),
-    "last_message_id" int,
-    "unread_messages_count" int not null default 0,
-    "status" int not null default 1 -- 1 active, 2 inactive
-);
 
 create table messages (
     "id" serial primary key,

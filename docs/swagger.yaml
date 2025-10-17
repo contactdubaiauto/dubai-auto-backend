@@ -1662,6 +1662,8 @@ definitions:
     properties:
       about_us:
         type: string
+      activity_field:
+        type: string
       address:
         type: string
       avatar:
@@ -1669,6 +1671,8 @@ definitions:
       banner:
         type: string
       company_name:
+        type: string
+      company_type:
         type: string
       coordinates:
         type: string
@@ -1681,6 +1685,8 @@ definitions:
       registered:
         type: string
       telegram:
+        type: string
+      vat_number:
         type: string
       whatsapp:
         type: string

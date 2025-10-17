@@ -68,17 +68,28 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) mode
 			coordinates,
 			avatar,
 			banner,
-			created_at,
 			company_name,
-			message
-		from profiles where user_id = $1
+			message,
+			vat_number,
+			company_types.name as company_type,
+			activity_fields.name as activity_field,
+			profiles.created_at
+		from profiles 
+		left join company_types on company_types.id = profiles.company_type_id
+		left join activity_fields on activity_fields.id = profiles.activity_field_id
+		where user_id = $1
 	`
 	var profile model.ThirdPartyGetProfileRes
 	err := r.db.QueryRow(ctx, q, id).Scan(
 		&profile.AboutUs, &profile.Whatsapp,
 		&profile.Telegram, &profile.Address,
 		&profile.Coordinates, &profile.Avatar,
-		&profile.Banner, &profile.Registered, &profile.CompanyName, &profile.Message)
+		&profile.Banner,
+		&profile.CompanyName, &profile.Message,
+		&profile.VATNumber, &profile.CompanyType,
+		&profile.ActivityField,
+		&profile.Registered,
+	)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
