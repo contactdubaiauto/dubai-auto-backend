@@ -85,3 +85,7 @@ alter table profiles add column "company_name" varchar(200);
 
 alter table moto_brands alter column image drop not null;
 
+
+
+select 
+from messages

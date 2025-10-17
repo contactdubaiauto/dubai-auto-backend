@@ -279,23 +279,33 @@ func (s *ThirdPartyService) GetLogistDestinations(ctx *fasthttp.RequestCtx) mode
 	return model.Response{Data: destinations}
 }
 
-func (s *ThirdPartyService) CreateLogistDestination(ctx *fasthttp.RequestCtx, req model.CreateLogistDestinationRequest) model.Response {
-	id, err := s.repo.CreateLogistDestination(ctx, req)
+func (s *ThirdPartyService) CreateLogistDestination(ctx *fasthttp.RequestCtx, userID int, destinations []model.CreateLogistDestinationRequest) model.Response {
+	// todo: update the delete method to delete only the destinations that are not in the new destinations
+	err := s.repo.DeleteAllLogistDestinations(ctx, userID)
 
 	if err != nil {
 		return model.Response{
-			Status: 400,
+			Status: 500,
 			Error:  err,
 		}
 	}
 
-	return model.Response{
-		Data: model.SuccessWithId{Id: id, Message: "Destination created successfully"},
+	for _, destination := range destinations {
+		_, err := s.repo.CreateLogistDestination(ctx, userID, destination)
+
+		if err != nil {
+			return model.Response{
+				Status: 400,
+				Error:  err,
+			}
+		}
 	}
+
+	return model.Response{Data: model.Success{Message: "Destinations created successfully"}}
 }
 
-func (s *ThirdPartyService) DeleteLogistDestination(ctx *fasthttp.RequestCtx, id int) model.Response {
-	err := s.repo.DeleteLogistDestination(ctx, id)
+func (s *ThirdPartyService) DeleteLogistDestination(ctx *fasthttp.RequestCtx, userID int, id int) model.Response {
+	err := s.repo.DeleteLogistDestination(ctx, userID, id)
 
 	if err != nil {
 		return model.Response{

@@ -112,6 +112,8 @@ create table users (
     "role_id" int not null default 1, -- 1 user, 2 dealer, 3 logistic, 4 broker, 5 car service
     "password" varchar(100) not null,
     "phone" varchar(100),
+    "online" boolean default false,
+    "last_active_date" timestamp default now(),
     "status" int not null default 1, -- 1 active, 2 pending, 3 inactive
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
@@ -119,22 +121,32 @@ create table users (
     unique("phone")
 );
 
-create table destinations (
+
+create table user_destinations (
     "id" serial primary key,
+    "user_id" int not null,
     "from_id" int not null,
     "to_id" int not null,
     "created_at" timestamp default now(),
-    constraint fk_destinations_from_id
+    constraint fk_user_destinations_from_id
         foreign key ("from_id")
             references countries(id)
                 on delete cascade
                 on update cascade,
-    constraint fk_destinations_to_id
+    constraint fk_user_destinations_to_id
         foreign key ("to_id")
             references countries(id)
                 on delete cascade
-                on update cascade
+                on update cascade,
+    constraint fk_user_destinations_user_id
+        foreign key (user_id)
+            references users(id)
+                on delete cascade
+                on update cascade,
+    unique(user_id, from_id, to_id)
 );
+
+
 
 create table profiles (
     "id" serial primary key, 
@@ -188,9 +200,10 @@ create table messages (
     "id" serial primary key,
     "sender_id" int not null,
     "receiver_id" int not null,
+    "status" int not null default 1, -- 1-unread, 2-read
     "message" varchar(500) not null, --  it is an id if type "item".
     "type" int not null default 1, -- 1-text, 2-item, 3-link, 4-image, 5-video, 6-audio, 7-file, 8-location, 9-contact, 10-event, 11-task, 12-note, 13-reminder, 14-alert, 15-notification, 16-other
-    "created_at" timestamp default now(),
+    "created_at" timestamp not null,
     constraint fk_messages_sender_id
         foreign key (sender_id)
             references users(id)

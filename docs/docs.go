@@ -16952,6 +16952,9 @@ const docTemplate = `{
                 "registered": {
                     "type": "string"
                 },
+                "role_id": {
+                    "type": "integer"
+                },
                 "telegram": {
                     "type": "string"
                 },

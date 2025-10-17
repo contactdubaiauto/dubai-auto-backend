@@ -645,16 +645,17 @@ func (h *ThirdPartyHandler) GetLogistDestinations(c *fiber.Ctx) error {
 // @Router       /api/v1/third-party/logist/destinations [post]
 func (h *ThirdPartyHandler) CreateLogistDestination(c *fiber.Ctx) error {
 	ctx := c.Context()
-	var req model.CreateLogistDestinationRequest
+	userID := c.Locals("id").(int)
+	var destinations []model.CreateLogistDestinationRequest
 
-	if err := c.BodyParser(&req); err != nil {
+	if err := c.BodyParser(&destinations); err != nil {
 		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  err,
 		})
 	}
 
-	data := h.service.CreateLogistDestination(ctx, req)
+	data := h.service.CreateLogistDestination(ctx, userID, destinations)
 	return utils.FiberResponse(c, &data)
 }
 
@@ -674,6 +675,7 @@ func (h *ThirdPartyHandler) CreateLogistDestination(c *fiber.Ctx) error {
 // @Router       /api/v1/third-party/logist/destinations/{id} [delete]
 func (h *ThirdPartyHandler) DeleteLogistDestination(c *fiber.Ctx) error {
 	ctx := c.Context()
+	userID := c.Locals("id").(int)
 	idStr := c.Params("id")
 
 	id, err := strconv.Atoi(idStr)
@@ -684,6 +686,6 @@ func (h *ThirdPartyHandler) DeleteLogistDestination(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.service.DeleteLogistDestination(ctx, id)
+	data := h.service.DeleteLogistDestination(ctx, userID, id)
 	return utils.FiberResponse(c, &data)
 }

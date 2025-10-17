@@ -98,11 +98,12 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) mode
 	q = `
 		select 
 			email,
-			phone
+			phone,
+			role_id
 		from users 
 		where id = $1
 	`
-	err = r.db.QueryRow(ctx, q, id).Scan(&profile.Email, &profile.Phone)
+	err = r.db.QueryRow(ctx, q, id).Scan(&profile.Email, &profile.Phone, &profile.RoleID)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -635,7 +636,7 @@ func (r *ThirdPartyRepository) GetLogistDestinations(ctx *fasthttp.RequestCtx) (
 				'name', ct.name,
 				'flag', ct.flag
 			) as to_country
-		FROM routes r
+		FROM user_destinations r
 		LEFT JOIN countries cf ON r.from_id = cf.id
 		LEFT JOIN countries ct ON r.to_id = ct.id
 		ORDER BY r.created_at DESC
@@ -659,21 +660,30 @@ func (r *ThirdPartyRepository) GetLogistDestinations(ctx *fasthttp.RequestCtx) (
 	return destinations, nil
 }
 
-func (r *ThirdPartyRepository) CreateLogistDestination(ctx *fasthttp.RequestCtx, req model.CreateLogistDestinationRequest) (int, error) {
+func (r *ThirdPartyRepository) CreateLogistDestination(ctx *fasthttp.RequestCtx, userID int, req model.CreateLogistDestinationRequest) (int, error) {
 	q := `
-		INSERT INTO routes (from_id, to_id)
-		VALUES ($1, $2)
+		INSERT INTO user_destinations (user_id, from_id, to_id)
+		VALUES ($1, $2, $3)
+		ON CONFLICT (user_id, from_id, to_id) DO NOTHING
 		RETURNING id
 	`
 	var id int
-	err := r.db.QueryRow(ctx, q, req.FromID, req.ToID).Scan(&id)
+	err := r.db.QueryRow(ctx, q, userID, req.FromID, req.ToID).Scan(&id)
 	return id, err
 }
 
-func (r *ThirdPartyRepository) DeleteLogistDestination(ctx *fasthttp.RequestCtx, id int) error {
+func (r *ThirdPartyRepository) DeleteLogistDestination(ctx *fasthttp.RequestCtx, userID int, id int) error {
 	q := `
-		DELETE FROM routes WHERE id = $1
+		DELETE FROM user_destinations WHERE user_id = $1 AND id = $2
 	`
-	_, err := r.db.Exec(ctx, q, id)
+	_, err := r.db.Exec(ctx, q, userID, id)
+	return err
+}
+
+func (r *ThirdPartyRepository) DeleteAllLogistDestinations(ctx *fasthttp.RequestCtx, userID int) error {
+	q := `
+		DELETE FROM user_destinations WHERE user_id = $1
+	`
+	_, err := r.db.Exec(ctx, q, userID)
 	return err
 }

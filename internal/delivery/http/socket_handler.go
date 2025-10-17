@@ -31,11 +31,6 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 
 	app.Get("/ws", websocket.New(func(c *websocket.Conn) {
 		token := c.Query("token")
-
-		if token == "" {
-			token = c.Query("auth")
-		}
-
 		user, err := auth.ValidateWSJWT(token)
 
 		if err != nil {
@@ -53,12 +48,10 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 		}
 
 		user.Conn = c
-
 		wsMutex.Lock()
 		wsClients[c] = user
 		wsUserConns[user.ID] = append(wsUserConns[user.ID], c)
 		wsMutex.Unlock()
-
 		log.Printf("✅ User %d connected via WebSocket", user.ID)
 
 		welcomeMsg := model.WSMessage{
@@ -71,6 +64,11 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 		c.WriteJSON(welcomeMsg)
 
 		broadcastUserStatus(user.ID, "online")
+		err = h.service.UpdateUserStatus(user.ID, true)
+
+		if err != nil {
+			log.Printf("❌ Error updating user status: %v", err)
+		}
 
 		defer func() {
 			wsMutex.Lock()
@@ -93,8 +91,21 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 			wsMutex.Unlock()
 			log.Printf("🔌 User %d disconnected", user.ID)
 			broadcastUserStatus(user.ID, "offline")
+			err = h.service.UpdateUserStatus(user.ID, false)
+
+			if err != nil {
+				log.Printf("❌ Error updating user status: %v", err)
+			}
 			c.Close()
 		}()
+
+		data, err := h.service.GetNewMessages(user.ID)
+
+		if err != nil {
+			log.Printf("❌ Error getting unread messages: %v", err)
+		} else if data != nil {
+			sendToUser(user.ID, "new_messages", data)
+		}
 
 		for {
 			var msg model.WSMessage
@@ -159,6 +170,7 @@ func broadcastMessage(event string, data any) {
 	}
 }
 
+// after remove this
 func broadcastUserStatus(userID int, status string) {
 	statusMessage := map[string]any{
 		"user_id":  userID,

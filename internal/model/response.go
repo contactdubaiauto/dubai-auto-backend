@@ -470,6 +470,7 @@ type ThirdPartyGetProfileRes struct {
 	VATNumber     *string    `json:"vat_number"`
 	CompanyType   *string    `json:"company_type"`
 	ActivityField *string    `json:"activity_field"`
+	RoleID        *int       `json:"role_id"`
 }
 
 type ThirdPartyGetRegistrationDataRes struct {
