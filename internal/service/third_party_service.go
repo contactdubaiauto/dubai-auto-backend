@@ -165,6 +165,16 @@ func (s *ThirdPartyService) UpdateDealerCar(ctx *fasthttp.RequestCtx, car *model
 	}
 }
 
+func (s *ThirdPartyService) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, carID, dealerID int) *model.Response {
+	car, err := s.repo.GetEditDealerCarByID(ctx, carID, dealerID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusNotFound}
+	}
+
+	return &model.Response{Data: car}
+}
+
 func (s *ThirdPartyService) CreateDealerCarImages(ctx *fasthttp.RequestCtx, carID int, images []string) *model.Response {
 	err := s.repo.CreateDealerCarImages(ctx, carID, images)
 

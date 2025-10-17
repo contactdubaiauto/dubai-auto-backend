@@ -175,6 +175,7 @@ func SetupAdminRoutes(r fiber.Router, db *pgxpool.Pool) {
 	motoCategories := r.Group("/moto-categories")
 	{
 		motoCategories.Get("/", adminHandler.GetMotoCategories)
+		motoCategories.Get("/:id/brands", adminHandler.GetMotoBrandsByCategoryID)
 		motoCategories.Post("/", adminHandler.CreateMotoCategory)
 		motoCategories.Put("/:id", adminHandler.UpdateMotoCategory)
 		motoCategories.Delete("/:id", adminHandler.DeleteMotoCategory)
@@ -192,6 +193,7 @@ func SetupAdminRoutes(r fiber.Router, db *pgxpool.Pool) {
 	motoBrands := r.Group("/moto-brands")
 	{
 		motoBrands.Get("/", adminHandler.GetMotoBrands)
+		motoBrands.Get("/:id/models", adminHandler.GetMotoModelsByBrandID)
 		motoBrands.Post("/", adminHandler.CreateMotoBrand)
 		motoBrands.Post("/:id/images", adminHandler.CreateMotoBrandImage)
 		motoBrands.Put("/:id", adminHandler.UpdateMotoBrand)
@@ -228,6 +230,7 @@ func SetupAdminRoutes(r fiber.Router, db *pgxpool.Pool) {
 	comtransCategories := r.Group("/comtrans-categories")
 	{
 		comtransCategories.Get("/", adminHandler.GetComtransCategories)
+		comtransCategories.Get("/:id/brands", adminHandler.GetComtransBrandsByCategoryID)
 		comtransCategories.Post("/", adminHandler.CreateComtransCategory)
 		comtransCategories.Put("/:id", adminHandler.UpdateComtransCategory)
 		comtransCategories.Delete("/:id", adminHandler.DeleteComtransCategory)
@@ -245,6 +248,7 @@ func SetupAdminRoutes(r fiber.Router, db *pgxpool.Pool) {
 	comtransBrands := r.Group("/comtrans-brands")
 	{
 		comtransBrands.Get("/", adminHandler.GetComtransBrands)
+		comtransBrands.Get("/:id/models", adminHandler.GetComtransModelsByBrandID)
 		comtransBrands.Post("/", adminHandler.CreateComtransBrand)
 		comtransBrands.Post("/:id/images", adminHandler.CreateComtransBrandImage)
 		comtransBrands.Put("/:id", adminHandler.UpdateComtransBrand)

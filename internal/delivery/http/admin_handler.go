@@ -15,8 +15,8 @@ import (
 )
 
 type AdminHandler struct {
-	AdminService *service.AdminService
-	validator    *auth.Validator
+	service   *service.AdminService
+	validator *auth.Validator
 }
 
 func NewAdminHandler(service *service.AdminService) *AdminHandler {
@@ -39,7 +39,7 @@ func NewAdminHandler(service *service.AdminService) *AdminHandler {
 // @Router       /api/v1/admin/applications [get]
 func (h *AdminHandler) GetApplications(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetApplications(ctx)
+	data := h.service.GetApplications(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -67,7 +67,7 @@ func (h *AdminHandler) GetApplication(c *fiber.Ctx) error {
 		})
 	}
 	ctx := c.Context()
-	data := h.AdminService.GetApplication(ctx, id)
+	data := h.service.GetApplication(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -112,7 +112,7 @@ func (h *AdminHandler) AcceptApplication(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.AcceptApplication(ctx, id, req)
+	data := h.service.AcceptApplication(ctx, id, req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -140,7 +140,7 @@ func (h *AdminHandler) RejectApplication(c *fiber.Ctx) error {
 		})
 	}
 	ctx := c.Context()
-	data := h.AdminService.RejectApplication(ctx, id)
+	data := h.service.RejectApplication(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -160,7 +160,7 @@ func (h *AdminHandler) RejectApplication(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/cities [get]
 func (h *AdminHandler) GetCities(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetCities(ctx)
+	data := h.service.GetCities(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -196,7 +196,7 @@ func (h *AdminHandler) CreateCity(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.AdminService.CreateCity(ctx, &req)
+	data := h.service.CreateCity(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -243,7 +243,7 @@ func (h *AdminHandler) UpdateCity(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.AdminService.UpdateCity(ctx, id, &req)
+	data := h.service.UpdateCity(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -272,7 +272,7 @@ func (h *AdminHandler) DeleteCity(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteCity(ctx, id)
+	data := h.service.DeleteCity(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -292,7 +292,7 @@ func (h *AdminHandler) DeleteCity(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/brands [get]
 func (h *AdminHandler) GetBrands(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetBrands(ctx)
+	data := h.service.GetBrands(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -328,7 +328,7 @@ func (h *AdminHandler) CreateBrand(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.AdminService.CreateBrand(ctx, &req)
+	data := h.service.CreateBrand(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -360,7 +360,7 @@ func (h *AdminHandler) CreateBrandImage(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.AdminService.CreateBrandImage(ctx, form, id)
+	data := h.service.CreateBrandImage(ctx, form, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -407,7 +407,7 @@ func (h *AdminHandler) UpdateBrand(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.AdminService.UpdateBrand(ctx, id, &req)
+	data := h.service.UpdateBrand(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -436,7 +436,7 @@ func (h *AdminHandler) DeleteBrand(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteBrand(ctx, id)
+	data := h.service.DeleteBrand(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -465,7 +465,7 @@ func (h *AdminHandler) GetModels(c *fiber.Ctx) error {
 			Error:  errors.New("brand id must be integer"),
 		})
 	}
-	data := h.AdminService.GetModels(ctx, brandId)
+	data := h.service.GetModels(ctx, brandId)
 	return utils.FiberResponse(c, data)
 }
 
@@ -510,7 +510,7 @@ func (h *AdminHandler) CreateModel(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.AdminService.CreateModel(ctx, brandId, &req)
+	data := h.service.CreateModel(ctx, brandId, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -557,7 +557,7 @@ func (h *AdminHandler) UpdateModel(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.AdminService.UpdateModel(ctx, id, &req)
+	data := h.service.UpdateModel(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -586,7 +586,7 @@ func (h *AdminHandler) DeleteModel(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteModel(ctx, id)
+	data := h.service.DeleteModel(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -606,7 +606,7 @@ func (h *AdminHandler) DeleteModel(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/body-types [get]
 func (h *AdminHandler) GetBodyTypes(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetBodyTypes(ctx)
+	data := h.service.GetBodyTypes(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -642,7 +642,7 @@ func (h *AdminHandler) CreateBodyType(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.AdminService.CreateBodyType(ctx, &req)
+	data := h.service.CreateBodyType(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -700,7 +700,7 @@ func (h *AdminHandler) CreateBodyTypeImage(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.AdminService.CreateBodyTypeImage(ctx, id, paths)
+	data := h.service.CreateBodyTypeImage(ctx, id, paths)
 	return utils.FiberResponse(c, data)
 }
 
@@ -747,7 +747,7 @@ func (h *AdminHandler) UpdateBodyType(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.AdminService.UpdateBodyType(ctx, id, &req)
+	data := h.service.UpdateBodyType(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -776,7 +776,7 @@ func (h *AdminHandler) DeleteBodyType(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteBodyType(ctx, id)
+	data := h.service.DeleteBodyType(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -804,7 +804,7 @@ func (h *AdminHandler) DeleteBodyTypeImage(c *fiber.Ctx) error {
 			Error:  errors.New("body type image id must be integer"),
 		})
 	}
-	data := h.AdminService.DeleteBodyTypeImage(ctx, id)
+	data := h.service.DeleteBodyTypeImage(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -834,7 +834,7 @@ func (h *AdminHandler) GetRegions(c *fiber.Ctx) error {
 		})
 	}
 	ctx := c.Context()
-	data := h.AdminService.GetRegions(ctx, cityId)
+	data := h.service.GetRegions(ctx, cityId)
 	return utils.FiberResponse(c, data)
 }
 
@@ -874,7 +874,7 @@ func (h *AdminHandler) CreateRegion(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateRegion(ctx, cityId, &req)
+	data := h.service.CreateRegion(ctx, cityId, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -915,7 +915,7 @@ func (h *AdminHandler) UpdateRegion(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateRegion(ctx, id, &req)
+	data := h.service.UpdateRegion(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -946,7 +946,7 @@ func (h *AdminHandler) DeleteRegion(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteRegion(ctx, id)
+	data := h.service.DeleteRegion(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -966,7 +966,7 @@ func (h *AdminHandler) DeleteRegion(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/transmissions [get]
 func (h *AdminHandler) GetTransmissions(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetTransmissions(ctx)
+	data := h.service.GetTransmissions(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1002,7 +1002,7 @@ func (h *AdminHandler) CreateTransmission(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateTransmission(ctx, &req)
+	data := h.service.CreateTransmission(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1049,7 +1049,7 @@ func (h *AdminHandler) UpdateTransmission(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateTransmission(ctx, id, &req)
+	data := h.service.UpdateTransmission(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1078,7 +1078,7 @@ func (h *AdminHandler) DeleteTransmission(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteTransmission(ctx, id)
+	data := h.service.DeleteTransmission(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1098,7 +1098,7 @@ func (h *AdminHandler) DeleteTransmission(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/engines [get]
 func (h *AdminHandler) GetEngines(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetEngines(ctx)
+	data := h.service.GetEngines(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1134,7 +1134,7 @@ func (h *AdminHandler) CreateEngine(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateEngine(ctx, &req)
+	data := h.service.CreateEngine(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1181,7 +1181,7 @@ func (h *AdminHandler) UpdateEngine(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateEngine(ctx, id, &req)
+	data := h.service.UpdateEngine(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1210,7 +1210,7 @@ func (h *AdminHandler) DeleteEngine(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteEngine(ctx, id)
+	data := h.service.DeleteEngine(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1230,7 +1230,7 @@ func (h *AdminHandler) DeleteEngine(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/drivetrains [get]
 func (h *AdminHandler) GetDrivetrains(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetDrivetrains(ctx)
+	data := h.service.GetDrivetrains(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1266,7 +1266,7 @@ func (h *AdminHandler) CreateDrivetrain(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateDrivetrain(ctx, &req)
+	data := h.service.CreateDrivetrain(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1313,7 +1313,7 @@ func (h *AdminHandler) UpdateDrivetrain(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateDrivetrain(ctx, id, &req)
+	data := h.service.UpdateDrivetrain(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1342,7 +1342,7 @@ func (h *AdminHandler) DeleteDrivetrain(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteDrivetrain(ctx, id)
+	data := h.service.DeleteDrivetrain(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1362,7 +1362,7 @@ func (h *AdminHandler) DeleteDrivetrain(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/fuel-types [get]
 func (h *AdminHandler) GetFuelTypes(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetFuelTypes(ctx)
+	data := h.service.GetFuelTypes(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1398,7 +1398,7 @@ func (h *AdminHandler) CreateFuelType(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateFuelType(ctx, &req)
+	data := h.service.CreateFuelType(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1445,7 +1445,7 @@ func (h *AdminHandler) UpdateFuelType(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateFuelType(ctx, id, &req)
+	data := h.service.UpdateFuelType(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1474,7 +1474,7 @@ func (h *AdminHandler) DeleteFuelType(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteFuelType(ctx, id)
+	data := h.service.DeleteFuelType(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1494,7 +1494,7 @@ func (h *AdminHandler) DeleteFuelType(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/moto-categories [get]
 func (h *AdminHandler) GetMotoCategories(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetMotoCategories(ctx)
+	data := h.service.GetMotoCategories(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1530,7 +1530,36 @@ func (h *AdminHandler) CreateMotoCategory(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateMotoCategory(ctx, &req)
+	data := h.service.CreateMotoCategory(ctx, &req)
+	return utils.FiberResponse(c, data)
+}
+
+// GetMotoBrandsByCategoryID godoc
+// @Summary      Get moto brands by category ID
+// @Description  Returns a list of all moto brands by category ID
+// @Tags         admin-moto-categories
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Moto category ID"
+// @Success      200  {array}  model.AdminMotoBrandResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/moto-categories/{id}/brands [get]
+func (h *AdminHandler) GetMotoBrandsByCategoryID(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("moto category id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.GetMotoBrandsByCategoryID(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1577,7 +1606,7 @@ func (h *AdminHandler) UpdateMotoCategory(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateMotoCategory(ctx, id, &req)
+	data := h.service.UpdateMotoCategory(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1606,7 +1635,7 @@ func (h *AdminHandler) DeleteMotoCategory(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteMotoCategory(ctx, id)
+	data := h.service.DeleteMotoCategory(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1626,7 +1655,37 @@ func (h *AdminHandler) DeleteMotoCategory(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/moto-brands [get]
 func (h *AdminHandler) GetMotoBrands(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetMotoBrands(ctx)
+	data := h.service.GetMotoBrands(ctx)
+	return utils.FiberResponse(c, data)
+}
+
+// GetMotoModelsByBrandID godoc
+// @Summary      Get moto models by brand ID
+// @Description  Returns a list of all moto models by brand ID
+// @Tags         admin-moto-brands
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Moto brand ID"
+// @Success      200  {array}  model.AdminMotoModelResponse
+// @Failure      400  {object}  model.ResultMessage
+
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/moto-brands/{id}/models [get]
+func (h *AdminHandler) GetMotoModelsByBrandID(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("moto brand id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.GetMotoModelsByBrandID(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1662,7 +1721,7 @@ func (h *AdminHandler) CreateMotoBrand(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateMotoBrand(ctx, &req)
+	data := h.service.CreateMotoBrand(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1694,7 +1753,7 @@ func (h *AdminHandler) CreateMotoBrandImage(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.AdminService.CreateMotoBrandImage(ctx, form, id)
+	data := h.service.CreateMotoBrandImage(ctx, form, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1741,7 +1800,7 @@ func (h *AdminHandler) UpdateMotoBrand(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateMotoBrand(ctx, id, &req)
+	data := h.service.UpdateMotoBrand(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1770,7 +1829,7 @@ func (h *AdminHandler) DeleteMotoBrand(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteMotoBrand(ctx, id)
+	data := h.service.DeleteMotoBrand(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1790,7 +1849,7 @@ func (h *AdminHandler) DeleteMotoBrand(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/moto-models [get]
 func (h *AdminHandler) GetMotoModels(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetMotoModels(ctx)
+	data := h.service.GetMotoModels(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1826,7 +1885,7 @@ func (h *AdminHandler) CreateMotoModel(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateMotoModel(ctx, &req)
+	data := h.service.CreateMotoModel(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1873,7 +1932,7 @@ func (h *AdminHandler) UpdateMotoModel(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateMotoModel(ctx, id, &req)
+	data := h.service.UpdateMotoModel(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1902,7 +1961,7 @@ func (h *AdminHandler) DeleteMotoModel(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteMotoModel(ctx, id)
+	data := h.service.DeleteMotoModel(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1922,7 +1981,7 @@ func (h *AdminHandler) DeleteMotoModel(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/moto-parameters [get]
 func (h *AdminHandler) GetMotoParameters(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetMotoParameters(ctx)
+	data := h.service.GetMotoParameters(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1958,7 +2017,7 @@ func (h *AdminHandler) CreateMotoParameter(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateMotoParameter(ctx, &req)
+	data := h.service.CreateMotoParameter(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2005,7 +2064,7 @@ func (h *AdminHandler) UpdateMotoParameter(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateMotoParameter(ctx, id, &req)
+	data := h.service.UpdateMotoParameter(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2034,7 +2093,7 @@ func (h *AdminHandler) DeleteMotoParameter(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteMotoParameter(ctx, id)
+	data := h.service.DeleteMotoParameter(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2065,7 +2124,7 @@ func (h *AdminHandler) GetMotoParameterValues(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.GetMotoParameterValues(ctx, motoParamId)
+	data := h.service.GetMotoParameterValues(ctx, motoParamId)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2112,7 +2171,7 @@ func (h *AdminHandler) CreateMotoParameterValue(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateMotoParameterValue(ctx, motoParamId, &req)
+	data := h.service.CreateMotoParameterValue(ctx, motoParamId, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2170,7 +2229,7 @@ func (h *AdminHandler) UpdateMotoParameterValue(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateMotoParameterValue(ctx, motoParamId, id, &req)
+	data := h.service.UpdateMotoParameterValue(ctx, motoParamId, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2210,7 +2269,7 @@ func (h *AdminHandler) DeleteMotoParameterValue(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteMotoParameterValue(ctx, motoParamId, id)
+	data := h.service.DeleteMotoParameterValue(ctx, motoParamId, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2241,7 +2300,7 @@ func (h *AdminHandler) GetMotoCategoryParameters(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.GetMotoCategoryParameters(ctx, categoryId)
+	data := h.service.GetMotoCategoryParameters(ctx, categoryId)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2288,7 +2347,7 @@ func (h *AdminHandler) CreateMotoCategoryParameter(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateMotoCategoryParameter(ctx, categoryId, &req)
+	data := h.service.CreateMotoCategoryParameter(ctx, categoryId, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2346,7 +2405,7 @@ func (h *AdminHandler) UpdateMotoCategoryParameter(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateMotoCategoryParameter(ctx, categoryId, parameterId, &req)
+	data := h.service.UpdateMotoCategoryParameter(ctx, categoryId, parameterId, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2386,7 +2445,7 @@ func (h *AdminHandler) DeleteMotoCategoryParameter(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteMotoCategoryParameter(ctx, categoryId, parameterId)
+	data := h.service.DeleteMotoCategoryParameter(ctx, categoryId, parameterId)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2406,7 +2465,35 @@ func (h *AdminHandler) DeleteMotoCategoryParameter(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/comtrans-categories [get]
 func (h *AdminHandler) GetComtransCategories(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetComtransCategories(ctx)
+	data := h.service.GetComtransCategories(ctx)
+	return utils.FiberResponse(c, data)
+}
+
+// GetComtransBrandsByCategoryID godoc
+// @Summary      Get comtrans brands by category ID
+// @Description  Returns a list of comtrans brands for a specific category
+// @Tags         admin-comtrans-brands
+// @Produce      json
+// @Security     BearerAuth
+// @Param        category_id   path      int  true  "Comtrans category ID"
+// @Success      200  {array}  model.AdminComtransBrandResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/comtrans-categories/{category_id}/brands [get]
+func (h *AdminHandler) GetComtransBrandsByCategoryID(c *fiber.Ctx) error {
+	categoryIdStr := c.Params("category_id")
+	categoryId, err := strconv.Atoi(categoryIdStr)
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("category id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.GetComtransBrandsByCategoryID(ctx, categoryId)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2442,7 +2529,7 @@ func (h *AdminHandler) CreateComtransCategory(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateComtransCategory(ctx, &req)
+	data := h.service.CreateComtransCategory(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2489,7 +2576,7 @@ func (h *AdminHandler) UpdateComtransCategory(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateComtransCategory(ctx, id, &req)
+	data := h.service.UpdateComtransCategory(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2518,7 +2605,7 @@ func (h *AdminHandler) DeleteComtransCategory(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteComtransCategory(ctx, id)
+	data := h.service.DeleteComtransCategory(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2549,7 +2636,7 @@ func (h *AdminHandler) GetComtransCategoryParameters(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.GetComtransCategoryParameters(ctx, categoryId)
+	data := h.service.GetComtransCategoryParameters(ctx, categoryId)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2596,7 +2683,7 @@ func (h *AdminHandler) CreateComtransCategoryParameter(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateComtransCategoryParameter(ctx, categoryId, &req)
+	data := h.service.CreateComtransCategoryParameter(ctx, categoryId, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2654,7 +2741,7 @@ func (h *AdminHandler) UpdateComtransCategoryParameter(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateComtransCategoryParameter(ctx, categoryId, id, &req)
+	data := h.service.UpdateComtransCategoryParameter(ctx, categoryId, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2694,7 +2781,7 @@ func (h *AdminHandler) DeleteComtransCategoryParameter(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteComtransCategoryParameter(ctx, categoryId, id)
+	data := h.service.DeleteComtransCategoryParameter(ctx, categoryId, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2714,7 +2801,36 @@ func (h *AdminHandler) DeleteComtransCategoryParameter(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/comtrans-brands [get]
 func (h *AdminHandler) GetComtransBrands(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetComtransBrands(ctx)
+	data := h.service.GetComtransBrands(ctx)
+	return utils.FiberResponse(c, data)
+}
+
+// GetComtransModelsByBrandID godoc
+// @Summary      Get comtrans models by brand ID
+// @Description  Returns a list of comtrans models by brand ID
+// @Tags         admin-comtrans-brands
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Comtrans brand ID"
+// @Success      200  {array}  model.AdminComtransModelResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/comtrans-brands/{id}/models [get]
+func (h *AdminHandler) GetComtransModelsByBrandID(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("comtrans brand id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.GetComtransModelsByBrandID(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2750,7 +2866,7 @@ func (h *AdminHandler) CreateComtransBrand(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateComtransBrand(ctx, &req)
+	data := h.service.CreateComtransBrand(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2782,7 +2898,7 @@ func (h *AdminHandler) CreateComtransBrandImage(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.AdminService.CreateComtransBrandImage(ctx, form, id)
+	data := h.service.CreateComtransBrandImage(ctx, form, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2829,7 +2945,7 @@ func (h *AdminHandler) UpdateComtransBrand(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateComtransBrand(ctx, id, &req)
+	data := h.service.UpdateComtransBrand(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2858,7 +2974,7 @@ func (h *AdminHandler) DeleteComtransBrand(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteComtransBrand(ctx, id)
+	data := h.service.DeleteComtransBrand(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2878,7 +2994,7 @@ func (h *AdminHandler) DeleteComtransBrand(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/comtrans-models [get]
 func (h *AdminHandler) GetComtransModels(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetComtransModels(ctx)
+	data := h.service.GetComtransModels(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2914,7 +3030,7 @@ func (h *AdminHandler) CreateComtransModel(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateComtransModel(ctx, &req)
+	data := h.service.CreateComtransModel(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2961,7 +3077,7 @@ func (h *AdminHandler) UpdateComtransModel(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateComtransModel(ctx, id, &req)
+	data := h.service.UpdateComtransModel(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2990,7 +3106,7 @@ func (h *AdminHandler) DeleteComtransModel(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteComtransModel(ctx, id)
+	data := h.service.DeleteComtransModel(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3010,7 +3126,7 @@ func (h *AdminHandler) DeleteComtransModel(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/comtrans-parameters [get]
 func (h *AdminHandler) GetComtransParameters(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetComtransParameters(ctx)
+	data := h.service.GetComtransParameters(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3046,7 +3162,7 @@ func (h *AdminHandler) CreateComtransParameter(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateComtransParameter(ctx, &req)
+	data := h.service.CreateComtransParameter(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3093,7 +3209,7 @@ func (h *AdminHandler) UpdateComtransParameter(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateComtransParameter(ctx, id, &req)
+	data := h.service.UpdateComtransParameter(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3122,7 +3238,7 @@ func (h *AdminHandler) DeleteComtransParameter(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteComtransParameter(ctx, id)
+	data := h.service.DeleteComtransParameter(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3153,7 +3269,7 @@ func (h *AdminHandler) GetComtransParameterValues(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.GetComtransParameterValues(ctx, parameterId)
+	data := h.service.GetComtransParameterValues(ctx, parameterId)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3200,7 +3316,7 @@ func (h *AdminHandler) CreateComtransParameterValue(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateComtransParameterValue(ctx, parameterId, &req)
+	data := h.service.CreateComtransParameterValue(ctx, parameterId, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3258,7 +3374,7 @@ func (h *AdminHandler) UpdateComtransParameterValue(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateComtransParameterValue(ctx, parameterId, id, &req)
+	data := h.service.UpdateComtransParameterValue(ctx, parameterId, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3298,7 +3414,7 @@ func (h *AdminHandler) DeleteComtransParameterValue(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteComtransParameterValue(ctx, parameterId, id)
+	data := h.service.DeleteComtransParameterValue(ctx, parameterId, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3318,7 +3434,7 @@ func (h *AdminHandler) DeleteComtransParameterValue(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/service-types [get]
 func (h *AdminHandler) GetServiceTypes(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetServiceTypes(ctx)
+	data := h.service.GetServiceTypes(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3354,7 +3470,7 @@ func (h *AdminHandler) CreateServiceType(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateServiceType(ctx, &req)
+	data := h.service.CreateServiceType(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3401,7 +3517,7 @@ func (h *AdminHandler) UpdateServiceType(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateServiceType(ctx, id, &req)
+	data := h.service.UpdateServiceType(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3430,7 +3546,7 @@ func (h *AdminHandler) DeleteServiceType(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteServiceType(ctx, id)
+	data := h.service.DeleteServiceType(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3450,7 +3566,7 @@ func (h *AdminHandler) DeleteServiceType(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/services [get]
 func (h *AdminHandler) GetServices(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetServices(ctx)
+	data := h.service.GetServices(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3486,7 +3602,7 @@ func (h *AdminHandler) CreateService(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateService(ctx, &req)
+	data := h.service.CreateService(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3533,7 +3649,7 @@ func (h *AdminHandler) UpdateService(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateService(ctx, id, &req)
+	data := h.service.UpdateService(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3562,7 +3678,7 @@ func (h *AdminHandler) DeleteService(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteService(ctx, id)
+	data := h.service.DeleteService(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3582,7 +3698,7 @@ func (h *AdminHandler) DeleteService(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/generations [get]
 func (h *AdminHandler) GetGenerations(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetGenerations(ctx)
+	data := h.service.GetGenerations(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3621,7 +3737,7 @@ func (h *AdminHandler) GetGenerationsByModel(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.GetGenerationsByModel(ctx, brandId, modelId)
+	data := h.service.GetGenerationsByModel(ctx, brandId, modelId)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3657,7 +3773,7 @@ func (h *AdminHandler) CreateGeneration(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateGeneration(ctx, &req)
+	data := h.service.CreateGeneration(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3704,7 +3820,7 @@ func (h *AdminHandler) UpdateGeneration(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateGeneration(ctx, id, &req)
+	data := h.service.UpdateGeneration(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3736,7 +3852,7 @@ func (h *AdminHandler) CreateGenerationImage(c *fiber.Ctx) error {
 	}
 
 	form, _ := c.MultipartForm()
-	data := h.AdminService.CreateGenerationImage(ctx, form, id)
+	data := h.service.CreateGenerationImage(ctx, form, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3765,7 +3881,7 @@ func (h *AdminHandler) DeleteGeneration(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteGeneration(ctx, id)
+	data := h.service.DeleteGeneration(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3796,7 +3912,7 @@ func (h *AdminHandler) GetGenerationModifications(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.GetGenerationModifications(ctx, generationId)
+	data := h.service.GetGenerationModifications(ctx, generationId)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3843,7 +3959,7 @@ func (h *AdminHandler) CreateGenerationModification(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateGenerationModification(ctx, generationId, &req)
+	data := h.service.CreateGenerationModification(ctx, generationId, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3901,7 +4017,7 @@ func (h *AdminHandler) UpdateGenerationModification(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateGenerationModification(ctx, generationId, id, &req)
+	data := h.service.UpdateGenerationModification(ctx, generationId, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3941,7 +4057,7 @@ func (h *AdminHandler) DeleteGenerationModification(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteGenerationModification(ctx, generationId, id)
+	data := h.service.DeleteGenerationModification(ctx, generationId, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3961,7 +4077,7 @@ func (h *AdminHandler) DeleteGenerationModification(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/configurations [get]
 func (h *AdminHandler) GetConfigurations(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetConfigurations(ctx)
+	data := h.service.GetConfigurations(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3997,7 +4113,7 @@ func (h *AdminHandler) CreateConfiguration(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateConfiguration(ctx, &req)
+	data := h.service.CreateConfiguration(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -4044,7 +4160,7 @@ func (h *AdminHandler) UpdateConfiguration(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateConfiguration(ctx, id, &req)
+	data := h.service.UpdateConfiguration(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -4073,7 +4189,7 @@ func (h *AdminHandler) DeleteConfiguration(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteConfiguration(ctx, id)
+	data := h.service.DeleteConfiguration(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -4093,7 +4209,7 @@ func (h *AdminHandler) DeleteConfiguration(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/colors [get]
 func (h *AdminHandler) GetColors(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetColors(ctx)
+	data := h.service.GetColors(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -4129,7 +4245,7 @@ func (h *AdminHandler) CreateColor(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.CreateColor(ctx, &req)
+	data := h.service.CreateColor(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -4161,7 +4277,7 @@ func (h *AdminHandler) CreateColorImage(c *fiber.Ctx) error {
 	}
 
 	form, _ := c.MultipartForm()
-	data := h.AdminService.CreateColorImage(ctx, form, id)
+	data := h.service.CreateColorImage(ctx, form, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -4208,7 +4324,7 @@ func (h *AdminHandler) UpdateColor(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateColor(ctx, id, &req)
+	data := h.service.UpdateColor(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -4237,7 +4353,7 @@ func (h *AdminHandler) DeleteColor(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteColor(ctx, id)
+	data := h.service.DeleteColor(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -4257,7 +4373,7 @@ func (h *AdminHandler) DeleteColor(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/countries [get]
 func (h *AdminHandler) GetCountries(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.AdminService.GetCountries(ctx)
+	data := h.service.GetCountries(ctx)
 	return utils.FiberResponse(c, data)
 }
 
@@ -4293,7 +4409,7 @@ func (h *AdminHandler) CreateCountry(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.AdminService.CreateCountry(ctx, &req)
+	data := h.service.CreateCountry(ctx, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -4325,7 +4441,7 @@ func (h *AdminHandler) CreateCountryImage(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.AdminService.CreateCountryImage(ctx, form, id)
+	data := h.service.CreateCountryImage(ctx, form, id)
 	return utils.FiberResponse(c, data)
 }
 
@@ -4371,7 +4487,7 @@ func (h *AdminHandler) UpdateCountry(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.UpdateCountry(ctx, id, &req)
+	data := h.service.UpdateCountry(ctx, id, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -4400,6 +4516,6 @@ func (h *AdminHandler) DeleteCountry(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.AdminService.DeleteCountry(ctx, id)
+	data := h.service.DeleteCountry(ctx, id)
 	return utils.FiberResponse(c, data)
 }

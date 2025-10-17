@@ -82,3 +82,6 @@ insert into activity_fields (name) values ('Industry');
 
 
 alter table profiles add column "company_name" varchar(200);
+
+alter table moto_brands alter column image drop not null;
+

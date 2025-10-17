@@ -419,6 +419,119 @@ func (r *ThirdPartyRepository) UpdateDealerCar(ctx *fasthttp.RequestCtx, car *mo
 	return err
 }
 
+func (r *ThirdPartyRepository) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, carID, dealerID int) (model.GetEditCarsResponse, error) {
+	car := model.GetEditCarsResponse{}
+
+	q := `
+		select 
+			vs.id,
+			json_build_object(
+				'id', bs.id,
+				'name', bs.name,
+				'logo', bs.logo,
+				'model_count', bs.model_count
+			) as brand,
+			json_build_object(
+				'id', rs.id,
+				'name', rs.name
+			) as region,
+			json_build_object(
+				'id', cs.id,
+				'name', cs.name
+			) as city,
+			json_build_object(
+				'id', ms.id,
+				'name', ms.name
+			) as model,
+			json_build_object(
+				'id', mfs.id,
+				'engine', es.value,
+				'fuel_type', fts.name,
+				'drivetrain', ds.name,
+				'transmission', ts.name
+			) as modification,
+			json_build_object(
+				'id', cls.id,
+				'name', cls.name,
+				'image', cls.image
+			) as color,
+			json_build_object(
+				'id', bts.id,
+				'name', bts.name,
+				'image', bts.image
+			) as body_type,
+			json_build_object(
+				'id', gs.id,
+				'name', gs.name,
+				'image', gs.image,
+				'start_year', gs.start_year,
+				'end_year', gs.end_year
+			) as generation,
+			vs.year,
+			vs.price,
+			vs.odometer,
+			vs.vin_code,
+			vs.wheel,
+			vs.trade_in,
+			vs.crash,
+			vs.credit,
+			vs.new,
+			vs.status,
+			vs.created_at,
+			images,
+			videos,
+			vs.phone_numbers,
+			vs.view_count,
+			vs.description,
+			CASE
+				WHEN vs.user_id = $2 THEN TRUE
+				ELSE FALSE
+			END AS my_car,
+			vs.owners
+		from vehicles vs
+		left join colors cls on vs.color_id = cls.id
+		left join generation_modifications mfs on mfs.id = vs.modification_id
+		left join generations gs on gs.id = mfs.generation_id
+		left join body_types bts on bts.id = mfs.body_type_id
+		left join engines es on es.id = mfs.engine_id
+		left join transmissions ts on ts.id = mfs.transmission_id
+		left join drivetrains ds on ds.id = mfs.drivetrain_id
+		left join fuel_types fts on fts.id = mfs.fuel_type_id
+		left join brands bs on vs.brand_id = bs.id
+		left join regions rs on vs.region_id = rs.id
+		left join cities cs on vs.city_id = cs.id
+		left join models ms on vs.model_id = ms.id
+		LEFT JOIN LATERAL (
+			SELECT json_agg(img.image) AS images
+			FROM (
+				SELECT image
+				FROM images
+				WHERE vehicle_id = vs.id
+				ORDER BY created_at DESC
+			) img
+		) images ON true
+		LEFT JOIN LATERAL (
+			SELECT json_agg(v.video) AS videos
+			FROM (
+				SELECT video
+				FROM videos
+				WHERE vehicle_id = vs.id
+				ORDER BY created_at DESC
+			) v
+		) videos ON true
+		where vs.id = $1 and vs.user_id = $2;
+	`
+	err := r.db.QueryRow(ctx, q, carID, dealerID).Scan(
+		&car.ID, &car.Brand, &car.Region, &car.City, &car.Model, &car.Modification,
+		&car.Color, &car.BodyType, &car.Generation, &car.Year, &car.Price, &car.Odometer, &car.VinCode,
+		&car.Wheel, &car.TradeIN, &car.Crash,
+		&car.Credit, &car.New, &car.Status, &car.CreatedAt, &car.Images, &car.Videos, &car.PhoneNumbers,
+		&car.ViewCount, &car.Description, &car.MyCar, &car.Owners,
+	)
+
+	return car, err
+}
+
 func (r *ThirdPartyRepository) CreateDealerCarImages(ctx *fasthttp.RequestCtx, carID int, images []string) error {
 
 	if len(images) == 0 {

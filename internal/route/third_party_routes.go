@@ -25,19 +25,20 @@ func SetupThirdPartyRoutes(r fiber.Router, db *pgxpool.Pool) {
 		r.Post("/profile/images", auth.TokenGuard, thirdPartyHandler.AvatarImages)
 		r.Post("/profile", auth.TokenGuard, thirdPartyHandler.Profile)
 		// dealer routes
-		r.Post("/dealer/car", auth.DealerGuard, thirdPartyHandler.CreateDealerCar)
-		r.Post("/dealer/car/:id", auth.DealerGuard, thirdPartyHandler.UpdateDealerCar)
-		r.Post("/dealer/car/:id/images", auth.DealerGuard, thirdPartyHandler.CreateDealerCarImages)
-		r.Post("/dealer/car/:id/videos", auth.DealerGuard, thirdPartyHandler.CreateDealerCarVideos)
-		r.Post("/dealer/car/:id/sell", auth.DealerGuard, thirdPartyHandler.StatusDealer)
-		r.Post("/dealer/car/:id/dont-sell", auth.DealerGuard, thirdPartyHandler.StatusDealer)
-		r.Delete("/dealer/car/:id/images", auth.DealerGuard, thirdPartyHandler.DeleteDealerCarImage)
-		r.Delete("/dealer/car/:id/videos", auth.DealerGuard, thirdPartyHandler.DeleteDealerCarVideo)
-		r.Delete("/dealer/car/:id", auth.DealerGuard, thirdPartyHandler.DeleteDealerCar)
+		r.Post("/dealer/car", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.CreateDealerCar)
+		r.Post("/dealer/car/:id", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.UpdateDealerCar)
+		r.Get("/dealer/car/:id/edit", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.GetEditCarByID)
+		r.Post("/dealer/car/:id/images", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.CreateDealerCarImages)
+		r.Post("/dealer/car/:id/videos", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.CreateDealerCarVideos)
+		r.Post("/dealer/car/:id/sell", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.StatusDealer)
+		r.Post("/dealer/car/:id/dont-sell", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.StatusDealer)
+		r.Delete("/dealer/car/:id/images", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.DeleteDealerCarImage)
+		r.Delete("/dealer/car/:id/videos", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.DeleteDealerCarVideo)
+		r.Delete("/dealer/car/:id", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.DeleteDealerCar)
 		// logist routes
-		r.Get("/logist/destinations", auth.LogistGuard, thirdPartyHandler.GetLogistDestinations)
-		r.Post("/logist/destinations", auth.LogistGuard, thirdPartyHandler.CreateLogistDestination)
-		r.Delete("/logist/destinations/:id", auth.LogistGuard, thirdPartyHandler.DeleteLogistDestination)
+		r.Get("/logist/destinations", auth.TokenGuard, auth.LogistGuard, thirdPartyHandler.GetLogistDestinations)
+		r.Post("/logist/destinations", auth.TokenGuard, auth.LogistGuard, thirdPartyHandler.CreateLogistDestination)
+		r.Delete("/logist/destinations/:id", auth.TokenGuard, auth.LogistGuard, thirdPartyHandler.DeleteLogistDestination)
 		// broker routes
 		// car service routes
 	}

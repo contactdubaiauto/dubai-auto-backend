@@ -3608,6 +3608,45 @@ paths:
       summary: Create a new comtrans brand image
       tags:
       - admin-comtrans-brands
+  /api/v1/admin/comtrans-brands/{id}/models:
+    get:
+      description: Returns a list of comtrans models by brand ID
+      parameters:
+      - description: Comtrans brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminComtransModelResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get comtrans models by brand ID
+      tags:
+      - admin-comtrans-brands
   /api/v1/admin/comtrans-categories:
     get:
       description: Returns a list of all comtrans categories
@@ -3680,6 +3719,45 @@ paths:
       summary: Create a comtrans category
       tags:
       - admin-comtrans-categories
+  /api/v1/admin/comtrans-categories/{category_id}/brands:
+    get:
+      description: Returns a list of comtrans brands for a specific category
+      parameters:
+      - description: Comtrans category ID
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminComtransBrandResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get comtrans brands by category ID
+      tags:
+      - admin-comtrans-brands
   /api/v1/admin/comtrans-categories/{category_id}/parameters:
     get:
       description: Returns a list of comtrans category parameters for a specific category
@@ -5792,6 +5870,21 @@ paths:
       summary: Create a new brand image
       tags:
       - admin-moto-brands
+  /api/v1/admin/moto-brands/{id}/models:
+    get:
+      responses:
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
   /api/v1/admin/moto-categories:
     get:
       description: Returns a list of all moto categories
@@ -6117,6 +6210,45 @@ paths:
       security:
       - BearerAuth: []
       summary: Update a moto category
+      tags:
+      - admin-moto-categories
+  /api/v1/admin/moto-categories/{id}/brands:
+    get:
+      description: Returns a list of all moto brands by category ID
+      parameters:
+      - description: Moto category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminMotoBrandResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get moto brands by category ID
       tags:
       - admin-moto-categories
   /api/v1/admin/moto-models:
@@ -7759,6 +7891,47 @@ paths:
       security:
       - BearerAuth: []
       summary: Change dealer car status
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/car/{id}/edit:
+    get:
+      description: Returns a dealer car by its ID
+      parameters:
+      - description: Dealer Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetEditCarsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get Edit dealer car by ID
       tags:
       - dealer
   /api/v1/third-party/dealer/car/{id}/images:

@@ -123,8 +123,8 @@ func (r *AdminRepository) AcceptApplication(ctx *fasthttp.RequestCtx, id int, pa
 		insert into users (email, password, username, role_id, phone)
 		values ($1, $2, $3, $4, $5) 
 		ON CONFLICT (email) DO UPDATE
-		SET password = EXCLUDED.password
-		returning id
+		SET password = EXCLUDED.password, created_at = now(), updated_at = now()
+		RETURNING id
 	`
 	var userID int
 	err = tx.QueryRow(ctx, q, tempUser.Email, password, tempUser.FullName, tempUser.RoleID, tempUser.Phone).Scan(&userID)
@@ -967,6 +967,35 @@ func (r *AdminRepository) CreateMotoCategory(ctx *fasthttp.RequestCtx, req *mode
 	return id, err
 }
 
+func (r *AdminRepository) GetMotoBrandsByCategoryID(ctx *fasthttp.RequestCtx, id int) ([]model.AdminMotoBrandResponse, error) {
+	motoBrands := make([]model.AdminMotoBrandResponse, 0)
+	q := `
+		SELECT mb.id, mb.name, mb.image, mb.moto_category_id, mc.name as moto_category_name, mb.created_at
+		FROM moto_brands mb
+		LEFT JOIN moto_categories mc ON mb.moto_category_id = mc.id
+		WHERE mb.moto_category_id = $1
+		ORDER BY mb.id DESC`
+
+	rows, err := r.db.Query(ctx, q, id)
+
+	if err != nil {
+		return motoBrands, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var motoBrand model.AdminMotoBrandResponse
+		if err := rows.Scan(&motoBrand.ID, &motoBrand.Name, &motoBrand.Image, &motoBrand.MotoCategoryID,
+			&motoBrand.MotoCategoryName, &motoBrand.CreatedAt); err != nil {
+			return motoBrands, err
+		}
+		motoBrands = append(motoBrands, motoBrand)
+	}
+
+	return motoBrands, err
+}
+
 func (r *AdminRepository) UpdateMotoCategory(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoCategoryRequest) error {
 	q := `UPDATE moto_categories SET name = $2 WHERE id = $1`
 	_, err := r.db.Exec(ctx, q, id, req.Name)
@@ -1005,6 +1034,35 @@ func (r *AdminRepository) GetMotoBrands(ctx *fasthttp.RequestCtx) ([]model.Admin
 	}
 
 	return motoBrands, err
+}
+
+func (r *AdminRepository) GetMotoModelsByBrandID(ctx *fasthttp.RequestCtx, id int) ([]model.AdminMotoModelResponse, error) {
+	motoModels := make([]model.AdminMotoModelResponse, 0)
+	q := `
+		SELECT mm.id, mm.name, mm.moto_brand_id, mb.name as moto_brand_name, mm.created_at
+		FROM moto_models mm
+		LEFT JOIN moto_brands mb ON mm.moto_brand_id = mb.id
+		WHERE mm.moto_brand_id = $1
+		ORDER BY mm.id DESC`
+
+	rows, err := r.db.Query(ctx, q, id)
+
+	if err != nil {
+		return motoModels, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var motoModel model.AdminMotoModelResponse
+		if err := rows.Scan(&motoModel.ID, &motoModel.Name, &motoModel.MotoBrandID,
+			&motoModel.MotoBrandName, &motoModel.CreatedAt); err != nil {
+			return motoModels, err
+		}
+		motoModels = append(motoModels, motoModel)
+	}
+
+	return motoModels, err
 }
 
 func (r *AdminRepository) CreateMotoBrand(ctx *fasthttp.RequestCtx, req *model.CreateMotoBrandRequest) (int, error) {
@@ -1242,6 +1300,35 @@ func (r *AdminRepository) GetComtransCategories(ctx *fasthttp.RequestCtx) ([]mod
 	return comtransCategories, err
 }
 
+func (r *AdminRepository) GetComtransBrandsByCategoryID(ctx *fasthttp.RequestCtx, categoryId int) ([]model.AdminComtransBrandResponse, error) {
+	comtransBrands := make([]model.AdminComtransBrandResponse, 0)
+	q := `
+		SELECT cb.id, cb.name, cb.image, cb.comtran_category_id, cc.name as comtrans_category_name, cb.created_at
+		FROM com_brands cb
+		LEFT JOIN com_categories cc ON cb.comtran_category_id = cc.id
+		WHERE cb.comtran_category_id = $1
+		ORDER BY cb.id DESC
+	`
+
+	rows, err := r.db.Query(ctx, q, categoryId)
+
+	if err != nil {
+		return comtransBrands, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var comtransBrand model.AdminComtransBrandResponse
+		if err := rows.Scan(&comtransBrand.ID, &comtransBrand.Name, &comtransBrand.Image, &comtransBrand.ComtransCategoryID,
+			&comtransBrand.ComtransCategoryName, &comtransBrand.CreatedAt); err != nil {
+			return comtransBrands, err
+		}
+		comtransBrands = append(comtransBrands, comtransBrand)
+	}
+
+	return comtransBrands, err
+}
+
 func (r *AdminRepository) CreateComtransCategory(ctx *fasthttp.RequestCtx, req *model.CreateComtransCategoryRequest) (int, error) {
 	q := `INSERT INTO com_categories (name) VALUES ($1) RETURNING id`
 	var id int
@@ -1335,6 +1422,35 @@ func (r *AdminRepository) GetComtransBrands(ctx *fasthttp.RequestCtx) ([]model.A
 	}
 
 	return comtransBrands, err
+}
+
+// Comtrans Models CRUD operations
+func (r *AdminRepository) GetComtransModelsByBrandID(ctx *fasthttp.RequestCtx, id int) ([]model.AdminComtransModelResponse, error) {
+	comtransModels := make([]model.AdminComtransModelResponse, 0)
+	q := `
+		SELECT cm.id, cm.name, cm.comtran_brand_id, cb.name as comtrans_brand_name, cm.created_at
+		FROM com_models cm
+		LEFT JOIN com_brands cb ON cm.comtran_brand_id = cb.id
+		WHERE cm.comtran_brand_id = $1
+		ORDER BY cm.id DESC
+	`
+
+	rows, err := r.db.Query(ctx, q, id)
+	if err != nil {
+		return comtransModels, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var comtransModel model.AdminComtransModelResponse
+		if err := rows.Scan(&comtransModel.ID, &comtransModel.Name, &comtransModel.ComtransBrandID,
+			&comtransModel.ComtransBrandName, &comtransModel.CreatedAt); err != nil {
+			return comtransModels, err
+		}
+		comtransModels = append(comtransModels, comtransModel)
+	}
+
+	return comtransModels, err
 }
 
 func (r *AdminRepository) CreateComtransBrand(ctx *fasthttp.RequestCtx, req *model.CreateComtransBrandRequest) (int, error) {

@@ -282,6 +282,37 @@ func (h *ThirdPartyHandler) UpdateDealerCar(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, &data)
 }
 
+// GetEditCarByID godoc
+// @Summary      Get Edit dealer car by ID
+// @Description  Returns a dealer car by its ID
+// @Tags         dealer
+// @Produce      json
+// @Param        id   path      int  true  "Dealer Car ID"
+// @Security 	 BearerAuth
+// @Success      200  {object}  model.GetEditCarsResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/car/{id}/edit [get]
+func (h *ThirdPartyHandler) GetEditCarByID(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	dealerID := c.Locals("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, &model.Response{
+			Status: 400,
+			Error:  errors.New("dealer car id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.GetEditDealerCarByID(ctx, id, dealerID)
+	return utils.FiberResponse(c, data)
+}
+
 // CreateCarImages godoc
 // @Summary      Upload car images
 // @Description  Uploads images for a car (max 10 files)

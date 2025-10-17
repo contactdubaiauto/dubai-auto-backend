@@ -1482,7 +1482,7 @@ func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID 
 				ORDER BY created_at DESC
 			) v
 		) videos ON true
-		where vs.id = $1;
+		where vs.id = $1 and vs.user_id = $2;
 	`
 	err := r.db.QueryRow(ctx, q, carID, userID).Scan(
 		&car.ID, &car.Brand, &car.Region, &car.City, &car.Model, &car.Modification,

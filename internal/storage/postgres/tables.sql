@@ -509,7 +509,7 @@ create table moto_categories (
 create table moto_brands (
     "id" serial primary key,
     "name" varchar(100) not null,
-    "image" varchar(255) not null,
+    "image" varchar(255),
     "moto_category_id" integer not null,
     "created_at" timestamp not null default now(),
     constraint fk_moto_brands_moto_category_id
@@ -518,6 +518,7 @@ create table moto_brands (
                 on delete cascade
                 on update cascade
 );
+
 
 
 create table moto_models (
@@ -718,7 +719,7 @@ create table com_categories (
 create table com_brands (
     "id" serial primary key,
     "name" varchar(100) not null,
-    "image" varchar(255) not null,
+    "image" varchar(255),
     "comtran_category_id" integer not null,
     "created_at" timestamp not null default now(),
     constraint fk_com_brands_comtran_category_id
@@ -727,6 +728,8 @@ create table com_brands (
                 on delete cascade
                 on update cascade
 );
+
+
 
 create table com_models (
     "id" serial primary key,

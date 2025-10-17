@@ -834,6 +834,14 @@ func (s *AdminService) CreateMotoCategory(ctx *fasthttp.RequestCtx, req *model.C
 	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto category created successfully"}}
 }
 
+func (s *AdminService) GetMotoBrandsByCategoryID(ctx *fasthttp.RequestCtx, id int) *model.Response {
+	motoBrands, err := s.repo.GetMotoBrandsByCategoryID(ctx, id)
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: motoBrands}
+}
+
 func (s *AdminService) UpdateMotoCategory(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoCategoryRequest) *model.Response {
 	err := s.repo.UpdateMotoCategory(ctx, id, req)
 	if err != nil {
@@ -857,6 +865,14 @@ func (s *AdminService) GetMotoBrands(ctx *fasthttp.RequestCtx) *model.Response {
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 	return &model.Response{Data: motoBrands}
+}
+
+func (s *AdminService) GetMotoModelsByBrandID(ctx *fasthttp.RequestCtx, id int) *model.Response {
+	motoModels, err := s.repo.GetMotoModelsByBrandID(ctx, id)
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: motoModels}
 }
 
 func (s *AdminService) CreateMotoBrand(ctx *fasthttp.RequestCtx, req *model.CreateMotoBrandRequest) *model.Response {
@@ -1063,6 +1079,15 @@ func (s *AdminService) GetComtransCategories(ctx *fasthttp.RequestCtx) *model.Re
 	return &model.Response{Data: comtransCategories}
 }
 
+func (s *AdminService) GetComtransBrandsByCategoryID(ctx *fasthttp.RequestCtx, categoryId int) *model.Response {
+	comtransBrands, err := s.repo.GetComtransBrandsByCategoryID(ctx, categoryId)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: comtransBrands}
+}
+
 func (s *AdminService) CreateComtransCategory(ctx *fasthttp.RequestCtx, req *model.CreateComtransCategoryRequest) *model.Response {
 	id, err := s.repo.CreateComtransCategory(ctx, req)
 	if err != nil {
@@ -1094,6 +1119,14 @@ func (s *AdminService) GetComtransBrands(ctx *fasthttp.RequestCtx) *model.Respon
 		return &model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 	return &model.Response{Data: comtransBrands}
+}
+
+func (s *AdminService) GetComtransModelsByBrandID(ctx *fasthttp.RequestCtx, id int) *model.Response {
+	comtransModels, err := s.repo.GetComtransModelsByBrandID(ctx, id)
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: comtransModels}
 }
 
 func (s *AdminService) CreateComtransBrand(ctx *fasthttp.RequestCtx, req *model.CreateComtransBrandRequest) *model.Response {
