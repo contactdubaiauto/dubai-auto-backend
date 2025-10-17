@@ -635,7 +635,7 @@ func (h *ThirdPartyHandler) GetLogistDestinations(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        destination  body      model.CreateLogistDestinationRequest  true  "Destination data"
+// @Param        destinations body      []model.CreateLogistDestinationRequest  true  "Destinations data"
 // @Success      200  {object}  model.SuccessWithId
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse

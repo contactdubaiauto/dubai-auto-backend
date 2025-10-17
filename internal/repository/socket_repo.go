@@ -27,9 +27,26 @@ func (r *SocketRepository) UpdateUserStatus(userID int, status bool) error {
 
 func (r *SocketRepository) GetNewMessages(userID int) ([]model.UserMessage, error) {
 	q := `
-		SELECT
-		FROM messages 
-		WHERE receiver_id = $1 AND status = 1
+		select 
+			u.id,
+			u.username,
+			u.last_active_date,
+			p.avatar,
+			json_agg(
+				json_build_object(
+					'id', m.id,
+					'message', m.message,
+					'type', m.type,
+					'created_at', m.created_at,
+					'sender_id', m.sender_id,
+					'receiver_id', m.receiver_id
+				)
+			) as messages
+		from messages m
+		left join users u on m.sender_id = u.id
+		left join profiles p on u.id = p.user_id
+		where m.status = 1 and m.receiver_id = $1
+		group by u.id, p.avatar;
 	`
 	rows, err := r.db.Query(context.Background(), q, userID)
 
@@ -42,8 +59,7 @@ func (r *SocketRepository) GetNewMessages(userID int) ([]model.UserMessage, erro
 
 	for rows.Next() {
 		var message model.UserMessage
-		err := rows.Scan(&message.ID, &message.Username, &message.LastActiveDate, &message.Messages)
-
+		err := rows.Scan(&message.ID, &message.Username, &message.LastActiveDate, &message.Avatar, &message.Messages)
 		if err != nil {
 			return messages, err
 		}
@@ -51,4 +67,13 @@ func (r *SocketRepository) GetNewMessages(userID int) ([]model.UserMessage, erro
 	}
 
 	return messages, err
+}
+
+func (r *SocketRepository) GetUserAvatar(userID int) (string, error) {
+	q := `
+		SELECT avatar FROM profiles WHERE user_id = $1
+	`
+	var avatar string
+	err := r.db.QueryRow(context.Background(), q, userID).Scan(&avatar)
+	return avatar, err
 }

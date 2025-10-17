@@ -5,7 +5,7 @@ admin - zayawkalar, cansel (send mail, delete user), accept, users can write mes
 3rd part users - forgot password, dealer (loginregister, first launch, garage)
 
 1. simple message emit/send/receive with websocket
-2. dealer from to object array
+2. 
 3. third part forget password
 4. get by id car, like always false gelya
 5. get user brands array (a, b, c, d)

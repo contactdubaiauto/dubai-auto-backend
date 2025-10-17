@@ -7,14 +7,15 @@ import (
 )
 
 type WSMessage struct {
-	Event   string `json:"event"`
-	Message string `json:"message,omitempty"`
-	Data    any    `json:"data,omitempty"`
+	Event        string `json:"event"`
+	TargetUserID int    `json:"target_user_id"`
+	Data         any    `json:"data"`
 }
 
 type WSUser struct {
 	ID       int             `json:"id"`
 	Username string          `json:"username"`
+	Avatar   string          `json:"avatar"`
 	RoleID   int             `json:"role_id"`
 	Conn     *websocket.Conn `json:"-"`
 }
@@ -32,5 +33,6 @@ type UserMessage struct {
 	Messages       []Message `json:"messages"`
 	LastActiveDate time.Time `json:"last_active_date"`
 	Username       string    `json:"username"`
+	Avatar         string    `json:"avatar"`
 	ID             int       `json:"id"`
 }

@@ -8165,12 +8165,14 @@ paths:
       - application/json
       description: Creates a new logist destination (route)
       parameters:
-      - description: Destination data
+      - description: Destinations data
         in: body
-        name: destination
+        name: destinations
         required: true
         schema:
-          $ref: '#/definitions/model.CreateLogistDestinationRequest'
+          items:
+            $ref: '#/definitions/model.CreateLogistDestinationRequest'
+          type: array
       produces:
       - application/json
       responses:

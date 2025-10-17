@@ -308,12 +308,21 @@
                 </div>
 
                 <div class="info-panel">
-                    <h4>📋 Available Events</h4>
+                    <h4>📋 Send Events</h4>
                     <ul>
-                        <li><span class="code">message</span> - Send public message</li>
+                        <li><span class="code">ping</span> - Send ping to server (get pong response)</li>
                         <li><span class="code">private_message</span> - Send private message with time, message, type</li>
-                        <li><span class="code">ping</span> - Send ping to server</li>
-                        <li><span class="code">get_online_users</span> - Get online users</li>
+                        <li><span class="code">get_online_users</span> - Get online users list</li>
+                    </ul>
+                </div>
+                
+                <div class="info-panel">
+                    <h4>📥 Receive Events</h4>
+                    <ul>
+                        <li><span class="code">pong</span> - Response to ping with timestamp</li>
+                        <li><span class="code">new_message</span> - Incoming private messages</li>
+                        <li><span class="code">connected</span> - Connection success confirmation</li>
+                        <li><span class="code">error</span> - Error messages from server</li>
                     </ul>
                 </div>
             </div>
@@ -456,6 +465,10 @@
                     const messageTime = new Date(privateMsg.time).toLocaleTimeString();
                     addMessage(`📩 From ${privateMsg.from_username} (${privateMsg.from_user_id}) [${privateMsg.type}] at ${messageTime}: ${privateMsg.message}`, 'user');
                     break;
+                case 'new_message':
+                    // Handle new incoming message (sent when a private message is received)
+                    handleNewMessage(data.data);
+                    break;
                 case 'error':
                     addMessage(`❌ Error: ${data.data.message || data.data.error}`, 'error');
                     break;
@@ -471,6 +484,26 @@
                 default:
                     addMessage(`📨 ${data.event}: ${JSON.stringify(data.data)}`, 'info');
             }
+        }
+
+        // Handle new message event
+        function handleNewMessage(data) {
+            // Check if data is an array (multiple messages) or single message object
+            if (Array.isArray(data)) {
+                addMessage(`📬 Received ${data.length} new message(s)`, 'system');
+                data.forEach(msg => displayNewMessage(msg));
+            } else {
+                displayNewMessage(data);
+            }
+        }
+
+        // Display a single new message
+        function displayNewMessage(msg) {
+            const clientTime = msg.time ? new Date(msg.time).toLocaleTimeString() : 'N/A';
+            const serverTime = msg.server_time ? new Date(msg.server_time).toLocaleTimeString() : '';
+            const timeInfo = serverTime ? `[Client: ${clientTime}, Server: ${serverTime}]` : `[${clientTime}]`;
+            
+            addMessage(`📬 New from ${msg.from_username} (ID: ${msg.from_user_id}) [${msg.type}] ${timeInfo}: ${msg.message}`, 'user');
         }
 
         // Send message via WebSocket
@@ -515,13 +548,11 @@
 
             const messageData = {
                 event: 'private_message',
+                target_user_id: parseInt(targetUserId),
                 data: {
-                    target_user_id: parseInt(targetUserId),
-                    message: {
-                        time: new Date().toISOString(),
-                        message: message,
-                        type: 'text'
-                    }
+                    message: message,
+                    type: 'text',
+                    time: new Date().toISOString()
                 }
             };
 

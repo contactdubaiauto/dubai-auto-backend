@@ -9432,12 +9432,15 @@ const docTemplate = `{
                 "summary": "Create logist destination",
                 "parameters": [
                     {
-                        "description": "Destination data",
-                        "name": "destination",
+                        "description": "Destinations data",
+                        "name": "destinations",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.CreateLogistDestinationRequest"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CreateLogistDestinationRequest"
+                            }
                         }
                     }
                 ],

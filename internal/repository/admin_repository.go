@@ -156,6 +156,7 @@ func (r *AdminRepository) AcceptApplication(ctx *fasthttp.RequestCtx, id int, pa
 			vat_number = EXCLUDED.vat_number
 	`
 	_, err = tx.Exec(ctx, q, userID, tempUser.FullName, tempUser.CompanyName, "application", tempUser.Address, tempUser.CompanyTypeID, tempUser.ActivityFieldID, tempUser.VATNumber)
+
 	if err != nil {
 		return "", err
 	}

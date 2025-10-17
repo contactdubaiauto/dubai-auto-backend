@@ -88,4 +88,21 @@ alter table moto_brands alter column image drop not null;
 
 
 select 
-from messages
+    u.id,
+    u.username,
+    u.last_active_date,
+    p.avatar,
+    json_agg(
+        json_build_object(
+            'id', m.id,
+            'message', m.message,
+            'type', m.type,
+            'created_at', m.created_at
+        )
+    ) as messages
+from messages m
+left join users u on m.sender_id = u.id
+left join profiles p on u.id = p.user_id
+where m.status = 1
+group by u.id, p.avatar;
+

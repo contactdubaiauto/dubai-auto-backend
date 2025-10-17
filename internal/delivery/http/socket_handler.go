@@ -3,8 +3,8 @@ package http
 import (
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
+	"dubai-auto/internal/utils"
 	"dubai-auto/pkg/auth"
-	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -26,6 +26,16 @@ var (
 	wsUserConns = make(map[int][]*websocket.Conn)         // userID -> []connections
 	wsMutex     = sync.RWMutex{}
 )
+
+//	{
+//	    "event": "private_message",
+//	    "target_user_id": 1,
+//	    "data": {
+//	        "message": "Hello, world!",
+//	        "type": "text",
+//	        "time": "2025-01-01 12:00:00"
+//	    }
+//	}
 
 func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 
@@ -49,7 +59,6 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 
 		user.Conn = c
 		wsMutex.Lock()
-		wsClients[c] = user
 		wsUserConns[user.ID] = append(wsUserConns[user.ID], c)
 		wsMutex.Unlock()
 		log.Printf("✅ User %d connected via WebSocket", user.ID)
@@ -61,9 +70,11 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 				"user_id": user.ID,
 			},
 		}
-		c.WriteJSON(welcomeMsg)
 
-		broadcastUserStatus(user.ID, "online")
+		user.Avatar = h.service.GetUserAvatar(user.ID)
+		wsClients[c] = user
+
+		c.WriteJSON(welcomeMsg)
 		err = h.service.UpdateUserStatus(user.ID, true)
 
 		if err != nil {
@@ -72,11 +83,11 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 
 		defer func() {
 			wsMutex.Lock()
-			delete(wsClients, c)
 
 			if conns, exists := wsUserConns[user.ID]; exists {
 
 				for i, conn := range conns {
+
 					if conn == c {
 						wsUserConns[user.ID] = append(conns[:i], conns[i+1:]...)
 						break
@@ -90,7 +101,6 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 
 			wsMutex.Unlock()
 			log.Printf("🔌 User %d disconnected", user.ID)
-			broadcastUserStatus(user.ID, "offline")
 			err = h.service.UpdateUserStatus(user.ID, false)
 
 			if err != nil {
@@ -104,7 +114,7 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 		if err != nil {
 			log.Printf("❌ Error getting unread messages: %v", err)
 		} else if data != nil {
-			sendToUser(user.ID, "new_messages", data)
+			sendToUser(user.ID, "new_message", data)
 		}
 
 		for {
@@ -127,14 +137,8 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 				}
 				c.WriteJSON(pongMsg)
 
-			case "message":
-				handleMessage(user, msg.Message)
-
 			case "private_message":
 				handlePrivateMessage(user, msg)
-
-			case "get_online_users":
-				sendOnlineUsers(c)
 
 			default:
 				log.Printf("⚠️ Unknown event: %s", msg.Event)
@@ -144,46 +148,6 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 
 	log.Println("🔌 WebSocket messaging service initialized at /ws")
 	log.Println("📖 Connect with: ws://localhost:8080/ws?token=YOUR_JWT_TOKEN")
-}
-
-func broadcastMessage(event string, data any) {
-	wsMutex.RLock()
-	connections := make([]*websocket.Conn, 0, len(wsClients))
-	for conn := range wsClients {
-		connections = append(connections, conn)
-	}
-	wsMutex.RUnlock()
-
-	log.Printf("📡 Broadcasting %s to %d users", event, len(connections))
-
-	msg := model.WSMessage{
-		Event: event,
-		Data:  data,
-	}
-
-	for _, conn := range connections {
-		go func(c *websocket.Conn) {
-			if err := c.WriteJSON(msg); err != nil {
-				log.Printf("❌ Broadcast error: %v", err)
-			}
-		}(conn)
-	}
-}
-
-// after remove this
-func broadcastUserStatus(userID int, status string) {
-	statusMessage := map[string]any{
-		"user_id":  userID,
-		"username": fmt.Sprintf("User_%d", userID),
-		"status":   status,
-	}
-
-	wsMutex.RLock()
-	connectedCount := len(wsClients)
-	wsMutex.RUnlock()
-
-	log.Printf("📡 Broadcasting user %d status: %s to %d users", userID, status, connectedCount)
-	broadcastMessage("user_status", statusMessage)
 }
 
 func sendToUser(userID int, event string, data any) {
@@ -203,8 +167,9 @@ func sendToUser(userID int, event string, data any) {
 	log.Printf("📤 Sending %s to user %d (%d connections)", event, userID, len(connections))
 
 	msg := model.WSMessage{
-		Event: event,
-		Data:  data,
+		Event:        event,
+		TargetUserID: userID,
+		Data:         data,
 	}
 
 	for _, conn := range connections {
@@ -213,39 +178,6 @@ func sendToUser(userID int, event string, data any) {
 				log.Printf("❌ Send error: %v", err)
 			}
 		}(conn)
-	}
-}
-
-func handleMessage(user *model.WSUser, message string) {
-	broadcastMessage("message", map[string]any{
-		"user_id":  user.ID,
-		"username": user.Username,
-		"message":  message,
-	})
-}
-
-func sendOnlineUsers(conn *websocket.Conn) {
-	wsMutex.RLock()
-	users := make([]map[string]any, 0, len(wsClients))
-
-	for _, user := range wsClients {
-		users = append(users, map[string]any{
-			"id":       user.ID,
-			"username": user.Username,
-		})
-	}
-	wsMutex.RUnlock()
-
-	msg := model.WSMessage{
-		Event: "online_users",
-		Data: map[string]any{
-			"users": users,
-			"count": len(users),
-		},
-	}
-
-	if err := conn.WriteJSON(msg); err != nil {
-		log.Printf("❌ Send online users error: %v", err)
 	}
 }
 
@@ -265,18 +197,21 @@ func handlePrivateMessage(sender *model.WSUser, msg model.WSMessage) {
 	}
 
 	targetUserID, ok := targetUserIDFloat.(float64)
+
 	if !ok {
 		log.Printf("❌ Invalid target_user_id type")
 		return
 	}
 
-	messageObj, exists := data["message"]
+	dataObj, exists := data["data"]
+
 	if !exists {
 		log.Printf("❌ Missing message in private message")
 		return
 	}
 
-	messageData, ok := messageObj.(map[string]any)
+	messageData, ok := dataObj.(map[string]any)
+
 	if !ok {
 		log.Printf("❌ Invalid message format - expected object with time, message, type")
 		return
@@ -297,10 +232,10 @@ func handlePrivateMessage(sender *model.WSUser, msg model.WSMessage) {
 		"message":       messageText,
 		"type":          messageType,
 		"time":          messageTime,
-		"server_time":   time.Now(),
+		"server_time":   utils.GMTTime(),
 	}
 
-	sendToUser(int(targetUserID), "private_message", privateMessageData)
+	sendToUser(int(targetUserID), "new_message", privateMessageData)
 
 	log.Printf("📤 Private message sent from user %d to user %d (type: %v)", sender.ID, int(targetUserID), messageType)
 }

@@ -30,7 +30,6 @@ func (r *ThirdPartyRepository) Profile(ctx *fasthttp.RequestCtx, id int, profile
 			address = $4,
 			coordinates = $5,
 			message = $6
-
 		where user_id = $7
 	`
 	_, err := r.db.Exec(ctx, q, profile.AboutUs, profile.Whatsapp,
