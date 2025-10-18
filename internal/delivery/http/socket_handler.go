@@ -3,7 +3,6 @@ package http
 import (
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
-	"dubai-auto/internal/utils"
 	"dubai-auto/pkg/auth"
 	"log"
 	"sync"
@@ -45,13 +44,21 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 
 		if err != nil {
 			log.Printf("❌ Authentication failed: %v", err)
+
 			errMsg := model.WSMessage{
 				Event: "error",
-				Data: map[string]string{
-					"error":   "authentication_failed",
-					"message": err.Error(),
+				Data: []model.UserMessage{
+					{
+						Messages: []model.Message{
+							{
+								CreatedAt: time.Now(),
+								Message:   "authentication_failed",
+							},
+						},
+					},
 				},
 			}
+
 			c.WriteJSON(errMsg)
 			c.Close()
 			return
@@ -65,9 +72,20 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 
 		welcomeMsg := model.WSMessage{
 			Event: "connected",
-			Data: map[string]any{
-				"message": "Successfully connected to messaging service",
-				"user_id": user.ID,
+			Data: []model.UserMessage{
+				{
+					ID:             user.ID,
+					Username:       user.Username,
+					Avatar:         user.Avatar,
+					LastActiveDate: time.Now(),
+					Messages: []model.Message{
+						{
+							CreatedAt: time.Now(),
+							Message:   "Successfully connected to messaging service",
+							Type:      1,
+						},
+					},
+				},
 			},
 		}
 
@@ -118,7 +136,7 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 		}
 
 		for {
-			var msg model.WSMessage
+			var msg model.WSMessageReceived
 
 			if err := c.ReadJSON(&msg); err != nil {
 				log.Printf("❌ Read error: %v", err)
@@ -129,16 +147,56 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 
 			switch msg.Event {
 			case "ping":
+				pongData := []model.UserMessage{
+					{
+						Messages: []model.Message{
+							{
+								CreatedAt:  time.Now(),
+								Message:    "pong",
+								Type:       1,
+								SenderID:   user.ID,
+								ReceiverID: user.ID,
+								ID:         1,
+							},
+						},
+					},
+				}
+
 				pongMsg := model.WSMessage{
 					Event: "pong",
-					Data: map[string]any{
-						"timestamp": time.Now(),
-					},
+					Data:  pongData,
 				}
 				c.WriteJSON(pongMsg)
 
 			case "private_message":
-				handlePrivateMessage(user, msg)
+				targetC, exists := wsUserConns[msg.TargetUserID]
+
+				if !exists || len(targetC) == 0 {
+					// todo: write to database that the user is not online
+					log.Printf("❌ User %d not connected", msg.TargetUserID)
+					continue
+				}
+
+				// targetUser := wsClients[targetC[0]]
+				data := []model.UserMessage{
+					{
+						ID:             user.ID,
+						Username:       user.Username,
+						Avatar:         user.Avatar,
+						LastActiveDate: time.Now(),
+						Messages: []model.Message{
+							{
+								CreatedAt:  msg.Data.Time,
+								Message:    msg.Data.Message,
+								Type:       msg.Data.Type,
+								SenderID:   user.ID,
+								ReceiverID: msg.TargetUserID,
+							},
+						},
+					},
+				}
+
+				sendToUser(msg.TargetUserID, "new_message", data)
 
 			default:
 				log.Printf("⚠️ Unknown event: %s", msg.Event)
@@ -163,7 +221,6 @@ func sendToUser(userID int, event string, data any) {
 	connections := make([]*websocket.Conn, len(userConns))
 	copy(connections, userConns)
 	wsMutex.RUnlock()
-
 	log.Printf("📤 Sending %s to user %d (%d connections)", event, userID, len(connections))
 
 	msg := model.WSMessage{
@@ -172,70 +229,11 @@ func sendToUser(userID int, event string, data any) {
 		Data:         data,
 	}
 
-	for _, conn := range connections {
+	for i := range connections {
 		go func(c *websocket.Conn) {
 			if err := c.WriteJSON(msg); err != nil {
 				log.Printf("❌ Send error: %v", err)
 			}
-		}(conn)
+		}(connections[i])
 	}
-}
-
-func handlePrivateMessage(sender *model.WSUser, msg model.WSMessage) {
-	data, ok := msg.Data.(map[string]any)
-
-	if !ok {
-		log.Printf("❌ Invalid private message data format")
-		return
-	}
-
-	targetUserIDFloat, exists := data["target_user_id"]
-
-	if !exists {
-		log.Printf("❌ Missing target_user_id in private message")
-		return
-	}
-
-	targetUserID, ok := targetUserIDFloat.(float64)
-
-	if !ok {
-		log.Printf("❌ Invalid target_user_id type")
-		return
-	}
-
-	dataObj, exists := data["data"]
-
-	if !exists {
-		log.Printf("❌ Missing message in private message")
-		return
-	}
-
-	messageData, ok := dataObj.(map[string]any)
-
-	if !ok {
-		log.Printf("❌ Invalid message format - expected object with time, message, type")
-		return
-	}
-
-	messageText, hasMessage := messageData["message"]
-	messageType, hasType := messageData["type"]
-	messageTime, hasTime := messageData["time"]
-
-	if !hasMessage || !hasType || !hasTime {
-		log.Printf("❌ Message object missing required fields: time, message, type")
-		return
-	}
-
-	privateMessageData := map[string]any{
-		"from_user_id":  sender.ID,
-		"from_username": sender.Username,
-		"message":       messageText,
-		"type":          messageType,
-		"time":          messageTime,
-		"server_time":   utils.GMTTime(),
-	}
-
-	sendToUser(int(targetUserID), "new_message", privateMessageData)
-
-	log.Printf("📤 Private message sent from user %d to user %d (type: %v)", sender.ID, int(targetUserID), messageType)
 }

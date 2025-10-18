@@ -12,6 +12,19 @@ type WSMessage struct {
 	Data         any    `json:"data"`
 }
 
+type MessageReceived struct {
+	Time         time.Time `json:"time"`
+	Message      string    `json:"message"`
+	TargetUserID int       `json:"target_user_id"`
+	Type         int       `json:"type"`
+}
+
+type WSMessageReceived struct {
+	Event        string          `json:"event"`
+	TargetUserID int             `json:"target_user_id"`
+	Data         MessageReceived `json:"data"`
+}
+
 type WSUser struct {
 	ID       int             `json:"id"`
 	Username string          `json:"username"`
