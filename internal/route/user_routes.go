@@ -72,6 +72,17 @@ func SetupUserRoutes(r fiber.Router, db *pgxpool.Pool) {
 		r.Post("/likes/:car_id", auth.TokenGuard, userHandler.CarLike)
 		r.Delete("/likes/:car_id", auth.TokenGuard, userHandler.RemoveLike)
 
+		// brokers
+		r.Get("/brokers", auth.TokenGuard, userHandler.GetBrokers)
+		r.Get("/brokers/:id", auth.TokenGuard, userHandler.GetBrokerByID)
+
+		// logists
+		r.Get("/logists", auth.TokenGuard, userHandler.GetLogists)
+		r.Get("/logists/:id", auth.TokenGuard, userHandler.GetLogistByID)
+
+		// services
+		r.Get("/services", auth.TokenGuard, userHandler.GetServices)
+		r.Get("/services/:id", auth.TokenGuard, userHandler.GetServiceByID)
 	}
 
 }

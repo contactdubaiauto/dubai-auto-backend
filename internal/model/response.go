@@ -484,3 +484,10 @@ type LogistDestinationResponse struct {
 	To        *Country `json:"to"`
 	CreatedAt string   `json:"created_at"`
 }
+
+// User role responses (brokers, logists, services)
+type UserRoleResponse struct {
+	ID       int     `json:"id"`
+	Username *string `json:"username"`
+	Avatar   *string `json:"avatar"`
+}

@@ -106,3 +106,17 @@ left join profiles p on u.id = p.user_id
 where m.status = 1
 group by u.id, p.avatar;
 
+
+
+insert into users (email, username, role_id, password, phone) values ('dealer1@example.com', 'dealer1', 2, 'password1', '1234567891');
+insert into users (email, username, role_id, password, phone) values ('logist1@example.com', 'logist1', 3, 'password1', '1234567892');
+insert into users (email, username, role_id, password, phone) values ('broker1@example.com', 'broker1', 4, 'password1', '1234567893');
+insert into users (email, username, role_id, password, phone) values ('service1@example.com', 'service1', 5, 'password1', '1234567894');
+insert into users (email, username, role_id, password, phone) values ('dealer2@example.com', 'dealer2', 2, 'password2', '1234567895');
+insert into users (email, username, role_id, password, phone) values ('logist2@example.com', 'logist2', 3, 'password2', '1234567896');
+insert into users (email, username, role_id, password, phone) values ('broker2@example.com', 'broker2', 4, 'password2', '1234567897');
+insert into users (email, username, role_id, password, phone) values ('service2@example.com', 'service2', 5, 'password2', '1234567898');
+insert into users (email, username, role_id, password, phone) values ('dealer3@example.com', 'dealer3', 2, 'password3', '1234567899');
+insert into users (email, username, role_id, password, phone) values ('logist3@example.com', 'logist3', 3, 'password3', '1234567900');
+insert into users (email, username, role_id, password, phone) values ('broker3@example.com', 'broker3', 4, 'password3', '1234567901');
+insert into users (email, username, role_id, password, phone) values ('service3@example.com', 'service3', 5, 'password3', '1234567902');

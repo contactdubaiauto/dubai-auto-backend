@@ -486,3 +486,69 @@ func (s *UserService) DeleteCarVideo(ctx *fasthttp.RequestCtx, carID int, videoP
 	}
 	return &model.Response{Data: model.Success{Message: "Car video deleted successfully"}}
 }
+
+// GetBrokers returns all users with role_id = 4 (brokers)
+func (s *UserService) GetBrokers(ctx *fasthttp.RequestCtx) *model.Response {
+	const brokerRoleID = 4
+	brokers, err := s.UserRepository.GetUsersByRole(ctx, brokerRoleID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: brokers}
+}
+
+// GetBrokerByID returns a single broker by ID
+func (s *UserService) GetBrokerByID(ctx *fasthttp.RequestCtx, brokerID int) *model.Response {
+	const brokerRoleID = 4
+	broker, err := s.UserRepository.GetUserByRoleAndID(ctx, brokerRoleID, brokerID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusNotFound}
+	}
+	return &model.Response{Data: broker}
+}
+
+// GetLogists returns all users with role_id = 3 (logists)
+func (s *UserService) GetLogists(ctx *fasthttp.RequestCtx) *model.Response {
+	const logistRoleID = 3
+	logists, err := s.UserRepository.GetUsersByRole(ctx, logistRoleID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: logists}
+}
+
+// GetLogistByID returns a single logist by ID
+func (s *UserService) GetLogistByID(ctx *fasthttp.RequestCtx, logistID int) *model.Response {
+	const logistRoleID = 3
+	logist, err := s.UserRepository.GetUserByRoleAndID(ctx, logistRoleID, logistID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusNotFound}
+	}
+	return &model.Response{Data: logist}
+}
+
+// GetServices returns all users with role_id = 5 (car services)
+func (s *UserService) GetServices(ctx *fasthttp.RequestCtx) *model.Response {
+	const serviceRoleID = 5
+	services, err := s.UserRepository.GetUsersByRole(ctx, serviceRoleID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return &model.Response{Data: services}
+}
+
+// GetServiceByID returns a single car service by ID
+func (s *UserService) GetServiceByID(ctx *fasthttp.RequestCtx, serviceID int) *model.Response {
+	const serviceRoleID = 5
+	service, err := s.UserRepository.GetUserByRoleAndID(ctx, serviceRoleID, serviceID)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusNotFound}
+	}
+	return &model.Response{Data: service}
+}

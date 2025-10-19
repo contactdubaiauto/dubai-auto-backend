@@ -1729,3 +1729,54 @@ func (r *UserRepository) DeleteCarVideo(ctx *fasthttp.RequestCtx, carID int, vid
 	_, err := r.db.Exec(ctx, q, carID, videoPath)
 	return err
 }
+
+// GetUsersByRole fetches users by their role_id (brokers=4, logists=3, services=5)
+func (r *UserRepository) GetUsersByRole(ctx *fasthttp.RequestCtx, roleID int) ([]model.UserRoleResponse, error) {
+	q := `
+		SELECT 
+			u.id,
+			u.username,
+			p.avatar
+		FROM users u
+		LEFT JOIN profiles p ON p.user_id = u.id
+		WHERE u.role_id = $1
+		ORDER BY u.id DESC
+	`
+
+	rows, err := r.db.Query(ctx, q, roleID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	users := make([]model.UserRoleResponse, 0)
+
+	for rows.Next() {
+		var user model.UserRoleResponse
+		if err := rows.Scan(&user.ID, &user.Username, &user.Avatar); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
+}
+
+// GetUserByRoleAndID fetches a single user by role_id and user id
+func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, roleID, userID int) (model.UserRoleResponse, error) {
+	q := `
+		SELECT 
+			u.id,
+			u.username, 
+			p.avatar
+		FROM users u
+		LEFT JOIN profiles p ON p.user_id = u.id
+		WHERE u.role_id = $1 AND u.id = $2
+	`
+
+	var user model.UserRoleResponse
+	err := r.db.QueryRow(ctx, q, roleID, userID).Scan(&user.ID, &user.Username, &user.Avatar)
+
+	return user, err
+}
