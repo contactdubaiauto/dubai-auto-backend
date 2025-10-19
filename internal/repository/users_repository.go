@@ -1764,19 +1764,74 @@ func (r *UserRepository) GetUsersByRole(ctx *fasthttp.RequestCtx, roleID int) ([
 }
 
 // GetUserByRoleAndID fetches a single user by role_id and user id
-func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, roleID, userID int) (model.UserRoleResponse, error) {
+func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, roleID, userID int) (model.ThirdPartyGetProfileRes, error) {
 	q := `
-		SELECT 
-			u.id,
-			u.username, 
-			p.avatar
-		FROM users u
-		LEFT JOIN profiles p ON p.user_id = u.id
-		WHERE u.role_id = $1 AND u.id = $2
+		select
+			about_me,
+			whatsapp,
+			telegram,
+			address,
+			coordinates,
+			avatar,
+			banner,
+			company_name,
+			message,
+			vat_number,
+			company_types.name as company_type,
+			activity_fields.name as activity_field,
+			profiles.created_at,
+            destinations.countries as destinations
+		from users 
+        left join profiles on profiles.user_id = users.id
+        left join (
+                SELECT json_agg(
+                        json_build_object(
+                        'from_country', json_build_object(
+                            'id', cf.id,
+                            'name', cf.name,
+                            'flag', cf.flag
+                        ),
+                        'to_country', json_build_object(
+                            'id', ct.id,
+                            'name', ct.name,
+                            'flag', ct.flag
+                        )
+                        )
+                    ) AS countries
+                FROM user_destinations ds
+                LEFT JOIN countries cf ON cf.id = ds.from_id
+                LEFT JOIN countries ct ON ct.id = ds.to_id
+                WHERE ds.user_id = $1
+        ) destinations on true
+		left join company_types on company_types.id = profiles.company_type_id
+		left join activity_fields on activity_fields.id = profiles.activity_field_id
+        where users.id = $1;
 	`
+	var profile model.ThirdPartyGetProfileRes
+	err := r.db.QueryRow(ctx, q, userID).Scan(
+		&profile.AboutUs, &profile.Whatsapp,
+		&profile.Telegram, &profile.Address,
+		&profile.Coordinates, &profile.Avatar,
+		&profile.Banner,
+		&profile.CompanyName, &profile.Message,
+		&profile.VATNumber, &profile.CompanyType,
+		&profile.ActivityField,
+		&profile.Registered,
+		&profile.Destinations,
+	)
 
-	var user model.UserRoleResponse
-	err := r.db.QueryRow(ctx, q, roleID, userID).Scan(&user.ID, &user.Username, &user.Avatar)
+	if err != nil {
+		return profile, err
+	}
 
-	return user, err
+	q = `
+		select 
+			email,
+			phone,
+			role_id
+		from users 
+		where id = $1
+	`
+	err = r.db.QueryRow(ctx, q, userID).Scan(&profile.Email, &profile.Phone, &profile.RoleID)
+	return profile, err
 }

@@ -29,8 +29,14 @@ func (s *ThirdPartyService) FirstLogin(ctx *fasthttp.RequestCtx, id int, profile
 	return s.repo.FirstLogin(ctx, id, profile)
 }
 
-func (s *ThirdPartyService) GetProfile(ctx *fasthttp.RequestCtx, id int) model.Response {
-	return s.repo.GetProfile(ctx, id)
+func (s *ThirdPartyService) GetProfile(ctx *fasthttp.RequestCtx, id int) *model.Response {
+	profile, err := s.repo.GetProfile(ctx, id)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: profile}
 }
 
 func (s *ThirdPartyService) GetMyCars(ctx *fasthttp.RequestCtx, userID int) model.Response {

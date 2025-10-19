@@ -120,3 +120,21 @@ insert into users (email, username, role_id, password, phone) values ('dealer3@e
 insert into users (email, username, role_id, password, phone) values ('logist3@example.com', 'logist3', 3, 'password3', '1234567900');
 insert into users (email, username, role_id, password, phone) values ('broker3@example.com', 'broker3', 4, 'password3', '1234567901');
 insert into users (email, username, role_id, password, phone) values ('service3@example.com', 'service3', 5, 'password3', '1234567902');
+
+
+insert into profiles (user_id, company_name, company_type_id, activity_field_id, vat_number, driving_experience, notification, username, registered_by, google, avatar, banner, whatsapp, telegram, address, coordinates, message, birthday, about_me) 
+    values 
+    (79, 'Company 1', 1, 1, '1234567890', 10, true, 'dealer1', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '1234567890', '1234567890', '1234567890', '1234567890', '1234567890', '2025-12-10', '1234567890'),
+    (80, 'Company 2', 2, 2, '1234567891', 15, true, 'dealer2', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '1234567891', '1234567891', '1234567891', '1234567891', '1234567891', '2025-12-10', '1234567891'),
+    (81, 'Company 3', 3, 3, '1234567892', 20, true, 'dealer3', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '1234567892', '1234567892', '1234567892', '1234567892', '1234567892', '2025-12-10', '1234567892'),
+    (82, 'Company 4', 1, 1, '1234567893', 25, true, 'broker1', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '1234567893', '1234567893', '1234567893', '1234567893', '1234567893', '2025-12-10', '1234567893'),
+    (83, 'Company 5', 2, 2, '1234567894', 30, true, 'service1', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '1234567894', '1234567894', '1234567894', '1234567894', '1234567894', '2025-12-10', '1234567894'),
+    (84, 'Company 6', 3, 3, '1234567895', 35, true, 'broker2', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '1234567895', '1234567895', '1234567895', '1234567895', '1234567895', '2025-12-10', '1234567895'),
+    (85, 'Company 7', 1, 1, '1234567896', 40, true, 'service2', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '1234567896', '1234567896', '1234567896', '1234567896', '1234567896', '2025-12-10', '1234567896'),
+    (86, 'Company 8', 2, 2, '1234567897', 45, true, 'broker3', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '1234567897', '1234567897', '1234567897', '1234567897', '1234567897', '2025-12-10', '1234567897'),
+    (87, 'Company 9', 3, 3, '1234567898', 50, true, 'service3', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '1234567898', '1234567898', '1234567898', '1234567898', '1234567898', '2025-12-10', '1234567898'),
+    (88, 'Company 10', 1, 1, '1234567899', 55, true, 'dealer4', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '1234567899', '1234567899', '1234567899', '1234567899', '1234567899', '2025-12-10', '1234567899'),
+    (89, 'Company 11', 2, 2, '1234567900', 60, true, 'logist4', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '1234567900', '1234567900', '1234567900', '1234567900', '1234567900', '2025-12-10', '1234567900'),
+    (90, 'Company 12', 3, 3, '1234567901', 65, true, 'broker4', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '1234567901', '1234567901', '1234567901', '1234567901', '1234567901', '2025-12-10', '1234567901');
+
+

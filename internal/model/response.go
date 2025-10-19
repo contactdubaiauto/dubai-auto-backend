@@ -454,23 +454,29 @@ type AdminComtransCategoryParameterResponse struct {
 	ComtransParameterID   int       `json:"comtrans_parameter_id"`
 }
 
+type ThirdPartProfileDestinationsRes struct {
+	FromCountry *Country `json:"from_country"`
+	ToCountry   *Country `json:"to_country"`
+}
+
 type ThirdPartyGetProfileRes struct {
-	Registered    *time.Time `json:"registered"`
-	CompanyName   *string    `json:"company_name"`
-	AboutUs       *string    `json:"about_us"`
-	Email         *string    `json:"email"`
-	Whatsapp      *string    `json:"whatsapp"`
-	Telegram      *string    `json:"telegram"`
-	Phone         *string    `json:"phone"`
-	Address       *string    `json:"address"`
-	Coordinates   *string    `json:"coordinates"`
-	Avatar        *string    `json:"avatar"`
-	Banner        *string    `json:"banner"`
-	Message       *string    `json:"message"`
-	VATNumber     *string    `json:"vat_number"`
-	CompanyType   *string    `json:"company_type"`
-	ActivityField *string    `json:"activity_field"`
-	RoleID        *int       `json:"role_id"`
+	Registered    *time.Time                         `json:"registered"`
+	Destinations  *[]ThirdPartProfileDestinationsRes `json:"destinations"`
+	CompanyName   *string                            `json:"company_name"`
+	AboutUs       *string                            `json:"about_us"`
+	Email         *string                            `json:"email"`
+	Whatsapp      *string                            `json:"whatsapp"`
+	Telegram      *string                            `json:"telegram"`
+	Phone         *string                            `json:"phone"`
+	Address       *string                            `json:"address"`
+	Coordinates   *string                            `json:"coordinates"`
+	Avatar        *string                            `json:"avatar"`
+	Banner        *string                            `json:"banner"`
+	Message       *string                            `json:"message"`
+	VATNumber     *string                            `json:"vat_number"`
+	CompanyType   *string                            `json:"company_type"`
+	ActivityField *string                            `json:"activity_field"`
+	RoleID        *int                               `json:"role_id"`
 }
 
 type ThirdPartyGetRegistrationDataRes struct {

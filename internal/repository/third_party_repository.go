@@ -57,7 +57,7 @@ func (r *ThirdPartyRepository) FirstLogin(ctx *fasthttp.RequestCtx, id int, prof
 	return model.Response{Data: model.Success{Message: "First login updated successfully"}}
 }
 
-func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) model.Response {
+func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (model.ThirdPartyGetProfileRes, error) {
 	q := `
 		select
 			about_me,
@@ -91,7 +91,7 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) mode
 	)
 
 	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
+		return profile, err
 	}
 
 	q = `
@@ -103,12 +103,7 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) mode
 		where id = $1
 	`
 	err = r.db.QueryRow(ctx, q, id).Scan(&profile.Email, &profile.Phone, &profile.RoleID)
-
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-
-	return model.Response{Data: profile}
+	return profile, err
 }
 
 func (r *ThirdPartyRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID int) ([]model.GetCarsResponse, error) {

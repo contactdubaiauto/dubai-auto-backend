@@ -101,7 +101,7 @@ func (h *ThirdPartyHandler) GetProfile(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Locals("id").(int)
 	data := h.service.GetProfile(ctx, id)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetMyCars godoc
