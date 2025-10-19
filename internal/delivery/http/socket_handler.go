@@ -3,7 +3,9 @@ package http
 import (
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
+	"dubai-auto/internal/utils"
 	"dubai-auto/pkg/auth"
+	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -64,6 +66,28 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 			return
 		}
 
+		err = h.service.CheckUserExists(user.ID)
+
+		if err != nil {
+			log.Printf("❌ Error checking user exists: %v", err)
+			errMsg := model.WSMessage{
+				Event: "error",
+				Data: []model.UserMessage{
+					{
+						Messages: []model.Message{
+							{
+								CreatedAt: time.Now(),
+								Message:   "user_not_found",
+							},
+						},
+					},
+				},
+			}
+			c.WriteJSON(errMsg)
+			c.Close()
+			return
+		}
+
 		user.Conn = c
 		wsMutex.Lock()
 		wsUserConns[user.ID] = append(wsUserConns[user.ID], c)
@@ -76,7 +100,7 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 				{
 					ID:             user.ID,
 					Username:       user.Username,
-					Avatar:         user.Avatar,
+					Avatar:         &user.Avatar,
 					LastActiveDate: time.Now(),
 					Messages: []model.Message{
 						{
@@ -124,6 +148,7 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 			if err != nil {
 				log.Printf("❌ Error updating user status: %v", err)
 			}
+
 			c.Close()
 		}()
 
@@ -137,6 +162,8 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 
 		for {
 			var msg model.WSMessageReceived
+
+			fmt.Println("Timezone check: ", utils.CheckGMTTime(msg.Data.Time))
 
 			if err := c.ReadJSON(&msg); err != nil {
 				log.Printf("❌ Read error: %v", err)
@@ -173,6 +200,12 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 
 				if !exists || len(targetC) == 0 {
 					// todo: write to database that the user is not online
+					err := h.service.MessageWriteToDatabase(user.ID, false, msg.Data)
+
+					if err != nil {
+						log.Printf("❌ Error writing to database: %v", err)
+					}
+
 					log.Printf("❌ User %d not connected", msg.TargetUserID)
 					continue
 				}
@@ -182,7 +215,7 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 					{
 						ID:             user.ID,
 						Username:       user.Username,
-						Avatar:         user.Avatar,
+						Avatar:         &user.Avatar,
 						LastActiveDate: time.Now(),
 						Messages: []model.Message{
 							{

@@ -15,7 +15,7 @@ type WSMessage struct {
 type MessageReceived struct {
 	Time         time.Time `json:"time"`
 	Message      string    `json:"message"`
-	TargetUserID int       `json:"target_user_id"`
+	TargetUserID int       `json:"target_user_id"` // todo: remove this field, it is have in WSMessageReceived
 	Type         int       `json:"type"`
 }
 
@@ -46,6 +46,6 @@ type UserMessage struct {
 	Messages       []Message `json:"messages"`
 	LastActiveDate time.Time `json:"last_active_date"`
 	Username       string    `json:"username"`
-	Avatar         string    `json:"avatar"`
+	Avatar         *string   `json:"avatar"`
 	ID             int       `json:"id"`
 }

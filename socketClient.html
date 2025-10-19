@@ -292,11 +292,11 @@
                     <h3>🔐 Authentication</h3>
                     <div class="form-group">
                         <label for="serverUrl">Server URL:</label>
-                        <input type="text" id="serverUrl" value="ws://84.200.87.48:8080" placeholder="ws://84.200.87.48:8080">
+                        <input type="text" id="serverUrl" value="ws://localhost:8080" placeholder="ws://localhost:8080">
                     </div>
                     <div class="form-group">
                         <label for="jwtToken">JWT Token:</label>
-                        <textarea id="jwtToken" rows="3" placeholder="Enter your JWT token here...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjQxNDE1MjUsImlkIjo0NCwicm9sZV9pZCI6MH0.pFHb7iZKI3U6UV6VTeOfD3daWsuZUB4JFHJTwklMhoM</textarea>
+                        <textarea id="jwtToken" rows="3" placeholder="Enter your JWT token here...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjQzODY3OTYsImlkIjo1NCwicm9sZV9pZCI6Mn0.JHoz058mFnn6TzMdTqkGFxzD-VU6KaCz9fKSADUjBE4</textarea>
                     </div>
                     <button class="btn" id="connectBtn" onclick="connect()">Connect</button>
                     <button class="btn danger" id="disconnectBtn" onclick="disconnect()" disabled>Disconnect</button>
@@ -498,12 +498,23 @@
         }
 
         // Display a single new message
-        function displayNewMessage(msg) {
-            const clientTime = msg.time ? new Date(msg.time).toLocaleTimeString() : 'N/A';
-            const serverTime = msg.server_time ? new Date(msg.server_time).toLocaleTimeString() : '';
-            const timeInfo = serverTime ? `[Client: ${clientTime}, Server: ${serverTime}]` : `[${clientTime}]`;
+        function displayNewMessage(userMsg) {
+            // userMsg is a UserMessage object with: id, username, avatar, last_active_date, messages[]
+            const fromUsername = userMsg.username || 'Unknown';
+            const fromUserId = userMsg.id || 'N/A';
             
-            addMessage(`📬 New from ${msg.from_username} (ID: ${msg.from_user_id}) [${msg.type}] ${timeInfo}: ${msg.message}`, 'user');
+            // Process each message in the messages array
+            if (userMsg.messages && Array.isArray(userMsg.messages)) {
+                userMsg.messages.forEach(msg => {
+                    const messageTime = msg.created_at ? new Date(msg.created_at).toLocaleTimeString() : 'N/A';
+                    const messageType = msg.type || 'N/A';
+                    const messageContent = msg.message || '';
+                    
+                    addMessage(`📬 New from ${fromUsername} (ID: ${fromUserId}) [Type: ${messageType}] [${messageTime}]: ${messageContent}`, 'user');
+                });
+            } else {
+                addMessage(`📬 New from ${fromUsername} (ID: ${fromUserId}): [No message content]`, 'user');
+            }
         }
 
         // Send message via WebSocket
@@ -552,6 +563,7 @@
                 data: {
                     message: message,
                     type: 1,
+                    target_user_id: parseInt(targetUserId),
                     time: new Date().toISOString()
                 }
             };
@@ -650,7 +662,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             addMessage('🚀 Welcome to WebSocket Client!', 'system');
             addMessage('📝 Enter your JWT token and click Connect to start messaging.', 'info');
-            addMessage('💡 Connect to ws://84.200.87.48:8080/ws', 'info');
+            addMessage('💡 Connect to ws://localhost:8080/ws', 'info');
         });
     </script>
 </body>

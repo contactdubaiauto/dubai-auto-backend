@@ -202,7 +202,7 @@ create table messages (
     "receiver_id" int not null,
     "status" int not null default 1, -- 1-unread, 2-read
     "message" varchar(500) not null, --  it is an id if type "item".
-    "type" int not null default 1, -- 1-text, 2-item, 3-link, 4-image, 5-video, 6-audio, 7-file, 8-location, 9-contact, 10-event, 11-task, 12-note, 13-reminder, 14-alert, 15-notification, 16-other
+    "type" int not null default 1, -- 1-text, 2-item, 3-video, 4-image,
     "created_at" timestamp not null,
     constraint fk_messages_sender_id
         foreign key (sender_id)

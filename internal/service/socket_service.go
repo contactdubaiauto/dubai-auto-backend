@@ -32,3 +32,13 @@ func (s *SocketService) GetUserAvatar(userID int) string {
 
 	return avatar
 }
+
+func (s *SocketService) MessageWriteToDatabase(senderUserID int, status bool, msg model.MessageReceived) error {
+	err := s.repo.MessageWriteToDatabase(senderUserID, status, msg)
+	return err
+}
+
+func (s *SocketService) CheckUserExists(userID int) error {
+	err := s.repo.CheckUserExists(userID)
+	return err
+}

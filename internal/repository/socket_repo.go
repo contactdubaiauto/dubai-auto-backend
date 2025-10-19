@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"dubai-auto/internal/model"
+	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -27,7 +28,13 @@ func (r *SocketRepository) UpdateUserStatus(userID int, status bool) error {
 
 func (r *SocketRepository) GetNewMessages(userID int) ([]model.UserMessage, error) {
 	q := `
-		select 
+		WITH updated_messages AS (
+			UPDATE messages
+			SET status = 2
+			WHERE status = 1 AND receiver_id = $1
+			RETURNING id, sender_id, receiver_id, message, type, created_at
+		)
+		SELECT 
 			u.id,
 			u.username,
 			u.last_active_date,
@@ -37,16 +44,15 @@ func (r *SocketRepository) GetNewMessages(userID int) ([]model.UserMessage, erro
 					'id', m.id,
 					'message', m.message,
 					'type', m.type,
-					'created_at', m.created_at,
+					'created_at', to_char(m.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
 					'sender_id', m.sender_id,
 					'receiver_id', m.receiver_id
 				)
 			) as messages
-		from messages m
-		left join users u on m.sender_id = u.id
-		left join profiles p on u.id = p.user_id
-		where m.status = 1 and m.receiver_id = $1
-		group by u.id, p.avatar;
+		FROM updated_messages m
+		LEFT JOIN users u ON m.sender_id = u.id
+		LEFT JOIN profiles p ON u.id = p.user_id
+		GROUP BY u.id, p.avatar;
 	`
 	rows, err := r.db.Query(context.Background(), q, userID)
 
@@ -60,6 +66,7 @@ func (r *SocketRepository) GetNewMessages(userID int) ([]model.UserMessage, erro
 	for rows.Next() {
 		var message model.UserMessage
 		err := rows.Scan(&message.ID, &message.Username, &message.LastActiveDate, &message.Avatar, &message.Messages)
+
 		if err != nil {
 			return messages, err
 		}
@@ -76,4 +83,30 @@ func (r *SocketRepository) GetUserAvatar(userID int) (string, error) {
 	var avatar string
 	err := r.db.QueryRow(context.Background(), q, userID).Scan(&avatar)
 	return avatar, err
+}
+
+func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool, msg model.MessageReceived) error {
+	s := 1
+
+	if status {
+		s = 2
+	}
+	fmt.Println("message data: ", senderUserID, msg.TargetUserID, s, msg.Message, msg.Type, msg.Time)
+	q := `
+		INSERT INTO messages (
+			sender_id, receiver_id, status, message, type, created_at
+		) VALUES ($1, $2, $3, $4, $5, $6)
+	`
+	_, err := r.db.Exec(context.Background(), q, senderUserID, msg.TargetUserID, s, msg.Message, msg.Type, msg.Time)
+	return err
+}
+
+func (r *SocketRepository) CheckUserExists(userID int) error {
+	q := `
+		SELECT id FROM users WHERE id = $1
+	`
+	var id int
+	err := r.db.QueryRow(context.Background(), q, userID).Scan(&id)
+	fmt.Println(id)
+	return err
 }
