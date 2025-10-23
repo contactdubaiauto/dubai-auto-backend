@@ -223,14 +223,14 @@ func (s *UserService) GetBodysByModelID(ctx *fasthttp.RequestCtx, modelID int, w
 	return &model.Response{Data: data}
 }
 
-func (s *UserService) GetBodysByModels(ctx *fasthttp.RequestCtx, wheel bool, models, years []int) *model.Response {
-	data, err := s.UserRepository.GetBodysByModels(ctx, wheel, models, years)
+// func (s *UserService) GetBodysByModels(ctx *fasthttp.RequestCtx, wheel bool, models, years []int) *model.Response {
+// 	data, err := s.UserRepository.GetBodysByModels(ctx, wheel, models, years)
 
-	if err != nil {
-		return &model.Response{Error: err, Status: 400}
-	}
-	return &model.Response{Data: data}
-}
+// 	if err != nil {
+// 		return &model.Response{Error: err, Status: 400}
+// 	}
+// 	return &model.Response{Data: data}
+// }
 
 func (s *UserService) GetBodyTypes(ctx *fasthttp.RequestCtx) *model.Response {
 	data, err := s.UserRepository.GetBodyTypes(ctx)

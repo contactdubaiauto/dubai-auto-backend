@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/pkg/auth"
 
@@ -14,11 +15,12 @@ import (
 )
 
 type ThirdPartyRepository struct {
-	db *pgxpool.Pool
+	config *config.Config
+	db     *pgxpool.Pool
 }
 
-func NewThirdPartyRepository(db *pgxpool.Pool) *ThirdPartyRepository {
-	return &ThirdPartyRepository{db}
+func NewThirdPartyRepository(config *config.Config, db *pgxpool.Pool) *ThirdPartyRepository {
+	return &ThirdPartyRepository{config, db}
 }
 
 func (r *ThirdPartyRepository) Profile(ctx *fasthttp.RequestCtx, id int, profile model.ThirdPartyProfileReq) model.Response {

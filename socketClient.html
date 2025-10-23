@@ -292,11 +292,12 @@
                     <h3>🔐 Authentication</h3>
                     <div class="form-group">
                         <label for="serverUrl">Server URL:</label>
-                        <input type="text" id="serverUrl" value="ws://localhost:8080" placeholder="ws://localhost:8080">
+                        <input type="text" id="serverUrl" value="ws://84.200.87.48:8080" placeholder="ws://84.200.87.48:8080">
                     </div>
                     <div class="form-group">
                         <label for="jwtToken">JWT Token:</label>
-                        <textarea id="jwtToken" rows="3" placeholder="Enter your JWT token here...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjQzODY3OTYsImlkIjo1NCwicm9sZV9pZCI6Mn0.JHoz058mFnn6TzMdTqkGFxzD-VU6KaCz9fKSADUjBE4</textarea>
+                        <!-- <textarea id="jwtToken" rows="3" placeholder="Enter your JWT token here...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjQ0NjU1NzUsImlkIjo1Nywicm9sZV9pZCI6MX0.bwp5u_CYXzOXMGZueKq6cqYM5BvVR4Z_IbvshCR5oA0</textarea> -->
+                        <textarea id="jwtToken" rows="3" placeholder="Enter your JWT token here...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjQ0NjU1NzUsImlkIjo1Nywicm9sZV9pZCI6MX0.bwp5u_CYXzOXMGZueKq6cqYM5BvVR4Z_IbvshCR5oA0</textarea>
                     </div>
                     <button class="btn" id="connectBtn" onclick="connect()">Connect</button>
                     <button class="btn danger" id="disconnectBtn" onclick="disconnect()" disabled>Disconnect</button>
@@ -346,6 +347,14 @@
                     <label for="privateMessageInput">📩 Private Message:</label>
                     <input type="number" id="targetUserId" placeholder="Target User ID" style="margin-bottom: 10px;">
                     <input type="text" id="privateMessageInput" placeholder="Private message..." onkeypress="handlePrivateKeyPress(event)">
+                    <!-- message type -->
+                    <select id="messageType">
+                        <option value="1">Text</option>
+                        <option value="2">Item</option>
+                        <option value="3">Video</option>
+                        <option value="4">Image</option>
+                        <option value="5">File</option>
+                    </select>
                 </div>
                 <button class="btn" onclick="sendPrivateMessage()">Send Private Message</button>
 
@@ -556,13 +565,14 @@
             const message = messageInput.value.trim();
             
             if (!message || !targetUserId || !isConnected) return;
-
+            messageTypeInteger = document.getElementById('messageType').value;
+            
             const messageData = {
                 event: 'private_message',
                 target_user_id: parseInt(targetUserId),
                 data: {
                     message: message,
-                    type: 1,
+                    type: parseInt(messageTypeInteger),
                     target_user_id: parseInt(targetUserId),
                     time: new Date().toISOString()
                 }
@@ -662,7 +672,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             addMessage('🚀 Welcome to WebSocket Client!', 'system');
             addMessage('📝 Enter your JWT token and click Connect to start messaging.', 'info');
-            addMessage('💡 Connect to ws://localhost:8080/ws', 'info');
+            addMessage('💡 Connect to ws://84.200.87.48:8080/ws', 'info');
         });
     </script>
 </body>

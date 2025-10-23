@@ -21,7 +21,7 @@ import (
 // @title Project name
 // @version 1.0
 // @description Project Description
-// @host 84.200.87.48
+// @host https://api.mashynbazar.com
 // @BasePath /
 
 // @securityDefinitions.apikey BearerAuth

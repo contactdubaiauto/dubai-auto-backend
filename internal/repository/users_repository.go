@@ -8,16 +8,18 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
 
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/pkg/auth"
 )
 
 type UserRepository struct {
-	db *pgxpool.Pool
+	config *config.Config
+	db     *pgxpool.Pool
 }
 
-func NewUserRepository(db *pgxpool.Pool) *UserRepository {
-	return &UserRepository{db}
+func NewUserRepository(config *config.Config, db *pgxpool.Pool) *UserRepository {
+	return &UserRepository{config, db}
 }
 
 func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int) ([]model.GetCarsResponse, error) {
@@ -72,7 +74,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int) ([]mod
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT image
+				SELECT $2 || image as image
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -81,7 +83,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int) ([]mod
 		LEFT JOIN LATERAL (
 			SELECT json_agg(v.video) AS videos
 			FROM (
-				SELECT video
+				SELECT $2 || video as video
 				FROM videos
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -90,7 +92,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int) ([]mod
 		where vs.user_id = $1 and status = 2
 		order by vs.id desc
 	`
-	rows, err := r.db.Query(ctx, q, *userID)
+	rows, err := r.db.Query(ctx, q, *userID, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return cars, err
@@ -164,7 +166,7 @@ func (r *UserRepository) OnSale(ctx *fasthttp.RequestCtx, userID *int) ([]model.
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT image
+				SELECT $2 || image as image
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -173,7 +175,7 @@ func (r *UserRepository) OnSale(ctx *fasthttp.RequestCtx, userID *int) ([]model.
 		LEFT JOIN LATERAL (
 			SELECT json_agg(v.video) AS videos
 			FROM (
-				SELECT video
+				SELECT $2 || video as video
 				FROM videos
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -182,7 +184,7 @@ func (r *UserRepository) OnSale(ctx *fasthttp.RequestCtx, userID *int) ([]model.
 		where vs.user_id = $1 and status = 3
 		order by vs.id desc
 	`
-	rows, err := r.db.Query(ctx, q, *userID)
+	rows, err := r.db.Query(ctx, q, *userID, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return cars, err
@@ -529,14 +531,14 @@ func (r *UserRepository) GetGenerationsByModelID(ctx *fasthttp.RequestCtx, model
 		select
 			gs.id,
 			gs.name,
-			gs.image,
+			$5 || gs.image,
 			gs.start_year,
 			gs.end_year,
 			gms.modifications
 		from gms
 		left join generations gs on gs.id = gms.generation_id;
 	`
-	rows, err := r.db.Query(ctx, q, modelID, year, bodyTypeID, wheel)
+	rows, err := r.db.Query(ctx, q, modelID, year, bodyTypeID, wheel, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return nil, err
@@ -590,14 +592,14 @@ func (r *UserRepository) GetGenerationsByModels(ctx *fasthttp.RequestCtx, models
 		select
 			gs.id,
 			gs.name,
-			gs.image,
+			$2 || gs.image,
 			gs.start_year,
 			gs.end_year,
 			gms.modifications
 		from gms
 		left join generations gs on gs.id = gms.generation_id;
 	`
-	rows, err := r.db.Query(ctx, q, models)
+	rows, err := r.db.Query(ctx, q, models, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return nil, err
@@ -658,7 +660,7 @@ func (r *UserRepository) GetBodysByModelID(ctx *fasthttp.RequestCtx, modelID int
 		select DISTINCT ON (bts.id)
 			bts.id,
 			bts.name,
-			bts.image
+			$4 || bts.image
 		from generation_modifications gms
 		left join body_types bts on bts.id = gms.body_type_id
 		where gms.generation_id in (
@@ -670,7 +672,7 @@ func (r *UserRepository) GetBodysByModelID(ctx *fasthttp.RequestCtx, modelID int
 		)
 	`
 
-	rows, err := r.db.Query(ctx, q, year, modelID, wheel)
+	rows, err := r.db.Query(ctx, q, year, modelID, wheel, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return nil, err
@@ -692,57 +694,57 @@ func (r *UserRepository) GetBodysByModelID(ctx *fasthttp.RequestCtx, modelID int
 	return bodyTypes, err
 }
 
-func (r *UserRepository) GetBodysByModels(ctx *fasthttp.RequestCtx, wheel bool, models, years []int) ([]model.BodyType, error) {
-	q := `
-		select DISTINCT ON (bts.id)
-			bts.id,
-			bts.name,
-			bts.image
-		from generation_modifications gms
-		left join body_types bts on bts.id = gms.body_type_id
-		where gms.generation_id in (
-			select 
-				gs.id 
-			from generations gs 
-			WHERE 
-				EXISTS (
-					SELECT 1
-					FROM UNNEST($1::int[]) AS year_val
-					WHERE gs.start_year <= year_val
-					AND gs.end_year >= year_val
-				)
-				and gs.model_id = any ($2) and gs.wheel = $3
-		)
-	`
+// func (r *UserRepository) GetBodysByModels(ctx *fasthttp.RequestCtx, wheel bool, models, years []int) ([]model.BodyType, error) {
+// 	q := `
+// 		select DISTINCT ON (bts.id)
+// 			bts.id,
+// 			bts.name,
+// 			$4 || bts.image
+// 		from generation_modifications gms
+// 		left join body_types bts on bts.id = gms.body_type_id
+// 		where gms.generation_id in (
+// 			select
+// 				gs.id
+// 			from generations gs
+// 			WHERE
+// 				EXISTS (
+// 					SELECT 1
+// 					FROM UNNEST($1::int[]) AS year_val
+// 					WHERE gs.start_year <= year_val
+// 					AND gs.end_year >= year_val
+// 				)
+// 				and gs.model_id = any ($2) and gs.wheel = $3
+// 		)
+// 	`
 
-	rows, err := r.db.Query(ctx, q, years, models, wheel)
+// 	rows, err := r.db.Query(ctx, q, years, models, wheel, r.config.IMAGE_BASE_URL)
 
-	if err != nil {
-		return nil, err
-	}
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	defer rows.Close()
-	bodyTypes := make([]model.BodyType, 0)
+// 	defer rows.Close()
+// 	bodyTypes := make([]model.BodyType, 0)
 
-	for rows.Next() {
-		var bodyType model.BodyType
+// 	for rows.Next() {
+// 		var bodyType model.BodyType
 
-		if err := rows.Scan(&bodyType.ID, &bodyType.Name, &bodyType.Image); err != nil {
-			return nil, err
-		}
+// 		if err := rows.Scan(&bodyType.ID, &bodyType.Name, &bodyType.Image); err != nil {
+// 			return nil, err
+// 		}
 
-		bodyTypes = append(bodyTypes, bodyType)
-	}
+// 		bodyTypes = append(bodyTypes, bodyType)
+// 	}
 
-	return bodyTypes, err
-}
+// 	return bodyTypes, err
+// }
 
 func (r *UserRepository) GetBodyTypes(ctx *fasthttp.RequestCtx) ([]model.BodyType, error) {
 	q := `
-		SELECT id, name, image FROM body_types
+		SELECT id, name, $1 || image as image FROM body_types
 	`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return nil, err
@@ -861,10 +863,10 @@ func (r *UserRepository) GetFuelTypes(ctx *fasthttp.RequestCtx) ([]model.FuelTyp
 
 func (r *UserRepository) GetColors(ctx *fasthttp.RequestCtx) ([]model.Color, error) {
 	q := `
-		SELECT id, name, image FROM colors
+		SELECT id, name, $1 || image as image FROM colors
 	`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return nil, err
@@ -886,10 +888,10 @@ func (r *UserRepository) GetColors(ctx *fasthttp.RequestCtx) ([]model.Color, err
 
 func (r *UserRepository) GetCountries(ctx *fasthttp.RequestCtx) ([]model.Country, error) {
 	q := `
-		SELECT id, name, flag FROM countries
+		SELECT id, name, $1 || flag FROM countries
 	`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return nil, err
@@ -957,7 +959,7 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int) (model.Ho
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT image
+				SELECT $2 || image as image
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -967,7 +969,7 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int) (model.Ho
 		order by vs.id desc limit 4
 	`
 
-	rows, err := r.db.Query(ctx, q, userID)
+	rows, err := r.db.Query(ctx, q, userID, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return home, err
@@ -1207,7 +1209,7 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT image
+				SELECT ` + r.config.IMAGE_BASE_URL + ` || image as image
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -1216,7 +1218,7 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 		LEFT JOIN LATERAL (
 			SELECT json_agg(v.video) AS videos
 			FROM (
-				SELECT video
+				SELECT ` + r.config.IMAGE_BASE_URL + ` || video as video
 				FROM videos
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -1354,7 +1356,7 @@ func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int)
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT image
+				SELECT ` + r.config.IMAGE_BASE_URL + ` || image as image
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -1363,7 +1365,7 @@ func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int)
 		LEFT JOIN LATERAL (
 			SELECT json_agg(v.video) AS videos
 			FROM (
-				SELECT video
+				SELECT ` + r.config.IMAGE_BASE_URL + ` || video as video
 				FROM videos
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -1467,7 +1469,7 @@ func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID 
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT image
+				SELECT ` + r.config.IMAGE_BASE_URL + ` || image as image
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -1476,7 +1478,7 @@ func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID 
 		LEFT JOIN LATERAL (
 			SELECT json_agg(v.video) AS videos
 			FROM (
-				SELECT video
+				SELECT ` + r.config.IMAGE_BASE_URL + ` || video as video
 				FROM videos
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -1644,7 +1646,7 @@ func (r *UserRepository) Likes(ctx *fasthttp.RequestCtx, userID *int) ([]model.G
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT image
+				SELECT $2 || image as image
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -1653,7 +1655,7 @@ func (r *UserRepository) Likes(ctx *fasthttp.RequestCtx, userID *int) ([]model.G
 		LEFT JOIN LATERAL (
 			SELECT json_agg(v.video) AS videos
 			FROM (
-				SELECT video
+				SELECT $2 || video as video
 				FROM videos
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -1662,7 +1664,7 @@ func (r *UserRepository) Likes(ctx *fasthttp.RequestCtx, userID *int) ([]model.G
 		where vs.status = 3
 		order by vs.id desc
 	`
-	rows, err := r.db.Query(ctx, q, *userID)
+	rows, err := r.db.Query(ctx, q, *userID, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return cars, err

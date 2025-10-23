@@ -4,14 +4,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
 
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/delivery/http"
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/service"
 	"dubai-auto/pkg/auth"
 )
 
-func SetupUserRoutes(r fiber.Router, db *pgxpool.Pool) {
-	userRepository := repository.NewUserRepository(db)
+func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool) {
+	userRepository := repository.NewUserRepository(config, db)
 	userService := service.NewUserService(userRepository)
 	userHandler := http.NewUserHandler(userService)
 

@@ -4,15 +4,17 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
 
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 )
 
 type AuthRepository struct {
-	db *pgxpool.Pool
+	config *config.Config
+	db     *pgxpool.Pool
 }
 
-func NewAuthRepository(db *pgxpool.Pool) *AuthRepository {
-	return &AuthRepository{db}
+func NewAuthRepository(config *config.Config, db *pgxpool.Pool) *AuthRepository {
+	return &AuthRepository{config, db}
 }
 
 func (r *AuthRepository) UserLoginGoogle(ctx *fasthttp.RequestCtx, claims model.GoogleUserInfo) (model.UserByEmail, error) {

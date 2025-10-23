@@ -1,6 +1,7 @@
 package route
 
 import (
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/delivery/http"
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/service"
@@ -10,8 +11,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func SetupThirdPartyRoutes(r fiber.Router, db *pgxpool.Pool) {
-	thirdPartyRepository := repository.NewThirdPartyRepository(db)
+func SetupThirdPartyRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool) {
+	thirdPartyRepository := repository.NewThirdPartyRepository(config, db)
 	thirdPartyService := service.NewThirdPartyService(thirdPartyRepository)
 	thirdPartyHandler := http.NewThirdPartyHandler(thirdPartyService, auth.NewValidator())
 

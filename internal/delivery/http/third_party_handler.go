@@ -5,14 +5,14 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gofiber/fiber/v2"
+
 	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
 	"dubai-auto/internal/utils"
 	"dubai-auto/pkg/auth"
 	"dubai-auto/pkg/files"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 type ThirdPartyHandler struct {
@@ -451,8 +451,8 @@ func (h *ThirdPartyHandler) StatusDealer(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
 	dealerID := c.Locals("id").(int)
-
 	id, err := strconv.Atoi(idStr)
+
 	if err != nil {
 		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
@@ -599,12 +599,14 @@ func (h *ThirdPartyHandler) DeleteDealerCar(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
+
 	if err != nil {
 		return utils.FiberResponse(c, &model.Response{
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
 	}
+
 	data := h.service.DeleteDealerCar(ctx, id)
 	return utils.FiberResponse(c, &data)
 }
@@ -677,8 +679,8 @@ func (h *ThirdPartyHandler) DeleteLogistDestination(c *fiber.Ctx) error {
 	ctx := c.Context()
 	userID := c.Locals("id").(int)
 	idStr := c.Params("id")
-
 	id, err := strconv.Atoi(idStr)
+
 	if err != nil {
 		return utils.FiberResponse(c, &model.Response{
 			Status: 400,

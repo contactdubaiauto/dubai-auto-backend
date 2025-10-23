@@ -1,12 +1,11 @@
 
 
-user-da vin code required
-admin - zayawkalar, cansel (send mail, delete user), accept, users can write message to admin
-3rd part users - forgot password, dealer (loginregister, first launch, garage)
 
 1. user logist/broker/service by id
-2. 
+2. ok, ..../admin/applications?type=1,2,3,4,5 ?status=1,2,3 [1 new, 2 accepted, 3 declined]
 3. third part forget password
 4. get by id car, like always false gelya
 5. get user brands array (a, b, c, d)
 
+
+3rd part users - forgot password, dealer (loginregister, first launch, garage)

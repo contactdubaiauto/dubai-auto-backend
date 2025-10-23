@@ -31,6 +31,6 @@ func InitApp(db *pgxpool.Pool, conf *config.Config, logger *logger.Logger) *fibe
 	}
 
 	app.Static("api/v1/images", "."+conf.STATIC_PATH)
-	route.Init(app, db)
+	route.Init(app, conf, db)
 	return app
 }

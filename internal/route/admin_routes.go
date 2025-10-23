@@ -4,13 +4,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
 
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/delivery/http"
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/service"
 )
 
-func SetupAdminRoutes(r fiber.Router, db *pgxpool.Pool) {
-	adminRepository := repository.NewAdminRepository(db)
+func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool) {
+	adminRepository := repository.NewAdminRepository(config, db)
 	adminService := service.NewAdminService(adminRepository)
 	adminHandler := http.NewAdminHandler(adminService)
 

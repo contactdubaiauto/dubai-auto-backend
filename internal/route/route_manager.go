@@ -5,28 +5,29 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	_ "dubai-auto/docs"
+	"dubai-auto/internal/config"
 	"dubai-auto/pkg/auth"
 )
 
-func Init(app *fiber.App, db *pgxpool.Pool) {
+func Init(app *fiber.App, config *config.Config, db *pgxpool.Pool) {
 
 	userRoute := app.Group("/api/v1/users")
-	SetupUserRoutes(userRoute, db)
+	SetupUserRoutes(userRoute, config, db)
 
 	authRoute := app.Group("/api/v1/auth")
-	SetupAuthRoutes(authRoute, db)
+	SetupAuthRoutes(authRoute, config, db)
 
 	motorcycleRoute := app.Group("/api/v1/motorcycles")
-	SetupMotorcycleRoutes(motorcycleRoute, db)
+	SetupMotorcycleRoutes(motorcycleRoute, config, db)
 
 	comtransRoute := app.Group("/api/v1/comtrans")
-	SetupComtranRoutes(comtransRoute, db)
+	SetupComtranRoutes(comtransRoute, config, db)
 
 	adminRoute := app.Group("/api/v1/admin", auth.TokenGuard, auth.AdminGuard)
-	SetupAdminRoutes(adminRoute, db)
+	SetupAdminRoutes(adminRoute, config, db)
 
 	thirdPartyRoute := app.Group("/api/v1/third-party")
-	SetupThirdPartyRoutes(thirdPartyRoute, db)
+	SetupThirdPartyRoutes(thirdPartyRoute, config, db)
 
 	SetupWebSocketRoutes(app, db)
 

@@ -4,14 +4,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
 
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/delivery/http"
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/service"
 	"dubai-auto/pkg/auth"
 )
 
-func SetupMotorcycleRoutes(r fiber.Router, db *pgxpool.Pool) {
-	motorcycleRepository := repository.NewMotorcycleRepository(db)
+func SetupMotorcycleRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool) {
+	motorcycleRepository := repository.NewMotorcycleRepository(config, db)
 	motorcycleService := service.NewMotorcycleService(motorcycleRepository)
 	motorcycleHandler := http.NewMotorcycleHandler(motorcycleService)
 

@@ -2128,7 +2128,7 @@ definitions:
       username:
         type: string
     type: object
-host: 84.200.87.48
+host: https://api.mashynbazar.com
 info:
   contact: {}
   description: Project Description
@@ -7651,6 +7651,167 @@ paths:
       summary: User phone confirmation
       tags:
       - auth
+  /api/v1/comtrans:
+    get:
+      consumes:
+      - application/json
+      description: Get commercial transports
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetComtransResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get commercial transports
+      tags:
+      - comtrans
+    post:
+      consumes:
+      - application/json
+      description: Create commercial transport
+      parameters:
+      - description: Commercial Transport
+        in: body
+        name: comtrans
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateComtransRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create commercial transport
+      tags:
+      - comtrans
+  /api/v1/comtrans/categories:
+    get:
+      consumes:
+      - application/json
+      description: Get commercial transport categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetComtransCategoriesResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get commercial transport categories
+      tags:
+      - comtrans
+  /api/v1/comtrans/categories/{category_id}/brands:
+    get:
+      consumes:
+      - application/json
+      description: Get commercial transport brands
+      parameters:
+      - description: Category ID
+        in: path
+        name: category_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetComtransBrandsResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get commercial transport brands
+      tags:
+      - comtrans
+  /api/v1/comtrans/categories/{category_id}/brands/{brand_id}/models:
+    get:
+      consumes:
+      - application/json
+      description: Get commercial transport models by brand ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: category_id
+        required: true
+        type: string
+      - description: Brand ID
+        in: path
+        name: brand_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetComtransModelsResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get commercial transport models by brand ID
+      tags:
+      - comtrans
+  /api/v1/comtrans/categories/{category_id}/parameters:
+    get:
+      consumes:
+      - application/json
+      description: Get commercial transport parameters
+      parameters:
+      - description: Category ID
+        in: path
+        name: category_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetComtransParametersResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get commercial transport parameters
+      tags:
+      - comtrans
   /api/v1/third-party/dealer/car:
     post:
       consumes:
@@ -10497,60 +10658,6 @@ paths:
       summary: Get transmissions
       tags:
       - filter
-  /comtrans:
-    get:
-      consumes:
-      - application/json
-      description: Get commercial transports
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.GetComtransResponse'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get commercial transports
-      tags:
-      - comtrans
-    post:
-      consumes:
-      - application/json
-      description: Create commercial transport
-      parameters:
-      - description: Commercial Transport
-        in: body
-        name: comtrans
-        required: true
-        schema:
-          $ref: '#/definitions/model.CreateComtransRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.SuccessWithId'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Create commercial transport
-      tags:
-      - comtrans
   /comtrans/{comtrans_id}/images:
     post:
       consumes:
@@ -10986,113 +11093,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Set commercial transport for sale
-      tags:
-      - comtrans
-  /comtrans/categories:
-    get:
-      consumes:
-      - application/json
-      description: Get commercial transport categories
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.GetComtransCategoriesResponse'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      summary: Get commercial transport categories
-      tags:
-      - comtrans
-  /comtrans/categories/{category_id}/brands:
-    get:
-      consumes:
-      - application/json
-      description: Get commercial transport brands
-      parameters:
-      - description: Category ID
-        in: path
-        name: category_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.GetComtransBrandsResponse'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      summary: Get commercial transport brands
-      tags:
-      - comtrans
-  /comtrans/categories/{category_id}/brands/{brand_id}/models:
-    get:
-      consumes:
-      - application/json
-      description: Get commercial transport models by brand ID
-      parameters:
-      - description: Category ID
-        in: path
-        name: category_id
-        required: true
-        type: string
-      - description: Brand ID
-        in: path
-        name: brand_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.GetComtransModelsResponse'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      summary: Get commercial transport models by brand ID
-      tags:
-      - comtrans
-  /comtrans/categories/{category_id}/parameters:
-    get:
-      consumes:
-      - application/json
-      description: Get commercial transport parameters
-      parameters:
-      - description: Category ID
-        in: path
-        name: category_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.GetComtransParametersResponse'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      summary: Get commercial transport parameters
       tags:
       - comtrans
   /motorcycles:

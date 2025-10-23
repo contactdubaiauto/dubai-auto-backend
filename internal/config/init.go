@@ -36,6 +36,8 @@ type Config struct {
 	LOGGER_FILENAME      string
 	STATIC_PATH          string
 	DEFAULT_IMAGE_WIDTHS []uint
+	IMAGE_BASE_URL       string
+	FILE_BASE_URL        string
 }
 
 var ENV Config
@@ -69,5 +71,7 @@ func Init() *Config {
 	ENV.STATIC_PATH = loadEnvVariable("STATIC_PATH")
 	ENV.MIGRATE = loadEnvVariable("MIGRATE")
 	ENV.DEFAULT_IMAGE_WIDTHS = []uint{320, 640} // if change these sizes, u must change in pkg/files.go too (line: 147)
+	ENV.IMAGE_BASE_URL = loadEnvVariable("IMAGE_BASE_URL")
+	ENV.FILE_BASE_URL = loadEnvVariable("FILE_BASE_URL")
 	return &ENV
 }

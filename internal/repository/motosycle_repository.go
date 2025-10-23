@@ -8,19 +8,22 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
 
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/pkg/auth"
 )
 
 type MotorcycleRepository struct {
-	db *pgxpool.Pool
+	config *config.Config
+	db     *pgxpool.Pool
 }
 
-func NewMotorcycleRepository(db *pgxpool.Pool) *MotorcycleRepository {
-	return &MotorcycleRepository{db}
+func NewMotorcycleRepository(config *config.Config, db *pgxpool.Pool) *MotorcycleRepository {
+	return &MotorcycleRepository{config, db}
 }
 
-func (r *MotorcycleRepository) GetMotorcycleCategories(ctx *fasthttp.RequestCtx) (data []model.GetMotorcycleCategoriesResponse, err error) {
+func (r *MotorcycleRepository) GetMotorcycleCategories(ctx *fasthttp.RequestCtx) ([]model.GetMotorcycleCategoriesResponse, error) {
+	data := make([]model.GetMotorcycleCategoriesResponse, 0)
 	q := `
 		SELECT id, name FROM moto_categories
 	`
@@ -47,7 +50,8 @@ func (r *MotorcycleRepository) GetMotorcycleCategories(ctx *fasthttp.RequestCtx)
 	return data, nil
 }
 
-func (r *MotorcycleRepository) GetMotorcycleParameters(ctx *fasthttp.RequestCtx, categoryID string) (data []model.GetMotorcycleParametersResponse, err error) {
+func (r *MotorcycleRepository) GetMotorcycleParameters(ctx *fasthttp.RequestCtx, categoryID string) ([]model.GetMotorcycleParametersResponse, error) {
+	data := make([]model.GetMotorcycleParametersResponse, 0)
 	q := `
 		SELECT 
 			moto_parameters.id,
@@ -85,7 +89,8 @@ func (r *MotorcycleRepository) GetMotorcycleParameters(ctx *fasthttp.RequestCtx,
 	return data, nil
 }
 
-func (r *MotorcycleRepository) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, categoryID string) (data []model.GetMotorcycleBrandsResponse, err error) {
+func (r *MotorcycleRepository) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, categoryID string) ([]model.GetMotorcycleBrandsResponse, error) {
+	data := make([]model.GetMotorcycleBrandsResponse, 0)
 	q := `
 		SELECT id, name, image FROM moto_brands
 		WHERE moto_category_id = $1
@@ -112,7 +117,8 @@ func (r *MotorcycleRepository) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, cat
 	return data, nil
 }
 
-func (r *MotorcycleRepository) GetMotorcycleModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID string, brandID string) (data []model.GetMotorcycleModelsResponse, err error) {
+func (r *MotorcycleRepository) GetMotorcycleModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID string, brandID string) ([]model.GetMotorcycleModelsResponse, error) {
+	data := make([]model.GetMotorcycleModelsResponse, 0)
 	q := `
 		SELECT id, name FROM moto_models
 		WHERE moto_brand_id = $1
@@ -139,7 +145,8 @@ func (r *MotorcycleRepository) GetMotorcycleModelsByBrandID(ctx *fasthttp.Reques
 	return data, nil
 }
 
-func (r *MotorcycleRepository) CreateMotorcycle(ctx *fasthttp.RequestCtx, req model.CreateMotorcycleRequest, userID int) (data model.SuccessWithId, err error) {
+func (r *MotorcycleRepository) CreateMotorcycle(ctx *fasthttp.RequestCtx, req model.CreateMotorcycleRequest, userID int) (model.SuccessWithId, error) {
+	data := model.SuccessWithId{}
 	parameters := req.Parameters
 	req.Parameters = nil
 
@@ -157,7 +164,7 @@ func (r *MotorcycleRepository) CreateMotorcycle(ctx *fasthttp.RequestCtx, req mo
 	fmt.Println("user_id", userID)
 	var id int
 	args = append(args, userID)
-	err = r.db.QueryRow(ctx, q, args...).Scan(&id)
+	err := r.db.QueryRow(ctx, q, args...).Scan(&id)
 
 	if err != nil {
 		return data, err
@@ -182,7 +189,8 @@ func (r *MotorcycleRepository) CreateMotorcycle(ctx *fasthttp.RequestCtx, req mo
 	return data, err
 }
 
-func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx) (data []model.GetMotorcyclesResponse, err error) {
+func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx) ([]model.GetMotorcyclesResponse, error) {
+	data := make([]model.GetMotorcyclesResponse, 0)
 	q := `
 		select 
 			mcs.id,

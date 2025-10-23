@@ -29,7 +29,7 @@ func NewComtransHandler(service *service.ComtransService) *ComtransHandler {
 // @Produce json
 // @Success 200 {array} model.GetComtransCategoriesResponse
 // @Failure 500 {object} model.ResultMessage
-// @Router /comtrans/categories [get]
+// @Router /api/v1/comtrans/categories [get]
 func (h *ComtransHandler) GetComtransCategories(c *fiber.Ctx) error {
 
 	ctx := c.Context()
@@ -46,7 +46,7 @@ func (h *ComtransHandler) GetComtransCategories(c *fiber.Ctx) error {
 // @Param category_id path string true "Category ID"
 // @Success 200 {array} model.GetComtransParametersResponse
 // @Failure 500 {object} model.ResultMessage
-// @Router /comtrans/categories/{category_id}/parameters [get]
+// @Router /api/v1/comtrans/categories/{category_id}/parameters [get]
 func (h *ComtransHandler) GetComtransParameters(c *fiber.Ctx) error {
 	ctx := c.Context()
 	categoryID := c.Params("category_id")
@@ -63,7 +63,7 @@ func (h *ComtransHandler) GetComtransParameters(c *fiber.Ctx) error {
 // @Param category_id path string true "Category ID"
 // @Success 200 {array} model.GetComtransBrandsResponse
 // @Failure 500 {object} model.ResultMessage
-// @Router /comtrans/categories/{category_id}/brands [get]
+// @Router /api/v1/comtrans/categories/{category_id}/brands [get]
 func (h *ComtransHandler) GetComtransBrands(c *fiber.Ctx) error {
 	ctx := c.Context()
 	categoryID := c.Params("category_id")
@@ -81,7 +81,7 @@ func (h *ComtransHandler) GetComtransBrands(c *fiber.Ctx) error {
 // @Param brand_id path string true "Brand ID"
 // @Success 200 {array} model.GetComtransModelsResponse
 // @Failure 500 {object} model.ResultMessage
-// @Router /comtrans/categories/{category_id}/brands/{brand_id}/models [get]
+// @Router /api/v1/comtrans/categories/{category_id}/brands/{brand_id}/models [get]
 func (h *ComtransHandler) GetComtransModelsByBrandID(c *fiber.Ctx) error {
 	ctx := c.Context()
 	categoryID := c.Params("category_id")
@@ -98,7 +98,7 @@ func (h *ComtransHandler) GetComtransModelsByBrandID(c *fiber.Ctx) error {
 // @Security BearerAuth
 // @Success 200 {array} model.GetComtransResponse
 // @Failure 500 {object} model.ResultMessage
-// @Router /comtrans [get]
+// @Router /api/v1/comtrans [get]
 func (h *ComtransHandler) GetComtrans(c *fiber.Ctx) error {
 	ctx := c.Context()
 	return utils.FiberResponse(c, h.service.GetComtrans(ctx))
@@ -116,7 +116,7 @@ func (h *ComtransHandler) GetComtrans(c *fiber.Ctx) error {
 // @Success 200 {object} model.SuccessWithId
 // @Failure 500 {object} model.ResultMessage
 // @Failure 400 {object} model.ResultMessage
-// @Router /comtrans [post]
+// @Router /api/v1/comtrans [post]
 func (h *ComtransHandler) CreateComtrans(c *fiber.Ctx) error {
 	ctx := c.Context()
 	var comtrans model.CreateComtransRequest

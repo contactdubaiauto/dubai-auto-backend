@@ -4,15 +4,17 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
 
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 )
 
 type AdminRepository struct {
-	db *pgxpool.Pool
+	config *config.Config
+	db     *pgxpool.Pool
 }
 
-func NewAdminRepository(db *pgxpool.Pool) *AdminRepository {
-	return &AdminRepository{db}
+func NewAdminRepository(config *config.Config, db *pgxpool.Pool) *AdminRepository {
+	return &AdminRepository{config, db}
 }
 
 // Application CRUD operations
@@ -347,7 +349,7 @@ func (r *AdminRepository) DeleteModel(ctx *fasthttp.RequestCtx, id int) error {
 // Body Types CRUD operations
 func (r *AdminRepository) GetBodyTypes(ctx *fasthttp.RequestCtx) ([]model.AdminBodyTypeResponse, error) {
 	bodyTypes := make([]model.AdminBodyTypeResponse, 0)
-	q := `SELECT id, name, image, created_at FROM body_types ORDER BY id DESC`
+	q := `SELECT id, name, $1 || image, created_at FROM body_types ORDER BY id DESC`
 
 	rows, err := r.db.Query(ctx, q)
 
@@ -705,13 +707,13 @@ func (r *AdminRepository) DeleteService(ctx *fasthttp.RequestCtx, id int) error 
 func (r *AdminRepository) GetGenerations(ctx *fasthttp.RequestCtx) ([]model.AdminGenerationResponse, error) {
 	generations := make([]model.AdminGenerationResponse, 0)
 	q := `
-		SELECT g.id, g.name, g.model_id, m.name as model_name, g.start_year, g.end_year, g.wheel, g.image, g.created_at 
+		SELECT g.id, g.name, g.model_id, m.name as model_name, g.start_year, g.end_year, g.wheel, $1 || g.image, g.created_at 
 		FROM generations g
 		LEFT JOIN models m ON g.model_id = m.id
 		ORDER BY g.id DESC
 	`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
 	if err != nil {
 		return generations, err
 	}
@@ -752,14 +754,14 @@ func (r *AdminRepository) GetGenerationsByModel(ctx *fasthttp.RequestCtx, modelI
 			g.start_year, 
 			g.end_year, 
 			g.wheel, 
-			g.image, 
+			$2 || g.image, 
 			g.created_at 
 		FROM generations g
 		LEFT JOIN models m ON g.model_id = m.id
 		WHERE g.model_id = $1
 		ORDER BY g.id DESC
 	`
-	rows, err := r.db.Query(ctx, q, modelId)
+	rows, err := r.db.Query(ctx, q, modelId, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return generations, err
@@ -910,9 +912,9 @@ func (r *AdminRepository) DeleteConfiguration(ctx *fasthttp.RequestCtx, id int) 
 // Colors CRUD operations
 func (r *AdminRepository) GetColors(ctx *fasthttp.RequestCtx) ([]model.AdminColorResponse, error) {
 	colors := make([]model.AdminColorResponse, 0)
-	q := `SELECT id, name, image, created_at FROM colors ORDER BY id DESC`
+	q := `SELECT id, name, $1 || image, created_at FROM colors ORDER BY id DESC`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
 	if err != nil {
 		return colors, err
 	}
@@ -986,13 +988,13 @@ func (r *AdminRepository) CreateMotoCategory(ctx *fasthttp.RequestCtx, req *mode
 func (r *AdminRepository) GetMotoBrandsByCategoryID(ctx *fasthttp.RequestCtx, id int) ([]model.AdminMotoBrandResponse, error) {
 	motoBrands := make([]model.AdminMotoBrandResponse, 0)
 	q := `
-		SELECT mb.id, mb.name, mb.image, mb.moto_category_id, mc.name as moto_category_name, mb.created_at
+		SELECT mb.id, mb.name, $2 || mb.image, mb.moto_category_id, mc.name as moto_category_name, mb.created_at
 		FROM moto_brands mb
 		LEFT JOIN moto_categories mc ON mb.moto_category_id = mc.id
 		WHERE mb.moto_category_id = $1
 		ORDER BY mb.id DESC`
 
-	rows, err := r.db.Query(ctx, q, id)
+	rows, err := r.db.Query(ctx, q, id, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return motoBrands, err
@@ -1028,13 +1030,13 @@ func (r *AdminRepository) DeleteMotoCategory(ctx *fasthttp.RequestCtx, id int) e
 func (r *AdminRepository) GetMotoBrands(ctx *fasthttp.RequestCtx) ([]model.AdminMotoBrandResponse, error) {
 	motoBrands := make([]model.AdminMotoBrandResponse, 0)
 	q := `
-		SELECT mb.id, mb.name, mb.image, mb.moto_category_id, mc.name as moto_category_name, mb.created_at
+		SELECT mb.id, mb.name, $1 || mb.image, mb.moto_category_id, mc.name as moto_category_name, mb.created_at
 		FROM moto_brands mb
 		LEFT JOIN moto_categories mc ON mb.moto_category_id = mc.id
 		ORDER BY mb.id DESC
 	`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
 	if err != nil {
 		return motoBrands, err
 	}
@@ -1319,14 +1321,14 @@ func (r *AdminRepository) GetComtransCategories(ctx *fasthttp.RequestCtx) ([]mod
 func (r *AdminRepository) GetComtransBrandsByCategoryID(ctx *fasthttp.RequestCtx, categoryId int) ([]model.AdminComtransBrandResponse, error) {
 	comtransBrands := make([]model.AdminComtransBrandResponse, 0)
 	q := `
-		SELECT cb.id, cb.name, cb.image, cb.comtran_category_id, cc.name as comtrans_category_name, cb.created_at
+		SELECT cb.id, cb.name, $2 || cb.image, cb.comtran_category_id, cc.name as comtrans_category_name, cb.created_at
 		FROM com_brands cb
 		LEFT JOIN com_categories cc ON cb.comtran_category_id = cc.id
 		WHERE cb.comtran_category_id = $1
 		ORDER BY cb.id DESC
 	`
 
-	rows, err := r.db.Query(ctx, q, categoryId)
+	rows, err := r.db.Query(ctx, q, categoryId, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return comtransBrands, err
@@ -1416,13 +1418,13 @@ func (r *AdminRepository) DeleteComtransCategoryParameter(ctx *fasthttp.RequestC
 func (r *AdminRepository) GetComtransBrands(ctx *fasthttp.RequestCtx) ([]model.AdminComtransBrandResponse, error) {
 	comtransBrands := make([]model.AdminComtransBrandResponse, 0)
 	q := `
-		SELECT cb.id, cb.name, cb.image, cb.comtran_category_id, cc.name as comtrans_category_name, cb.created_at
+		SELECT cb.id, cb.name, $1 || cb.image, cb.comtran_category_id, cc.name as comtrans_category_name, cb.created_at
 		FROM com_brands cb
 		LEFT JOIN com_categories cc ON cb.comtran_category_id = cc.id
 		ORDER BY cb.id DESC
 	`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
 	if err != nil {
 		return comtransBrands, err
 	}
