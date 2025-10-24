@@ -11,6 +11,33 @@ definitions:
       password:
         type: string
     type: object
+  model.AdminApplicationByIDResponse:
+    properties:
+      company_name:
+        type: string
+      copy_of_id_url:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+      licence_expiry_date:
+        type: string
+      licence_issue_date:
+        type: string
+      licence_url:
+        type: string
+      memorandum_url:
+        type: string
+      phone:
+        type: string
+      status:
+        type: string
+    type: object
   model.AdminApplicationResponse:
     properties:
       company_name:
@@ -344,6 +371,15 @@ definitions:
       moto_parameter_id:
         type: integer
       name:
+        type: string
+    type: object
+  model.AdminProfileResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      username:
         type: string
     type: object
   model.AdminServiceResponse:
@@ -2128,7 +2164,7 @@ definitions:
       username:
         type: string
     type: object
-host: https://api.mashynbazar.com
+host: api.mashynbazar.com
 info:
   contact: {}
   description: Project Description
@@ -2183,7 +2219,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.AdminApplicationResponse'
+            $ref: '#/definitions/model.AdminApplicationByIDResponse'
         "400":
           description: Bad Request
           schema:
@@ -6759,6 +6795,37 @@ paths:
       summary: Update a moto parameter value
       tags:
       - admin-moto-parameter-values
+  /api/v1/admin/profile:
+    get:
+      description: Returns a profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AdminProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get profile
+      tags:
+      - admin-profile
   /api/v1/admin/service-types:
     get:
       description: Returns a list of all service types

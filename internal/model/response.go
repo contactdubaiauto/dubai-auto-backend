@@ -227,6 +227,12 @@ type GoogleUserInfo struct {
 	VerifiedEmail bool   `json:"verified_email"`
 }
 
+type AdminProfileResponse struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	ID       int    `json:"id"`
+}
+
 type AdminApplicationResponse struct {
 	LicenceIssueDate  *time.Time `json:"licence_issue_date"`
 	LicenceExpiryDate *time.Time `json:"licence_expiry_date"`
@@ -236,6 +242,21 @@ type AdminApplicationResponse struct {
 	Email             *string    `json:"email"`
 	Phone             *string    `json:"phone"`
 	Status            *string    `json:"status"`
+	ID                *int       `json:"id"`
+}
+
+type AdminApplicationByIDResponse struct {
+	LicenceIssueDate  *time.Time `json:"licence_issue_date"`
+	LicenceExpiryDate *time.Time `json:"licence_expiry_date"`
+	CreatedAt         *time.Time `json:"created_at"`
+	CompanyName       *string    `json:"company_name"`
+	FullName          *string    `json:"full_name"`
+	Email             *string    `json:"email"`
+	Phone             *string    `json:"phone"`
+	Status            *string    `json:"status"`
+	CopyOFIDURL       *string    `json:"copy_of_id_url"`
+	MemorandumURL     *string    `json:"memorandum_url"`
+	LicenceURL        *string    `json:"licence_url"`
 	ID                *int       `json:"id"`
 }
 

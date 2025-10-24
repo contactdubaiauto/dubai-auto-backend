@@ -25,6 +25,17 @@ func NewAdminService(repo *repository.AdminRepository) *AdminService {
 	return &AdminService{repo}
 }
 
+// Profile service methods
+func (s *AdminService) GetProfile(ctx *fasthttp.RequestCtx, id int) *model.Response {
+	profile, err := s.repo.GetProfile(ctx, id)
+
+	if err != nil {
+		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return &model.Response{Data: profile}
+}
+
 // Application service methods
 func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx) *model.Response {
 	applications, err := s.repo.GetApplications(ctx)

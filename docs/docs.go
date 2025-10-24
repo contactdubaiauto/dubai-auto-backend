@@ -95,7 +95,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.AdminApplicationResponse"
+                            "$ref": "#/definitions/model.AdminApplicationByIDResponse"
                         }
                     },
                     "400": {
@@ -7186,6 +7186,55 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/profile": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns a profile",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-profile"
+                ],
+                "summary": "Get profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.AdminProfileResponse"
                         }
                     },
                     "400": {
@@ -14823,6 +14872,47 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AdminApplicationByIDResponse": {
+            "type": "object",
+            "properties": {
+                "company_name": {
+                    "type": "string"
+                },
+                "copy_of_id_url": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "licence_expiry_date": {
+                    "type": "string"
+                },
+                "licence_issue_date": {
+                    "type": "string"
+                },
+                "licence_url": {
+                    "type": "string"
+                },
+                "memorandum_url": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "model.AdminApplicationResponse": {
             "type": "object",
             "properties": {
@@ -15334,6 +15424,20 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AdminProfileResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "username": {
                     "type": "string"
                 }
             }
@@ -17980,7 +18084,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "https://api.mashynbazar.com",
+	Host:             "api.mashynbazar.com",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Project name",

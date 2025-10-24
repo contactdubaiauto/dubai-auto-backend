@@ -25,6 +25,29 @@ func NewAdminHandler(service *service.AdminService) *AdminHandler {
 
 // Application handlers
 
+// Profile handlers
+
+// GetProfile godoc
+// @Summary      Get profile
+// @Description  Returns a profile
+// @Tags         admin-profile
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {object}  model.AdminProfileResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/profile [get]
+func (h *AdminHandler) GetProfile(c *fiber.Ctx) error {
+	id := c.Locals("id").(int)
+	ctx := c.Context()
+	data := h.service.GetProfile(ctx, id)
+	return utils.FiberResponse(c, data)
+}
+
+// Applications handlers
+
 // GetApplications godoc
 // @Summary      Get all applications
 // @Description  Returns a list of all applications
@@ -50,7 +73,7 @@ func (h *AdminHandler) GetApplications(c *fiber.Ctx) error {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id   path      int  true  "Application ID"
-// @Success      200  {object}  model.AdminApplicationResponse
+// @Success      200  {object}  model.AdminApplicationByIDResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse

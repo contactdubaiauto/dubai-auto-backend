@@ -37,13 +37,21 @@ func TokenGuard(c *fiber.Ctx) error {
 		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: err.Error()})
 	}
 
+	role_id := claims["role_id"]
+	id := claims["id"]
+
+	if id == nil || role_id == nil {
+		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: "token is invalid!"})
+	}
+
 	c.Locals("id", int(claims["id"].(float64)))
-	c.Locals("role_id", claims["role_id"].(float64))
+	c.Locals("role_id", int(role_id.(float64)))
 	return c.Next()
 }
 
 func UserGuardOrDefault(c *fiber.Ctx) error {
 	authorization := c.Get("Authorization")
+
 	if authorization == "" {
 		c.Locals("id", 0)
 		c.Locals("role_id", 0)
@@ -51,6 +59,7 @@ func UserGuardOrDefault(c *fiber.Ctx) error {
 	}
 
 	bearer := strings.Split(authorization, "Bearer ")
+
 	if len(bearer) < 2 {
 		c.Locals("id", 0)
 		c.Locals("role_id", 0)
@@ -66,6 +75,7 @@ func UserGuardOrDefault(c *fiber.Ctx) error {
 			return []byte(ENV.ACCESS_KEY), nil
 		},
 	)
+
 	if err != nil {
 		c.Locals("id", 0)
 		c.Locals("role_id", 0)
@@ -78,42 +88,47 @@ func UserGuardOrDefault(c *fiber.Ctx) error {
 }
 
 func AdminGuard(c *fiber.Ctx) error {
-	role, ok := c.Locals("role_id").(float64)
+	role, ok := c.Locals("role_id").(int)
 
 	if !ok || role != 100 {
-		return c.SendStatus(fiber.StatusForbidden)
+		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: "token is invalid!xrt"})
 	}
+
 	return c.Next()
 }
 
 func DealerGuard(c *fiber.Ctx) error {
-	role, ok := c.Locals("role_id").(float64)
+	role, ok := c.Locals("role_id").(int)
+
 	if !ok || role != 2 {
-		return c.SendStatus(fiber.StatusForbidden)
+		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: "token is invalid!duio"})
 	}
 	return c.Next()
 }
 
 func LogistGuard(c *fiber.Ctx) error {
-	role, ok := c.Locals("role_id").(float64)
+	role, ok := c.Locals("role_id").(int)
+
 	if !ok || role != 3 {
-		return c.SendStatus(fiber.StatusForbidden)
+		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: "token is invalid!ppol"})
 	}
 	return c.Next()
 }
 
 func BrokerGuard(c *fiber.Ctx) error {
-	role, ok := c.Locals("role_id").(float64)
+	role, ok := c.Locals("role_id").(int)
+
 	if !ok || role != 4 {
-		return c.SendStatus(fiber.StatusForbidden)
+		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: "token is invalid!mmdt"})
 	}
 	return c.Next()
 }
 
 func CarServiceGuard(c *fiber.Ctx) error {
-	role, ok := c.Locals("role_id").(float64)
+	role, ok := c.Locals("role_id").(int)
+
 	if !ok || role != 5 {
-		return c.SendStatus(fiber.StatusForbidden)
+		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: "token is invalid!dxre"})
 	}
 	return c.Next()
 }

@@ -15,6 +15,12 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool) {
 	adminService := service.NewAdminService(adminRepository)
 	adminHandler := http.NewAdminHandler(adminService)
 
+	// profile routes
+	profile := r.Group("/profile")
+	{
+		profile.Get("/", adminHandler.GetProfile)
+	}
+
 	// countries routes
 	countries := r.Group("/countries")
 	{

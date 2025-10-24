@@ -17,6 +17,21 @@ func NewAdminRepository(config *config.Config, db *pgxpool.Pool) *AdminRepositor
 	return &AdminRepository{config, db}
 }
 
+// Profile CRUD operations
+func (r *AdminRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (model.AdminProfileResponse, error) {
+	profile := model.AdminProfileResponse{}
+	q := `
+		SELECT 
+			id, 
+			username, 
+			email
+		FROM admins 
+		WHERE id = $1`
+	err := r.db.QueryRow(ctx, q, id).Scan(&profile.ID, &profile.Username, &profile.Email)
+
+	return profile, err
+}
+
 // Application CRUD operations
 func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx) ([]model.AdminApplicationResponse, error) {
 	applications := make([]model.AdminApplicationResponse, 0)
@@ -57,27 +72,34 @@ func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx) ([]model.Adm
 	return applications, err
 }
 
-func (r *AdminRepository) GetApplication(ctx *fasthttp.RequestCtx, id int) (model.AdminApplicationResponse, error) {
+func (r *AdminRepository) GetApplication(ctx *fasthttp.RequestCtx, id int) (model.AdminApplicationByIDResponse, error) {
 
-	q := `SELECT id, company_name, licence_issue_date, licence_expiry_date, username, email, phone, status, created_at FROM temp_users WHERE id = $1`
-	var application model.AdminApplicationResponse
-	rows, err := r.db.Query(ctx, q, id)
+	q := `
+			SELECT 
+				tu.id, 
+				tu.company_name, 
+				tu.licence_issue_date, 
+				tu.licence_expiry_date, 
+				tu.username, 
+				tu.email, 
+				tu.phone, 
+				tu.status, 
+				tu.created_at,
+				$2 || ds.copy_of_id_path as copy_of_id_url,
+				$2 || ds.memorandum_path as memorandum_url,
+				$2 || ds.licence_path as licence_url
+			FROM temp_users tu
+			left join documents ds on ds.id = tu.documents_id
+			WHERE tu.id = $1
+		`
+	var application model.AdminApplicationByIDResponse
+	err := r.db.QueryRow(ctx, q, id, r.config.STATIC_PATH).Scan(&application.ID, &application.CompanyName,
+		&application.LicenceIssueDate, &application.LicenceExpiryDate,
+		&application.FullName, &application.Email, &application.Phone,
+		&application.Status, &application.CreatedAt, &application.CopyOFIDURL,
+		&application.MemorandumURL, &application.LicenceURL)
 
-	if err != nil {
-		return model.AdminApplicationResponse{}, err
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		var application model.AdminApplicationResponse
-
-		if err := rows.Scan(&application.ID, &application.CompanyName, &application.LicenceIssueDate, &application.LicenceExpiryDate, &application.FullName, &application.Email, &application.Phone, &application.Status, &application.CreatedAt); err != nil {
-			return model.AdminApplicationResponse{}, err
-		}
-	}
-
-	return application, nil
+	return application, err
 }
 
 func (r *AdminRepository) AcceptApplication(ctx *fasthttp.RequestCtx, id int, password string) (string, error) {
