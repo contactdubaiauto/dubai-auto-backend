@@ -38,21 +38,21 @@ func (h *AuthHandler) UserLoginGoogle(c *fiber.Ctx) error {
 	user := &model.UserLoginGoogle{}
 
 	if err := c.BodyParser(user); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
 	}
 
 	if err := h.validator.Validate(user); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
 	}
 
 	data := h.service.UserLoginGoogle(c.Context(), user.TokenID)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // Send Application godoc
@@ -73,21 +73,21 @@ func (h *AuthHandler) Application(c *fiber.Ctx) error {
 	application := &model.UserApplication{}
 
 	if err := c.BodyParser(application); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
 	}
 
 	if err := h.validator.Validate(application); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
 	}
 
 	data := h.service.Application(c.Context(), *application)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // ApplicationDocuments godoc
@@ -113,7 +113,7 @@ func (h *AuthHandler) ApplicationDocuments(c *fiber.Ctx) error {
 	licence, err := c.FormFile("licence")
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -122,7 +122,7 @@ func (h *AuthHandler) ApplicationDocuments(c *fiber.Ctx) error {
 	memorandum, err := c.FormFile("memorandum")
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -131,7 +131,7 @@ func (h *AuthHandler) ApplicationDocuments(c *fiber.Ctx) error {
 	copyOfID, err := c.FormFile("copy_of_id")
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -159,7 +159,7 @@ func (h *AuthHandler) UserEmailConfirmation(c *fiber.Ctx) error {
 	user := &model.UserEmailConfirmationRequest{}
 
 	if err := c.BodyParser(user); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -167,7 +167,7 @@ func (h *AuthHandler) UserEmailConfirmation(c *fiber.Ctx) error {
 
 	data := h.service.UserEmailConfirmation(c.Context(), user)
 
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // UserPhone confirmation godoc
@@ -188,7 +188,7 @@ func (h *AuthHandler) UserPhoneConfirmation(c *fiber.Ctx) error {
 	user := &model.UserPhoneConfirmationRequest{}
 
 	if err := c.BodyParser(user); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -196,7 +196,7 @@ func (h *AuthHandler) UserPhoneConfirmation(c *fiber.Ctx) error {
 
 	data := h.service.UserPhoneConfirmation(c.Context(), user)
 
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // UserLoginEmail godoc
@@ -217,14 +217,14 @@ func (h *AuthHandler) UserLoginEmail(c *fiber.Ctx) error {
 	user := &model.UserLoginEmail{}
 
 	if err := c.BodyParser(user); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
 	}
 
 	data := h.service.UserLoginEmail(c.Context(), user)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // ThirdPartyLogin godoc
@@ -245,14 +245,14 @@ func (h *AuthHandler) ThirdPartyLogin(c *fiber.Ctx) error {
 	user := &model.ThirdPartyLoginReq{}
 
 	if err := c.BodyParser(user); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
 	}
 
 	data := h.service.ThirdPartyLogin(c.Context(), user)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // UserLoginPhone godoc
@@ -273,14 +273,51 @@ func (h *AuthHandler) UserLoginPhone(c *fiber.Ctx) error {
 	user := &model.UserLoginPhone{}
 
 	if err := c.BodyParser(user); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
 	}
 
 	data := h.service.UserLoginPhone(c.Context(), user)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
+}
+
+// UserRegisterDevice godoc
+// @Summary      User register device
+// @Description  Registers a device for a user
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      model.UserRegisterDevice  true  "User register device credentials"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/auth/user-register-device [post]
+func (h *AuthHandler) UserRegisterDevice(c *fiber.Ctx) error {
+	req := model.UserRegisterDevice{}
+	userID := c.Locals("id").(int)
+
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	if err := h.validator.Validate(req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	data := h.service.UserRegisterDevice(c.Context(), userID, req)
+
+	return utils.FiberResponse(c, data)
 }
 
 // DeleteAccount godoc
@@ -303,7 +340,7 @@ func (h *AuthHandler) DeleteAccount(c *fiber.Ctx) error {
 	userID, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -313,7 +350,7 @@ func (h *AuthHandler) DeleteAccount(c *fiber.Ctx) error {
 	authUserID := c.Locals("id").(int)
 
 	if userID != authUserID {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 403,
 			Error:  err,
 		})
@@ -341,12 +378,12 @@ func (h *AuthHandler) AdminLogin(c *fiber.Ctx) error {
 	user := &model.AdminLoginReq{}
 
 	if err := c.BodyParser(user); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
 	}
 
 	data := h.service.AdminLogin(c.Context(), user)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }

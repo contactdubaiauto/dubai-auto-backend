@@ -26,38 +26,38 @@ func NewAdminService(repo *repository.AdminRepository) *AdminService {
 }
 
 // Profile service methods
-func (s *AdminService) GetProfile(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) GetProfile(ctx *fasthttp.RequestCtx, id int) model.Response {
 	profile, err := s.repo.GetProfile(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: profile}
+	return model.Response{Data: profile}
 }
 
 // Application service methods
-func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx) model.Response {
 	applications, err := s.repo.GetApplications(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: applications}
+	return model.Response{Data: applications}
 }
 
-func (s *AdminService) GetApplication(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) GetApplication(ctx *fasthttp.RequestCtx, id int) model.Response {
 	application, err := s.repo.GetApplication(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: application}
+	return model.Response{Data: application}
 }
 
-func (s *AdminService) AcceptApplication(ctx *fasthttp.RequestCtx, id int, req model.AcceptApplicationRequest) *model.Response {
+func (s *AdminService) AcceptApplication(ctx *fasthttp.RequestCtx, id int, req model.AcceptApplicationRequest) model.Response {
 
 	if req.Password == "" {
 		req.Password = fmt.Sprintf("%d", utils.RandomOTP())
@@ -66,13 +66,13 @@ func (s *AdminService) AcceptApplication(ctx *fasthttp.RequestCtx, id int, req m
 	cryptedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
 	email, err := s.repo.AcceptApplication(ctx, id, string(cryptedPassword))
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
 	go func() {
@@ -84,87 +84,87 @@ func (s *AdminService) AcceptApplication(ctx *fasthttp.RequestCtx, id int, req m
 		}
 	}()
 
-	return &model.Response{Data: model.Success{Message: "Application accepted successfully"}}
+	return model.Response{Data: model.Success{Message: "Application accepted successfully"}}
 }
 
-func (s *AdminService) RejectApplication(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) RejectApplication(ctx *fasthttp.RequestCtx, id int) model.Response {
 	// todo: remove files/folders after reject
 	// todo: send email to user
 	err := s.repo.RejectApplication(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Application rejected successfully"}}
+	return model.Response{Data: model.Success{Message: "Application rejected successfully"}}
 }
 
 // Cities service methods
-func (s *AdminService) GetCities(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetCities(ctx *fasthttp.RequestCtx) model.Response {
 	cities, err := s.repo.GetCities(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: cities}
+	return model.Response{Data: cities}
 }
 
-func (s *AdminService) CreateCity(ctx *fasthttp.RequestCtx, req *model.CreateNameRequest) *model.Response {
+func (s *AdminService) CreateCity(ctx *fasthttp.RequestCtx, req *model.CreateNameRequest) model.Response {
 	id, err := s.repo.CreateCity(ctx, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "City created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "City created successfully"}}
 }
 
-func (s *AdminService) UpdateCity(ctx *fasthttp.RequestCtx, id int, req *model.CreateNameRequest) *model.Response {
+func (s *AdminService) UpdateCity(ctx *fasthttp.RequestCtx, id int, req *model.CreateNameRequest) model.Response {
 	err := s.repo.UpdateCity(ctx, id, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "City updated successfully"}}
+	return model.Response{Data: model.Success{Message: "City updated successfully"}}
 }
 
-func (s *AdminService) DeleteCity(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteCity(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteCity(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "City deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "City deleted successfully"}}
 }
 
 // Brands service methods
-func (s *AdminService) GetBrands(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetBrands(ctx *fasthttp.RequestCtx) model.Response {
 	brands, err := s.repo.GetBrands(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: brands}
+	return model.Response{Data: brands}
 }
 
-func (s *AdminService) CreateBrand(ctx *fasthttp.RequestCtx, req *model.CreateBrandRequest) *model.Response {
+func (s *AdminService) CreateBrand(ctx *fasthttp.RequestCtx, req *model.CreateBrandRequest) model.Response {
 	id, err := s.repo.CreateBrand(ctx, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Brand created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Brand created successfully"}}
 }
 
-func (s *AdminService) CreateBrandImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) *model.Response {
+func (s *AdminService) CreateBrandImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) model.Response {
 
 	if form == nil {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  errors.New("didn't upload the files"),
 		}
@@ -173,7 +173,7 @@ func (s *AdminService) CreateBrandImage(ctx *fasthttp.RequestCtx, form *multipar
 	image := form.File["image"]
 
 	if len(image) > 1 {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  errors.New("must load maximum 1 file"),
 		}
@@ -182,7 +182,7 @@ func (s *AdminService) CreateBrandImage(ctx *fasthttp.RequestCtx, form *multipar
 	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"cars/logos/"+strconv.Itoa(id))
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  err,
 		}
@@ -191,429 +191,429 @@ func (s *AdminService) CreateBrandImage(ctx *fasthttp.RequestCtx, form *multipar
 	err = s.repo.CreateBrandImage(ctx, id, path)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Brand image created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Brand image created successfully"}}
 }
 
-func (s *AdminService) UpdateBrand(ctx *fasthttp.RequestCtx, id int, req *model.CreateBrandRequest) *model.Response {
+func (s *AdminService) UpdateBrand(ctx *fasthttp.RequestCtx, id int, req *model.CreateBrandRequest) model.Response {
 	err := s.repo.UpdateBrand(ctx, id, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Brand updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Brand updated successfully"}}
 }
 
-func (s *AdminService) DeleteBrand(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteBrand(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteBrand(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Brand deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Brand deleted successfully"}}
 }
 
 // Models service methods
-func (s *AdminService) GetModels(ctx *fasthttp.RequestCtx, brand_id int) *model.Response {
+func (s *AdminService) GetModels(ctx *fasthttp.RequestCtx, brand_id int) model.Response {
 	models, err := s.repo.GetModels(ctx, brand_id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: models}
+	return model.Response{Data: models}
 }
 
-func (s *AdminService) CreateModel(ctx *fasthttp.RequestCtx, brand_id int, req *model.CreateModelRequest) *model.Response {
+func (s *AdminService) CreateModel(ctx *fasthttp.RequestCtx, brand_id int, req *model.CreateModelRequest) model.Response {
 	id, err := s.repo.CreateModel(ctx, brand_id, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Model created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Model created successfully"}}
 }
 
-func (s *AdminService) UpdateModel(ctx *fasthttp.RequestCtx, id int, req *model.UpdateModelRequest) *model.Response {
+func (s *AdminService) UpdateModel(ctx *fasthttp.RequestCtx, id int, req *model.UpdateModelRequest) model.Response {
 	err := s.repo.UpdateModel(ctx, id, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Model updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Model updated successfully"}}
 }
 
-func (s *AdminService) DeleteModel(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteModel(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteModel(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Model deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Model deleted successfully"}}
 }
 
 // Body Types service methods
-func (s *AdminService) GetBodyTypes(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetBodyTypes(ctx *fasthttp.RequestCtx) model.Response {
 	bodyTypes, err := s.repo.GetBodyTypes(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: bodyTypes}
+	return model.Response{Data: bodyTypes}
 }
 
-func (s *AdminService) CreateBodyType(ctx *fasthttp.RequestCtx, req *model.CreateBodyTypeRequest) *model.Response {
+func (s *AdminService) CreateBodyType(ctx *fasthttp.RequestCtx, req *model.CreateBodyTypeRequest) model.Response {
 	id, err := s.repo.CreateBodyType(ctx, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Body type created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Body type created successfully"}}
 }
 
-func (s *AdminService) CreateBodyTypeImage(ctx *fasthttp.RequestCtx, id int, paths []string) *model.Response {
+func (s *AdminService) CreateBodyTypeImage(ctx *fasthttp.RequestCtx, id int, paths []string) model.Response {
 	err := s.repo.CreateBodyTypeImage(ctx, id, paths)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Body type image created successfully"}}
+	return model.Response{Data: model.Success{Message: "Body type image created successfully"}}
 }
 
-func (s *AdminService) UpdateBodyType(ctx *fasthttp.RequestCtx, id int, req *model.CreateBodyTypeRequest) *model.Response {
+func (s *AdminService) UpdateBodyType(ctx *fasthttp.RequestCtx, id int, req *model.CreateBodyTypeRequest) model.Response {
 	err := s.repo.UpdateBodyType(ctx, id, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Body type updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Body type updated successfully"}}
 }
 
-func (s *AdminService) DeleteBodyType(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteBodyType(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteBodyType(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Body type deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Body type deleted successfully"}}
 }
 
-func (s *AdminService) DeleteBodyTypeImage(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteBodyTypeImage(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteBodyTypeImage(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Body type image deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Body type image deleted successfully"}}
 }
 
 // Transmissions service methods
-func (s *AdminService) GetTransmissions(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetTransmissions(ctx *fasthttp.RequestCtx) model.Response {
 	transmissions, err := s.repo.GetTransmissions(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: transmissions}
+	return model.Response{Data: transmissions}
 }
 
-func (s *AdminService) CreateTransmission(ctx *fasthttp.RequestCtx, req *model.CreateTransmissionRequest) *model.Response {
+func (s *AdminService) CreateTransmission(ctx *fasthttp.RequestCtx, req *model.CreateTransmissionRequest) model.Response {
 	id, err := s.repo.CreateTransmission(ctx, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Transmission created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Transmission created successfully"}}
 }
 
-func (s *AdminService) UpdateTransmission(ctx *fasthttp.RequestCtx, id int, req *model.CreateTransmissionRequest) *model.Response {
+func (s *AdminService) UpdateTransmission(ctx *fasthttp.RequestCtx, id int, req *model.CreateTransmissionRequest) model.Response {
 	err := s.repo.UpdateTransmission(ctx, id, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Transmission updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Transmission updated successfully"}}
 }
 
-func (s *AdminService) DeleteTransmission(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteTransmission(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteTransmission(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Transmission deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Transmission deleted successfully"}}
 }
 
 // Engines service methods
-func (s *AdminService) GetEngines(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetEngines(ctx *fasthttp.RequestCtx) model.Response {
 	engines, err := s.repo.GetEngines(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: engines}
+	return model.Response{Data: engines}
 }
 
-func (s *AdminService) CreateEngine(ctx *fasthttp.RequestCtx, req *model.CreateEngineRequest) *model.Response {
+func (s *AdminService) CreateEngine(ctx *fasthttp.RequestCtx, req *model.CreateEngineRequest) model.Response {
 	id, err := s.repo.CreateEngine(ctx, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Engine created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Engine created successfully"}}
 }
 
-func (s *AdminService) UpdateEngine(ctx *fasthttp.RequestCtx, id int, req *model.CreateEngineRequest) *model.Response {
+func (s *AdminService) UpdateEngine(ctx *fasthttp.RequestCtx, id int, req *model.CreateEngineRequest) model.Response {
 	err := s.repo.UpdateEngine(ctx, id, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Engine updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Engine updated successfully"}}
 }
 
-func (s *AdminService) DeleteEngine(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteEngine(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteEngine(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Engine deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Engine deleted successfully"}}
 }
 
 // Regions service methods
-func (s *AdminService) GetRegions(ctx *fasthttp.RequestCtx, city_id int) *model.Response {
+func (s *AdminService) GetRegions(ctx *fasthttp.RequestCtx, city_id int) model.Response {
 	regions, err := s.repo.GetRegions(ctx, city_id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: regions}
+	return model.Response{Data: regions}
 }
 
-func (s *AdminService) CreateRegion(ctx *fasthttp.RequestCtx, city_id int, req *model.CreateNameRequest) *model.Response {
+func (s *AdminService) CreateRegion(ctx *fasthttp.RequestCtx, city_id int, req *model.CreateNameRequest) model.Response {
 	id, err := s.repo.CreateRegion(ctx, city_id, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Region created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Region created successfully"}}
 }
 
-func (s *AdminService) UpdateRegion(ctx *fasthttp.RequestCtx, id int, req *model.CreateNameRequest) *model.Response {
+func (s *AdminService) UpdateRegion(ctx *fasthttp.RequestCtx, id int, req *model.CreateNameRequest) model.Response {
 	err := s.repo.UpdateRegion(ctx, id, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Region updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Region updated successfully"}}
 }
 
-func (s *AdminService) DeleteRegion(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteRegion(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteRegion(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Region deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Region deleted successfully"}}
 }
 
 // Drivetrains service methods
-func (s *AdminService) GetDrivetrains(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetDrivetrains(ctx *fasthttp.RequestCtx) model.Response {
 	drivetrains, err := s.repo.GetDrivetrains(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: drivetrains}
+	return model.Response{Data: drivetrains}
 }
 
-func (s *AdminService) CreateDrivetrain(ctx *fasthttp.RequestCtx, req *model.CreateDrivetrainRequest) *model.Response {
+func (s *AdminService) CreateDrivetrain(ctx *fasthttp.RequestCtx, req *model.CreateDrivetrainRequest) model.Response {
 	id, err := s.repo.CreateDrivetrain(ctx, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Drivetrain created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Drivetrain created successfully"}}
 }
 
-func (s *AdminService) UpdateDrivetrain(ctx *fasthttp.RequestCtx, id int, req *model.CreateDrivetrainRequest) *model.Response {
+func (s *AdminService) UpdateDrivetrain(ctx *fasthttp.RequestCtx, id int, req *model.CreateDrivetrainRequest) model.Response {
 	err := s.repo.UpdateDrivetrain(ctx, id, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Drivetrain updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Drivetrain updated successfully"}}
 }
 
-func (s *AdminService) DeleteDrivetrain(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteDrivetrain(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteDrivetrain(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Drivetrain deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Drivetrain deleted successfully"}}
 }
 
 // Fuel Types service methods
-func (s *AdminService) GetFuelTypes(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetFuelTypes(ctx *fasthttp.RequestCtx) model.Response {
 	fuelTypes, err := s.repo.GetFuelTypes(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: fuelTypes}
+	return model.Response{Data: fuelTypes}
 }
 
-func (s *AdminService) CreateFuelType(ctx *fasthttp.RequestCtx, req *model.CreateFuelTypeRequest) *model.Response {
+func (s *AdminService) CreateFuelType(ctx *fasthttp.RequestCtx, req *model.CreateFuelTypeRequest) model.Response {
 	id, err := s.repo.CreateFuelType(ctx, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Fuel type created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Fuel type created successfully"}}
 }
 
-func (s *AdminService) UpdateFuelType(ctx *fasthttp.RequestCtx, id int, req *model.CreateFuelTypeRequest) *model.Response {
+func (s *AdminService) UpdateFuelType(ctx *fasthttp.RequestCtx, id int, req *model.CreateFuelTypeRequest) model.Response {
 	err := s.repo.UpdateFuelType(ctx, id, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Fuel type updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Fuel type updated successfully"}}
 }
 
-func (s *AdminService) DeleteFuelType(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteFuelType(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteFuelType(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Fuel type deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Fuel type deleted successfully"}}
 }
 
 // Service Types service methods
-func (s *AdminService) GetServiceTypes(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetServiceTypes(ctx *fasthttp.RequestCtx) model.Response {
 	serviceTypes, err := s.repo.GetServiceTypes(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: serviceTypes}
+	return model.Response{Data: serviceTypes}
 }
 
-func (s *AdminService) CreateServiceType(ctx *fasthttp.RequestCtx, req *model.CreateServiceTypeRequest) *model.Response {
+func (s *AdminService) CreateServiceType(ctx *fasthttp.RequestCtx, req *model.CreateServiceTypeRequest) model.Response {
 	id, err := s.repo.CreateServiceType(ctx, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Service type created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Service type created successfully"}}
 }
 
-func (s *AdminService) UpdateServiceType(ctx *fasthttp.RequestCtx, id int, req *model.CreateServiceTypeRequest) *model.Response {
+func (s *AdminService) UpdateServiceType(ctx *fasthttp.RequestCtx, id int, req *model.CreateServiceTypeRequest) model.Response {
 	err := s.repo.UpdateServiceType(ctx, id, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Service type updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Service type updated successfully"}}
 }
 
-func (s *AdminService) DeleteServiceType(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteServiceType(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteServiceType(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Service type deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Service type deleted successfully"}}
 }
 
 // Services service methods
-func (s *AdminService) GetServices(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetServices(ctx *fasthttp.RequestCtx) model.Response {
 	services, err := s.repo.GetServices(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: services}
+	return model.Response{Data: services}
 }
 
-func (s *AdminService) CreateService(ctx *fasthttp.RequestCtx, req *model.CreateServiceRequest) *model.Response {
+func (s *AdminService) CreateService(ctx *fasthttp.RequestCtx, req *model.CreateServiceRequest) model.Response {
 	id, err := s.repo.CreateService(ctx, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Service created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Service created successfully"}}
 }
 
-func (s *AdminService) UpdateService(ctx *fasthttp.RequestCtx, id int, req *model.CreateServiceRequest) *model.Response {
+func (s *AdminService) UpdateService(ctx *fasthttp.RequestCtx, id int, req *model.CreateServiceRequest) model.Response {
 	err := s.repo.UpdateService(ctx, id, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Service updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Service updated successfully"}}
 }
 
-func (s *AdminService) DeleteService(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteService(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteService(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Service deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Service deleted successfully"}}
 }
 
 // Generations service methods
-func (s *AdminService) GetGenerations(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetGenerations(ctx *fasthttp.RequestCtx) model.Response {
 	generations, err := s.repo.GetGenerations(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: generations}
+	return model.Response{Data: generations}
 }
 
-func (s *AdminService) GetGenerationsByModel(ctx *fasthttp.RequestCtx, brandId, modelId int) *model.Response {
+func (s *AdminService) GetGenerationsByModel(ctx *fasthttp.RequestCtx, brandId, modelId int) model.Response {
 	// First validate that the model belongs to the specified brand
 	isValid, err := s.repo.ValidateModelBelongsToBrand(ctx, modelId, brandId)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
 	if !isValid {
-		return &model.Response{
+		return model.Response{
 			Error:  errors.New("model does not belong to the specified brand"),
 			Status: http.StatusBadRequest,
 		}
@@ -621,44 +621,44 @@ func (s *AdminService) GetGenerationsByModel(ctx *fasthttp.RequestCtx, brandId, 
 
 	generations, err := s.repo.GetGenerationsByModel(ctx, modelId)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: generations}
+	return model.Response{Data: generations}
 }
 
-func (s *AdminService) CreateGeneration(ctx *fasthttp.RequestCtx, req *model.CreateGenerationRequest) *model.Response {
+func (s *AdminService) CreateGeneration(ctx *fasthttp.RequestCtx, req *model.CreateGenerationRequest) model.Response {
 	id, err := s.repo.CreateGeneration(ctx, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Generation created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Generation created successfully"}}
 }
 
-func (s *AdminService) UpdateGeneration(ctx *fasthttp.RequestCtx, id int, req *model.UpdateGenerationRequest) *model.Response {
+func (s *AdminService) UpdateGeneration(ctx *fasthttp.RequestCtx, id int, req *model.UpdateGenerationRequest) model.Response {
 	err := s.repo.UpdateGeneration(ctx, id, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Generation updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Generation updated successfully"}}
 }
 
-func (s *AdminService) DeleteGeneration(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteGeneration(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteGeneration(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
 	// todo: delete image if exists
-	return &model.Response{Data: model.Success{Message: "Generation deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Generation deleted successfully"}}
 }
 
-func (s *AdminService) CreateGenerationImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) *model.Response {
+func (s *AdminService) CreateGenerationImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) model.Response {
 
 	if form == nil {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  errors.New("didn't upload the files"),
 		}
@@ -667,7 +667,7 @@ func (s *AdminService) CreateGenerationImage(ctx *fasthttp.RequestCtx, form *mul
 	image := form.File["image"]
 
 	if len(image) > 1 {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  errors.New("must load maximum 1 file"),
 		}
@@ -676,7 +676,7 @@ func (s *AdminService) CreateGenerationImage(ctx *fasthttp.RequestCtx, form *mul
 	paths, status, err := files.SaveFiles(image, config.ENV.STATIC_PATH+"cars/generations/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Status: status,
 			Error:  err,
 		}
@@ -686,100 +686,100 @@ func (s *AdminService) CreateGenerationImage(ctx *fasthttp.RequestCtx, form *mul
 	err = s.repo.CreateGenerationImage(ctx, id, paths)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Generation image created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Generation image created successfully"}}
 }
 
 // Generation Modifications service methods
-func (s *AdminService) GetGenerationModifications(ctx *fasthttp.RequestCtx, generationId int) *model.Response {
+func (s *AdminService) GetGenerationModifications(ctx *fasthttp.RequestCtx, generationId int) model.Response {
 	generationModifications, err := s.repo.GetGenerationModifications(ctx, generationId)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: generationModifications}
+	return model.Response{Data: generationModifications}
 }
 
-func (s *AdminService) CreateGenerationModification(ctx *fasthttp.RequestCtx, generationId int, req *model.CreateGenerationModificationRequest) *model.Response {
+func (s *AdminService) CreateGenerationModification(ctx *fasthttp.RequestCtx, generationId int, req *model.CreateGenerationModificationRequest) model.Response {
 	id, err := s.repo.CreateGenerationModification(ctx, generationId, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Generation modification created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Generation modification created successfully"}}
 }
 
-func (s *AdminService) UpdateGenerationModification(ctx *fasthttp.RequestCtx, generationId int, id int, req *model.UpdateGenerationModificationRequest) *model.Response {
+func (s *AdminService) UpdateGenerationModification(ctx *fasthttp.RequestCtx, generationId int, id int, req *model.UpdateGenerationModificationRequest) model.Response {
 	err := s.repo.UpdateGenerationModification(ctx, generationId, id, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Generation modification updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Generation modification updated successfully"}}
 }
 
-func (s *AdminService) DeleteGenerationModification(ctx *fasthttp.RequestCtx, generationId int, id int) *model.Response {
+func (s *AdminService) DeleteGenerationModification(ctx *fasthttp.RequestCtx, generationId int, id int) model.Response {
 	err := s.repo.DeleteGenerationModification(ctx, generationId, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Generation modification deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Generation modification deleted successfully"}}
 }
 
 // Configurations service methods
-func (s *AdminService) GetConfigurations(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetConfigurations(ctx *fasthttp.RequestCtx) model.Response {
 	configurations, err := s.repo.GetConfigurations(ctx)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: configurations}
+	return model.Response{Data: configurations}
 }
 
-func (s *AdminService) CreateConfiguration(ctx *fasthttp.RequestCtx, req *model.CreateConfigurationRequest) *model.Response {
+func (s *AdminService) CreateConfiguration(ctx *fasthttp.RequestCtx, req *model.CreateConfigurationRequest) model.Response {
 	id, err := s.repo.CreateConfiguration(ctx, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Configuration created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Configuration created successfully"}}
 }
 
-func (s *AdminService) UpdateConfiguration(ctx *fasthttp.RequestCtx, id int, req *model.UpdateConfigurationRequest) *model.Response {
+func (s *AdminService) UpdateConfiguration(ctx *fasthttp.RequestCtx, id int, req *model.UpdateConfigurationRequest) model.Response {
 	err := s.repo.UpdateConfiguration(ctx, id, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Configuration updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Configuration updated successfully"}}
 }
 
-func (s *AdminService) DeleteConfiguration(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteConfiguration(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteConfiguration(ctx, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Configuration deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Configuration deleted successfully"}}
 }
 
 // Colors service methods
-func (s *AdminService) GetColors(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetColors(ctx *fasthttp.RequestCtx) model.Response {
 	colors, err := s.repo.GetColors(ctx)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: colors}
+	return model.Response{Data: colors}
 }
 
-func (s *AdminService) CreateColor(ctx *fasthttp.RequestCtx, req *model.CreateColorRequest) *model.Response {
+func (s *AdminService) CreateColor(ctx *fasthttp.RequestCtx, req *model.CreateColorRequest) model.Response {
 	id, err := s.repo.CreateColor(ctx, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Color created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Color created successfully"}}
 }
 
-func (s *AdminService) CreateColorImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) *model.Response {
+func (s *AdminService) CreateColorImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) model.Response {
 
 	if form == nil {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  errors.New("didn't upload the files"),
 		}
@@ -788,7 +788,7 @@ func (s *AdminService) CreateColorImage(ctx *fasthttp.RequestCtx, form *multipar
 	image := form.File["image"]
 
 	if len(image) > 1 {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  errors.New("must load maximum 1 file"),
 		}
@@ -797,7 +797,7 @@ func (s *AdminService) CreateColorImage(ctx *fasthttp.RequestCtx, form *multipar
 	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"colors/"+strconv.Itoa(id))
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  err,
 		}
@@ -806,100 +806,100 @@ func (s *AdminService) CreateColorImage(ctx *fasthttp.RequestCtx, form *multipar
 	err = s.repo.CreateColorImage(ctx, id, path)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Color image created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Color image created successfully"}}
 }
 
-func (s *AdminService) UpdateColor(ctx *fasthttp.RequestCtx, id int, req *model.UpdateColorRequest) *model.Response {
+func (s *AdminService) UpdateColor(ctx *fasthttp.RequestCtx, id int, req *model.UpdateColorRequest) model.Response {
 	err := s.repo.UpdateColor(ctx, id, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Color updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Color updated successfully"}}
 }
 
-func (s *AdminService) DeleteColor(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteColor(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteColor(ctx, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Color deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Color deleted successfully"}}
 }
 
 // Moto Categories service methods
-func (s *AdminService) GetMotoCategories(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetMotoCategories(ctx *fasthttp.RequestCtx) model.Response {
 	motoCategories, err := s.repo.GetMotoCategories(ctx)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: motoCategories}
+	return model.Response{Data: motoCategories}
 }
 
-func (s *AdminService) CreateMotoCategory(ctx *fasthttp.RequestCtx, req *model.CreateMotoCategoryRequest) *model.Response {
+func (s *AdminService) CreateMotoCategory(ctx *fasthttp.RequestCtx, req *model.CreateMotoCategoryRequest) model.Response {
 	id, err := s.repo.CreateMotoCategory(ctx, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto category created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto category created successfully"}}
 }
 
-func (s *AdminService) GetMotoBrandsByCategoryID(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) GetMotoBrandsByCategoryID(ctx *fasthttp.RequestCtx, id int) model.Response {
 	motoBrands, err := s.repo.GetMotoBrandsByCategoryID(ctx, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: motoBrands}
+	return model.Response{Data: motoBrands}
 }
 
-func (s *AdminService) UpdateMotoCategory(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoCategoryRequest) *model.Response {
+func (s *AdminService) UpdateMotoCategory(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoCategoryRequest) model.Response {
 	err := s.repo.UpdateMotoCategory(ctx, id, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Moto category updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Moto category updated successfully"}}
 }
 
-func (s *AdminService) DeleteMotoCategory(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteMotoCategory(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteMotoCategory(ctx, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Moto category deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Moto category deleted successfully"}}
 }
 
 // Moto Brands service methods
-func (s *AdminService) GetMotoBrands(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetMotoBrands(ctx *fasthttp.RequestCtx) model.Response {
 	motoBrands, err := s.repo.GetMotoBrands(ctx)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: motoBrands}
+	return model.Response{Data: motoBrands}
 }
 
-func (s *AdminService) GetMotoModelsByBrandID(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) GetMotoModelsByBrandID(ctx *fasthttp.RequestCtx, id int) model.Response {
 	motoModels, err := s.repo.GetMotoModelsByBrandID(ctx, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: motoModels}
+	return model.Response{Data: motoModels}
 }
 
-func (s *AdminService) CreateMotoBrand(ctx *fasthttp.RequestCtx, req *model.CreateMotoBrandRequest) *model.Response {
+func (s *AdminService) CreateMotoBrand(ctx *fasthttp.RequestCtx, req *model.CreateMotoBrandRequest) model.Response {
 	id, err := s.repo.CreateMotoBrand(ctx, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto brand created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto brand created successfully"}}
 }
 
-func (s *AdminService) CreateMotoBrandImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) *model.Response {
+func (s *AdminService) CreateMotoBrandImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) model.Response {
 
 	if form == nil {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  errors.New("didn't upload the files"),
 		}
@@ -908,7 +908,7 @@ func (s *AdminService) CreateMotoBrandImage(ctx *fasthttp.RequestCtx, form *mult
 	image := form.File["image"]
 
 	if len(image) > 1 {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  errors.New("must load maximum 1 file"),
 		}
@@ -917,7 +917,7 @@ func (s *AdminService) CreateMotoBrandImage(ctx *fasthttp.RequestCtx, form *mult
 	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"moto/logos/"+strconv.Itoa(id))
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  err,
 		}
@@ -926,233 +926,233 @@ func (s *AdminService) CreateMotoBrandImage(ctx *fasthttp.RequestCtx, form *mult
 	err = s.repo.CreateMotoBrandImage(ctx, id, path)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto brand image created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto brand image created successfully"}}
 }
 
-func (s *AdminService) UpdateMotoBrand(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoBrandRequest) *model.Response {
+func (s *AdminService) UpdateMotoBrand(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoBrandRequest) model.Response {
 	err := s.repo.UpdateMotoBrand(ctx, id, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Moto brand updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Moto brand updated successfully"}}
 }
 
-func (s *AdminService) DeleteMotoBrand(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteMotoBrand(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteMotoBrand(ctx, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Moto brand deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Moto brand deleted successfully"}}
 }
 
 // Moto Models service methods
-func (s *AdminService) GetMotoModels(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetMotoModels(ctx *fasthttp.RequestCtx) model.Response {
 	motoModels, err := s.repo.GetMotoModels(ctx)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: motoModels}
+	return model.Response{Data: motoModels}
 }
 
-func (s *AdminService) CreateMotoModel(ctx *fasthttp.RequestCtx, req *model.CreateMotoModelRequest) *model.Response {
+func (s *AdminService) CreateMotoModel(ctx *fasthttp.RequestCtx, req *model.CreateMotoModelRequest) model.Response {
 	id, err := s.repo.CreateMotoModel(ctx, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto model created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto model created successfully"}}
 }
 
-func (s *AdminService) UpdateMotoModel(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoModelRequest) *model.Response {
+func (s *AdminService) UpdateMotoModel(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoModelRequest) model.Response {
 	err := s.repo.UpdateMotoModel(ctx, id, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Moto model updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Moto model updated successfully"}}
 }
 
-func (s *AdminService) DeleteMotoModel(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteMotoModel(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteMotoModel(ctx, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Moto model deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Moto model deleted successfully"}}
 }
 
 // Moto Parameters service methods
-func (s *AdminService) GetMotoParameters(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetMotoParameters(ctx *fasthttp.RequestCtx) model.Response {
 	motoParameters, err := s.repo.GetMotoParameters(ctx)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: motoParameters}
+	return model.Response{Data: motoParameters}
 }
 
-func (s *AdminService) CreateMotoParameter(ctx *fasthttp.RequestCtx, req *model.CreateMotoParameterRequest) *model.Response {
+func (s *AdminService) CreateMotoParameter(ctx *fasthttp.RequestCtx, req *model.CreateMotoParameterRequest) model.Response {
 	id, err := s.repo.CreateMotoParameter(ctx, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto parameter created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto parameter created successfully"}}
 }
 
-func (s *AdminService) UpdateMotoParameter(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoParameterRequest) *model.Response {
+func (s *AdminService) UpdateMotoParameter(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoParameterRequest) model.Response {
 	err := s.repo.UpdateMotoParameter(ctx, id, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Moto parameter updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Moto parameter updated successfully"}}
 }
 
-func (s *AdminService) DeleteMotoParameter(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteMotoParameter(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteMotoParameter(ctx, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Moto parameter deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Moto parameter deleted successfully"}}
 }
 
 // Moto Parameter Values service methods
-func (s *AdminService) GetMotoParameterValues(ctx *fasthttp.RequestCtx, motoParamId int) *model.Response {
+func (s *AdminService) GetMotoParameterValues(ctx *fasthttp.RequestCtx, motoParamId int) model.Response {
 	motoParameterValues, err := s.repo.GetMotoParameterValues(ctx, motoParamId)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: motoParameterValues}
+	return model.Response{Data: motoParameterValues}
 }
 
-func (s *AdminService) CreateMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, req *model.CreateMotoParameterValueRequest) *model.Response {
+func (s *AdminService) CreateMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, req *model.CreateMotoParameterValueRequest) model.Response {
 	id, err := s.repo.CreateMotoParameterValue(ctx, motoParamId, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto parameter value created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto parameter value created successfully"}}
 }
 
-func (s *AdminService) UpdateMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, id int, req *model.UpdateMotoParameterValueRequest) *model.Response {
+func (s *AdminService) UpdateMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, id int, req *model.UpdateMotoParameterValueRequest) model.Response {
 	err := s.repo.UpdateMotoParameterValue(ctx, motoParamId, id, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Moto parameter value updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Moto parameter value updated successfully"}}
 }
 
-func (s *AdminService) DeleteMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, id int) *model.Response {
+func (s *AdminService) DeleteMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, id int) model.Response {
 	err := s.repo.DeleteMotoParameterValue(ctx, motoParamId, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Moto parameter value deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Moto parameter value deleted successfully"}}
 }
 
 // Moto Category Parameters service methods
-func (s *AdminService) GetMotoCategoryParameters(ctx *fasthttp.RequestCtx, categoryId int) *model.Response {
+func (s *AdminService) GetMotoCategoryParameters(ctx *fasthttp.RequestCtx, categoryId int) model.Response {
 	motoCategoryParameters, err := s.repo.GetMotoCategoryParameters(ctx, categoryId)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: motoCategoryParameters}
+	return model.Response{Data: motoCategoryParameters}
 }
 
-func (s *AdminService) CreateMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, req *model.CreateMotoCategoryParameterRequest) *model.Response {
+func (s *AdminService) CreateMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, req *model.CreateMotoCategoryParameterRequest) model.Response {
 	parameterId, err := s.repo.CreateMotoCategoryParameter(ctx, categoryId, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: parameterId, Message: "Moto category parameter created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: parameterId, Message: "Moto category parameter created successfully"}}
 }
 
-func (s *AdminService) UpdateMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, parameterId int, req *model.UpdateMotoCategoryParameterRequest) *model.Response {
+func (s *AdminService) UpdateMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, parameterId int, req *model.UpdateMotoCategoryParameterRequest) model.Response {
 	err := s.repo.UpdateMotoCategoryParameter(ctx, categoryId, parameterId, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Moto category parameter updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Moto category parameter updated successfully"}}
 }
 
-func (s *AdminService) DeleteMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, parameterId int) *model.Response {
+func (s *AdminService) DeleteMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, parameterId int) model.Response {
 	err := s.repo.DeleteMotoCategoryParameter(ctx, categoryId, parameterId)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Moto category parameter deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Moto category parameter deleted successfully"}}
 }
 
 // Comtrans Categories service methods
-func (s *AdminService) GetComtransCategories(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetComtransCategories(ctx *fasthttp.RequestCtx) model.Response {
 	comtransCategories, err := s.repo.GetComtransCategories(ctx)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: comtransCategories}
+	return model.Response{Data: comtransCategories}
 }
 
-func (s *AdminService) GetComtransBrandsByCategoryID(ctx *fasthttp.RequestCtx, categoryId int) *model.Response {
+func (s *AdminService) GetComtransBrandsByCategoryID(ctx *fasthttp.RequestCtx, categoryId int) model.Response {
 	comtransBrands, err := s.repo.GetComtransBrandsByCategoryID(ctx, categoryId)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: comtransBrands}
+	return model.Response{Data: comtransBrands}
 }
 
-func (s *AdminService) CreateComtransCategory(ctx *fasthttp.RequestCtx, req *model.CreateComtransCategoryRequest) *model.Response {
+func (s *AdminService) CreateComtransCategory(ctx *fasthttp.RequestCtx, req *model.CreateComtransCategoryRequest) model.Response {
 	id, err := s.repo.CreateComtransCategory(ctx, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans category created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans category created successfully"}}
 }
 
-func (s *AdminService) UpdateComtransCategory(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransCategoryRequest) *model.Response {
+func (s *AdminService) UpdateComtransCategory(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransCategoryRequest) model.Response {
 	err := s.repo.UpdateComtransCategory(ctx, id, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Comtrans category updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Comtrans category updated successfully"}}
 }
 
-func (s *AdminService) DeleteComtransCategory(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteComtransCategory(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteComtransCategory(ctx, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Comtrans category deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Comtrans category deleted successfully"}}
 }
 
 // Comtrans Brands service methods
-func (s *AdminService) GetComtransBrands(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetComtransBrands(ctx *fasthttp.RequestCtx) model.Response {
 	comtransBrands, err := s.repo.GetComtransBrands(ctx)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: comtransBrands}
+	return model.Response{Data: comtransBrands}
 }
 
-func (s *AdminService) GetComtransModelsByBrandID(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) GetComtransModelsByBrandID(ctx *fasthttp.RequestCtx, id int) model.Response {
 	comtransModels, err := s.repo.GetComtransModelsByBrandID(ctx, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: comtransModels}
+	return model.Response{Data: comtransModels}
 }
 
-func (s *AdminService) CreateComtransBrand(ctx *fasthttp.RequestCtx, req *model.CreateComtransBrandRequest) *model.Response {
+func (s *AdminService) CreateComtransBrand(ctx *fasthttp.RequestCtx, req *model.CreateComtransBrandRequest) model.Response {
 	id, err := s.repo.CreateComtransBrand(ctx, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans brand created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans brand created successfully"}}
 }
 
-func (s *AdminService) CreateComtransBrandImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) *model.Response {
+func (s *AdminService) CreateComtransBrandImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) model.Response {
 
 	if form == nil {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  errors.New("didn't upload the files"),
 		}
@@ -1161,7 +1161,7 @@ func (s *AdminService) CreateComtransBrandImage(ctx *fasthttp.RequestCtx, form *
 	image := form.File["image"]
 
 	if len(image) > 1 {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  errors.New("must load maximum 1 file"),
 		}
@@ -1170,7 +1170,7 @@ func (s *AdminService) CreateComtransBrandImage(ctx *fasthttp.RequestCtx, form *
 	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"comtrans/logos/"+strconv.Itoa(id))
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  err,
 		}
@@ -1179,185 +1179,185 @@ func (s *AdminService) CreateComtransBrandImage(ctx *fasthttp.RequestCtx, form *
 	err = s.repo.CreateComtransBrandImage(ctx, id, path)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans brand image created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans brand image created successfully"}}
 }
 
-func (s *AdminService) UpdateComtransBrand(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransBrandRequest) *model.Response {
+func (s *AdminService) UpdateComtransBrand(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransBrandRequest) model.Response {
 	err := s.repo.UpdateComtransBrand(ctx, id, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Comtrans brand updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Comtrans brand updated successfully"}}
 }
 
-func (s *AdminService) DeleteComtransBrand(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteComtransBrand(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteComtransBrand(ctx, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Comtrans brand deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Comtrans brand deleted successfully"}}
 }
 
 // Comtrans Models service methods
-func (s *AdminService) GetComtransModels(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetComtransModels(ctx *fasthttp.RequestCtx) model.Response {
 	comtransModels, err := s.repo.GetComtransModels(ctx)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: comtransModels}
+	return model.Response{Data: comtransModels}
 }
 
-func (s *AdminService) CreateComtransModel(ctx *fasthttp.RequestCtx, req *model.CreateComtransModelRequest) *model.Response {
+func (s *AdminService) CreateComtransModel(ctx *fasthttp.RequestCtx, req *model.CreateComtransModelRequest) model.Response {
 	id, err := s.repo.CreateComtransModel(ctx, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans model created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans model created successfully"}}
 }
 
-func (s *AdminService) UpdateComtransModel(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransModelRequest) *model.Response {
+func (s *AdminService) UpdateComtransModel(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransModelRequest) model.Response {
 	err := s.repo.UpdateComtransModel(ctx, id, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Comtrans model updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Comtrans model updated successfully"}}
 }
 
-func (s *AdminService) DeleteComtransModel(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteComtransModel(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteComtransModel(ctx, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Comtrans model deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Comtrans model deleted successfully"}}
 }
 
 // Comtrans Parameters service methods
-func (s *AdminService) GetComtransParameters(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetComtransParameters(ctx *fasthttp.RequestCtx) model.Response {
 	comtransParameters, err := s.repo.GetComtransParameters(ctx)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: comtransParameters}
+	return model.Response{Data: comtransParameters}
 }
 
-func (s *AdminService) CreateComtransParameter(ctx *fasthttp.RequestCtx, req *model.CreateComtransParameterRequest) *model.Response {
+func (s *AdminService) CreateComtransParameter(ctx *fasthttp.RequestCtx, req *model.CreateComtransParameterRequest) model.Response {
 	id, err := s.repo.CreateComtransParameter(ctx, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans parameter created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans parameter created successfully"}}
 }
 
-func (s *AdminService) UpdateComtransParameter(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransParameterRequest) *model.Response {
+func (s *AdminService) UpdateComtransParameter(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransParameterRequest) model.Response {
 	err := s.repo.UpdateComtransParameter(ctx, id, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Comtrans parameter updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Comtrans parameter updated successfully"}}
 }
 
-func (s *AdminService) DeleteComtransParameter(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteComtransParameter(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteComtransParameter(ctx, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Comtrans parameter deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Comtrans parameter deleted successfully"}}
 }
 
 // Comtrans Parameter Values service methods
-func (s *AdminService) GetComtransParameterValues(ctx *fasthttp.RequestCtx, parameterId int) *model.Response {
+func (s *AdminService) GetComtransParameterValues(ctx *fasthttp.RequestCtx, parameterId int) model.Response {
 	comtransParameterValues, err := s.repo.GetComtransParameterValues(ctx, parameterId)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: comtransParameterValues}
+	return model.Response{Data: comtransParameterValues}
 }
 
-func (s *AdminService) CreateComtransParameterValue(ctx *fasthttp.RequestCtx, parameterId int, req *model.CreateComtransParameterValueRequest) *model.Response {
+func (s *AdminService) CreateComtransParameterValue(ctx *fasthttp.RequestCtx, parameterId int, req *model.CreateComtransParameterValueRequest) model.Response {
 	id, err := s.repo.CreateComtransParameterValue(ctx, parameterId, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans parameter value created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans parameter value created successfully"}}
 }
 
-func (s *AdminService) UpdateComtransParameterValue(ctx *fasthttp.RequestCtx, parameterId int, id int, req *model.UpdateComtransParameterValueRequest) *model.Response {
+func (s *AdminService) UpdateComtransParameterValue(ctx *fasthttp.RequestCtx, parameterId int, id int, req *model.UpdateComtransParameterValueRequest) model.Response {
 	err := s.repo.UpdateComtransParameterValue(ctx, parameterId, id, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Comtrans parameter value updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Comtrans parameter value updated successfully"}}
 }
 
-func (s *AdminService) DeleteComtransParameterValue(ctx *fasthttp.RequestCtx, parameterId int, id int) *model.Response {
+func (s *AdminService) DeleteComtransParameterValue(ctx *fasthttp.RequestCtx, parameterId int, id int) model.Response {
 	err := s.repo.DeleteComtransParameterValue(ctx, parameterId, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Comtrans parameter value deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Comtrans parameter value deleted successfully"}}
 }
 
 // Comtrans Category Parameters service methods
-func (s *AdminService) GetComtransCategoryParameters(ctx *fasthttp.RequestCtx, categoryId int) *model.Response {
+func (s *AdminService) GetComtransCategoryParameters(ctx *fasthttp.RequestCtx, categoryId int) model.Response {
 	comtransCategoryParameters, err := s.repo.GetComtransCategoryParameters(ctx, categoryId)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: comtransCategoryParameters}
+	return model.Response{Data: comtransCategoryParameters}
 }
 
-func (s *AdminService) CreateComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, req *model.CreateComtransCategoryParameterRequest) *model.Response {
+func (s *AdminService) CreateComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, req *model.CreateComtransCategoryParameterRequest) model.Response {
 	id, err := s.repo.CreateComtransCategoryParameter(ctx, categoryId, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans category parameter created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans category parameter created successfully"}}
 }
 
-func (s *AdminService) UpdateComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, id int, req *model.UpdateComtransCategoryParameterRequest) *model.Response {
+func (s *AdminService) UpdateComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, id int, req *model.UpdateComtransCategoryParameterRequest) model.Response {
 	err := s.repo.UpdateComtransCategoryParameter(ctx, categoryId, id, req)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Comtrans category parameter updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Comtrans category parameter updated successfully"}}
 }
 
-func (s *AdminService) DeleteComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, id int) *model.Response {
+func (s *AdminService) DeleteComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, id int) model.Response {
 	err := s.repo.DeleteComtransCategoryParameter(ctx, categoryId, id)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Comtrans category parameter deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Comtrans category parameter deleted successfully"}}
 }
 
 // Countries service methods
-func (s *AdminService) GetCountries(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *AdminService) GetCountries(ctx *fasthttp.RequestCtx) model.Response {
 	countries, err := s.repo.GetCountries(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: countries}
+	return model.Response{Data: countries}
 }
 
-func (s *AdminService) CreateCountry(ctx *fasthttp.RequestCtx, req *model.CreateNameRequest) *model.Response {
+func (s *AdminService) CreateCountry(ctx *fasthttp.RequestCtx, req *model.CreateNameRequest) model.Response {
 	id, err := s.repo.CreateCountry(ctx, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Country created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Country created successfully"}}
 }
 
-func (s *AdminService) CreateCountryImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) *model.Response {
+func (s *AdminService) CreateCountryImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) model.Response {
 
 	if form == nil {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  errors.New("didn't upload the files"),
 		}
@@ -1366,7 +1366,7 @@ func (s *AdminService) CreateCountryImage(ctx *fasthttp.RequestCtx, form *multip
 	image := form.File["image"]
 
 	if len(image) > 1 {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  errors.New("must load maximum 1 file"),
 		}
@@ -1375,7 +1375,7 @@ func (s *AdminService) CreateCountryImage(ctx *fasthttp.RequestCtx, form *multip
 	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"countries/"+strconv.Itoa(id))
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  err,
 		}
@@ -1384,28 +1384,28 @@ func (s *AdminService) CreateCountryImage(ctx *fasthttp.RequestCtx, form *multip
 	err = s.repo.CreateCountryImage(ctx, id, path)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.SuccessWithId{Id: id, Message: "Country flag image created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Country flag image created successfully"}}
 }
 
-func (s *AdminService) UpdateCountry(ctx *fasthttp.RequestCtx, id int, req *model.CreateNameRequest) *model.Response {
+func (s *AdminService) UpdateCountry(ctx *fasthttp.RequestCtx, id int, req *model.CreateNameRequest) model.Response {
 	err := s.repo.UpdateCountry(ctx, id, req)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Country updated successfully"}}
+	return model.Response{Data: model.Success{Message: "Country updated successfully"}}
 }
 
-func (s *AdminService) DeleteCountry(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *AdminService) DeleteCountry(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteCountry(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Country deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Country deleted successfully"}}
 }

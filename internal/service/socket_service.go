@@ -35,6 +35,8 @@ func (s *SocketService) GetUserAvatar(userID int) string {
 
 func (s *SocketService) MessageWriteToDatabase(senderUserID int, status bool, msg model.MessageReceived) error {
 	err := s.repo.MessageWriteToDatabase(senderUserID, status, msg)
+	// todo: send push notification to the user
+
 	return err
 }
 

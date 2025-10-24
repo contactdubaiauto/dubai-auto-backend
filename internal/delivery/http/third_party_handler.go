@@ -44,14 +44,14 @@ func (h *ThirdPartyHandler) Profile(c *fiber.Ctx) error {
 	profile := &model.ThirdPartyProfileReq{}
 
 	if err := c.BodyParser(profile); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
 	}
 
 	data := h.service.Profile(ctx, id, *profile)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // Profile godoc
@@ -74,14 +74,14 @@ func (h *ThirdPartyHandler) FirstLogin(c *fiber.Ctx) error {
 	profile := &model.ThirdPartyFirstLoginReq{}
 
 	if err := c.BodyParser(profile); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
 	}
 
 	data := h.service.FirstLogin(ctx, id, *profile)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetProfile godoc
@@ -121,7 +121,7 @@ func (h *ThirdPartyHandler) GetMyCars(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Locals("id").(int)
 	data := h.service.GetMyCars(ctx, id)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // OnSale godoc
@@ -141,7 +141,7 @@ func (h *ThirdPartyHandler) OnSale(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Locals("id").(int)
 	data := h.service.OnSale(ctx, id)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetRegistrationData godoc
@@ -160,7 +160,7 @@ func (h *ThirdPartyHandler) OnSale(c *fiber.Ctx) error {
 func (h *ThirdPartyHandler) GetRegistrationData(c *fiber.Ctx) error {
 	ctx := c.Context()
 	data := h.service.GetRegistrationData(ctx)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // AvatarImages godoc
@@ -183,7 +183,7 @@ func (h *ThirdPartyHandler) AvatarImages(c *fiber.Ctx) error {
 	id := c.Locals("id").(int)
 	form, _ := c.MultipartForm()
 	data := h.service.CreateAvatarImages(ctx, form, id)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // BannerImage godoc
@@ -206,7 +206,7 @@ func (h *ThirdPartyHandler) BannerImage(c *fiber.Ctx) error {
 	id := c.Locals("id").(int)
 	form, _ := c.MultipartForm()
 	data := h.service.CreateBannerImage(ctx, form, id)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // CreateDealerCar godoc
@@ -230,14 +230,14 @@ func (h *ThirdPartyHandler) CreateDealerCar(c *fiber.Ctx) error {
 	ctx := c.Context()
 
 	if err := c.BodyParser(&car); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
 	}
 
 	data := h.service.CreateDealerCar(ctx, &car, dealerID)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // UpdateDealerCar godoc
@@ -264,14 +264,14 @@ func (h *ThirdPartyHandler) UpdateDealerCar(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
 	}
 
 	if err := c.BodyParser(&car); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -279,7 +279,7 @@ func (h *ThirdPartyHandler) UpdateDealerCar(c *fiber.Ctx) error {
 
 	car.ID = id
 	data := h.service.UpdateDealerCar(ctx, &car, dealerID)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetEditCarByID godoc
@@ -302,7 +302,7 @@ func (h *ThirdPartyHandler) GetEditCarByID(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("dealer car id must be integer"),
 		})
@@ -335,7 +335,7 @@ func (h *ThirdPartyHandler) CreateDealerCarImages(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid dealer car ID"),
 		})
@@ -344,7 +344,7 @@ func (h *ThirdPartyHandler) CreateDealerCarImages(c *fiber.Ctx) error {
 	form, _ := c.MultipartForm()
 
 	if form == nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("didn't upload the dealer car images"),
 		})
@@ -353,7 +353,7 @@ func (h *ThirdPartyHandler) CreateDealerCarImages(c *fiber.Ctx) error {
 	images := form.File["images"]
 
 	if len(images) > 10 {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("must load maximum 10 dealer car images"),
 		})
@@ -362,7 +362,7 @@ func (h *ThirdPartyHandler) CreateDealerCarImages(c *fiber.Ctx) error {
 	paths, status, err := files.SaveFiles(images, config.ENV.STATIC_PATH+"cars/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: status,
 			Error:  err,
 		})
@@ -394,7 +394,7 @@ func (h *ThirdPartyHandler) CreateDealerCarVideos(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid dealer car ID"),
 		})
@@ -403,7 +403,7 @@ func (h *ThirdPartyHandler) CreateDealerCarVideos(c *fiber.Ctx) error {
 	form, _ := c.MultipartForm()
 
 	if form == nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("didn't upload the dealer car videos"),
 		})
@@ -412,7 +412,7 @@ func (h *ThirdPartyHandler) CreateDealerCarVideos(c *fiber.Ctx) error {
 	videos := form.File["videos"]
 
 	if len(videos) > 1 {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("must load maximum 1 dealer car video(s)"),
 		})
@@ -422,7 +422,7 @@ func (h *ThirdPartyHandler) CreateDealerCarVideos(c *fiber.Ctx) error {
 	path, err := files.SaveOriginal(videos[0], config.ENV.STATIC_PATH+"cars/"+idStr+"/videos")
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -454,7 +454,7 @@ func (h *ThirdPartyHandler) StatusDealer(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
@@ -465,11 +465,11 @@ func (h *ThirdPartyHandler) StatusDealer(c *fiber.Ctx) error {
 
 	if strings.Contains(path, "dont-sell") {
 		data := h.service.DealerDontSell(ctx, &id, &dealerID)
-		return utils.FiberResponse(c, &data)
+		return utils.FiberResponse(c, data)
 	}
 
 	data := h.service.DealerSell(ctx, &id, &dealerID)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // DeleteDealerCarImage godoc
@@ -493,7 +493,7 @@ func (h *ThirdPartyHandler) DeleteDealerCarImage(c *fiber.Ctx) error {
 	dealerCarID, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("dealer car id must be integer"),
 		})
@@ -502,14 +502,14 @@ func (h *ThirdPartyHandler) DeleteDealerCarImage(c *fiber.Ctx) error {
 	var req model.DeleteCarImageRequest
 
 	if err := c.BodyParser(&req); err != nil || req.Image == "" {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid image path in request body"),
 		})
 	}
 
 	if err := h.validator.Validate(req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
@@ -547,7 +547,7 @@ func (h *ThirdPartyHandler) DeleteDealerCarVideo(c *fiber.Ctx) error {
 	dealerCarID, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("dealer car id must be integer"),
 		})
@@ -556,14 +556,14 @@ func (h *ThirdPartyHandler) DeleteDealerCarVideo(c *fiber.Ctx) error {
 	var video model.DeleteCarVideoRequest
 
 	if err := c.BodyParser(&video); err != nil || video.Video == "" {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid video path in request body"),
 		})
 	}
 
 	if err := h.validator.Validate(video); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
@@ -601,14 +601,14 @@ func (h *ThirdPartyHandler) DeleteDealerCar(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("car id must be integer"),
 		})
 	}
 
 	data := h.service.DeleteDealerCar(ctx, id)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // GetLogistDestinations godoc
@@ -627,7 +627,7 @@ func (h *ThirdPartyHandler) DeleteDealerCar(c *fiber.Ctx) error {
 func (h *ThirdPartyHandler) GetLogistDestinations(c *fiber.Ctx) error {
 	ctx := c.Context()
 	data := h.service.GetLogistDestinations(ctx)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // CreateLogistDestination godoc
@@ -651,14 +651,14 @@ func (h *ThirdPartyHandler) CreateLogistDestination(c *fiber.Ctx) error {
 	var destinations []model.CreateLogistDestinationRequest
 
 	if err := c.BodyParser(&destinations); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
 	}
 
 	data := h.service.CreateLogistDestination(ctx, userID, destinations)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }
 
 // DeleteLogistDestination godoc
@@ -682,12 +682,12 @@ func (h *ThirdPartyHandler) DeleteLogistDestination(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("destination id must be integer"),
 		})
 	}
 
 	data := h.service.DeleteLogistDestination(ctx, userID, id)
-	return utils.FiberResponse(c, &data)
+	return utils.FiberResponse(c, data)
 }

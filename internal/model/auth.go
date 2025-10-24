@@ -6,6 +6,12 @@ type UserLoginGoogle struct {
 	TokenID string `json:"token_id" binding:"required"`
 }
 
+type UserRegisterDevice struct {
+	DeviceID    string `json:"device_id" binding:"required"`
+	DeviceType  string `json:"device_type"`
+	DeviceToken string `json:"device_token" binding:"required"`
+}
+
 type UserApplication struct {
 	CompanyName       string `json:"company_name" binding:"required"`
 	LicenceIssueDate  string `json:"licence_issue_date" binding:"required"`

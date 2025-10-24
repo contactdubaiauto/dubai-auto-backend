@@ -29,6 +29,17 @@ func NewAuthService(repo *repository.AuthRepository) *AuthService {
 	return &AuthService{repo}
 }
 
+func (s *AuthService) UserRegisterDevice(ctx *fasthttp.RequestCtx, userID int, req model.UserRegisterDevice) model.Response {
+
+	err := s.repo.UserRegisterDevice(ctx, userID, req)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Device registered successfully"}}
+}
+
 func (s *AuthService) Application(ctx *fasthttp.RequestCtx, req model.UserApplication) model.Response {
 	u, err := s.repo.Application(ctx, req)
 
@@ -45,56 +56,56 @@ func (s *AuthService) Application(ctx *fasthttp.RequestCtx, req model.UserApplic
 	}
 }
 
-func (s *AuthService) ApplicationDocuments(ctx *fasthttp.RequestCtx, id int, licence, memorandum, copyOfID *multipart.FileHeader) *model.Response {
+func (s *AuthService) ApplicationDocuments(ctx *fasthttp.RequestCtx, id int, licence, memorandum, copyOfID *multipart.FileHeader) model.Response {
 	documents := model.UserApplicationDocuments{}
 	ext := strings.ToLower(filepath.Ext(licence.Filename))
 
 	if ext != ".pdf" {
-		return &model.Response{Error: errors.New("only PDF files are allowed"), Status: http.StatusBadRequest}
+		return model.Response{Error: errors.New("only PDF files are allowed"), Status: http.StatusBadRequest}
 	}
 
 	if !utils.IsPDF(licence) {
-		return &model.Response{Error: errors.New("file is not a valid PDF"), Status: http.StatusBadRequest}
+		return model.Response{Error: errors.New("file is not a valid PDF"), Status: http.StatusBadRequest}
 	}
 
 	path, err := files.SaveOriginal(licence, config.ENV.STATIC_PATH+"documents/"+strconv.Itoa(id))
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
 	documents.Licence = path
 	ext = strings.ToLower(filepath.Ext(memorandum.Filename))
 
 	if ext != ".pdf" {
-		return &model.Response{Error: errors.New("only PDF files are allowed"), Status: http.StatusBadRequest}
+		return model.Response{Error: errors.New("only PDF files are allowed"), Status: http.StatusBadRequest}
 	}
 
 	if !utils.IsPDF(memorandum) {
-		return &model.Response{Error: errors.New("file is not a valid PDF"), Status: http.StatusBadRequest}
+		return model.Response{Error: errors.New("file is not a valid PDF"), Status: http.StatusBadRequest}
 	}
 
 	path, err = files.SaveOriginal(memorandum, config.ENV.STATIC_PATH+"documents/"+strconv.Itoa(id))
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
 	documents.Memorandum = path
 	ext = strings.ToLower(filepath.Ext(copyOfID.Filename))
 
 	if ext != ".pdf" {
-		return &model.Response{Error: errors.New("only PDF files are allowed"), Status: http.StatusBadRequest}
+		return model.Response{Error: errors.New("only PDF files are allowed"), Status: http.StatusBadRequest}
 	}
 
 	if !utils.IsPDF(copyOfID) {
-		return &model.Response{Error: errors.New("file is not a valid PDF"), Status: http.StatusBadRequest}
+		return model.Response{Error: errors.New("file is not a valid PDF"), Status: http.StatusBadRequest}
 	}
 
 	path, err = files.SaveOriginal(copyOfID, config.ENV.STATIC_PATH+"documents/"+strconv.Itoa(id))
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
 	documents.CopyOfID = path
@@ -102,10 +113,10 @@ func (s *AuthService) ApplicationDocuments(ctx *fasthttp.RequestCtx, id int, lic
 	err = s.repo.ApplicationDocuments(ctx, id, documents)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Application documents sent successfully"}}
+	return model.Response{Data: model.Success{Message: "Application documents sent successfully"}}
 }
 
 func (s *AuthService) UserLoginGoogle(ctx *fasthttp.RequestCtx, tokenID string) model.Response {
@@ -146,12 +157,12 @@ func (s *AuthService) UserLoginGoogle(ctx *fasthttp.RequestCtx, tokenID string) 
 	}
 }
 
-func (s *AuthService) DeleteAccount(ctx *fasthttp.RequestCtx, userID int) *model.Response {
+func (s *AuthService) DeleteAccount(ctx *fasthttp.RequestCtx, userID int) model.Response {
 	err := s.repo.DeleteAccount(ctx, userID)
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Account deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Account deleted successfully"}}
 }
 
 func (s *AuthService) UserEmailConfirmation(ctx *fasthttp.RequestCtx, user *model.UserEmailConfirmationRequest) model.Response {

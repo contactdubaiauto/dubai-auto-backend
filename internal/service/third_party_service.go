@@ -29,14 +29,14 @@ func (s *ThirdPartyService) FirstLogin(ctx *fasthttp.RequestCtx, id int, profile
 	return s.repo.FirstLogin(ctx, id, profile)
 }
 
-func (s *ThirdPartyService) GetProfile(ctx *fasthttp.RequestCtx, id int) *model.Response {
+func (s *ThirdPartyService) GetProfile(ctx *fasthttp.RequestCtx, id int) model.Response {
 	profile, err := s.repo.GetProfile(ctx, id)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: profile}
+	return model.Response{Data: profile}
 }
 
 func (s *ThirdPartyService) GetMyCars(ctx *fasthttp.RequestCtx, userID int) model.Response {
@@ -171,42 +171,42 @@ func (s *ThirdPartyService) UpdateDealerCar(ctx *fasthttp.RequestCtx, car *model
 	}
 }
 
-func (s *ThirdPartyService) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, carID, dealerID int) *model.Response {
+func (s *ThirdPartyService) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, carID, dealerID int) model.Response {
 	car, err := s.repo.GetEditDealerCarByID(ctx, carID, dealerID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusNotFound}
+		return model.Response{Error: err, Status: http.StatusNotFound}
 	}
 
-	return &model.Response{Data: car}
+	return model.Response{Data: car}
 }
 
-func (s *ThirdPartyService) CreateDealerCarImages(ctx *fasthttp.RequestCtx, carID int, images []string) *model.Response {
+func (s *ThirdPartyService) CreateDealerCarImages(ctx *fasthttp.RequestCtx, carID int, images []string) model.Response {
 	err := s.repo.CreateDealerCarImages(ctx, carID, images)
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Status: 500,
 			Error:  err,
 		}
 	}
 
-	return &model.Response{
+	return model.Response{
 		Data: model.Success{Message: "Dealer car images created successfully"},
 	}
 }
 
-func (s *ThirdPartyService) CreateDealerCarVideos(ctx *fasthttp.RequestCtx, carID int, video string) *model.Response {
+func (s *ThirdPartyService) CreateDealerCarVideos(ctx *fasthttp.RequestCtx, carID int, video string) model.Response {
 	err := s.repo.CreateDealerCarVideos(ctx, carID, video)
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Status: 500,
 			Error:  err,
 		}
 	}
 
-	return &model.Response{
+	return model.Response{
 		Data: model.Success{Message: "Dealer car videos created successfully"},
 	}
 }
@@ -237,24 +237,24 @@ func (s *ThirdPartyService) DealerSell(ctx *fasthttp.RequestCtx, carID, dealerID
 	return model.Response{Data: model.Success{Message: "successfully updated status"}}
 }
 
-func (s *ThirdPartyService) DeleteDealerCarImage(ctx *fasthttp.RequestCtx, carID int, imagePath string) *model.Response {
+func (s *ThirdPartyService) DeleteDealerCarImage(ctx *fasthttp.RequestCtx, carID int, imagePath string) model.Response {
 	err := s.repo.DeleteDealerCarImage(ctx, carID, imagePath)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Dealer car image deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Dealer car image deleted successfully"}}
 }
 
-func (s *ThirdPartyService) DeleteDealerCarVideo(ctx *fasthttp.RequestCtx, carID int, videoPath string) *model.Response {
+func (s *ThirdPartyService) DeleteDealerCarVideo(ctx *fasthttp.RequestCtx, carID int, videoPath string) model.Response {
 	err := s.repo.DeleteDealerCarVideo(ctx, carID, videoPath)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "Dealer car video deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Dealer car video deleted successfully"}}
 }
 
 func (s *ThirdPartyService) DeleteDealerCar(ctx *fasthttp.RequestCtx, id int) model.Response {

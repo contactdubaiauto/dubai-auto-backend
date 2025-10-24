@@ -17,27 +17,28 @@ func loadEnvVariable(key string) string {
 }
 
 type Config struct {
-	ClientID             string
-	MIGRATE              string
-	DB_HOST              string
-	DB_PORT              string
-	DB_USER              string
-	DB_PASSWORD          string
-	DB_NAME              string
-	DB_URL               string
-	ACCESS_KEY           string
-	ACCESS_TIME          time.Duration
-	REFRESH_KEY          string
-	REFRESH_TIME         time.Duration
-	APP_VERSION          string
-	PORT                 string
-	APP_MODE             string
-	LOGGER_FOLDER_PATH   string
-	LOGGER_FILENAME      string
-	STATIC_PATH          string
-	DEFAULT_IMAGE_WIDTHS []uint
-	IMAGE_BASE_URL       string
-	FILE_BASE_URL        string
+	ClientID              string
+	MIGRATE               string
+	DB_HOST               string
+	DB_PORT               string
+	DB_USER               string
+	DB_PASSWORD           string
+	DB_NAME               string
+	DB_URL                string
+	ACCESS_KEY            string
+	ACCESS_TIME           time.Duration
+	REFRESH_KEY           string
+	REFRESH_TIME          time.Duration
+	APP_VERSION           string
+	PORT                  string
+	APP_MODE              string
+	LOGGER_FOLDER_PATH    string
+	LOGGER_FILENAME       string
+	STATIC_PATH           string
+	DEFAULT_IMAGE_WIDTHS  []uint
+	IMAGE_BASE_URL        string
+	FILE_BASE_URL         string
+	FIREBASE_ACCOUNT_FILE string
 }
 
 var ENV Config
@@ -73,5 +74,6 @@ func Init() *Config {
 	ENV.DEFAULT_IMAGE_WIDTHS = []uint{320, 640} // if change these sizes, u must change in pkg/files.go too (line: 147)
 	ENV.IMAGE_BASE_URL = loadEnvVariable("IMAGE_BASE_URL")
 	ENV.FILE_BASE_URL = loadEnvVariable("FILE_BASE_URL")
+	ENV.FIREBASE_ACCOUNT_FILE = loadEnvVariable("FIREBASE_ACCOUNT_FILE")
 	return &ENV
 }

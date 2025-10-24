@@ -84,7 +84,7 @@ func (h *AdminHandler) GetApplication(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("application id must be integer"),
 		})
@@ -114,21 +114,21 @@ func (h *AdminHandler) AcceptApplication(c *fiber.Ctx) error {
 	var req model.AcceptApplicationRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
 	}
 
 	if err := h.validator.Validate(req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
 	}
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("application id must be integer"),
 		})
@@ -157,7 +157,7 @@ func (h *AdminHandler) RejectApplication(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("application id must be integer"),
 		})
@@ -206,14 +206,14 @@ func (h *AdminHandler) CreateCity(c *fiber.Ctx) error {
 	ctx := c.Context()
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
 	}
 
 	if err := h.validator.Validate(req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
@@ -243,7 +243,7 @@ func (h *AdminHandler) UpdateCity(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("city id must be integer"),
 		})
@@ -253,14 +253,14 @@ func (h *AdminHandler) UpdateCity(c *fiber.Ctx) error {
 	ctx := c.Context()
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
 	}
 
 	if err := h.validator.Validate(req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
@@ -288,7 +288,7 @@ func (h *AdminHandler) DeleteCity(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("city id must be integer"),
 		})
@@ -338,14 +338,14 @@ func (h *AdminHandler) CreateBrand(c *fiber.Ctx) error {
 	ctx := c.Context()
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
 	}
 
 	if err := h.validator.Validate(req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
@@ -377,7 +377,7 @@ func (h *AdminHandler) CreateBrandImage(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("brand id must be integer"),
 		})
@@ -407,7 +407,7 @@ func (h *AdminHandler) UpdateBrand(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("brand id must be integer"),
 		})
@@ -417,14 +417,14 @@ func (h *AdminHandler) UpdateBrand(c *fiber.Ctx) error {
 	ctx := c.Context()
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
 	}
 
 	if err := h.validator.Validate(req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
@@ -452,7 +452,7 @@ func (h *AdminHandler) DeleteBrand(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("brand id must be integer"),
 		})
@@ -483,7 +483,7 @@ func (h *AdminHandler) GetModels(c *fiber.Ctx) error {
 	brandId, err := strconv.Atoi(brandIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("brand id must be integer"),
 		})
@@ -513,21 +513,21 @@ func (h *AdminHandler) CreateModel(c *fiber.Ctx) error {
 	brandId, err := strconv.Atoi(brandIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("brand id must be integer"),
 		})
 	}
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
 	}
 
 	if err := h.validator.Validate(req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
@@ -558,7 +558,7 @@ func (h *AdminHandler) UpdateModel(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("model id must be integer"),
 		})
@@ -567,14 +567,14 @@ func (h *AdminHandler) UpdateModel(c *fiber.Ctx) error {
 	var req model.UpdateModelRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
 	}
 
 	if err := h.validator.Validate(req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
@@ -602,7 +602,7 @@ func (h *AdminHandler) DeleteModel(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("model id must be integer"),
 		})
@@ -652,14 +652,14 @@ func (h *AdminHandler) CreateBodyType(c *fiber.Ctx) error {
 	ctx := c.Context()
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
 	}
 
 	if err := h.validator.Validate(req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
@@ -690,7 +690,7 @@ func (h *AdminHandler) CreateBodyTypeImage(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("body type id must be integer"),
 		})
@@ -699,7 +699,7 @@ func (h *AdminHandler) CreateBodyTypeImage(c *fiber.Ctx) error {
 	form, _ := c.MultipartForm()
 
 	if form == nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("didn't upload the files"),
 		})
@@ -708,7 +708,7 @@ func (h *AdminHandler) CreateBodyTypeImage(c *fiber.Ctx) error {
 	image := form.File["image"]
 
 	if len(image) > 10 {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("must load maximum 10 files"),
 		})
@@ -717,7 +717,7 @@ func (h *AdminHandler) CreateBodyTypeImage(c *fiber.Ctx) error {
 	paths, status, err := files.SaveFiles(image, config.ENV.STATIC_PATH+"cars/body/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: status,
 			Error:  err,
 		})
@@ -747,7 +747,7 @@ func (h *AdminHandler) UpdateBodyType(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("body type id must be integer"),
 		})
@@ -757,14 +757,14 @@ func (h *AdminHandler) UpdateBodyType(c *fiber.Ctx) error {
 	ctx := c.Context()
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
 	}
 
 	if err := h.validator.Validate(req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
@@ -792,7 +792,7 @@ func (h *AdminHandler) DeleteBodyType(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("body type id must be integer"),
 		})
@@ -822,7 +822,7 @@ func (h *AdminHandler) DeleteBodyTypeImage(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("body type image id must be integer"),
 		})
@@ -851,7 +851,7 @@ func (h *AdminHandler) GetRegions(c *fiber.Ctx) error {
 	cityId, err := strconv.Atoi(cityIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("city id must be integer"),
 		})
@@ -881,7 +881,7 @@ func (h *AdminHandler) CreateRegion(c *fiber.Ctx) error {
 	cityId, err := strconv.Atoi(cityIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("city id must be integer"),
 		})
@@ -890,7 +890,7 @@ func (h *AdminHandler) CreateRegion(c *fiber.Ctx) error {
 	var req model.CreateNameRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
@@ -922,7 +922,7 @@ func (h *AdminHandler) UpdateRegion(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("region id must be integer"),
 		})
@@ -931,7 +931,7 @@ func (h *AdminHandler) UpdateRegion(c *fiber.Ctx) error {
 	var req model.CreateNameRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
@@ -962,7 +962,7 @@ func (h *AdminHandler) DeleteRegion(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("region id must be integer"),
 		})
@@ -1011,14 +1011,14 @@ func (h *AdminHandler) CreateTransmission(c *fiber.Ctx) error {
 	var req model.CreateTransmissionRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -1049,7 +1049,7 @@ func (h *AdminHandler) UpdateTransmission(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("transmission id must be integer"),
 		})
@@ -1058,14 +1058,14 @@ func (h *AdminHandler) UpdateTransmission(c *fiber.Ctx) error {
 	var req model.CreateTransmissionRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -1094,7 +1094,7 @@ func (h *AdminHandler) DeleteTransmission(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("transmission id must be integer"),
 		})
@@ -1143,14 +1143,14 @@ func (h *AdminHandler) CreateEngine(c *fiber.Ctx) error {
 	var req model.CreateEngineRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -1181,7 +1181,7 @@ func (h *AdminHandler) UpdateEngine(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("engine id must be integer"),
 		})
@@ -1190,14 +1190,14 @@ func (h *AdminHandler) UpdateEngine(c *fiber.Ctx) error {
 	var req model.CreateEngineRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -1226,7 +1226,7 @@ func (h *AdminHandler) DeleteEngine(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("engine id must be integer"),
 		})
@@ -1275,14 +1275,14 @@ func (h *AdminHandler) CreateDrivetrain(c *fiber.Ctx) error {
 	var req model.CreateDrivetrainRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -1313,7 +1313,7 @@ func (h *AdminHandler) UpdateDrivetrain(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("drivetrain id must be integer"),
 		})
@@ -1322,14 +1322,14 @@ func (h *AdminHandler) UpdateDrivetrain(c *fiber.Ctx) error {
 	var req model.CreateDrivetrainRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -1358,7 +1358,7 @@ func (h *AdminHandler) DeleteDrivetrain(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("drivetrain id must be integer"),
 		})
@@ -1407,14 +1407,14 @@ func (h *AdminHandler) CreateFuelType(c *fiber.Ctx) error {
 	var req model.CreateFuelTypeRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -1445,7 +1445,7 @@ func (h *AdminHandler) UpdateFuelType(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("fuel type id must be integer"),
 		})
@@ -1454,14 +1454,14 @@ func (h *AdminHandler) UpdateFuelType(c *fiber.Ctx) error {
 	var req model.CreateFuelTypeRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -1490,7 +1490,7 @@ func (h *AdminHandler) DeleteFuelType(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("fuel type id must be integer"),
 		})
@@ -1539,14 +1539,14 @@ func (h *AdminHandler) CreateMotoCategory(c *fiber.Ctx) error {
 	var req model.CreateMotoCategoryRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -1575,7 +1575,7 @@ func (h *AdminHandler) GetMotoBrandsByCategoryID(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto category id must be integer"),
 		})
@@ -1606,7 +1606,7 @@ func (h *AdminHandler) UpdateMotoCategory(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto category id must be integer"),
 		})
@@ -1615,14 +1615,14 @@ func (h *AdminHandler) UpdateMotoCategory(c *fiber.Ctx) error {
 	var req model.UpdateMotoCategoryRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -1651,7 +1651,7 @@ func (h *AdminHandler) DeleteMotoCategory(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto category id must be integer"),
 		})
@@ -1701,7 +1701,7 @@ func (h *AdminHandler) GetMotoModelsByBrandID(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto brand id must be integer"),
 		})
@@ -1730,14 +1730,14 @@ func (h *AdminHandler) CreateMotoBrand(c *fiber.Ctx) error {
 	var req model.CreateMotoBrandRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -1770,7 +1770,7 @@ func (h *AdminHandler) CreateMotoBrandImage(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("brand id must be integer"),
 		})
@@ -1800,7 +1800,7 @@ func (h *AdminHandler) UpdateMotoBrand(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto brand id must be integer"),
 		})
@@ -1809,14 +1809,14 @@ func (h *AdminHandler) UpdateMotoBrand(c *fiber.Ctx) error {
 	var req model.UpdateMotoBrandRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -1845,7 +1845,7 @@ func (h *AdminHandler) DeleteMotoBrand(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto brand id must be integer"),
 		})
@@ -1894,14 +1894,14 @@ func (h *AdminHandler) CreateMotoModel(c *fiber.Ctx) error {
 	var req model.CreateMotoModelRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -1932,7 +1932,7 @@ func (h *AdminHandler) UpdateMotoModel(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto model id must be integer"),
 		})
@@ -1941,14 +1941,14 @@ func (h *AdminHandler) UpdateMotoModel(c *fiber.Ctx) error {
 	var req model.UpdateMotoModelRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -1977,7 +1977,7 @@ func (h *AdminHandler) DeleteMotoModel(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto model id must be integer"),
 		})
@@ -2026,14 +2026,14 @@ func (h *AdminHandler) CreateMotoParameter(c *fiber.Ctx) error {
 	var req model.CreateMotoParameterRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -2064,7 +2064,7 @@ func (h *AdminHandler) UpdateMotoParameter(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto parameter id must be integer"),
 		})
@@ -2073,14 +2073,14 @@ func (h *AdminHandler) UpdateMotoParameter(c *fiber.Ctx) error {
 	var req model.UpdateMotoParameterRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -2109,7 +2109,7 @@ func (h *AdminHandler) DeleteMotoParameter(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto parameter id must be integer"),
 		})
@@ -2140,7 +2140,7 @@ func (h *AdminHandler) GetMotoParameterValues(c *fiber.Ctx) error {
 	motoParamId, err := strconv.Atoi(motoParamIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto parameter id must be integer"),
 		})
@@ -2171,7 +2171,7 @@ func (h *AdminHandler) CreateMotoParameterValue(c *fiber.Ctx) error {
 	motoParamId, err := strconv.Atoi(motoParamIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto parameter id must be integer"),
 		})
@@ -2180,14 +2180,14 @@ func (h *AdminHandler) CreateMotoParameterValue(c *fiber.Ctx) error {
 	var req model.CreateMotoParameterValueRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -2219,7 +2219,7 @@ func (h *AdminHandler) UpdateMotoParameterValue(c *fiber.Ctx) error {
 	motoParamId, err := strconv.Atoi(motoParamIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto parameter id must be integer"),
 		})
@@ -2229,7 +2229,7 @@ func (h *AdminHandler) UpdateMotoParameterValue(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto parameter value id must be integer"),
 		})
@@ -2238,14 +2238,14 @@ func (h *AdminHandler) UpdateMotoParameterValue(c *fiber.Ctx) error {
 	var req model.UpdateMotoParameterValueRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -2275,7 +2275,7 @@ func (h *AdminHandler) DeleteMotoParameterValue(c *fiber.Ctx) error {
 	motoParamId, err := strconv.Atoi(motoParamIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto parameter id must be integer"),
 		})
@@ -2285,7 +2285,7 @@ func (h *AdminHandler) DeleteMotoParameterValue(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto parameter value id must be integer"),
 		})
@@ -2316,7 +2316,7 @@ func (h *AdminHandler) GetMotoCategoryParameters(c *fiber.Ctx) error {
 	categoryId, err := strconv.Atoi(categoryIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("category id must be integer"),
 		})
@@ -2347,7 +2347,7 @@ func (h *AdminHandler) CreateMotoCategoryParameter(c *fiber.Ctx) error {
 	categoryId, err := strconv.Atoi(categoryIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("category id must be integer"),
 		})
@@ -2356,14 +2356,14 @@ func (h *AdminHandler) CreateMotoCategoryParameter(c *fiber.Ctx) error {
 	var req model.CreateMotoCategoryParameterRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -2395,7 +2395,7 @@ func (h *AdminHandler) UpdateMotoCategoryParameter(c *fiber.Ctx) error {
 	categoryId, err := strconv.Atoi(categoryIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("category id must be integer"),
 		})
@@ -2405,7 +2405,7 @@ func (h *AdminHandler) UpdateMotoCategoryParameter(c *fiber.Ctx) error {
 	parameterId, err := strconv.Atoi(parameterIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto parameter id must be integer"),
 		})
@@ -2414,14 +2414,14 @@ func (h *AdminHandler) UpdateMotoCategoryParameter(c *fiber.Ctx) error {
 	var req model.UpdateMotoCategoryParameterRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -2451,7 +2451,7 @@ func (h *AdminHandler) DeleteMotoCategoryParameter(c *fiber.Ctx) error {
 	categoryId, err := strconv.Atoi(categoryIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("category id must be integer"),
 		})
@@ -2461,7 +2461,7 @@ func (h *AdminHandler) DeleteMotoCategoryParameter(c *fiber.Ctx) error {
 	parameterId, err := strconv.Atoi(parameterIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("moto parameter id must be integer"),
 		})
@@ -2509,7 +2509,7 @@ func (h *AdminHandler) GetComtransBrandsByCategoryID(c *fiber.Ctx) error {
 	categoryIdStr := c.Params("category_id")
 	categoryId, err := strconv.Atoi(categoryIdStr)
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("category id must be integer"),
 		})
@@ -2538,14 +2538,14 @@ func (h *AdminHandler) CreateComtransCategory(c *fiber.Ctx) error {
 	var req model.CreateComtransCategoryRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -2576,7 +2576,7 @@ func (h *AdminHandler) UpdateComtransCategory(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("comtrans category id must be integer"),
 		})
@@ -2585,14 +2585,14 @@ func (h *AdminHandler) UpdateComtransCategory(c *fiber.Ctx) error {
 	var req model.UpdateComtransCategoryRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -2621,7 +2621,7 @@ func (h *AdminHandler) DeleteComtransCategory(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("comtrans category id must be integer"),
 		})
@@ -2652,7 +2652,7 @@ func (h *AdminHandler) GetComtransCategoryParameters(c *fiber.Ctx) error {
 	categoryId, err := strconv.Atoi(categoryIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("category id must be integer"),
 		})
@@ -2683,7 +2683,7 @@ func (h *AdminHandler) CreateComtransCategoryParameter(c *fiber.Ctx) error {
 	categoryId, err := strconv.Atoi(categoryIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("category id must be integer"),
 		})
@@ -2692,14 +2692,14 @@ func (h *AdminHandler) CreateComtransCategoryParameter(c *fiber.Ctx) error {
 	var req model.CreateComtransCategoryParameterRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -2731,7 +2731,7 @@ func (h *AdminHandler) UpdateComtransCategoryParameter(c *fiber.Ctx) error {
 	categoryId, err := strconv.Atoi(categoryIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("category id must be integer"),
 		})
@@ -2741,7 +2741,7 @@ func (h *AdminHandler) UpdateComtransCategoryParameter(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("comtrans category parameter id must be integer"),
 		})
@@ -2750,14 +2750,14 @@ func (h *AdminHandler) UpdateComtransCategoryParameter(c *fiber.Ctx) error {
 	var req model.UpdateComtransCategoryParameterRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -2787,7 +2787,7 @@ func (h *AdminHandler) DeleteComtransCategoryParameter(c *fiber.Ctx) error {
 	categoryId, err := strconv.Atoi(categoryIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("category id must be integer"),
 		})
@@ -2797,7 +2797,7 @@ func (h *AdminHandler) DeleteComtransCategoryParameter(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("comtrans category parameter id must be integer"),
 		})
@@ -2846,7 +2846,7 @@ func (h *AdminHandler) GetComtransModelsByBrandID(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("comtrans brand id must be integer"),
 		})
@@ -2875,14 +2875,14 @@ func (h *AdminHandler) CreateComtransBrand(c *fiber.Ctx) error {
 	var req model.CreateComtransBrandRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -2915,7 +2915,7 @@ func (h *AdminHandler) CreateComtransBrandImage(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("brand id must be integer"),
 		})
@@ -2945,7 +2945,7 @@ func (h *AdminHandler) UpdateComtransBrand(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("comtrans brand id must be integer"),
 		})
@@ -2954,14 +2954,14 @@ func (h *AdminHandler) UpdateComtransBrand(c *fiber.Ctx) error {
 	var req model.UpdateComtransBrandRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -2990,7 +2990,7 @@ func (h *AdminHandler) DeleteComtransBrand(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("comtrans brand id must be integer"),
 		})
@@ -3039,14 +3039,14 @@ func (h *AdminHandler) CreateComtransModel(c *fiber.Ctx) error {
 	var req model.CreateComtransModelRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -3077,7 +3077,7 @@ func (h *AdminHandler) UpdateComtransModel(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("comtrans model id must be integer"),
 		})
@@ -3086,14 +3086,14 @@ func (h *AdminHandler) UpdateComtransModel(c *fiber.Ctx) error {
 	var req model.UpdateComtransModelRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -3122,7 +3122,7 @@ func (h *AdminHandler) DeleteComtransModel(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("comtrans model id must be integer"),
 		})
@@ -3171,14 +3171,14 @@ func (h *AdminHandler) CreateComtransParameter(c *fiber.Ctx) error {
 	var req model.CreateComtransParameterRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -3209,7 +3209,7 @@ func (h *AdminHandler) UpdateComtransParameter(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("comtrans parameter id must be integer"),
 		})
@@ -3218,14 +3218,14 @@ func (h *AdminHandler) UpdateComtransParameter(c *fiber.Ctx) error {
 	var req model.UpdateComtransParameterRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -3254,7 +3254,7 @@ func (h *AdminHandler) DeleteComtransParameter(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("comtrans parameter id must be integer"),
 		})
@@ -3285,7 +3285,7 @@ func (h *AdminHandler) GetComtransParameterValues(c *fiber.Ctx) error {
 	parameterId, err := strconv.Atoi(parameterIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("parameter id must be integer"),
 		})
@@ -3316,7 +3316,7 @@ func (h *AdminHandler) CreateComtransParameterValue(c *fiber.Ctx) error {
 	parameterId, err := strconv.Atoi(parameterIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("parameter id must be integer"),
 		})
@@ -3325,14 +3325,14 @@ func (h *AdminHandler) CreateComtransParameterValue(c *fiber.Ctx) error {
 	var req model.CreateComtransParameterValueRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -3364,7 +3364,7 @@ func (h *AdminHandler) UpdateComtransParameterValue(c *fiber.Ctx) error {
 	parameterId, err := strconv.Atoi(parameterIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("parameter id must be integer"),
 		})
@@ -3374,7 +3374,7 @@ func (h *AdminHandler) UpdateComtransParameterValue(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("comtrans parameter value id must be integer"),
 		})
@@ -3383,14 +3383,14 @@ func (h *AdminHandler) UpdateComtransParameterValue(c *fiber.Ctx) error {
 	var req model.UpdateComtransParameterValueRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -3420,7 +3420,7 @@ func (h *AdminHandler) DeleteComtransParameterValue(c *fiber.Ctx) error {
 	parameterId, err := strconv.Atoi(parameterIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("parameter id must be integer"),
 		})
@@ -3430,7 +3430,7 @@ func (h *AdminHandler) DeleteComtransParameterValue(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("comtrans parameter value id must be integer"),
 		})
@@ -3479,14 +3479,14 @@ func (h *AdminHandler) CreateServiceType(c *fiber.Ctx) error {
 	var req model.CreateServiceTypeRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -3517,7 +3517,7 @@ func (h *AdminHandler) UpdateServiceType(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("service type id must be integer"),
 		})
@@ -3526,14 +3526,14 @@ func (h *AdminHandler) UpdateServiceType(c *fiber.Ctx) error {
 	var req model.CreateServiceTypeRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -3562,7 +3562,7 @@ func (h *AdminHandler) DeleteServiceType(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("service type id must be integer"),
 		})
@@ -3611,14 +3611,14 @@ func (h *AdminHandler) CreateService(c *fiber.Ctx) error {
 	var req model.CreateServiceRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -3649,7 +3649,7 @@ func (h *AdminHandler) UpdateService(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("service id must be integer"),
 		})
@@ -3658,14 +3658,14 @@ func (h *AdminHandler) UpdateService(c *fiber.Ctx) error {
 	var req model.CreateServiceRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -3694,7 +3694,7 @@ func (h *AdminHandler) DeleteService(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("service id must be integer"),
 		})
@@ -3745,7 +3745,7 @@ func (h *AdminHandler) GetGenerationsByModel(c *fiber.Ctx) error {
 
 	brandId, err := strconv.Atoi(brandIdStr)
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("brand id must be integer"),
 		})
@@ -3753,7 +3753,7 @@ func (h *AdminHandler) GetGenerationsByModel(c *fiber.Ctx) error {
 
 	modelId, err := strconv.Atoi(modelIdStr)
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("model id must be integer"),
 		})
@@ -3782,14 +3782,14 @@ func (h *AdminHandler) CreateGeneration(c *fiber.Ctx) error {
 	var req model.CreateGenerationRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -3820,7 +3820,7 @@ func (h *AdminHandler) UpdateGeneration(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("generation id must be integer"),
 		})
@@ -3829,14 +3829,14 @@ func (h *AdminHandler) UpdateGeneration(c *fiber.Ctx) error {
 	var req model.UpdateGenerationRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -3868,7 +3868,7 @@ func (h *AdminHandler) CreateGenerationImage(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("generation id must be integer"),
 		})
@@ -3897,7 +3897,7 @@ func (h *AdminHandler) DeleteGeneration(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("generation id must be integer"),
 		})
@@ -3928,7 +3928,7 @@ func (h *AdminHandler) GetGenerationModifications(c *fiber.Ctx) error {
 	generationId, err := strconv.Atoi(generationIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("generation id must be integer"),
 		})
@@ -3959,7 +3959,7 @@ func (h *AdminHandler) CreateGenerationModification(c *fiber.Ctx) error {
 	generationId, err := strconv.Atoi(generationIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("generation id must be integer"),
 		})
@@ -3968,14 +3968,14 @@ func (h *AdminHandler) CreateGenerationModification(c *fiber.Ctx) error {
 	var req model.CreateGenerationModificationRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -4007,7 +4007,7 @@ func (h *AdminHandler) UpdateGenerationModification(c *fiber.Ctx) error {
 	generationId, err := strconv.Atoi(generationIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("generation id must be integer"),
 		})
@@ -4017,7 +4017,7 @@ func (h *AdminHandler) UpdateGenerationModification(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("generation modification id must be integer"),
 		})
@@ -4026,14 +4026,14 @@ func (h *AdminHandler) UpdateGenerationModification(c *fiber.Ctx) error {
 	var req model.UpdateGenerationModificationRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -4063,7 +4063,7 @@ func (h *AdminHandler) DeleteGenerationModification(c *fiber.Ctx) error {
 	generationId, err := strconv.Atoi(generationIdStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("generation id must be integer"),
 		})
@@ -4073,7 +4073,7 @@ func (h *AdminHandler) DeleteGenerationModification(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("generation modification id must be integer"),
 		})
@@ -4122,14 +4122,14 @@ func (h *AdminHandler) CreateConfiguration(c *fiber.Ctx) error {
 	var req model.CreateConfigurationRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -4160,7 +4160,7 @@ func (h *AdminHandler) UpdateConfiguration(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("configuration id must be integer"),
 		})
@@ -4169,14 +4169,14 @@ func (h *AdminHandler) UpdateConfiguration(c *fiber.Ctx) error {
 	var req model.UpdateConfigurationRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -4205,7 +4205,7 @@ func (h *AdminHandler) DeleteConfiguration(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("configuration id must be integer"),
 		})
@@ -4254,14 +4254,14 @@ func (h *AdminHandler) CreateColor(c *fiber.Ctx) error {
 	var req model.CreateColorRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -4293,7 +4293,7 @@ func (h *AdminHandler) CreateColorImage(c *fiber.Ctx) error {
 	ctx := c.Context()
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("color id must be integer"),
 		})
@@ -4324,7 +4324,7 @@ func (h *AdminHandler) UpdateColor(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("color id must be integer"),
 		})
@@ -4333,14 +4333,14 @@ func (h *AdminHandler) UpdateColor(c *fiber.Ctx) error {
 	var req model.UpdateColorRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request body"),
 		})
 	}
 
 	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -4369,7 +4369,7 @@ func (h *AdminHandler) DeleteColor(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("color id must be integer"),
 		})
@@ -4419,14 +4419,14 @@ func (h *AdminHandler) CreateCountry(c *fiber.Ctx) error {
 	ctx := c.Context()
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
 	}
 
 	if err := h.validator.Validate(req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
@@ -4458,7 +4458,7 @@ func (h *AdminHandler) CreateCountryImage(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("country id must be integer"),
 		})
@@ -4489,21 +4489,21 @@ func (h *AdminHandler) UpdateCountry(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("country id must be integer"),
 		})
 	}
 
 	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
 	}
 
 	if err := h.validator.Validate(req); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid request data: " + err.Error()),
 		})
@@ -4532,7 +4532,7 @@ func (h *AdminHandler) DeleteCountry(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("country id must be integer"),
 		})

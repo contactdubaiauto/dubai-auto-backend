@@ -122,7 +122,7 @@ func (h *ComtransHandler) CreateComtrans(c *fiber.Ctx) error {
 	var comtrans model.CreateComtransRequest
 
 	if err := c.BodyParser(&comtrans); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -157,7 +157,7 @@ func (h *ComtransHandler) CreateComtransImages(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid commercial transport ID"),
 		})
@@ -167,7 +167,7 @@ func (h *ComtransHandler) CreateComtransImages(c *fiber.Ctx) error {
 	form, _ := c.MultipartForm()
 
 	if form == nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("didn't upload the files"),
 		})
@@ -177,7 +177,7 @@ func (h *ComtransHandler) CreateComtransImages(c *fiber.Ctx) error {
 	images := form.File["images"]
 
 	if len(images) > 10 {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("must load maximum 10 files"),
 		})
@@ -187,7 +187,7 @@ func (h *ComtransHandler) CreateComtransImages(c *fiber.Ctx) error {
 	paths, status, err := files.SaveFiles(images, config.ENV.STATIC_PATH+"comtrans/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: status,
 			Error:  err,
 		})
@@ -220,7 +220,7 @@ func (h *ComtransHandler) CreateComtransVideos(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid commercial transport ID"),
 		})
@@ -230,7 +230,7 @@ func (h *ComtransHandler) CreateComtransVideos(c *fiber.Ctx) error {
 	form, _ := c.MultipartForm()
 
 	if form == nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("didn't upload the files"),
 		})
@@ -240,7 +240,7 @@ func (h *ComtransHandler) CreateComtransVideos(c *fiber.Ctx) error {
 	videos := form.File["videos"]
 
 	if len(videos) > 1 {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("must load maximum 1 file(s)"),
 		})
@@ -250,7 +250,7 @@ func (h *ComtransHandler) CreateComtransVideos(c *fiber.Ctx) error {
 	path, err := files.SaveOriginal(videos[0], config.ENV.STATIC_PATH+"comtrans/"+idStr+"/videos")
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -283,7 +283,7 @@ func (h *ComtransHandler) DeleteComtransImage(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid commercial transport ID"),
 		})
@@ -293,7 +293,7 @@ func (h *ComtransHandler) DeleteComtransImage(c *fiber.Ctx) error {
 	imageID, err := strconv.Atoi(imageIDStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid image ID"),
 		})
@@ -326,7 +326,7 @@ func (h *ComtransHandler) DeleteComtransVideo(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid commercial transport ID"),
 		})
@@ -336,7 +336,7 @@ func (h *ComtransHandler) DeleteComtransVideo(c *fiber.Ctx) error {
 	videoID, err := strconv.Atoi(videoIDStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid video ID"),
 		})
@@ -368,7 +368,7 @@ func (h *ComtransHandler) GetComtransByID(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("commercial transport id must be integer"),
 		})
@@ -399,7 +399,7 @@ func (h *ComtransHandler) GetEditComtransByID(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("commercial transport id must be integer"),
 		})
@@ -430,7 +430,7 @@ func (h *ComtransHandler) BuyComtrans(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("commercial transport id must be integer"),
 		})
@@ -461,7 +461,7 @@ func (h *ComtransHandler) DontSellComtrans(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("commercial transport id must be integer"),
 		})
@@ -492,7 +492,7 @@ func (h *ComtransHandler) SellComtrans(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("commercial transport id must be integer"),
 		})
@@ -522,7 +522,7 @@ func (h *ComtransHandler) DeleteComtrans(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("commercial transport id must be integer"),
 		})

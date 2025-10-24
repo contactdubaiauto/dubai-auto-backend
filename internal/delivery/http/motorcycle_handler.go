@@ -123,7 +123,7 @@ func (h *MotorcycleHandler) CreateMotorcycle(c *fiber.Ctx) error {
 	var motorcycle model.CreateMotorcycleRequest
 
 	if err := c.BodyParser(&motorcycle); err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -158,7 +158,7 @@ func (h *MotorcycleHandler) CreateMotorcycleImages(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid motorcycle ID"),
 		})
@@ -168,7 +168,7 @@ func (h *MotorcycleHandler) CreateMotorcycleImages(c *fiber.Ctx) error {
 	form, _ := c.MultipartForm()
 
 	if form == nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("didn't upload the files"),
 		})
@@ -178,7 +178,7 @@ func (h *MotorcycleHandler) CreateMotorcycleImages(c *fiber.Ctx) error {
 	images := form.File["images"]
 
 	if len(images) > 10 {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("must load maximum 10 files"),
 		})
@@ -188,7 +188,7 @@ func (h *MotorcycleHandler) CreateMotorcycleImages(c *fiber.Ctx) error {
 	paths, status, err := files.SaveFiles(images, config.ENV.STATIC_PATH+"motorcycles/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: status,
 			Error:  err,
 		})
@@ -221,7 +221,7 @@ func (h *MotorcycleHandler) CreateMotorcycleVideos(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid motorcycle ID"),
 		})
@@ -231,7 +231,7 @@ func (h *MotorcycleHandler) CreateMotorcycleVideos(c *fiber.Ctx) error {
 	form, _ := c.MultipartForm()
 
 	if form == nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("didn't upload the files"),
 		})
@@ -241,7 +241,7 @@ func (h *MotorcycleHandler) CreateMotorcycleVideos(c *fiber.Ctx) error {
 	videos := form.File["videos"]
 
 	if len(videos) > 1 {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("must load maximum 1 file(s)"),
 		})
@@ -251,7 +251,7 @@ func (h *MotorcycleHandler) CreateMotorcycleVideos(c *fiber.Ctx) error {
 	path, err := files.SaveOriginal(videos[0], config.ENV.STATIC_PATH+"motorcycles/"+idStr+"/videos")
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
 		})
@@ -284,7 +284,7 @@ func (h *MotorcycleHandler) DeleteMotorcycleImage(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid motorcycle ID"),
 		})
@@ -294,7 +294,7 @@ func (h *MotorcycleHandler) DeleteMotorcycleImage(c *fiber.Ctx) error {
 	imageID, err := strconv.Atoi(imageIDStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid image ID"),
 		})
@@ -327,7 +327,7 @@ func (h *MotorcycleHandler) DeleteMotorcycleVideo(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid motorcycle ID"),
 		})
@@ -337,7 +337,7 @@ func (h *MotorcycleHandler) DeleteMotorcycleVideo(c *fiber.Ctx) error {
 	videoID, err := strconv.Atoi(videoIDStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("invalid video ID"),
 		})
@@ -369,7 +369,7 @@ func (h *MotorcycleHandler) GetMotorcycleByID(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("motorcycle id must be integer"),
 		})
@@ -400,7 +400,7 @@ func (h *MotorcycleHandler) GetEditMotorcycleByID(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("motorcycle id must be integer"),
 		})
@@ -431,7 +431,7 @@ func (h *MotorcycleHandler) BuyMotorcycle(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("motorcycle id must be integer"),
 		})
@@ -462,7 +462,7 @@ func (h *MotorcycleHandler) DontSellMotorcycle(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("motorcycle id must be integer"),
 		})
@@ -493,7 +493,7 @@ func (h *MotorcycleHandler) SellMotorcycle(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("motorcycle id must be integer"),
 		})
@@ -523,7 +523,7 @@ func (h *MotorcycleHandler) DeleteMotorcycle(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		return utils.FiberResponse(c, &model.Response{
+		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  errors.New("motorcycle id must be integer"),
 		})

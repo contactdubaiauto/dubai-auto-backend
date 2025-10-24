@@ -7,7 +7,7 @@ import (
 	"dubai-auto/pkg/logger"
 )
 
-func FiberResponse(c *fiber.Ctx, data *model.Response) error {
+func FiberResponse(c *fiber.Ctx, data model.Response) error {
 
 	switch data.Status {
 	case 0:

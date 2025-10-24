@@ -17,6 +17,17 @@ func NewAuthRepository(config *config.Config, db *pgxpool.Pool) *AuthRepository 
 	return &AuthRepository{config, db}
 }
 
+func (r *AuthRepository) UserRegisterDevice(ctx *fasthttp.RequestCtx, userID int, req model.UserRegisterDevice) error {
+	q := `
+		INSERT INTO user_tokens (user_id, device_id, device_type, device_token)
+		VALUES ($1, $2, $3, $4)
+		ON CONFLICT (user_id) DO UPDATE
+		SET device_type = EXCLUDED.device_type, device_token = EXCLUDED.device_token
+	`
+	_, err := r.db.Exec(ctx, q, userID, req.DeviceID, req.DeviceType, req.DeviceToken)
+	return err
+}
+
 func (r *AuthRepository) UserLoginGoogle(ctx *fasthttp.RequestCtx, claims model.GoogleUserInfo) (model.UserByEmail, error) {
 	var userByEmail model.UserByEmail
 	q := `

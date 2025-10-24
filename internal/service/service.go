@@ -19,295 +19,295 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 	return &UserService{repo}
 }
 
-func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID *int) *model.Response {
+func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID *int) model.Response {
 	cars, err := s.UserRepository.GetMyCars(ctx, userID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: cars}
+	return model.Response{Data: cars}
 }
 
-func (s *UserService) OnSale(ctx *fasthttp.RequestCtx, userID *int) *model.Response {
+func (s *UserService) OnSale(ctx *fasthttp.RequestCtx, userID *int) model.Response {
 	cars, err := s.UserRepository.OnSale(ctx, userID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: cars}
+	return model.Response{Data: cars}
 }
 
-func (s *UserService) Cancel(ctx *fasthttp.RequestCtx, carID *int, dir string) *model.Response {
+func (s *UserService) Cancel(ctx *fasthttp.RequestCtx, carID *int, dir string) model.Response {
 	err := s.UserRepository.Cancel(ctx, carID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 	files.RemoveFolder(dir)
 
-	return &model.Response{Data: model.Success{Message: "succesfully cancelled"}}
+	return model.Response{Data: model.Success{Message: "succesfully cancelled"}}
 }
 
-func (s *UserService) DeleteCar(ctx *fasthttp.RequestCtx, carID *int, dir string) *model.Response {
+func (s *UserService) DeleteCar(ctx *fasthttp.RequestCtx, carID *int, dir string) model.Response {
 	err := s.UserRepository.DeleteCar(ctx, carID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
 	files.RemoveFolder(dir)
-	return &model.Response{Data: model.Success{Message: "succesfully deleted"}}
+	return model.Response{Data: model.Success{Message: "succesfully deleted"}}
 }
 
-func (s *UserService) DontSell(ctx *fasthttp.RequestCtx, carID, userID *int) *model.Response {
+func (s *UserService) DontSell(ctx *fasthttp.RequestCtx, carID, userID *int) model.Response {
 	err := s.UserRepository.DontSell(ctx, carID, userID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "succesfully updated status"}}
+	return model.Response{Data: model.Success{Message: "succesfully updated status"}}
 }
 
-func (s *UserService) Sell(ctx *fasthttp.RequestCtx, carID, userID *int) *model.Response {
+func (s *UserService) Sell(ctx *fasthttp.RequestCtx, carID, userID *int) model.Response {
 	err := s.UserRepository.Sell(ctx, carID, userID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: model.Success{Message: "succesfully updated status"}}
+	return model.Response{Data: model.Success{Message: "succesfully updated status"}}
 }
 
-func (s *UserService) GetBrands(ctx *fasthttp.RequestCtx, text string) *model.Response {
+func (s *UserService) GetBrands(ctx *fasthttp.RequestCtx, text string) model.Response {
 	brands, err := s.UserRepository.GetBrands(ctx, text)
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Error:  err,
 			Status: http.StatusBadRequest,
 		}
 	}
-	return &model.Response{
+	return model.Response{
 		Data: brands,
 	}
 }
 
-func (s *UserService) GetProfile(ctx *fasthttp.RequestCtx, userID int) *model.Response {
+func (s *UserService) GetProfile(ctx *fasthttp.RequestCtx, userID int) model.Response {
 	profile, err := s.UserRepository.GetProfile(ctx, userID)
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Error:  err,
 			Status: http.StatusBadRequest,
 		}
 	}
-	return &model.Response{
+	return model.Response{
 		Data: profile,
 	}
 }
 
-func (s *UserService) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, profile *model.UpdateProfileRequest) *model.Response {
+func (s *UserService) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, profile *model.UpdateProfileRequest) model.Response {
 	err := s.UserRepository.UpdateProfile(ctx, userID, profile)
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Error:  err,
 			Status: http.StatusBadRequest,
 		}
 	}
-	return &model.Response{
+	return model.Response{
 		Data: model.Success{Message: "Profile updated successfully"},
 	}
 }
 
-func (s *UserService) GetFilterBrands(ctx *fasthttp.RequestCtx, text string) *model.Response {
+func (s *UserService) GetFilterBrands(ctx *fasthttp.RequestCtx, text string) model.Response {
 	brands, err := s.UserRepository.GetFilterBrands(ctx, text)
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Error:  err,
 			Status: http.StatusBadRequest,
 		}
 	}
-	return &model.Response{
+	return model.Response{
 		Data: brands,
 	}
 }
 
-func (s *UserService) GetCities(ctx *fasthttp.RequestCtx, text string) *model.Response {
+func (s *UserService) GetCities(ctx *fasthttp.RequestCtx, text string) model.Response {
 	cities, err := s.UserRepository.GetCities(ctx, text)
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Error:  err,
 			Status: http.StatusBadRequest,
 		}
 	}
-	return &model.Response{
+	return model.Response{
 		Data: cities,
 	}
 }
 
-func (s *UserService) GetModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text string) *model.Response {
+func (s *UserService) GetModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text string) model.Response {
 	data, err := s.UserRepository.GetModelsByBrandID(ctx, brandID, text)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: 400}
+		return model.Response{Error: err, Status: 400}
 	}
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-func (s *UserService) GetFilterModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text string) *model.Response {
+func (s *UserService) GetFilterModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text string) model.Response {
 	data, err := s.UserRepository.GetFilterModelsByBrandID(ctx, brandID, text)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: 400}
+		return model.Response{Error: err, Status: 400}
 	}
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-func (s *UserService) GetFilterModelsByBrands(ctx *fasthttp.RequestCtx, brands []int, text string) *model.Response {
+func (s *UserService) GetFilterModelsByBrands(ctx *fasthttp.RequestCtx, brands []int, text string) model.Response {
 	data, err := s.UserRepository.GetFilterModelsByBrands(ctx, brands, text)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: 400}
+		return model.Response{Error: err, Status: 400}
 	}
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-func (s *UserService) GetGenerationsByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year, bodyTypeID string) *model.Response {
+func (s *UserService) GetGenerationsByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year, bodyTypeID string) model.Response {
 	data, err := s.UserRepository.GetGenerationsByModelID(ctx, modelID, wheel, year, bodyTypeID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: 400}
+		return model.Response{Error: err, Status: 400}
 	}
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-func (s *UserService) GetGenerationsByModels(ctx *fasthttp.RequestCtx, models []int) *model.Response {
+func (s *UserService) GetGenerationsByModels(ctx *fasthttp.RequestCtx, models []int) model.Response {
 	data, err := s.UserRepository.GetGenerationsByModels(ctx, models)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: 400}
+		return model.Response{Error: err, Status: 400}
 	}
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-func (s *UserService) GetYearsByModelID(ctx *fasthttp.RequestCtx, modelID int64, wheel bool) *model.Response {
+func (s *UserService) GetYearsByModelID(ctx *fasthttp.RequestCtx, modelID int64, wheel bool) model.Response {
 	data, err := s.UserRepository.GetYearsByModelID(ctx, modelID, wheel)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: 400}
+		return model.Response{Error: err, Status: 400}
 	}
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-func (s *UserService) GetYearsByModels(ctx *fasthttp.RequestCtx, models []int, wheel bool) *model.Response {
+func (s *UserService) GetYearsByModels(ctx *fasthttp.RequestCtx, models []int, wheel bool) model.Response {
 	data, err := s.UserRepository.GetYearsByModels(ctx, models, wheel)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: 400}
+		return model.Response{Error: err, Status: 400}
 	}
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-func (s *UserService) GetBodysByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year string) *model.Response {
+func (s *UserService) GetBodysByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year string) model.Response {
 	data, err := s.UserRepository.GetBodysByModelID(ctx, modelID, wheel, year)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: 400}
+		return model.Response{Error: err, Status: 400}
 	}
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-// func (s *UserService) GetBodysByModels(ctx *fasthttp.RequestCtx, wheel bool, models, years []int) *model.Response {
+// func (s *UserService) GetBodysByModels(ctx *fasthttp.RequestCtx, wheel bool, models, years []int) model.Response {
 // 	data, err := s.UserRepository.GetBodysByModels(ctx, wheel, models, years)
 
 // 	if err != nil {
-// 		return &model.Response{Error: err, Status: 400}
+// 		return model.Response{Error: err, Status: 400}
 // 	}
-// 	return &model.Response{Data: data}
+// 	return model.Response{Data: data}
 // }
 
-func (s *UserService) GetBodyTypes(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *UserService) GetBodyTypes(ctx *fasthttp.RequestCtx) model.Response {
 	data, err := s.UserRepository.GetBodyTypes(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-func (s *UserService) GetTransmissions(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *UserService) GetTransmissions(ctx *fasthttp.RequestCtx) model.Response {
 	data, err := s.UserRepository.GetTransmissions(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-func (s *UserService) GetEngines(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *UserService) GetEngines(ctx *fasthttp.RequestCtx) model.Response {
 	data, err := s.UserRepository.GetEngines(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-func (s *UserService) GetDrivetrains(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *UserService) GetDrivetrains(ctx *fasthttp.RequestCtx) model.Response {
 	data, err := s.UserRepository.GetDrivetrains(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-func (s *UserService) GetFuelTypes(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *UserService) GetFuelTypes(ctx *fasthttp.RequestCtx) model.Response {
 	data, err := s.UserRepository.GetFuelTypes(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-func (s *UserService) GetColors(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *UserService) GetColors(ctx *fasthttp.RequestCtx) model.Response {
 	data, err := s.UserRepository.GetColors(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-func (s *UserService) GetCountries(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *UserService) GetCountries(ctx *fasthttp.RequestCtx) model.Response {
 	data, err := s.UserRepository.GetCountries(ctx)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-func (s *UserService) GetHome(ctx *fasthttp.RequestCtx, userID int) *model.Response {
+func (s *UserService) GetHome(ctx *fasthttp.RequestCtx, userID int) model.Response {
 	data, err := s.UserRepository.GetHome(ctx, userID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
 func (s *UserService) GetCars(ctx *fasthttp.RequestCtx, userID int, brands, models, regions, cities,
 	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors []string,
-	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer string, new, wheel *bool) *model.Response {
+	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer string, new, wheel *bool) model.Response {
 
 	cars, err := s.UserRepository.GetCars(ctx, userID, brands, models, regions, cities,
 		generations, transmissions, engines, drivetrains, body_types, fuel_types,
@@ -315,240 +315,240 @@ func (s *UserService) GetCars(ctx *fasthttp.RequestCtx, userID int, brands, mode
 		price_from, price_to, tradeIn, owners, crash, odometer, new, wheel)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return &model.Response{Data: cars}
+	return model.Response{Data: cars}
 }
 
-func (s *UserService) GetPriceRecommendation(ctx *fasthttp.RequestCtx, filter model.GetPriceRecommendationRequest) *model.Response {
+func (s *UserService) GetPriceRecommendation(ctx *fasthttp.RequestCtx, filter model.GetPriceRecommendationRequest) model.Response {
 	prices, err := s.UserRepository.GetPriceRecommendation(ctx, filter)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusNotFound}
+		return model.Response{Error: err, Status: http.StatusNotFound}
 	}
 
 	if len(prices) == 0 {
-		return &model.Response{Error: errors.New("no prices found"), Status: http.StatusNotFound}
+		return model.Response{Error: errors.New("no prices found"), Status: http.StatusNotFound}
 	}
 
-	return &model.Response{Data: model.GetPriceRecommendationResponse{MaxPrice: prices[0], MinPrice: prices[len(prices)-1], AvgPrice: prices[len(prices)/2]}}
+	return model.Response{Data: model.GetPriceRecommendationResponse{MaxPrice: prices[0], MinPrice: prices[len(prices)-1], AvgPrice: prices[len(prices)/2]}}
 }
 
-func (s *UserService) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int) *model.Response {
+func (s *UserService) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int) model.Response {
 	car, err := s.UserRepository.GetCarByID(ctx, carID, userID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusNotFound}
+		return model.Response{Error: err, Status: http.StatusNotFound}
 	}
 
-	return &model.Response{Data: car}
+	return model.Response{Data: car}
 }
 
-func (s *UserService) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID int) *model.Response {
+func (s *UserService) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID int) model.Response {
 	car, err := s.UserRepository.GetEditCarByID(ctx, carID, userID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusNotFound}
+		return model.Response{Error: err, Status: http.StatusNotFound}
 	}
 
-	return &model.Response{Data: car}
+	return model.Response{Data: car}
 }
 
-func (s *UserService) BuyCar(ctx *fasthttp.RequestCtx, carID, userID int) *model.Response {
+func (s *UserService) BuyCar(ctx *fasthttp.RequestCtx, carID, userID int) model.Response {
 	err := s.UserRepository.BuyCar(ctx, carID, userID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusNotFound}
+		return model.Response{Error: err, Status: http.StatusNotFound}
 	}
 
-	return &model.Response{Data: model.Success{Message: "successfully buy a car"}}
+	return model.Response{Data: model.Success{Message: "successfully buy a car"}}
 }
 
-func (s *UserService) CreateCar(ctx *fasthttp.RequestCtx, car *model.CreateCarRequest, userID int) *model.Response {
+func (s *UserService) CreateCar(ctx *fasthttp.RequestCtx, car *model.CreateCarRequest, userID int) model.Response {
 
 	id, err := s.UserRepository.CreateCar(ctx, car, userID)
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  err,
 		}
 	}
 
-	return &model.Response{
+	return model.Response{
 		Data: model.SuccessWithId{Id: id, Message: "Car created successfully"},
 	}
 }
 
-func (s *UserService) UpdateCar(ctx *fasthttp.RequestCtx, car *model.UpdateCarRequest, userID int) *model.Response {
+func (s *UserService) UpdateCar(ctx *fasthttp.RequestCtx, car *model.UpdateCarRequest, userID int) model.Response {
 	err := s.UserRepository.UpdateCar(ctx, car, userID)
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Status: 400,
 			Error:  err,
 		}
 	}
 
-	return &model.Response{
+	return model.Response{
 		Data: model.Success{Message: "Car updated successfully"},
 	}
 }
 
-func (s *UserService) CarLike(ctx *fasthttp.RequestCtx, carID, userID *int) *model.Response {
+func (s *UserService) CarLike(ctx *fasthttp.RequestCtx, carID, userID *int) model.Response {
 	err := s.UserRepository.CarLike(ctx, carID, userID)
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Status: 409,
 			Error:  err,
 		}
 	}
 
-	return &model.Response{
+	return model.Response{
 		Data: model.Success{Message: "Like created successfully"},
 	}
 }
 
-func (s *UserService) RemoveLike(ctx *fasthttp.RequestCtx, carID, userID *int) *model.Response {
+func (s *UserService) RemoveLike(ctx *fasthttp.RequestCtx, carID, userID *int) model.Response {
 	err := s.UserRepository.RemoveLike(ctx, carID, userID)
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Status: 409,
 			Error:  err,
 		}
 	}
 
-	return &model.Response{
+	return model.Response{
 		Data: model.Success{Message: "Like removed successfully"},
 	}
 }
 
-func (s *UserService) Likes(ctx *fasthttp.RequestCtx, userID *int) *model.Response {
+func (s *UserService) Likes(ctx *fasthttp.RequestCtx, userID *int) model.Response {
 	data, err := s.UserRepository.Likes(ctx, userID)
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Status: 409,
 			Error:  err,
 		}
 	}
 
-	return &model.Response{Data: data}
+	return model.Response{Data: data}
 }
 
-func (s *UserService) CreateCarImages(ctx *fasthttp.RequestCtx, carID int, images []string) *model.Response {
+func (s *UserService) CreateCarImages(ctx *fasthttp.RequestCtx, carID int, images []string) model.Response {
 	err := s.UserRepository.CreateCarImages(ctx, carID, images)
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Status: 500,
 			Error:  err,
 		}
 	}
 
-	return &model.Response{
+	return model.Response{
 		Data: model.Success{Message: "Car images created successfully"},
 	}
 }
 
-func (s *UserService) CreateCarVideos(ctx *fasthttp.RequestCtx, carID int, video string) *model.Response {
+func (s *UserService) CreateCarVideos(ctx *fasthttp.RequestCtx, carID int, video string) model.Response {
 	err := s.UserRepository.CreateCarVideos(ctx, carID, video)
 
 	if err != nil {
-		return &model.Response{
+		return model.Response{
 			Status: 500,
 			Error:  err,
 		}
 	}
 
-	return &model.Response{
+	return model.Response{
 		Data: model.Success{Message: "Car videos created successfully"},
 	}
 }
 
-func (s *UserService) DeleteCarImage(ctx *fasthttp.RequestCtx, carID int, imagePath string) *model.Response {
+func (s *UserService) DeleteCarImage(ctx *fasthttp.RequestCtx, carID int, imagePath string) model.Response {
 	err := s.UserRepository.DeleteCarImage(ctx, carID, imagePath)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Car image deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Car image deleted successfully"}}
 }
 
-func (s *UserService) DeleteCarVideo(ctx *fasthttp.RequestCtx, carID int, videoPath string) *model.Response {
+func (s *UserService) DeleteCarVideo(ctx *fasthttp.RequestCtx, carID int, videoPath string) model.Response {
 	err := s.UserRepository.DeleteCarVideo(ctx, carID, videoPath)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: model.Success{Message: "Car video deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "Car video deleted successfully"}}
 }
 
 // GetBrokers returns all users with role_id = 4 (brokers)
-func (s *UserService) GetBrokers(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *UserService) GetBrokers(ctx *fasthttp.RequestCtx) model.Response {
 	const brokerRoleID = 4
 	brokers, err := s.UserRepository.GetUsersByRole(ctx, brokerRoleID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: brokers}
+	return model.Response{Data: brokers}
 }
 
 // GetBrokerByID returns a single broker by ID
-func (s *UserService) GetBrokerByID(ctx *fasthttp.RequestCtx, brokerID int) *model.Response {
+func (s *UserService) GetBrokerByID(ctx *fasthttp.RequestCtx, brokerID int) model.Response {
 	const brokerRoleID = 4
 	broker, err := s.UserRepository.GetUserByRoleAndID(ctx, brokerRoleID, brokerID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusNotFound}
+		return model.Response{Error: err, Status: http.StatusNotFound}
 	}
-	return &model.Response{Data: broker}
+	return model.Response{Data: broker}
 }
 
 // GetLogists returns all users with role_id = 3 (logists)
-func (s *UserService) GetLogists(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *UserService) GetLogists(ctx *fasthttp.RequestCtx) model.Response {
 	const logistRoleID = 3
 	logists, err := s.UserRepository.GetUsersByRole(ctx, logistRoleID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: logists}
+	return model.Response{Data: logists}
 }
 
 // GetLogistByID returns a single logist by ID
-func (s *UserService) GetLogistByID(ctx *fasthttp.RequestCtx, logistID int) *model.Response {
+func (s *UserService) GetLogistByID(ctx *fasthttp.RequestCtx, logistID int) model.Response {
 	const logistRoleID = 3
 	logist, err := s.UserRepository.GetUserByRoleAndID(ctx, logistRoleID, logistID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusNotFound}
+		return model.Response{Error: err, Status: http.StatusNotFound}
 	}
-	return &model.Response{Data: logist}
+	return model.Response{Data: logist}
 }
 
 // GetServices returns all users with role_id = 5 (car services)
-func (s *UserService) GetServices(ctx *fasthttp.RequestCtx) *model.Response {
+func (s *UserService) GetServices(ctx *fasthttp.RequestCtx) model.Response {
 	const serviceRoleID = 5
 	services, err := s.UserRepository.GetUsersByRole(ctx, serviceRoleID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return &model.Response{Data: services}
+	return model.Response{Data: services}
 }
 
 // GetServiceByID returns a single car service by ID
-func (s *UserService) GetServiceByID(ctx *fasthttp.RequestCtx, serviceID int) *model.Response {
+func (s *UserService) GetServiceByID(ctx *fasthttp.RequestCtx, serviceID int) model.Response {
 	const serviceRoleID = 5
 	service, err := s.UserRepository.GetUserByRoleAndID(ctx, serviceRoleID, serviceID)
 
 	if err != nil {
-		return &model.Response{Error: err, Status: http.StatusNotFound}
+		return model.Response{Error: err, Status: http.StatusNotFound}
 	}
-	return &model.Response{Data: service}
+	return model.Response{Data: service}
 }
