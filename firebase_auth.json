@@ -1,0 +1,29 @@
+{
+    "project_info": {
+      "project_number": "272099085461",
+      "project_id": "dubaai-dealers-test",
+      "storage_bucket": "dubaai-dealers-test.firebasestorage.app"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:272099085461:android:fa4217edb2c60eacdd5f9c",
+          "android_client_info": {
+            "package_name": "com.example.dubai_dealers_app"
+          }
+        },
+        "oauth_client": [],
+        "api_key": [
+          {
+            "current_key": "AIzaSyBsTtFGJeXzF9IrSCQAfvZeBoj6L7c0O0I"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": []
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }

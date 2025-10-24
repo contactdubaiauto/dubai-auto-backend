@@ -954,3 +954,19 @@ create table messages (
                 on update cascade
 );
 
+
+create table user_tokens (
+    "id" serial primary key,
+    "user_id" int not null,
+    "device_id" varchar(255) not null,
+    "device_type" varchar(255),
+    "device_token" varchar(255) not null,
+    "created_at" timestamp not null default now(),
+    constraint fk_user_devices_user_id
+        foreign key (user_id)
+            references users(id)
+                on delete cascade
+                on update cascade,
+    unique("user_id")
+);
+

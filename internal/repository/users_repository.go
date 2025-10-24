@@ -1209,7 +1209,7 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT ` + r.config.IMAGE_BASE_URL + ` || image as image
+				SELECT '` + r.config.IMAGE_BASE_URL + `' || image as image
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -1218,7 +1218,7 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 		LEFT JOIN LATERAL (
 			SELECT json_agg(v.video) AS videos
 			FROM (
-				SELECT ` + r.config.IMAGE_BASE_URL + ` || video as video
+				SELECT '` + r.config.IMAGE_BASE_URL + `' || video as video
 				FROM videos
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -1356,7 +1356,7 @@ func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int)
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT ` + r.config.IMAGE_BASE_URL + ` || image as image
+				SELECT '` + r.config.IMAGE_BASE_URL + `' || image as image
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -1365,7 +1365,7 @@ func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int)
 		LEFT JOIN LATERAL (
 			SELECT json_agg(v.video) AS videos
 			FROM (
-				SELECT ` + r.config.IMAGE_BASE_URL + ` || video as video
+				SELECT '` + r.config.IMAGE_BASE_URL + `' || video as video
 				FROM videos
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -1469,7 +1469,7 @@ func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID 
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT ` + r.config.IMAGE_BASE_URL + ` || image as image
+				SELECT '` + r.config.IMAGE_BASE_URL + `' || image as image
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -1478,7 +1478,7 @@ func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID 
 		LEFT JOIN LATERAL (
 			SELECT json_agg(v.video) AS videos
 			FROM (
-				SELECT ` + r.config.IMAGE_BASE_URL + ` || video as video
+				SELECT '` + r.config.IMAGE_BASE_URL + `' || video as video
 				FROM videos
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
