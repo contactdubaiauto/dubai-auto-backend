@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"log"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -11,10 +12,17 @@ import (
 	"dubai-auto/internal/config"
 	"dubai-auto/internal/route"
 	"dubai-auto/pkg/auth"
+	"dubai-auto/pkg/firebase"
 	"dubai-auto/pkg/logger"
 )
 
 func InitApp(db *pgxpool.Pool, conf *config.Config, logger *logger.Logger) *fiber.App {
+	firebaseService, err := firebase.InitFirebase(conf)
+
+	if err != nil {
+		log.Fatalf("Failed to initialize Firebase: %v", err)
+	}
+
 	appConfig := fiber.Config{
 		BodyLimit: 50 * 1024 * 1024,
 	}
@@ -31,6 +39,6 @@ func InitApp(db *pgxpool.Pool, conf *config.Config, logger *logger.Logger) *fibe
 	}
 
 	app.Static("api/v1/images", "."+conf.STATIC_PATH)
-	route.Init(app, conf, db)
+	route.Init(app, conf, db, firebaseService)
 	return app
 }

@@ -49,3 +49,9 @@ type UserMessage struct {
 	Avatar         *string   `json:"avatar"`
 	ID             int       `json:"id"`
 }
+
+type FirebaseMessage struct {
+	Message string    `json:"message"`
+	Time    time.Time `json:"time"`
+	Type    int       `json:"type"`
+}

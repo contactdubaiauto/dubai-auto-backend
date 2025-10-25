@@ -5,8 +5,8 @@ deploy:
 	@echo "Building done"
 
 	@echo "Deploying..."
-	# @scp ./bin/da2 root@31.57.228.223:/var/www/da/da2
-	# @ssh root@31.57.228.223 "rm -f /var/www/da/da && mv /var/www/da/da2 /var/www/da/da"
+	@scp ./bin/da2 root@31.57.228.223:/var/www/da/da2
+	@ssh root@31.57.228.223 "rm -f /var/www/da/da && mv /var/www/da/da2 /var/www/da/da"
 	
 	@scp -r ./docs root@31.57.228.223:/var/www/da
 	@scp -r ./firebase_account.json root@31.57.228.223:/var/www/da

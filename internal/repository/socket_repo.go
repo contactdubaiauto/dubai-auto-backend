@@ -110,3 +110,12 @@ func (r *SocketRepository) CheckUserExists(userID int) error {
 	fmt.Println(id)
 	return err
 }
+
+func (r *SocketRepository) GetUserToken(userID int) (string, error) {
+	q := `
+		SELECT device_token FROM user_tokens WHERE user_id = $1
+	`
+	var token string
+	err := r.db.QueryRow(context.Background(), q, userID).Scan(&token)
+	return token, err
+}

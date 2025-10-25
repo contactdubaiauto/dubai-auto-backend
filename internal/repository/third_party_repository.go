@@ -554,6 +554,7 @@ func (r *ThirdPartyRepository) CreateDealerCarImages(ctx *fasthttp.RequestCtx, c
 
 	for i := range images {
 		_, err := r.db.Exec(ctx, q, carID, images[i])
+
 		if err != nil {
 			return err
 		}

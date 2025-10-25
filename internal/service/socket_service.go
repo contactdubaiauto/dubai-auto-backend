@@ -3,14 +3,18 @@ package service
 import (
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
+	"dubai-auto/pkg/firebase"
+	"strconv"
+	"time"
 )
 
 type SocketService struct {
-	repo *repository.SocketRepository
+	repo            *repository.SocketRepository
+	firebaseService *firebase.FirebaseService
 }
 
-func NewSocketService(repo *repository.SocketRepository) *SocketService {
-	return &SocketService{repo}
+func NewSocketService(repo *repository.SocketRepository, firebaseService *firebase.FirebaseService) *SocketService {
+	return &SocketService{repo, firebaseService}
 }
 
 func (s *SocketService) UpdateUserStatus(userID int, status bool) error {
@@ -35,9 +39,27 @@ func (s *SocketService) GetUserAvatar(userID int) string {
 
 func (s *SocketService) MessageWriteToDatabase(senderUserID int, status bool, msg model.MessageReceived) error {
 	err := s.repo.MessageWriteToDatabase(senderUserID, status, msg)
-	// todo: send push notification to the user
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	// todo: send push notification to the user
+	token, err := s.repo.GetUserToken(msg.TargetUserID)
+
+	if err != nil {
+		return err
+	}
+
+	messageData := map[string]string{
+		"message": msg.Message,
+		"type":    strconv.Itoa(msg.Type),
+		"time":    msg.Time.Format(time.RFC3339),
+	}
+
+	s.firebaseService.SendToToken(token, "New Message", "You have a new message", messageData)
+
+	return nil
 }
 
 func (s *SocketService) CheckUserExists(userID int) error {

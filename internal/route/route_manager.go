@@ -7,9 +7,10 @@ import (
 	_ "dubai-auto/docs"
 	"dubai-auto/internal/config"
 	"dubai-auto/pkg/auth"
+	"dubai-auto/pkg/firebase"
 )
 
-func Init(app *fiber.App, config *config.Config, db *pgxpool.Pool) {
+func Init(app *fiber.App, config *config.Config, db *pgxpool.Pool, firebaseService *firebase.FirebaseService) {
 
 	userRoute := app.Group("/api/v1/users")
 	SetupUserRoutes(userRoute, config, db)
@@ -29,6 +30,6 @@ func Init(app *fiber.App, config *config.Config, db *pgxpool.Pool) {
 	thirdPartyRoute := app.Group("/api/v1/third-party")
 	SetupThirdPartyRoutes(thirdPartyRoute, config, db)
 
-	SetupWebSocketRoutes(app, db)
+	SetupWebSocketRoutes(app, db, firebaseService)
 
 }
