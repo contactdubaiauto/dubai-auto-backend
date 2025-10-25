@@ -1735,6 +1735,8 @@ definitions:
         type: integer
       telegram:
         type: string
+      user_id:
+        type: integer
       vat_number:
         type: string
       whatsapp:
@@ -2154,6 +2156,18 @@ definitions:
     required:
     - otp
     - phone
+    type: object
+  model.UserRegisterDevice:
+    properties:
+      device_id:
+        type: string
+      device_token:
+        type: string
+      device_type:
+        type: string
+    required:
+    - device_id
+    - device_token
     type: object
   model.UserRoleResponse:
     properties:
@@ -7716,6 +7730,48 @@ paths:
           schema:
             $ref: '#/definitions/model.ResultMessage'
       summary: User phone confirmation
+      tags:
+      - auth
+  /api/v1/auth/user-register-device:
+    post:
+      consumes:
+      - application/json
+      description: Registers a device for a user
+      parameters:
+      - description: User register device credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserRegisterDevice'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: User register device
       tags:
       - auth
   /api/v1/comtrans:

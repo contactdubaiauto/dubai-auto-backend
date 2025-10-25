@@ -62,6 +62,7 @@ func (r *ThirdPartyRepository) FirstLogin(ctx *fasthttp.RequestCtx, id int, prof
 func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (model.ThirdPartyGetProfileRes, error) {
 	q := `
 		select
+			user_id,
 			about_me,
 			whatsapp,
 			telegram,
@@ -82,6 +83,7 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (mod
 	`
 	var profile model.ThirdPartyGetProfileRes
 	err := r.db.QueryRow(ctx, q, id).Scan(
+		&profile.UserID,
 		&profile.AboutUs, &profile.Whatsapp,
 		&profile.Telegram, &profile.Address,
 		&profile.Coordinates, &profile.Avatar,
@@ -160,7 +162,7 @@ func (r *ThirdPartyRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID int) (
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT image
+				SELECT $2 || image as image
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -169,7 +171,7 @@ func (r *ThirdPartyRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID int) (
 		LEFT JOIN LATERAL (
 			SELECT json_agg(v.video) AS videos
 			FROM (
-				SELECT video
+				SELECT $2 || video as video
 				FROM videos
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -178,7 +180,7 @@ func (r *ThirdPartyRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID int) (
 		where vs.user_id = $1 and status = 2
 		order by vs.id desc
 	`
-	rows, err := r.db.Query(ctx, q, userID)
+	rows, err := r.db.Query(ctx, q, userID, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return cars, err
@@ -252,7 +254,7 @@ func (r *ThirdPartyRepository) OnSale(ctx *fasthttp.RequestCtx, userID int) ([]m
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT image
+				SELECT $2 || image as image
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -261,7 +263,7 @@ func (r *ThirdPartyRepository) OnSale(ctx *fasthttp.RequestCtx, userID int) ([]m
 		LEFT JOIN LATERAL (
 			SELECT json_agg(v.video) AS videos
 			FROM (
-				SELECT video
+				SELECT $2 || video as video
 				FROM videos
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -270,7 +272,7 @@ func (r *ThirdPartyRepository) OnSale(ctx *fasthttp.RequestCtx, userID int) ([]m
 		where vs.user_id = $1 and status = 3
 		order by vs.id desc
 	`
-	rows, err := r.db.Query(ctx, q, userID)
+	rows, err := r.db.Query(ctx, q, userID, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return cars, err
@@ -461,17 +463,17 @@ func (r *ThirdPartyRepository) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, ca
 			json_build_object(
 				'id', cls.id,
 				'name', cls.name,
-				'image', cls.image
+				'image', $3 || cls.image as image
 			) as color,
 			json_build_object(
 				'id', bts.id,
 				'name', bts.name,
-				'image', bts.image
+				'image', $3 || bts.image as image
 			) as body_type,
 			json_build_object(
 				'id', gs.id,
 				'name', gs.name,
-				'image', gs.image,
+				'image', $3 || gs.image as image,
 				'start_year', gs.start_year,
 				'end_year', gs.end_year
 			) as generation,
@@ -492,7 +494,7 @@ func (r *ThirdPartyRepository) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, ca
 			vs.view_count,
 			vs.description,
 			CASE
-				WHEN vs.user_id = $2 THEN TRUE
+				WHEN vs.user_id = $3 THEN TRUE
 				ELSE FALSE
 			END AS my_car,
 			vs.owners
@@ -512,7 +514,7 @@ func (r *ThirdPartyRepository) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, ca
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT image
+				SELECT $3 || image as image
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -521,7 +523,7 @@ func (r *ThirdPartyRepository) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, ca
 		LEFT JOIN LATERAL (
 			SELECT json_agg(v.video) AS videos
 			FROM (
-				SELECT video
+				SELECT $3 || video as video
 				FROM videos
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -529,7 +531,7 @@ func (r *ThirdPartyRepository) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, ca
 		) videos ON true
 		where vs.id = $1 and vs.user_id = $2;
 	`
-	err := r.db.QueryRow(ctx, q, carID, dealerID).Scan(
+	err := r.db.QueryRow(ctx, q, carID, dealerID, r.config.IMAGE_BASE_URL).Scan(
 		&car.ID, &car.Brand, &car.Region, &car.City, &car.Model, &car.Modification,
 		&car.Color, &car.BodyType, &car.Generation, &car.Year, &car.Price, &car.Odometer, &car.VinCode,
 		&car.Wheel, &car.TradeIN, &car.Crash,

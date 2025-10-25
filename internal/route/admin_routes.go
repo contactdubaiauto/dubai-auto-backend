@@ -10,6 +10,8 @@ import (
 	"dubai-auto/internal/service"
 )
 
+// TODO: Hemmesini interface cykar!
+
 func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool) {
 	adminRepository := repository.NewAdminRepository(config, db)
 	adminService := service.NewAdminService(adminRepository)

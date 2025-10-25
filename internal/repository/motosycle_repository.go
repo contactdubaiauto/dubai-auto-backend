@@ -92,11 +92,11 @@ func (r *MotorcycleRepository) GetMotorcycleParameters(ctx *fasthttp.RequestCtx,
 func (r *MotorcycleRepository) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, categoryID string) ([]model.GetMotorcycleBrandsResponse, error) {
 	data := make([]model.GetMotorcycleBrandsResponse, 0)
 	q := `
-		SELECT id, name, image FROM moto_brands
+		SELECT id, name, $2 || image as image FROM moto_brands
 		WHERE moto_category_id = $1
 	`
 
-	rows, err := r.db.Query(ctx, q, categoryID)
+	rows, err := r.db.Query(ctx, q, categoryID, r.config.IMAGE_BASE_URL)
 	if err != nil {
 		return nil, err
 	}
@@ -264,7 +264,7 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx) ([]model
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT image
+				SELECT $1 || image as image
 				FROM moto_images
 				WHERE moto_id = mcs.id
 				ORDER BY created_at DESC
@@ -273,7 +273,7 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx) ([]model
 		LEFT JOIN LATERAL (
 			SELECT json_agg(v.video) AS videos
 			FROM (
-				SELECT video
+				SELECT $1 || video as video
 				FROM moto_videos
 				WHERE moto_id = mcs.id
 				ORDER BY created_at DESC
@@ -282,7 +282,7 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx) ([]model
 
 	`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
 	if err != nil {
 		return nil, err
 	}
@@ -454,7 +454,7 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT image
+				SELECT $3 || image as image
 				FROM moto_images
 				WHERE moto_id = mcs.id
 				ORDER BY created_at DESC
@@ -463,7 +463,7 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 		LEFT JOIN LATERAL (
 			SELECT json_agg(v.video) AS videos
 			FROM (
-				SELECT video
+				SELECT $3 || video as video
 				FROM moto_videos
 				WHERE moto_id = mcs.id
 				ORDER BY created_at DESC
@@ -472,7 +472,7 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 		WHERE mcs.id = $1;
 	`
 
-	err := r.db.QueryRow(ctx, q, motorcycleID, userID).Scan(
+	err := r.db.QueryRow(ctx, q, motorcycleID, userID, r.config.IMAGE_BASE_URL).Scan(
 		&motorcycle.ID, &motorcycle.Owner, &motorcycle.Engine, &motorcycle.Power, &motorcycle.Year,
 		&motorcycle.NumberOfCycles, &motorcycle.Odometer, &motorcycle.Crash, &motorcycle.NotCleared,
 		&motorcycle.Owners, &motorcycle.DateOfPurchase, &motorcycle.WarrantyDate, &motorcycle.PTC,
@@ -562,7 +562,7 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT image
+				SELECT $3 || image as image
 				FROM moto_images
 				WHERE moto_id = mcs.id
 				ORDER BY created_at DESC
@@ -571,7 +571,7 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 		LEFT JOIN LATERAL (
 			SELECT json_agg(v.video) AS videos
 			FROM (
-				SELECT video
+				SELECT $3 || video as video
 				FROM moto_videos
 				WHERE moto_id = mcs.id
 				ORDER BY created_at DESC
@@ -580,7 +580,7 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 		WHERE mcs.id = $1 AND mcs.user_id = $2;
 	`
 
-	err := r.db.QueryRow(ctx, q, motorcycleID, userID).Scan(
+	err := r.db.QueryRow(ctx, q, motorcycleID, userID, r.config.IMAGE_BASE_URL).Scan(
 		&motorcycle.ID, &motorcycle.Owner, &motorcycle.Engine, &motorcycle.Power, &motorcycle.Year,
 		&motorcycle.NumberOfCycles, &motorcycle.Odometer, &motorcycle.Crash, &motorcycle.NotCleared,
 		&motorcycle.Owners, &motorcycle.DateOfPurchase, &motorcycle.WarrantyDate, &motorcycle.PTC,

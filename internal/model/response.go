@@ -497,6 +497,7 @@ type ThirdPartyGetProfileRes struct {
 	VATNumber     *string                            `json:"vat_number"`
 	CompanyType   *string                            `json:"company_type"`
 	ActivityField *string                            `json:"activity_field"`
+	UserID        *int                               `json:"user_id"`
 	RoleID        *int                               `json:"role_id"`
 }
 

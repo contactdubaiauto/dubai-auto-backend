@@ -8640,6 +8640,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/auth/user-register-device": {
+            "post": {
+                "description": "Registers a device for a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "User register device",
+                "parameters": [
+                    {
+                        "description": "User register device credentials",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UserRegisterDevice"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/comtrans": {
             "get": {
                 "security": [
@@ -17448,6 +17512,9 @@ const docTemplate = `{
                 "telegram": {
                     "type": "string"
                 },
+                "user_id": {
+                    "type": "integer"
+                },
                 "vat_number": {
                     "type": "string"
                 },
@@ -18052,6 +18119,24 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserRegisterDevice": {
+            "type": "object",
+            "required": [
+                "device_id",
+                "device_token"
+            ],
+            "properties": {
+                "device_id": {
+                    "type": "string"
+                },
+                "device_token": {
+                    "type": "string"
+                },
+                "device_type": {
                     "type": "string"
                 }
             }
