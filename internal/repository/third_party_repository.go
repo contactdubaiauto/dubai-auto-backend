@@ -69,12 +69,12 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (mod
 						'from_country', json_build_object(
 							'id', fc.id,
 							'name', fc.name,
-							'flag', fc.flag
+							'flag', $2 || fc.flag
 						),
 						'to_country', json_build_object(
 							'id', tc.id,
 							'name', tc.name,
-							'flag', tc.flag
+							'flag', $2 || tc.flag
 						)
 					)
 				) as destinations
@@ -107,7 +107,7 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (mod
 		where p.user_id = $1
 	`
 	var profile model.ThirdPartyGetProfileRes
-	err := r.db.QueryRow(ctx, q, id).Scan(
+	err := r.db.QueryRow(ctx, q, id, r.config.IMAGE_BASE_URL).Scan(
 		&profile.UserID,
 		&profile.AboutUs, &profile.Whatsapp,
 		&profile.Telegram, &profile.Address,
@@ -654,12 +654,12 @@ func (r *ThirdPartyRepository) GetLogistDestinations(ctx *fasthttp.RequestCtx) (
 			json_build_object(
 				'id', cf.id,
 				'name', cf.name,
-				'flag', cf.flag
+				'flag', $1 || cf.flag as flag
 			) as from_country,
 			json_build_object(
 				'id', ct.id,
 				'name', ct.name,
-				'flag', ct.flag
+				'flag', $1 || ct.flag as flag
 			) as to_country
 		FROM user_destinations r
 		LEFT JOIN countries cf ON r.from_id = cf.id
@@ -667,7 +667,7 @@ func (r *ThirdPartyRepository) GetLogistDestinations(ctx *fasthttp.RequestCtx) (
 		ORDER BY r.created_at DESC
 	`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
 	if err != nil {
 		return nil, err
 	}
