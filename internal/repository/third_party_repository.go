@@ -61,25 +61,50 @@ func (r *ThirdPartyRepository) FirstLogin(ctx *fasthttp.RequestCtx, id int, prof
 
 func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (model.ThirdPartyGetProfileRes, error) {
 	q := `
+		with ds as (
+			select
+				uds.user_id,
+				json_agg(
+					json_build_object(
+						'from_country', json_build_object(
+							'id', fc.id,
+							'name', fc.name,
+							'flag', fc.flag
+						),
+						'to_country', json_build_object(
+							'id', tc.id,
+							'name', tc.name,
+							'flag', tc.flag
+						)
+					)
+				) as destinations
+			from user_destinations uds
+			left join countries fc on fc.id = uds.from_id
+			left join countries tc on tc.id = uds.to_id
+			where uds.user_id = $1
+			group by uds.user_id
+		)
 		select
-			user_id,
-			about_me,
-			whatsapp,
-			telegram,
-			address,
-			coordinates,
-			avatar,
-			banner,
-			company_name,
-			message,
-			vat_number,
+			p.user_id,
+			p.about_me,
+			p.whatsapp,
+			p.telegram,
+			p.address,
+			p.coordinates,
+			p.avatar,
+			p.banner,
+			p.company_name,
+			p.message,
+			p.vat_number,
 			company_types.name as company_type,
 			activity_fields.name as activity_field,
-			profiles.created_at
-		from profiles 
-		left join company_types on company_types.id = profiles.company_type_id
-		left join activity_fields on activity_fields.id = profiles.activity_field_id
-		where user_id = $1
+			p.created_at,
+			ds.destinations
+		from profiles p
+		left join ds on ds.user_id = p.user_id
+		left join company_types on company_types.id = p.company_type_id
+		left join activity_fields on activity_fields.id = p.activity_field_id
+		where p.user_id = $1
 	`
 	var profile model.ThirdPartyGetProfileRes
 	err := r.db.QueryRow(ctx, q, id).Scan(
@@ -92,6 +117,7 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (mod
 		&profile.VATNumber, &profile.CompanyType,
 		&profile.ActivityField,
 		&profile.Registered,
+		&profile.Destinations,
 	)
 
 	if err != nil {
