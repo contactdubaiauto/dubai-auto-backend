@@ -87,7 +87,8 @@ func (r *AdminRepository) GetApplication(ctx *fasthttp.RequestCtx, id int) (mode
 				tu.created_at,
 				$2 || ds.copy_of_id_path as copy_of_id_url,
 				$2 || ds.memorandum_path as memorandum_url,
-				$2 || ds.licence_path as licence_url
+				$2 || ds.licence_path as licence_url,
+				tu.address
 			FROM temp_users tu
 			left join documents ds on ds.id = tu.documents_id
 			WHERE tu.id = $1
@@ -97,7 +98,7 @@ func (r *AdminRepository) GetApplication(ctx *fasthttp.RequestCtx, id int) (mode
 		&application.LicenceIssueDate, &application.LicenceExpiryDate,
 		&application.FullName, &application.Email, &application.Phone,
 		&application.Status, &application.CreatedAt, &application.CopyOFIDURL,
-		&application.MemorandumURL, &application.LicenceURL)
+		&application.MemorandumURL, &application.LicenceURL, &application.Address)
 
 	return application, err
 }

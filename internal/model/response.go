@@ -260,6 +260,7 @@ type AdminApplicationByIDResponse struct {
 	CompanyType       *string    `json:"company_type"`
 	ActivityField     *string    `json:"activity_field"`
 	VATNumber         *string    `json:"vat_number"`
+	Address           *string    `json:"address"`
 	ID                *int       `json:"id"`
 }
 

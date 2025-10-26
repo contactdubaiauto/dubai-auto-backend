@@ -14942,6 +14942,9 @@ const docTemplate = `{
                 "activity_field": {
                     "type": "string"
                 },
+                "address": {
+                    "type": "string"
+                },
                 "company_name": {
                     "type": "string"
                 },
