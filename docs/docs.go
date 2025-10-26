@@ -30,6 +30,22 @@ const docTemplate = `{
                     "admin-applications"
                 ],
                 "summary": "Get all applications",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Role ID (2: Dealer, 3: Logist, 4: Broker, 5: Car Service)",
+                        "name": "role",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Status ID (1: Pending, 2: Approved, 3: Rejected)",
+                        "name": "status",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -88,6 +104,13 @@ const docTemplate = `{
                         "description": "Application ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Status ID (1: Pending, 2: Approved, 3: Rejected)",
+                        "name": "status",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -18181,7 +18204,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "api.mashynbazar.com",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Project name",

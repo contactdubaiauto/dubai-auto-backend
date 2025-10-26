@@ -33,9 +33,32 @@ func (r *AdminRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (model.Ad
 }
 
 // Application CRUD operations
-func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx) ([]model.AdminApplicationResponse, error) {
+func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx, qRole int, qStatus int) ([]model.AdminApplicationResponse, error) {
 	applications := make([]model.AdminApplicationResponse, 0)
-	q := `
+	q := ``
+
+	switch qStatus {
+	case model.APPLICATION_STATUS_APPROVED:
+		// select from users table
+		q = `
+			SELECT 
+				u.id,
+				p.company_name, 
+				d.licence_issue_date, 
+				d.licence_expiry_date, 
+				u.username, 
+				u.email, 
+				u.phone, 
+				u.status, 
+				u.created_at
+			FROM users u
+			left join profiles p on p.user_id = u.id
+			left join documents d on d.id = p.documents_id
+			WHERE role_id = $1
+			ORDER BY id DESC
+		`
+	default:
+		q = `
 			SELECT 
 				id, 
 				company_name, 
@@ -47,9 +70,12 @@ func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx) ([]model.Adm
 				status, 
 				created_at 
 			FROM temp_users 
+			WHERE role_id = $1
 			ORDER BY id DESC
 		`
-	rows, err := r.db.Query(ctx, q)
+	}
+
+	rows, err := r.db.Query(ctx, q, qRole)
 
 	if err != nil {
 		return applications, err
@@ -72,9 +98,39 @@ func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx) ([]model.Adm
 	return applications, err
 }
 
-func (r *AdminRepository) GetApplication(ctx *fasthttp.RequestCtx, id int) (model.AdminApplicationByIDResponse, error) {
+func (r *AdminRepository) GetApplication(ctx *fasthttp.RequestCtx, id int, qStatus int) (model.AdminApplicationByIDResponse, error) {
+	q := ``
 
-	q := `
+	switch qStatus {
+	case model.APPLICATION_STATUS_APPROVED:
+		// select from users table
+		q = `
+			SELECT 
+				u.id, 
+				p.company_name, 
+				ds.licence_issue_date, 
+				ds.licence_expiry_date, 
+				u.username, 
+				u.email, 
+				u.phone, 
+				u.status, 
+				u.created_at,
+				$2 || ds.copy_of_id_path as copy_of_id_url,
+				$2 || ds.memorandum_path as memorandum_url,
+				$2 || ds.licence_path as licence_url,
+				p.address,
+				ct.name as company_type,
+				af.name as activity_field,
+				p.vat_number
+			FROM users u
+			left join profiles p on p.user_id = u.id
+			left join documents ds on ds.id = p.documents_id
+			left join company_types ct on ct.id = p.company_type_id
+			left join activity_fields af on af.id = p.activity_field_id
+			WHERE u.id = $1
+		`
+	default:
+		q = `
 			SELECT 
 				tu.id, 
 				tu.company_name, 
@@ -88,17 +144,26 @@ func (r *AdminRepository) GetApplication(ctx *fasthttp.RequestCtx, id int) (mode
 				$2 || ds.copy_of_id_path as copy_of_id_url,
 				$2 || ds.memorandum_path as memorandum_url,
 				$2 || ds.licence_path as licence_url,
-				tu.address
+				tu.address,
+				ct.name as company_type,
+				af.name as activity_field,
+				tu.vat_number
 			FROM temp_users tu
 			left join documents ds on ds.id = tu.documents_id
+			left join company_types ct on ct.id = tu.company_type_id
+			left join activity_fields af on af.id = tu.activity_field_id
 			WHERE tu.id = $1
 		`
+	}
+
 	var application model.AdminApplicationByIDResponse
-	err := r.db.QueryRow(ctx, q, id, r.config.STATIC_PATH).Scan(&application.ID, &application.CompanyName,
+	err := r.db.QueryRow(ctx, q, id, r.config.STATIC_PATH).Scan(
+		&application.ID, &application.CompanyName,
 		&application.LicenceIssueDate, &application.LicenceExpiryDate,
 		&application.FullName, &application.Email, &application.Phone,
 		&application.Status, &application.CreatedAt, &application.CopyOFIDURL,
-		&application.MemorandumURL, &application.LicenceURL, &application.Address)
+		&application.MemorandumURL, &application.LicenceURL, &application.Address,
+		&application.CompanyType, &application.ActivityField, &application.VATNumber)
 
 	return application, err
 }
@@ -167,9 +232,10 @@ func (r *AdminRepository) AcceptApplication(ctx *fasthttp.RequestCtx, id int, pa
 			address,
 			company_type_id,
 			activity_field_id,
-			vat_number
+			vat_number,
+			documents_id
 		)
-		values ($1, $2, $3, $4, $5, $6, $7, $8)
+		values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 		on conflict (user_id)
 		do update set
 			username = EXCLUDED.username,
@@ -178,9 +244,13 @@ func (r *AdminRepository) AcceptApplication(ctx *fasthttp.RequestCtx, id int, pa
 			address = EXCLUDED.address,
 			company_type_id = EXCLUDED.company_type_id,
 			activity_field_id = EXCLUDED.activity_field_id,
-			vat_number = EXCLUDED.vat_number
+			vat_number = EXCLUDED.vat_number,
+			documents_id = EXCLUDED.documents_id
 	`
-	_, err = tx.Exec(ctx, q, userID, tempUser.FullName, tempUser.CompanyName, "application", tempUser.Address, tempUser.CompanyTypeID, tempUser.ActivityFieldID, tempUser.VATNumber)
+	_, err = tx.Exec(ctx, q,
+		userID, tempUser.FullName, tempUser.CompanyName, "application",
+		tempUser.Address, tempUser.CompanyTypeID, tempUser.ActivityFieldID,
+		tempUser.VATNumber, tempUser.DocumentsID)
 
 	if err != nil {
 		return "", err

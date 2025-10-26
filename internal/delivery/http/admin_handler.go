@@ -54,6 +54,8 @@ func (h *AdminHandler) GetProfile(c *fiber.Ctx) error {
 // @Tags         admin-applications
 // @Produce      json
 // @Security     BearerAuth
+// @Param        role   query      int  true  "Role ID (2: Dealer, 3: Logist, 4: Broker, 5: Car Service)"
+// @Param        status   query      int  true  "Status ID (1: Pending, 2: Approved, 3: Rejected)"
 // @Success      200  {array}  model.AdminApplicationResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -61,8 +63,11 @@ func (h *AdminHandler) GetProfile(c *fiber.Ctx) error {
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/admin/applications [get]
 func (h *AdminHandler) GetApplications(c *fiber.Ctx) error {
+	qRole := c.Query("role")
+	qStatus := c.Query("status")
+
 	ctx := c.Context()
-	data := h.service.GetApplications(ctx)
+	data := h.service.GetApplications(ctx, qRole, qStatus)
 	return utils.FiberResponse(c, data)
 }
 
@@ -73,6 +78,7 @@ func (h *AdminHandler) GetApplications(c *fiber.Ctx) error {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id   path      int  true  "Application ID"
+// @Param        status   query      int  true  "Status ID (1: Pending, 2: Approved, 3: Rejected)"
 // @Success      200  {object}  model.AdminApplicationByIDResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -81,16 +87,9 @@ func (h *AdminHandler) GetApplications(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/applications/{id} [get]
 func (h *AdminHandler) GetApplication(c *fiber.Ctx) error {
 	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("application id must be integer"),
-		})
-	}
+	qStatus := c.Query("status")
 	ctx := c.Context()
-	data := h.service.GetApplication(ctx, id)
+	data := h.service.GetApplication(ctx, idStr, qStatus)
 	return utils.FiberResponse(c, data)
 }
 

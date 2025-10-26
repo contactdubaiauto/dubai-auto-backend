@@ -37,8 +37,24 @@ func (s *AdminService) GetProfile(ctx *fasthttp.RequestCtx, id int) model.Respon
 }
 
 // Application service methods
-func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx) model.Response {
-	applications, err := s.repo.GetApplications(ctx)
+func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx, qRole string, qStatus string) model.Response {
+	qRoleInt, err := strconv.Atoi(qRole)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusBadRequest}
+	}
+
+	qStatusInt, err := strconv.Atoi(qStatus)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusBadRequest}
+	}
+
+	if (qRoleInt > model.ROLE_COUNT || qRoleInt < 1) || (qStatusInt > model.APPLICATION_STATUS_COUNT || qStatusInt < 1) {
+		return model.Response{Error: errors.New("invalid role or status"), Status: http.StatusBadRequest}
+	}
+
+	applications, err := s.repo.GetApplications(ctx, qRoleInt, qStatusInt)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -47,8 +63,24 @@ func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx) model.Response 
 	return model.Response{Data: applications}
 }
 
-func (s *AdminService) GetApplication(ctx *fasthttp.RequestCtx, id int) model.Response {
-	application, err := s.repo.GetApplication(ctx, id)
+func (s *AdminService) GetApplication(ctx *fasthttp.RequestCtx, idStr string, qStatus string) model.Response {
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusBadRequest}
+	}
+
+	qStatusInt, err := strconv.Atoi(qStatus)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusBadRequest}
+	}
+
+	if qStatusInt > model.APPLICATION_STATUS_COUNT || qStatusInt < 1 {
+		return model.Response{Error: errors.New("invalid status"), Status: http.StatusBadRequest}
+	}
+
+	application, err := s.repo.GetApplication(ctx, id, qStatusInt)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}

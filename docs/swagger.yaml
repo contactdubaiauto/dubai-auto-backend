@@ -2186,7 +2186,7 @@ definitions:
       username:
         type: string
     type: object
-host: localhost:8080
+host: api.mashynbazar.com
 info:
   contact: {}
   description: Project Description
@@ -2196,6 +2196,17 @@ paths:
   /api/v1/admin/applications:
     get:
       description: Returns a list of all applications
+      parameters:
+      - description: 'Role ID (2: Dealer, 3: Logist, 4: Broker, 5: Car Service)'
+        in: query
+        name: role
+        required: true
+        type: integer
+      - description: 'Status ID (1: Pending, 2: Approved, 3: Rejected)'
+        in: query
+        name: status
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -2233,6 +2244,11 @@ paths:
       - description: Application ID
         in: path
         name: id
+        required: true
+        type: integer
+      - description: 'Status ID (1: Pending, 2: Approved, 3: Rejected)'
+        in: query
+        name: status
         required: true
         type: integer
       produces:

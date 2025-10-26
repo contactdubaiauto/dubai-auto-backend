@@ -168,6 +168,7 @@ create table profiles (
     "coordinates" varchar(200),
     "message" varchar(300),
     "birthday" date,
+    "documents_id" int,
     "about_me" varchar(300),
     "last_active_date" timestamp default now(),
     "created_at" timestamp default now(),
@@ -191,9 +192,21 @@ create table profiles (
             references activity_fields(id)
                 on delete cascade
                 on update cascade,
+    constraint fk_profiles_documents_id
+        foreign key (documents_id)
+            references documents(id)
+                on delete cascade
+                on update cascade,
     unique (user_id)
 );
 
+alter table profiles add column documents_id int;
+-- create constraint 
+alter table profiles add constraint fk_profiles_documents_id
+        foreign key (documents_id)
+            references documents(id)
+                on delete cascade
+                on update cascade;
 
 create table messages (
     "id" serial primary key,

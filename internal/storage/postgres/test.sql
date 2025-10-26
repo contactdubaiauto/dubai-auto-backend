@@ -67,3 +67,25 @@ insert into user_destinations (user_id, from_id, to_id) values
     (88, 1, 2),
     (88, 2, 3),
     (88, 3, 4);
+
+
+
+
+SELECT 
+    u.id, 
+    p.company_name, 
+    ds.licence_issue_date, 
+    ds.licence_expiry_date, 
+    u.username, 
+    u.email, 
+    u.phone, 
+    u.status, 
+    u.created_at,
+    $2 || ds.copy_of_id_path as copy_of_id_url,
+    $2 || ds.memorandum_path as memorandum_url,
+    $2 || ds.licence_path as licence_url,
+    p.address
+FROM users u
+left join profiles p on p.user_id = u.id
+left join documents ds on ds.id = p.documents_id
+WHERE u.id = $1
