@@ -257,6 +257,9 @@ type AdminApplicationByIDResponse struct {
 	CopyOFIDURL       *string    `json:"copy_of_id_url"`
 	MemorandumURL     *string    `json:"memorandum_url"`
 	LicenceURL        *string    `json:"licence_url"`
+	CompanyType       *string    `json:"company_type"`
+	ActivityField     *string    `json:"activity_field"`
+	VATNumber         *string    `json:"vat_number"`
 	ID                *int       `json:"id"`
 }
 

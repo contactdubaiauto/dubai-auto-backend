@@ -14939,7 +14939,13 @@ const docTemplate = `{
         "model.AdminApplicationByIDResponse": {
             "type": "object",
             "properties": {
+                "activity_field": {
+                    "type": "string"
+                },
                 "company_name": {
+                    "type": "string"
+                },
+                "company_type": {
                     "type": "string"
                 },
                 "copy_of_id_url": {
@@ -14973,6 +14979,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
+                    "type": "string"
+                },
+                "vat_number": {
                     "type": "string"
                 }
             }

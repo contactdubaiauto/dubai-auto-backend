@@ -3,6 +3,7 @@ package firebase
 import (
 	"context"
 	"dubai-auto/internal/config"
+	"fmt"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
@@ -17,7 +18,9 @@ type FirebaseService struct {
 
 func InitFirebase(cfg *config.Config) (*FirebaseService, error) {
 	ctx := context.Background()
+	fmt.Println(cfg.FIREBASE_ACCOUNT_FILE)
 	opt := option.WithCredentialsFile(cfg.FIREBASE_ACCOUNT_FILE)
+	fmt.Println("opt", opt)
 	app, err := firebase.NewApp(ctx, nil, opt)
 
 	if err != nil {
