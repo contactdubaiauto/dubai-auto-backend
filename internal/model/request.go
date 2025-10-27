@@ -62,6 +62,16 @@ type ThirdPartyLoginReq struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type UserForgetPasswordReq struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
+type UserResetPasswordReq struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+	OTP      string `json:"otp" binding:"required"`
+}
+
 type AdminLoginReq struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`

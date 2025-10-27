@@ -100,7 +100,7 @@ func (r *AuthRepository) DeleteAccount(ctx *fasthttp.RequestCtx, userID int) err
 	return err
 }
 
-func (r *AuthRepository) UserByEmail(ctx *fasthttp.RequestCtx, email *string) (*model.UserByEmail, error) {
+func (r *AuthRepository) TempUserByEmail(ctx *fasthttp.RequestCtx, email *string) (*model.UserByEmail, error) {
 
 	query := `
 		SELECT id, email, password, username FROM temp_users WHERE email = $1
@@ -113,7 +113,36 @@ func (r *AuthRepository) UserByEmail(ctx *fasthttp.RequestCtx, email *string) (*
 	return &u, err
 }
 
-func (r *AuthRepository) UserByPhone(ctx *fasthttp.RequestCtx, phone *string) (model.UserByPhone, error) {
+func (r *AuthRepository) UserByEmail(ctx *fasthttp.RequestCtx, email *string) (*model.UserByEmail, error) {
+
+	query := `
+		SELECT id, temp_password FROM users WHERE email = $1
+	`
+	row := r.db.QueryRow(ctx, query, email)
+
+	var u model.UserByEmail
+	err := row.Scan(&u.ID, &u.OTP)
+
+	return &u, err
+}
+
+func (r *AuthRepository) UpdateUserTempPassword(ctx *fasthttp.RequestCtx, userID int, password string) error {
+	q := `
+		UPDATE users SET temp_password = $1 WHERE id = $2
+	`
+	_, err := r.db.Exec(ctx, q, password, userID)
+	return err
+}
+
+func (r *AuthRepository) UpdateUserPassword(ctx *fasthttp.RequestCtx, userID int, password string) error {
+	q := `
+		UPDATE users SET password = $1 WHERE id = $2
+	`
+	_, err := r.db.Exec(ctx, q, password, userID)
+	return err
+}
+
+func (r *AuthRepository) TempUserByPhone(ctx *fasthttp.RequestCtx, phone *string) (model.UserByPhone, error) {
 	query := `
 		SELECT id, phone, password, username FROM temp_users WHERE phone = $1
 	`

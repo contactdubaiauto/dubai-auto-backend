@@ -144,3 +144,6 @@ insert into profiles (user_id, company_name, company_type_id, activity_field_id,
 alter table vehicles alter column owners drop not null;
 alter table vehicles alter column owners set default 0;
 
+
+alter table users add column temp_password varchar(100);
+

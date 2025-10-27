@@ -111,6 +111,7 @@ create table users (
     "username" varchar(100) not null,
     "role_id" int not null default 1, -- 1 user, 2 dealer, 3 logistic, 4 broker, 5 car service
     "password" varchar(100) not null,
+    "temp_password" varchar(100),
     "phone" varchar(100),
     "online" boolean default false,
     "last_active_date" timestamp default now(),
@@ -120,6 +121,8 @@ create table users (
     unique("email"),
     unique("phone")
 );
+
+
 
 create table user_destinations (
     "id" serial primary key,

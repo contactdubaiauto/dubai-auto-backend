@@ -227,6 +227,62 @@ func (h *AuthHandler) UserLoginEmail(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
+// UserForgetPassword godoc
+// @Summary      User forget password
+// @Description  Sends a password reset email to the user
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      model.UserForgetPasswordReq  true  "User forget password credentials"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/auth/user-forget-password [post]
+func (h *AuthHandler) UserForgetPassword(c *fiber.Ctx) error {
+	user := &model.UserForgetPasswordReq{}
+
+	if err := c.BodyParser(user); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	data := h.service.UserForgetPassword(c.Context(), user)
+	return utils.FiberResponse(c, data)
+}
+
+// UserResetPassword godoc
+// @Summary      User reset password
+// @Description  Resets a user's password
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      model.UserResetPasswordReq  true  "User reset password credentials"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/auth/user-reset-password [post]
+func (h *AuthHandler) UserResetPassword(c *fiber.Ctx) error {
+	user := &model.UserResetPasswordReq{}
+
+	if err := c.BodyParser(user); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	data := h.service.UserResetPassword(c.Context(), user)
+	return utils.FiberResponse(c, data)
+}
+
 // ThirdPartyLogin godoc
 // @Summary      Third party login
 // @Description  Authenticates a user and returns a JWT token

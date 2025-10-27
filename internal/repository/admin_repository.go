@@ -448,7 +448,7 @@ func (r *AdminRepository) GetBrands(ctx *fasthttp.RequestCtx) ([]model.AdminBran
 			ORDER BY id DESC
 		`
 
-	rows, err := r.db.Query(ctx, q, r.config.STATIC_PATH)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return brands, err

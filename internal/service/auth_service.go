@@ -166,7 +166,7 @@ func (s *AuthService) DeleteAccount(ctx *fasthttp.RequestCtx, userID int) model.
 }
 
 func (s *AuthService) UserEmailConfirmation(ctx *fasthttp.RequestCtx, user *model.UserEmailConfirmationRequest) model.Response {
-	u, err := s.repo.UserByEmail(ctx, &user.Email)
+	u, err := s.repo.TempUserByEmail(ctx, &user.Email)
 
 	if err != nil {
 		return model.Response{
@@ -201,7 +201,7 @@ func (s *AuthService) UserEmailConfirmation(ctx *fasthttp.RequestCtx, user *mode
 }
 
 func (s *AuthService) UserPhoneConfirmation(ctx *fasthttp.RequestCtx, user *model.UserPhoneConfirmationRequest) model.Response {
-	u, err := s.repo.UserByPhone(ctx, &user.Phone)
+	u, err := s.repo.TempUserByPhone(ctx, &user.Phone)
 
 	if err != nil {
 		return model.Response{
@@ -267,6 +267,63 @@ func (s *AuthService) UserLoginEmail(ctx *fasthttp.RequestCtx, user *model.UserL
 	return model.Response{
 		Data: model.Success{Message: "Successfully created the user"},
 	}
+}
+
+func (s *AuthService) UserForgetPassword(ctx *fasthttp.RequestCtx, user *model.UserForgetPasswordReq) model.Response {
+	u, err := s.repo.UserByEmail(ctx, &user.Email)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusNotFound}
+	}
+
+	otp := utils.RandomOTP()
+	otpHash, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%d", otp)), bcrypt.DefaultCost)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	err = utils.SendEmail("Password Reset", fmt.Sprintf("Your new password is: %d", otp), user.Email)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	err = s.repo.UpdateUserTempPassword(ctx, u.ID, string(otpHash))
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Confirmation code sent successfully"}}
+}
+
+func (s *AuthService) UserResetPassword(ctx *fasthttp.RequestCtx, user *model.UserResetPasswordReq) model.Response {
+	u, err := s.repo.UserByEmail(ctx, &user.Email)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusNotFound}
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(u.OTP), []byte(user.OTP))
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusBadRequest}
+	}
+
+	newPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	err = s.repo.UpdateUserPassword(ctx, u.ID, string(newPassword))
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "New password reset successfully"}}
 }
 
 func (s *AuthService) ThirdPartyLogin(ctx *fasthttp.RequestCtx, user *model.ThirdPartyLoginReq) model.Response {

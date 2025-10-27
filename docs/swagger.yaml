@@ -2130,6 +2130,13 @@ definitions:
     - email
     - otp
     type: object
+  model.UserForgetPasswordReq:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
   model.UserLoginEmail:
     properties:
       email:
@@ -2172,6 +2179,19 @@ definitions:
     required:
     - device_id
     - device_token
+    type: object
+  model.UserResetPasswordReq:
+    properties:
+      email:
+        type: string
+      otp:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - otp
+    - password
     type: object
   model.UserRoleResponse:
     properties:
@@ -7709,6 +7729,48 @@ paths:
       summary: User email confirmation
       tags:
       - auth
+  /api/v1/auth/user-forget-password:
+    post:
+      consumes:
+      - application/json
+      description: Sends a password reset email to the user
+      parameters:
+      - description: User forget password credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserForgetPasswordReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: User forget password
+      tags:
+      - auth
   /api/v1/auth/user-login-email:
     post:
       consumes:
@@ -7917,6 +7979,48 @@ paths:
           schema:
             $ref: '#/definitions/model.ResultMessage'
       summary: User register device
+      tags:
+      - auth
+  /api/v1/auth/user-reset-password:
+    post:
+      consumes:
+      - application/json
+      description: Resets a user's password
+      parameters:
+      - description: User reset password credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserResetPasswordReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: User reset password
       tags:
       - auth
   /api/v1/comtrans:
