@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -773,7 +774,7 @@ func (h *AdminHandler) CreateBodyType(c *fiber.Ctx) error {
 // @Security     BearerAuth
 // @Param        id        path      int                          true  "Body type ID"
 // @Param        image     formData  file    true   "body type image (max 1)"
-// @Success      200       {object}  model.SuccessWithId
+// @Success      200       {object}  model.Success
 // @Failure      400       {object}  model.ResultMessage
 // @Failure      401       {object}  auth.ErrorResponse
 // @Failure      403       {object}  auth.ErrorResponse
@@ -1786,7 +1787,6 @@ func (h *AdminHandler) GetMotoBrands(c *fiber.Ctx) error {
 // @Param        id   path      int  true  "Moto brand ID"
 // @Success      200  {array}  model.AdminMotoModelResponse
 // @Failure      400  {object}  model.ResultMessage
-
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      500  {object}  model.ResultMessage
@@ -2601,7 +2601,8 @@ func (h *AdminHandler) GetComtransCategories(c *fiber.Ctx) error {
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/admin/comtrans-categories/{category_id}/brands [get]
 func (h *AdminHandler) GetComtransBrandsByCategoryID(c *fiber.Ctx) error {
-	categoryIdStr := c.Params("category_id")
+	categoryIdStr := c.Params("id")
+	fmt.Println("categoryIdStr", categoryIdStr)
 	categoryId, err := strconv.Atoi(categoryIdStr)
 	if err != nil {
 		return utils.FiberResponse(c, model.Response{

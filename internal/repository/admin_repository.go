@@ -237,7 +237,7 @@ func (r *AdminRepository) GetApplication(ctx *fasthttp.RequestCtx, id int, qStat
 	}
 
 	var application model.AdminApplicationByIDResponse
-	err := r.db.QueryRow(ctx, q, id, r.config.STATIC_PATH).Scan(
+	err := r.db.QueryRow(ctx, q, id, r.config.IMAGE_BASE_URL).Scan(
 		&application.ID, &application.CompanyName,
 		&application.LicenceIssueDate, &application.LicenceExpiryDate,
 		&application.FullName, &application.Email, &application.Phone,
@@ -566,9 +566,9 @@ func (r *AdminRepository) GetBodyTypes(ctx *fasthttp.RequestCtx) ([]model.AdminB
 }
 
 func (r *AdminRepository) CreateBodyType(ctx *fasthttp.RequestCtx, req *model.CreateBodyTypeRequest) (int, error) {
-	q := `INSERT INTO body_types (name, image) VALUES ($1, $2) RETURNING id`
+	q := `INSERT INTO body_types (name, image) VALUES ($1, 'not_uploaded') RETURNING id`
 	var id int
-	err := r.db.QueryRow(ctx, q, req.Name, req.Image).Scan(&id)
+	err := r.db.QueryRow(ctx, q, req.Name).Scan(&id)
 	return id, err
 }
 
@@ -593,8 +593,8 @@ func (r *AdminRepository) DeleteBodyTypeImage(ctx *fasthttp.RequestCtx, id int) 
 }
 
 func (r *AdminRepository) UpdateBodyType(ctx *fasthttp.RequestCtx, id int, req *model.CreateBodyTypeRequest) error {
-	q := `UPDATE body_types SET name = $2, image = $3 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.Image)
+	q := `UPDATE body_types SET name = $2 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name)
 	return err
 }
 

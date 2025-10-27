@@ -20,6 +20,7 @@ type UserApplication struct {
 	Email             string `json:"email" binding:"required"`
 	Phone             string `json:"phone" binding:"required"`
 	Address           string `json:"address" binding:"required"`
+	Password          string `json:"password" binding:"omitempty"`
 	VATNumber         string `json:"vat_number" binding:"required"`
 	CompanyTypeID     int    `json:"company_type_id" binding:"required"`
 	ActivityFieldID   int    `json:"activity_field_id" binding:"required"`

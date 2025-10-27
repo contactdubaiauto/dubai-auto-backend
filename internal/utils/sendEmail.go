@@ -8,8 +8,8 @@ import (
 func SendEmail(title, subject, receiver string) error {
 	smtpHost := "smtp.gmail.com"
 	smtpPort := "587"
-	from := "berdalyyew99@gmail.com"
-	password := "ykrg srux uiyb wjnx"
+	from := "contact.dubai.auto@gmail.com"
+	password := "sloh hauz bouf smlq"
 	message := []byte("Subject: " + title + "\r\n" +
 		"\r\n" +
 		subject + "\r\n")

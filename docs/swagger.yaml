@@ -488,8 +488,6 @@ definitions:
     type: object
   model.CreateBodyTypeRequest:
     properties:
-      image:
-        type: string
       name:
         maxLength: 50
         minLength: 2
@@ -2100,6 +2098,8 @@ definitions:
         type: string
       licence_issue_date:
         type: string
+      password:
+        type: string
       phone:
         type: string
       role_id:
@@ -2361,6 +2361,64 @@ paths:
       summary: Accept an application
       tags:
       - admin-applications
+  /api/v1/admin/applications/{id}/documents:
+    post:
+      consumes:
+      - application/json
+      description: Sends application documents to the database
+      parameters:
+      - description: Application ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: A PDF document file
+        in: formData
+        name: licence
+        required: true
+        type: file
+      - description: A PDF document file
+        in: formData
+        name: memorandum
+        required: true
+        type: file
+      - description: A PDF document file
+        in: formData
+        name: copy_of_id
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Application documents
+      tags:
+      - admin-applications
   /api/v1/admin/applications/{id}/reject:
     post:
       description: Rejects an application by ID
@@ -2528,7 +2586,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.SuccessWithId'
+            $ref: '#/definitions/model.Success'
         "400":
           description: Bad Request
           schema:
@@ -6013,7 +6071,26 @@ paths:
       - admin-moto-brands
   /api/v1/admin/moto-brands/{id}/models:
     get:
+      description: Returns a list of all moto models by brand ID
+      parameters:
+      - description: Moto brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
       responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminMotoModelResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
         "401":
           description: Unauthorized
           schema:
@@ -6026,6 +6103,11 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get moto models by brand ID
+      tags:
+      - admin-moto-brands
   /api/v1/admin/moto-categories:
     get:
       description: Returns a list of all moto categories

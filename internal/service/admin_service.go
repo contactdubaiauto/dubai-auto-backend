@@ -66,7 +66,20 @@ func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx, qRole string, q
 }
 
 func (s *AdminService) CreateApplication(ctx *fasthttp.RequestCtx, req model.UserApplication) model.Response {
-	// todo: if password is empty, generate random password
+
+	if req.Password == "" {
+		req.Password = fmt.Sprintf("%d", utils.RandomOTP())
+	}
+
+	err := utils.SendEmail("Password", fmt.Sprintf("Your password is: %s", req.Password), req.Email)
+
+	if err != nil {
+		return model.Response{
+			Error:  err,
+			Status: http.StatusInternalServerError,
+		}
+	}
+
 	id, err := s.repo.CreateApplication(ctx, req)
 
 	if err != nil {

@@ -5,8 +5,7 @@ type CreateNameRequest struct {
 }
 
 type CreateBodyTypeRequest struct {
-	Name  string `json:"name" validate:"required,min=2,max=50"`
-	Image string `json:"image"`
+	Name string `json:"name" validate:"required,min=2,max=50"`
 }
 
 // Brand requests

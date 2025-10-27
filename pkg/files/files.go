@@ -329,7 +329,6 @@ func SaveVideos(file *multipart.FileHeader, folder string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to copy uploaded file: %v", err)
 	}
-
 	// Define output path for the HLS
 	outputPath := filepath.Join(folder, outputID+".m3u8")
 	go VideoToHLS(tempVideoPath, outputPath)
