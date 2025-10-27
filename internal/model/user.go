@@ -56,7 +56,7 @@ type CreateCarRequest struct {
 	Odometer       int      `json:"odometer" validate:"required"`
 	Price          int      `json:"price" validate:"required"`
 	ColorID        int      `json:"color_id" validate:"required"`
-	Owners         int      `json:"owners" validate:"required"`
+	Owners         int      `json:"owners" omitempty:"true"`
 	TradeIn        int      `json:"trade_in" validate:"required"`
 	New            bool     `json:"new"`
 	Crash          bool     `json:"crash"`

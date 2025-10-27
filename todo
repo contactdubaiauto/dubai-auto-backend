@@ -3,8 +3,9 @@
 
 1. get applications with filter
 2. Dealer, Broker, Logist, Car services adminkadan gosup bilmeli 
-3. 
-4. 
+3. /api/v1/users/colors    1.301917ms
+Oct 26 18:25:04 srv225949807.host da[246641]: {"level":"error","time":"2025-10-26T18:25:04Z","message":"ERROR: syntax error at or near \"as\" (SQLSTATE 42601)"}
+4. mode, modification count
 5. 
 
 

@@ -437,7 +437,7 @@ create table vehicles (
     "city_id" int default 1,
     "model_id" int,
     "ownership_type_id" int not null default 1,
-    "owners" int not null default 1,
+    "owners" int not null default 0,
     "view_count" int not null default 0,
     "year" int not null,
     "popular" int not null default 0,

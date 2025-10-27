@@ -31,11 +31,12 @@ func (r *ThirdPartyRepository) Profile(ctx *fasthttp.RequestCtx, id int, profile
 			telegram = $3,
 			address = $4,
 			coordinates = $5,
-			message = $6
+			message = $6,
+			phone = $7
 		where user_id = $7
 	`
 	_, err := r.db.Exec(ctx, q, profile.AboutUs, profile.Whatsapp,
-		profile.Telegram, profile.Address, profile.Coordinates, profile.Message, id)
+		profile.Telegram, profile.Address, profile.Coordinates, profile.Message, profile.Phone, id)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -91,8 +92,8 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (mod
 			p.telegram,
 			p.address,
 			p.coordinates,
-			p.avatar,
-			p.banner,
+			$2 || p.avatar,
+			$2 || p.banner,
 			p.company_name,
 			p.message,
 			p.vat_number,

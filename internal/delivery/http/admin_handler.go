@@ -71,6 +71,42 @@ func (h *AdminHandler) GetApplications(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
+// Send Application godoc
+// @Summary      Send application
+// @Description  Sends an application to the database
+// @Tags         admin-applications
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        application  body      model.UserApplication  true  "Application"
+// @Success      200   {object}  model.SuccessWithId
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/admin/applications [post]
+func (h *AdminHandler) CreateApplication(c *fiber.Ctx) error {
+	application := &model.UserApplication{}
+
+	if err := c.BodyParser(application); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	if err := h.validator.Validate(application); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	data := h.service.CreateApplication(c.Context(), *application)
+	return utils.FiberResponse(c, data)
+}
+
 // GetApplication godoc
 // @Summary      Get an application
 // @Description  Returns an application by ID
@@ -90,6 +126,66 @@ func (h *AdminHandler) GetApplication(c *fiber.Ctx) error {
 	qStatus := c.Query("status")
 	ctx := c.Context()
 	data := h.service.GetApplication(ctx, idStr, qStatus)
+	return utils.FiberResponse(c, data)
+}
+
+// ApplicationDocuments godoc
+// @Summary      Application documents
+// @Description  Sends application documents to the database
+// @Tags         admin-applications
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id  path      int  true  "Application ID"
+// @Param        licence  	 formData  file    true   "A PDF document file"
+// @Param        memorandum  formData  file    true   "A PDF document file"
+// @Param        copy_of_id  formData  file    true   "A PDF document file"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/admin/applications/{id}/documents [post]
+func (h *AdminHandler) CreateApplicationDocuments(c *fiber.Ctx) error {
+	ctx := c.Context()
+	userIDStr := c.Params("id")
+	userID, err := strconv.Atoi(userIDStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("application userID must be integer"),
+		})
+	}
+	licence, err := c.FormFile("licence")
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	memorandum, err := c.FormFile("memorandum")
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	copyOfID, err := c.FormFile("copy_of_id")
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	data := h.service.CreateApplicationDocuments(ctx, userID, licence, memorandum, copyOfID)
 	return utils.FiberResponse(c, data)
 }
 
@@ -713,16 +809,16 @@ func (h *AdminHandler) CreateBodyTypeImage(c *fiber.Ctx) error {
 		})
 	}
 
-	paths, status, err := files.SaveFiles(image, config.ENV.STATIC_PATH+"cars/body/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
+	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"cars/body/"+strconv.Itoa(id))
 
 	if err != nil {
 		return utils.FiberResponse(c, model.Response{
-			Status: status,
+			Status: 500,
 			Error:  err,
 		})
 	}
 
-	data := h.service.CreateBodyTypeImage(ctx, id, paths)
+	data := h.service.CreateBodyTypeImage(ctx, id, path)
 	return utils.FiberResponse(c, data)
 }
 

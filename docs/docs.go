@@ -81,6 +81,73 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Sends an application to the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-applications"
+                ],
+                "summary": "Send application",
+                "parameters": [
+                    {
+                        "description": "Application",
+                        "name": "application",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UserApplication"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.SuccessWithId"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
             }
         },
         "/api/v1/admin/applications/{id}": {
@@ -15731,7 +15798,6 @@ const docTemplate = `{
                 "model_id",
                 "modification_id",
                 "odometer",
-                "owners",
                 "phone_numbers",
                 "price",
                 "trade_in",
@@ -17607,7 +17673,6 @@ const docTemplate = `{
         "model.ThirdPartyProfileReq": {
             "type": "object",
             "required": [
-                "email",
                 "phone"
             ],
             "properties": {
@@ -17619,9 +17684,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "coordinates": {
-                    "type": "string"
-                },
-                "email": {
                     "type": "string"
                 },
                 "message": {

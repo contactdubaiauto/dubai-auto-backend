@@ -34,9 +34,12 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool) {
 	}
 
 	// Application routes
+	// todo: update to third-party routes
 	{
 		r.Get("/applications", adminHandler.GetApplications)
+		r.Post("/applications", adminHandler.CreateApplication)
 		r.Get("/applications/:id", adminHandler.GetApplication)
+		r.Post("/applications/:id/documents", adminHandler.CreateApplicationDocuments)
 		r.Post("/applications/:id/accept", adminHandler.AcceptApplication)
 		r.Post("/applications/:id/reject", adminHandler.RejectApplication)
 	}

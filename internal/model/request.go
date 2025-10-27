@@ -253,7 +253,6 @@ type AcceptApplicationRequest struct {
 
 type ThirdPartyProfileReq struct {
 	AboutUs     string `json:"about_us" validate:"max=300"`
-	Email       string `json:"email" validate:"required"`
 	Message     string `json:"message"`
 	Whatsapp    string `json:"whatsapp"`
 	Telegram    string `json:"telegram"`

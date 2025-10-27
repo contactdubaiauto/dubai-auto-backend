@@ -98,6 +98,86 @@ func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx, qRole int, q
 	return applications, err
 }
 
+func (r *AdminRepository) CreateApplication(ctx *fasthttp.RequestCtx, req model.UserApplication) (int, error) {
+	tx, err := r.db.Begin(ctx)
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
+
+	q := `
+		insert into users (email, password, username, role_id, phone)
+		values ($1, $2, $3, $4, $5) 
+		ON CONFLICT (email) DO UPDATE
+		SET password = EXCLUDED.password, created_at = now(), updated_at = now(), role_id = EXCLUDED.role_id, phone = EXCLUDED.phone
+		RETURNING id
+	`
+	var userID int
+	err = tx.QueryRow(ctx, q, req.Email, "password", req.FullName, req.RoleID, req.Phone).Scan(&userID)
+
+	if err != nil {
+		return 0, err
+	}
+
+	// insert to documents table
+
+	q = `
+		insert into documents (
+			copy_of_id_path,
+			memorandum_path,
+			licence_path,
+			licence_issue_date,
+			licence_expiry_date
+		)
+		values ($1, $2, $3, $4, $5)
+		returning id
+	`
+	var documentID int
+	err = tx.QueryRow(ctx, q, "req.CopyOfIDPath", "req.MemorandumPath", "req.LicencePath", req.LicenceIssueDate, req.LicenceExpiryDate).Scan(&documentID)
+
+	if err != nil {
+		return 0, err
+	}
+
+	q = `
+		insert into profiles (
+			user_id, 
+			username, 
+			company_name, 
+			registered_by,
+			address,
+			company_type_id,
+			activity_field_id,
+			vat_number,
+			documents_id
+		)
+		values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		on conflict (user_id)
+		do update set
+			username = EXCLUDED.username,
+			company_name = EXCLUDED.company_name,
+			registered_by = EXCLUDED.registered_by,
+			address = EXCLUDED.address,
+			company_type_id = EXCLUDED.company_type_id,
+			activity_field_id = EXCLUDED.activity_field_id,
+			vat_number = EXCLUDED.vat_number,
+			documents_id = EXCLUDED.documents_id
+	`
+	_, err = tx.Exec(ctx, q,
+		userID, req.FullName, req.CompanyName, "application",
+		req.Address, req.CompanyTypeID, req.ActivityFieldID,
+		req.VATNumber, documentID)
+
+	if err != nil {
+		return 0, err
+	}
+
+	err = tx.Commit(ctx)
+	return userID, err
+}
+
 func (r *AdminRepository) GetApplication(ctx *fasthttp.RequestCtx, id int, qStatus int) (model.AdminApplicationByIDResponse, error) {
 	q := ``
 
@@ -166,6 +246,28 @@ func (r *AdminRepository) GetApplication(ctx *fasthttp.RequestCtx, id int, qStat
 		&application.CompanyType, &application.ActivityField, &application.VATNumber)
 
 	return application, err
+}
+
+func (r *AdminRepository) CreateApplicationDocuments(ctx *fasthttp.RequestCtx, userID int, documents model.UserApplicationDocuments) error {
+	q := `
+		select documents_id from profiles where user_id = $1
+	`
+	var documentsID int
+	err := r.db.QueryRow(ctx, q, userID).Scan(&documentsID)
+
+	if err != nil {
+		return err
+	}
+
+	q = `
+		update documents set
+			licence_path = $1,
+			memorandum_path = $2,
+			copy_of_id_path = $3
+		where id = $4
+	`
+	_, err = r.db.Exec(ctx, q, documents.Licence, documents.Memorandum, documents.CopyOfID, documentsID)
+	return err
 }
 
 func (r *AdminRepository) AcceptApplication(ctx *fasthttp.RequestCtx, id int, password string) (string, error) {
@@ -338,7 +440,7 @@ func (r *AdminRepository) GetBrands(ctx *fasthttp.RequestCtx) ([]model.AdminBran
 			SELECT 
 				id, 
 				name, 
-				logo, 
+				$1 || logo, 
 				model_count, 
 				popular, 
 				updated_at 
@@ -346,7 +448,7 @@ func (r *AdminRepository) GetBrands(ctx *fasthttp.RequestCtx) ([]model.AdminBran
 			ORDER BY id DESC
 		`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(ctx, q, r.config.STATIC_PATH)
 
 	if err != nil {
 		return brands, err
@@ -444,7 +546,7 @@ func (r *AdminRepository) GetBodyTypes(ctx *fasthttp.RequestCtx) ([]model.AdminB
 	bodyTypes := make([]model.AdminBodyTypeResponse, 0)
 	q := `SELECT id, name, $1 || image, created_at FROM body_types ORDER BY id DESC`
 
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return bodyTypes, err
@@ -470,13 +572,13 @@ func (r *AdminRepository) CreateBodyType(ctx *fasthttp.RequestCtx, req *model.Cr
 	return id, err
 }
 
-func (r *AdminRepository) CreateBodyTypeImage(ctx *fasthttp.RequestCtx, id int, paths []string) error {
+func (r *AdminRepository) CreateBodyTypeImage(ctx *fasthttp.RequestCtx, id int, path string) error {
 	q := `
 		UPDATE body_types 
 		SET image = $2 
 		WHERE id = $1
 	`
-	_, err := r.db.Exec(ctx, q, id, paths[0])
+	_, err := r.db.Exec(ctx, q, id, path)
 	return err
 }
 

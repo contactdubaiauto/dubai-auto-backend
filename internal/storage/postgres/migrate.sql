@@ -138,3 +138,9 @@ insert into profiles (user_id, company_name, company_type_id, activity_field_id,
     (90, 'Company 12', 3, 3, '1234567901', 65, true, 'broker4', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '1234567901', '1234567901', '1234567901', '1234567901', '1234567901', '2025-12-10', '1234567901');
 
 
+
+
+
+alter table vehicles alter column owners drop not null;
+alter table vehicles alter column owners set default 0;
+

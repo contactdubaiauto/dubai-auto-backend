@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"mime/multipart"
 	"net/http"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/valyala/fasthttp"
 	"golang.org/x/crypto/bcrypt"
@@ -63,6 +65,17 @@ func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx, qRole string, q
 	return model.Response{Data: applications}
 }
 
+func (s *AdminService) CreateApplication(ctx *fasthttp.RequestCtx, req model.UserApplication) model.Response {
+	// todo: if password is empty, generate random password
+	id, err := s.repo.CreateApplication(ctx, req)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Application created successfully"}}
+}
+
 func (s *AdminService) GetApplication(ctx *fasthttp.RequestCtx, idStr string, qStatus string) model.Response {
 	id, err := strconv.Atoi(idStr)
 
@@ -87,6 +100,69 @@ func (s *AdminService) GetApplication(ctx *fasthttp.RequestCtx, idStr string, qS
 	}
 
 	return model.Response{Data: application}
+}
+
+func (s *AdminService) CreateApplicationDocuments(ctx *fasthttp.RequestCtx, userID int, licence, memorandum, copyOfID *multipart.FileHeader) model.Response {
+	documents := model.UserApplicationDocuments{}
+	ext := strings.ToLower(filepath.Ext(licence.Filename))
+
+	if ext != ".pdf" {
+		return model.Response{Error: errors.New("only PDF files are allowed"), Status: http.StatusBadRequest}
+	}
+
+	if !utils.IsPDF(licence) {
+		return model.Response{Error: errors.New("file is not a valid PDF"), Status: http.StatusBadRequest}
+	}
+
+	path, err := files.SaveOriginal(licence, config.ENV.STATIC_PATH+"documents/"+strconv.Itoa(userID))
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	documents.Licence = path
+	ext = strings.ToLower(filepath.Ext(memorandum.Filename))
+
+	if ext != ".pdf" {
+		return model.Response{Error: errors.New("only PDF files are allowed"), Status: http.StatusBadRequest}
+	}
+
+	if !utils.IsPDF(memorandum) {
+		return model.Response{Error: errors.New("file is not a valid PDF"), Status: http.StatusBadRequest}
+	}
+
+	path, err = files.SaveOriginal(memorandum, config.ENV.STATIC_PATH+"documents/"+strconv.Itoa(userID))
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	documents.Memorandum = path
+	ext = strings.ToLower(filepath.Ext(copyOfID.Filename))
+
+	if ext != ".pdf" {
+		return model.Response{Error: errors.New("only PDF files are allowed"), Status: http.StatusBadRequest}
+	}
+
+	if !utils.IsPDF(copyOfID) {
+		return model.Response{Error: errors.New("file is not a valid PDF"), Status: http.StatusBadRequest}
+	}
+
+	path, err = files.SaveOriginal(copyOfID, config.ENV.STATIC_PATH+"documents/"+strconv.Itoa(userID))
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	documents.CopyOfID = path
+	fmt.Println(documents)
+	err = s.repo.CreateApplicationDocuments(ctx, userID, documents)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Application documents sent successfully"}}
 }
 
 func (s *AdminService) AcceptApplication(ctx *fasthttp.RequestCtx, id int, req model.AcceptApplicationRequest) model.Response {
@@ -311,8 +387,8 @@ func (s *AdminService) CreateBodyType(ctx *fasthttp.RequestCtx, req *model.Creat
 	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Body type created successfully"}}
 }
 
-func (s *AdminService) CreateBodyTypeImage(ctx *fasthttp.RequestCtx, id int, paths []string) model.Response {
-	err := s.repo.CreateBodyTypeImage(ctx, id, paths)
+func (s *AdminService) CreateBodyTypeImage(ctx *fasthttp.RequestCtx, id int, path string) model.Response {
+	err := s.repo.CreateBodyTypeImage(ctx, id, path)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
