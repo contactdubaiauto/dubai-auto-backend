@@ -11,10 +11,10 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func SetupThirdPartyRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool) {
+func SetupThirdPartyRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, validator *auth.Validator) {
 	thirdPartyRepository := repository.NewThirdPartyRepository(config, db)
 	thirdPartyService := service.NewThirdPartyService(thirdPartyRepository)
-	thirdPartyHandler := http.NewThirdPartyHandler(thirdPartyService, auth.NewValidator())
+	thirdPartyHandler := http.NewThirdPartyHandler(thirdPartyService, validator)
 
 	{
 		r.Get("/registration-data", thirdPartyHandler.GetRegistrationData)

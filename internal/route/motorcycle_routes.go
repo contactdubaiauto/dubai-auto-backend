@@ -11,10 +11,10 @@ import (
 	"dubai-auto/pkg/auth"
 )
 
-func SetupMotorcycleRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool) {
+func SetupMotorcycleRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, validator *auth.Validator) {
 	motorcycleRepository := repository.NewMotorcycleRepository(config, db)
 	motorcycleService := service.NewMotorcycleService(motorcycleRepository)
-	motorcycleHandler := http.NewMotorcycleHandler(motorcycleService)
+	motorcycleHandler := http.NewMotorcycleHandler(motorcycleService, validator)
 
 	{
 		// get motorcycles categories

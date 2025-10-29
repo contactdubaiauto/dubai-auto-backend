@@ -33,9 +33,14 @@ func main() {
 
 	conf := config.Init()
 	auth.Init(conf.ACCESS_KEY, conf.ACCESS_TIME, conf.REFRESH_KEY, conf.REFRESH_TIME)
-	logger := logger.InitLogger(conf.LOGGER_FOLDER_PATH, conf.LOGGER_FILENAME, conf.APP_MODE)
+	err := logger.InitLogger(conf.LOGGER_FOLDER_PATH, conf.LOGGER_FILENAME, conf.APP_MODE)
+
+	if err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
+	}
+
 	db := postgres.Init(conf)
-	app := app.InitApp(db, conf, logger)
+	app := app.InitApp(db, conf)
 
 	app.Get("/swagger/*", swagger.New(swagger.Config{
 		URL: "/swagger/doc.json",

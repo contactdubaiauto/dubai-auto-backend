@@ -22,7 +22,7 @@ func NewUserRepository(config *config.Config, db *pgxpool.Pool) *UserRepository 
 	return &UserRepository{config, db}
 }
 
-func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int) ([]model.GetCarsResponse, error) {
+func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int, limit, lastID int) ([]model.GetCarsResponse, error) {
 	cars := make([]model.GetCarsResponse, 0)
 	q := `
 		select 
@@ -89,10 +89,11 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int) ([]mod
 				ORDER BY created_at DESC
 			) v
 		) videos ON true
-		where vs.user_id = $1 and status = 2
+		where vs.user_id = $1 and status = 2 and vs.id > $3
 		order by vs.id desc
+		limit $4
 	`
-	rows, err := r.db.Query(ctx, q, *userID, r.config.IMAGE_BASE_URL)
+	rows, err := r.db.Query(ctx, q, *userID, r.config.IMAGE_BASE_URL, lastID, limit)
 
 	if err != nil {
 		return cars, err
@@ -114,7 +115,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int) ([]mod
 	return cars, err
 }
 
-func (r *UserRepository) OnSale(ctx *fasthttp.RequestCtx, userID *int) ([]model.GetCarsResponse, error) {
+func (r *UserRepository) OnSale(ctx *fasthttp.RequestCtx, userID *int, limit, lastID int) ([]model.GetCarsResponse, error) {
 	cars := make([]model.GetCarsResponse, 0)
 	q := `
 		select 
@@ -181,10 +182,11 @@ func (r *UserRepository) OnSale(ctx *fasthttp.RequestCtx, userID *int) ([]model.
 				ORDER BY created_at DESC
 			) v
 		) videos ON true
-		where vs.user_id = $1 and status = 3
+		where vs.user_id = $1 and status = 3 and vs.id > $3
 		order by vs.id desc
+		limit $4
 	`
-	rows, err := r.db.Query(ctx, q, *userID, r.config.IMAGE_BASE_URL)
+	rows, err := r.db.Query(ctx, q, *userID, r.config.IMAGE_BASE_URL, lastID, limit)
 
 	if err != nil {
 		return cars, err
@@ -996,8 +998,8 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int) (model.Ho
 func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 	brands, models, regions, cities, generations, transmissions,
 	engines, drivetrains, body_types, fuel_types, ownership_types, colors []string,
-	year_from, year_to, credit,
-	price_from, price_to, tradeIn, owners, crash, odometer string, new, wheel *bool) ([]model.GetCarsResponse, error) {
+	year_from, year_to, credit, price_from, price_to, tradeIn, owners,
+	crash, odometer string, new, wheel *bool, limit, lastID int) ([]model.GetCarsResponse, error) {
 
 	var qWhere string
 	var qValues []any
@@ -1224,11 +1226,11 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 				ORDER BY created_at DESC
 			) v
 		) videos ON true
-		where vs.status = 3
+		where vs.status = 3 and vs.id > ` + strconv.Itoa(lastID) + `
 		` + qWhere + `
 		order by vs.id desc
+		limit ` + strconv.Itoa(limit) + `
 	`
-
 	rows, err := r.db.Query(ctx, q, qValues...)
 
 	if err != nil {
@@ -1733,7 +1735,7 @@ func (r *UserRepository) DeleteCarVideo(ctx *fasthttp.RequestCtx, carID int, vid
 }
 
 // GetUsersByRole fetches users by their role_id (brokers=4, logists=3, services=5)
-func (r *UserRepository) GetUsersByRole(ctx *fasthttp.RequestCtx, roleID int) ([]model.UserRoleResponse, error) {
+func (r *UserRepository) GetUsersByRole(ctx *fasthttp.RequestCtx, roleID int, limit, lastID int) ([]model.UserRoleResponse, error) {
 	q := `
 		SELECT 
 			u.id,
@@ -1741,11 +1743,12 @@ func (r *UserRepository) GetUsersByRole(ctx *fasthttp.RequestCtx, roleID int) ([
 			p.avatar
 		FROM users u
 		LEFT JOIN profiles p ON p.user_id = u.id
-		WHERE u.role_id = $1
+		WHERE u.role_id = $1 and u.id > $2
 		ORDER BY u.id DESC
+		limit $3
 	`
 
-	rows, err := r.db.Query(ctx, q, roleID)
+	rows, err := r.db.Query(ctx, q, roleID, lastID, limit)
 
 	if err != nil {
 		return nil, err

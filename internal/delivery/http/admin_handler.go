@@ -20,8 +20,8 @@ type AdminHandler struct {
 	validator *auth.Validator
 }
 
-func NewAdminHandler(service *service.AdminService) *AdminHandler {
-	return &AdminHandler{service, auth.NewValidator()}
+func NewAdminHandler(service *service.AdminService, validator *auth.Validator) *AdminHandler {
+	return &AdminHandler{service, validator}
 }
 
 // Application handlers
@@ -57,6 +57,8 @@ func (h *AdminHandler) GetProfile(c *fiber.Ctx) error {
 // @Security     BearerAuth
 // @Param        role   query      int  true  "Role ID (2: Dealer, 3: Logist, 4: Broker, 5: Car Service)"
 // @Param        status   query      int  true  "Status ID (1: Pending, 2: Approved, 3: Rejected)"
+// @Param        limit   query      string  false  "Limit"
+// @Param        last_id   query      string  false  "Last item ID"
 // @Success      200  {array}  model.AdminApplicationResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -66,9 +68,10 @@ func (h *AdminHandler) GetProfile(c *fiber.Ctx) error {
 func (h *AdminHandler) GetApplications(c *fiber.Ctx) error {
 	qRole := c.Query("role")
 	qStatus := c.Query("status")
-
+	limit := c.Query("limit")
+	lastID := c.Query("last_id")
 	ctx := c.Context()
-	data := h.service.GetApplications(ctx, qRole, qStatus)
+	data := h.service.GetApplications(ctx, qRole, qStatus, limit, lastID)
 	return utils.FiberResponse(c, data)
 }
 
@@ -3666,138 +3669,6 @@ func (h *AdminHandler) DeleteServiceType(c *fiber.Ctx) error {
 
 	ctx := c.Context()
 	data := h.service.DeleteServiceType(ctx, id)
-	return utils.FiberResponse(c, data)
-}
-
-// Service handlers
-
-// GetServices godoc
-// @Summary      Get all services
-// @Description  Returns a list of all services
-// @Tags         admin-services
-// @Produce      json
-// @Security     BearerAuth
-// @Success      200  {array}  model.AdminServiceResponse
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/services [get]
-func (h *AdminHandler) GetServices(c *fiber.Ctx) error {
-	ctx := c.Context()
-	data := h.service.GetServices(ctx)
-	return utils.FiberResponse(c, data)
-}
-
-// CreateService godoc
-// @Summary      Create a service
-// @Description  Creates a new service
-// @Tags         admin-services
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        service  body      model.CreateServiceRequest  true  "Service data"
-// @Success      200  {object}  model.SuccessWithId
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/services [post]
-func (h *AdminHandler) CreateService(c *fiber.Ctx) error {
-	var req model.CreateServiceRequest
-
-	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("invalid request body"),
-		})
-	}
-
-	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  err,
-		})
-	}
-
-	ctx := c.Context()
-	data := h.service.CreateService(ctx, &req)
-	return utils.FiberResponse(c, data)
-}
-
-// UpdateService godoc
-// @Summary      Update a service
-// @Description  Updates a service by ID
-// @Tags         admin-services
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id       path      int                     true  "Service ID"
-// @Param        service  body      model.CreateServiceRequest  true  "Service data"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/services/{id} [put]
-func (h *AdminHandler) UpdateService(c *fiber.Ctx) error {
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("service id must be integer"),
-		})
-	}
-
-	var req model.CreateServiceRequest
-
-	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("invalid request body"),
-		})
-	}
-
-	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  err,
-		})
-	}
-
-	ctx := c.Context()
-	data := h.service.UpdateService(ctx, id, &req)
-	return utils.FiberResponse(c, data)
-}
-
-// DeleteService godoc
-// @Summary      Delete a service
-// @Description  Deletes a service by ID
-// @Tags         admin-services
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id   path      int  true  "Service ID"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/services/{id} [delete]
-func (h *AdminHandler) DeleteService(c *fiber.Ctx) error {
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("service id must be integer"),
-		})
-	}
-
-	ctx := c.Context()
-	data := h.service.DeleteService(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 

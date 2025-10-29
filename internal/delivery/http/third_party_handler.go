@@ -110,6 +110,8 @@ func (h *ThirdPartyHandler) GetProfile(c *fiber.Ctx) error {
 // @Tags         third-party
 // @Produce      json
 // @Security     BearerAuth
+// @Param        limit   query      string  false  "Limit"
+// @Param        last_id   query      string  false  "Last item ID"
 // @Success      200      {array}  model.GetCarsResponse
 // @Failure      400      {object}  model.ResultMessage
 // @Failure      401      {object}  auth.ErrorResponse
@@ -120,7 +122,9 @@ func (h *ThirdPartyHandler) GetProfile(c *fiber.Ctx) error {
 func (h *ThirdPartyHandler) GetMyCars(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Locals("id").(int)
-	data := h.service.GetMyCars(ctx, id)
+	limit := c.Query("limit")
+	lastID := c.Query("last_id")
+	data := h.service.GetMyCars(ctx, id, limit, lastID)
 	return utils.FiberResponse(c, data)
 }
 

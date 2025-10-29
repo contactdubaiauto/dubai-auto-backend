@@ -11,10 +11,10 @@ import (
 	"dubai-auto/pkg/auth"
 )
 
-func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool) {
+func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, validator *auth.Validator) {
 	userRepository := repository.NewUserRepository(config, db)
 	userService := service.NewUserService(userRepository)
-	userHandler := http.NewUserHandler(userService)
+	userHandler := http.NewUserHandler(userService, validator)
 
 	{
 

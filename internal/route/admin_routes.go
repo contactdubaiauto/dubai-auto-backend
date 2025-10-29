@@ -8,14 +8,15 @@ import (
 	"dubai-auto/internal/delivery/http"
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/service"
+	"dubai-auto/pkg/auth"
 )
 
 // TODO: Hemmesini interface cykar!
 
-func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool) {
+func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, validator *auth.Validator) {
 	adminRepository := repository.NewAdminRepository(config, db)
 	adminService := service.NewAdminService(adminRepository)
-	adminHandler := http.NewAdminHandler(adminService)
+	adminHandler := http.NewAdminHandler(adminService, validator)
 
 	// profile routes
 	profile := r.Group("/profile")
@@ -126,25 +127,6 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool) {
 		fuelTypes.Put("/:id", adminHandler.UpdateFuelType)
 		fuelTypes.Delete("/:id", adminHandler.DeleteFuelType)
 	}
-
-	// Service Types routes
-	serviceTypes := r.Group("/service-types")
-	{
-		serviceTypes.Get("/", adminHandler.GetServiceTypes)
-		serviceTypes.Post("/", adminHandler.CreateServiceType)
-		serviceTypes.Put("/:id", adminHandler.UpdateServiceType)
-		serviceTypes.Delete("/:id", adminHandler.DeleteServiceType)
-	}
-
-	// Services routes
-	services := r.Group("/services")
-	{
-		services.Get("/", adminHandler.GetServices)
-		services.Post("/", adminHandler.CreateService)
-		services.Put("/:id", adminHandler.UpdateService)
-		services.Delete("/:id", adminHandler.DeleteService)
-	}
-
 	// Generations routes
 	generations := r.Group("/generations")
 	{

@@ -10,15 +10,17 @@ import (
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
 	"dubai-auto/internal/utils"
+	"dubai-auto/pkg/auth"
 	"dubai-auto/pkg/files"
 )
 
 type ComtransHandler struct {
-	service *service.ComtransService
+	service   *service.ComtransService
+	validator *auth.Validator
 }
 
-func NewComtransHandler(service *service.ComtransService) *ComtransHandler {
-	return &ComtransHandler{service}
+func NewComtransHandler(service *service.ComtransService, validator *auth.Validator) *ComtransHandler {
+	return &ComtransHandler{service, validator}
 }
 
 // GetComtransCategories godoc

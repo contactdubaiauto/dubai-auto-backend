@@ -13,12 +13,12 @@ type Logger struct {
 
 var Log *Logger
 
-func InitLogger(filePath string, fileName string, mode string) *Logger {
+func InitLogger(filePath string, fileName string, mode string) error {
 	// Ensure the log directory exists
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		err := os.MkdirAll(filePath, 0777)
 		if err != nil {
-			panic(err)
+			return err
 		}
 	}
 
@@ -28,8 +28,9 @@ func InitLogger(filePath string, fileName string, mode string) *Logger {
 		logFile, err := os.OpenFile(filepath.Join(filePath, fileName), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0777)
 
 		if err != nil {
-			panic(err)
+			return err
 		}
+
 		logger = zerolog.New(logFile).With().Timestamp().Logger()
 	} else {
 		logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
@@ -39,5 +40,5 @@ func InitLogger(filePath string, fileName string, mode string) *Logger {
 	zerolog.SetGlobalLevel(zerolog.TraceLevel)
 
 	Log = &Logger{logger}
-	return Log
+	return nil
 }

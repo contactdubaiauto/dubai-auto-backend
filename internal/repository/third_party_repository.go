@@ -137,7 +137,7 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (mod
 	return profile, err
 }
 
-func (r *ThirdPartyRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID int) ([]model.GetCarsResponse, error) {
+func (r *ThirdPartyRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID int, limit, lastID int) ([]model.GetCarsResponse, error) {
 	cars := make([]model.GetCarsResponse, 0)
 	q := `
 		select 
@@ -196,7 +196,7 @@ func (r *ThirdPartyRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID int) (
 			) img
 		) images ON true
 		LEFT JOIN LATERAL (
-			SELECT json_agg(v.video) AS videos
+			SELECT json_agg(v.video) as videos
 			FROM (
 				SELECT $2 || video as video
 				FROM videos
@@ -204,10 +204,11 @@ func (r *ThirdPartyRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID int) (
 				ORDER BY created_at DESC
 			) v
 		) videos ON true
-		where vs.user_id = $1 and status = 2
+		where vs.user_id = $1 and status = 2 and vs.id > $3
 		order by vs.id desc
+		limit $4
 	`
-	rows, err := r.db.Query(ctx, q, userID, r.config.IMAGE_BASE_URL)
+	rows, err := r.db.Query(ctx, q, userID, r.config.IMAGE_BASE_URL, lastID, limit)
 
 	if err != nil {
 		return cars, err

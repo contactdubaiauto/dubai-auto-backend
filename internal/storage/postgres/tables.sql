@@ -324,24 +324,23 @@ create table regions (
 );
 
 
-create table service_types (
-    "id" serial primary key,
-    "name" varchar(255) not null,
-    "created_at" timestamp default now()
-);
+-- create table service_types (
+--     "id" serial primary key,
+--     "name" varchar(255) not null,
+--     "created_at" timestamp default now()
+-- );
 
-create table services (
-    "id" serial primary key,
-    "name" varchar(255) not null,
-    "service_type_id" int not null,
-    "created_at" timestamp default now(),
-    constraint fk_services_service_type_id
-        foreign key (service_type_id)
-            references service_types(id)
-                on delete cascade
-                on update cascade
-);
-
+-- create table services (
+--     "id" serial primary key,
+--     "name" varchar(255) not null,
+--     "service_type_id" int not null,
+--     "created_at" timestamp default now(),
+--     constraint fk_services_service_type_id
+--         foreign key (service_type_id)
+--             references service_types(id)
+--                 on delete cascade
+--                 on update cascade
+-- );
 
 
 create table generations (

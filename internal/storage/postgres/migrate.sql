@@ -147,3 +147,5 @@ alter table vehicles alter column owners set default 0;
 
 alter table users add column temp_password varchar(100);
 
+drop table services;
+drop table service_types;

@@ -8,6 +8,7 @@ import (
 
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
+	"dubai-auto/internal/utils"
 	"dubai-auto/pkg/files"
 )
 
@@ -19,8 +20,9 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 	return &UserService{repo}
 }
 
-func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID *int) model.Response {
-	cars, err := s.UserRepository.GetMyCars(ctx, userID)
+func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID *int, limit, lastID string) model.Response {
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
+	cars, err := s.UserRepository.GetMyCars(ctx, userID, limitInt, lastIDInt)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -29,8 +31,9 @@ func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID *int) model.Res
 	return model.Response{Data: cars}
 }
 
-func (s *UserService) OnSale(ctx *fasthttp.RequestCtx, userID *int) model.Response {
-	cars, err := s.UserRepository.OnSale(ctx, userID)
+func (s *UserService) OnSale(ctx *fasthttp.RequestCtx, userID *int, limit, lastID string) model.Response {
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
+	cars, err := s.UserRepository.OnSale(ctx, userID, limitInt, lastIDInt)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -307,12 +310,12 @@ func (s *UserService) GetHome(ctx *fasthttp.RequestCtx, userID int) model.Respon
 
 func (s *UserService) GetCars(ctx *fasthttp.RequestCtx, userID int, brands, models, regions, cities,
 	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors []string,
-	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer string, new, wheel *bool) model.Response {
+	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer string, new, wheel *bool, limit, lastID int) model.Response {
 
 	cars, err := s.UserRepository.GetCars(ctx, userID, brands, models, regions, cities,
 		generations, transmissions, engines, drivetrains, body_types, fuel_types,
 		ownership_types, colors, year_from, year_to, credit,
-		price_from, price_to, tradeIn, owners, crash, odometer, new, wheel)
+		price_from, price_to, tradeIn, owners, crash, odometer, new, wheel, limit, lastID)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -488,9 +491,10 @@ func (s *UserService) DeleteCarVideo(ctx *fasthttp.RequestCtx, carID int, videoP
 }
 
 // GetBrokers returns all users with role_id = 4 (brokers)
-func (s *UserService) GetBrokers(ctx *fasthttp.RequestCtx) model.Response {
+func (s *UserService) GetBrokers(ctx *fasthttp.RequestCtx, limit, lastID string) model.Response {
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
 	const brokerRoleID = 4
-	brokers, err := s.UserRepository.GetUsersByRole(ctx, brokerRoleID)
+	brokers, err := s.UserRepository.GetUsersByRole(ctx, brokerRoleID, limitInt, lastIDInt)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -510,9 +514,10 @@ func (s *UserService) GetBrokerByID(ctx *fasthttp.RequestCtx, brokerID int) mode
 }
 
 // GetLogists returns all users with role_id = 3 (logists)
-func (s *UserService) GetLogists(ctx *fasthttp.RequestCtx) model.Response {
+func (s *UserService) GetLogists(ctx *fasthttp.RequestCtx, limit, lastID string) model.Response {
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
 	const logistRoleID = 3
-	logists, err := s.UserRepository.GetUsersByRole(ctx, logistRoleID)
+	logists, err := s.UserRepository.GetUsersByRole(ctx, logistRoleID, limitInt, lastIDInt)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -532,9 +537,10 @@ func (s *UserService) GetLogistByID(ctx *fasthttp.RequestCtx, logistID int) mode
 }
 
 // GetServices returns all users with role_id = 5 (car services)
-func (s *UserService) GetServices(ctx *fasthttp.RequestCtx) model.Response {
+func (s *UserService) GetServices(ctx *fasthttp.RequestCtx, limit, lastID string) model.Response {
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
 	const serviceRoleID = 5
-	services, err := s.UserRepository.GetUsersByRole(ctx, serviceRoleID)
+	services, err := s.UserRepository.GetUsersByRole(ctx, serviceRoleID, limitInt, lastIDInt)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}

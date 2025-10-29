@@ -16,8 +16,8 @@ type AuthHandler struct {
 	validator *auth.Validator
 }
 
-func NewAuthHandler(service *service.AuthService) *AuthHandler {
-	return &AuthHandler{service, auth.NewValidator()}
+func NewAuthHandler(service *service.AuthService, validator *auth.Validator) *AuthHandler {
+	return &AuthHandler{service, validator}
 }
 
 // UserLoginGoogle godoc

@@ -13,11 +13,11 @@ import (
 	"dubai-auto/internal/route"
 	"dubai-auto/pkg/auth"
 	"dubai-auto/pkg/firebase"
-	"dubai-auto/pkg/logger"
 )
 
-func InitApp(db *pgxpool.Pool, conf *config.Config, logger *logger.Logger) *fiber.App {
+func InitApp(db *pgxpool.Pool, conf *config.Config) *fiber.App {
 	firebaseService, err := firebase.InitFirebase(conf)
+	validator := auth.NewValidator()
 
 	if err != nil {
 		log.Fatalf("Failed to initialize Firebase: %v", err)
@@ -39,6 +39,6 @@ func InitApp(db *pgxpool.Pool, conf *config.Config, logger *logger.Logger) *fibe
 	}
 
 	app.Static("api/v1/images", "."+conf.STATIC_PATH)
-	route.Init(app, conf, db, firebaseService)
+	route.Init(app, conf, db, firebaseService, validator)
 	return app
 }

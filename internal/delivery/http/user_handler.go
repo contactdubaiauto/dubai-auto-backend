@@ -19,8 +19,8 @@ type UserHandler struct {
 	validator   *auth.Validator
 }
 
-func NewUserHandler(service *service.UserService) *UserHandler {
-	return &UserHandler{service, auth.NewValidator()}
+func NewUserHandler(service *service.UserService, validator *auth.Validator) *UserHandler {
+	return &UserHandler{service, validator}
 }
 
 // GetCars godoc
@@ -52,6 +52,8 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 // @Param  	odometer   	      query   string  false  "Filter by odometer"
 // @Param   price_from        query   string  false  "Filter by price from"
 // @Param   price_to          query   string  false  "Filter by price to"
+// @Param   limit             query   string  false  "Limit"
+// @Param   last_id           query   string  false  "Last item ID"
 // @Success      200  {array}  model.GetCarsResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -75,6 +77,8 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 	fuel_types := auth.QueryParamToArray(c.Query("fuel_types"))
 	ownership_types := auth.QueryParamToArray(c.Query("ownership_types"))
 	year_from := c.Query("year_from")
+	limit := c.Query("limit")
+	lastID := c.Query("last_id")
 	odometer := c.Query("odometer")
 	year_to := c.Query("year_to")
 	tradeIn := c.Query("trade_in")
@@ -110,11 +114,12 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 
 	}
 
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
 	data := h.UserService.GetCars(ctx, userID, brands, models,
 		regions, cities, generations, transmissions, engines, drivetrains,
 		body_types, fuel_types, ownership_types, colors,
 		year_from, year_to, credit, price_from, price_to,
-		tradeIn, owners, crash, odometer, new, wheel)
+		tradeIn, owners, crash, odometer, new, wheel, limitInt, lastIDInt)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1198,6 +1203,8 @@ func (h *UserHandler) RemoveLike(c *fiber.Ctx) error {
 // @Tags         profile
 // @Security     BearerAuth
 // @Produce      json
+// @Param        limit   query      string  false  "Limit"
+// @Param        last_id   query      string  false  "Last item ID"
 // @Success      200  {array}  model.GetCarsResponse
 // @Failure      400  {object} model.ResultMessage
 // @Failure      401  {object} auth.ErrorResponse
@@ -1207,8 +1214,10 @@ func (h *UserHandler) RemoveLike(c *fiber.Ctx) error {
 // @Router       /api/v1/users/profile/my-cars [get]
 func (h *UserHandler) GetMyCars(c *fiber.Ctx) error {
 	ctx := c.Context()
+	limit := c.Query("limit")
+	lastID := c.Query("last_id")
 	userID := c.Locals("id").(int)
-	data := h.UserService.GetMyCars(ctx, &userID)
+	data := h.UserService.GetMyCars(ctx, &userID, limit, lastID)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1218,6 +1227,8 @@ func (h *UserHandler) GetMyCars(c *fiber.Ctx) error {
 // @Tags         profile
 // @Security     BearerAuth
 // @Produce      json
+// @Param        limit   query      string  false  "Limit"
+// @Param        last_id   query      string  false  "Last item ID"
 // @Success      200  {array}  model.GetCarsResponse
 // @Failure      400  {object} model.ResultMessage
 // @Failure      401  {object} auth.ErrorResponse
@@ -1227,8 +1238,10 @@ func (h *UserHandler) GetMyCars(c *fiber.Ctx) error {
 // @Router       /api/v1/users/profile/on-sale [get]
 func (h *UserHandler) OnSale(c *fiber.Ctx) error {
 	ctx := c.Context()
+	limit := c.Query("limit")
+	lastID := c.Query("last_id")
 	userID := c.Locals("id").(int)
-	data := h.UserService.OnSale(ctx, &userID)
+	data := h.UserService.OnSale(ctx, &userID, limit, lastID)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1298,6 +1311,8 @@ func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
 // @Tags         user
 // @Produce      json
 // @Security     BearerAuth
+// @Param        limit   query      string  false  "Limit"
+// @Param        last_id   query      string  false  "Last item ID"
 // @Success      200  {array}  model.UserRoleResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -1307,7 +1322,9 @@ func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
 // @Router       /api/v1/users/brokers [get]
 func (h *UserHandler) GetBrokers(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.UserService.GetBrokers(ctx)
+	limit := c.Query("limit")
+	lastID := c.Query("last_id")
+	data := h.UserService.GetBrokers(ctx, limit, lastID)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1347,6 +1364,8 @@ func (h *UserHandler) GetBrokerByID(c *fiber.Ctx) error {
 // @Tags         user
 // @Produce      json
 // @Security     BearerAuth
+// @Param        limit   query      string  false  "Limit"
+// @Param        last_id   query      string  false  "Last item ID"
 // @Success      200  {array}  model.UserRoleResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -1356,7 +1375,9 @@ func (h *UserHandler) GetBrokerByID(c *fiber.Ctx) error {
 // @Router       /api/v1/users/logists [get]
 func (h *UserHandler) GetLogists(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.UserService.GetLogists(ctx)
+	limit := c.Query("limit")
+	lastID := c.Query("last_id")
+	data := h.UserService.GetLogists(ctx, limit, lastID)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1396,6 +1417,8 @@ func (h *UserHandler) GetLogistByID(c *fiber.Ctx) error {
 // @Tags         user
 // @Produce      json
 // @Security     BearerAuth
+// @Param        limit   query      string  false  "Limit"
+// @Param        last_id   query      string  false  "Last item ID"
 // @Success      200  {array}  model.UserRoleResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -1405,7 +1428,9 @@ func (h *UserHandler) GetLogistByID(c *fiber.Ctx) error {
 // @Router       /api/v1/users/services [get]
 func (h *UserHandler) GetServices(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.UserService.GetServices(ctx)
+	limit := c.Query("limit")
+	lastID := c.Query("last_id")
+	data := h.UserService.GetServices(ctx, limit, lastID)
 	return utils.FiberResponse(c, data)
 }
 

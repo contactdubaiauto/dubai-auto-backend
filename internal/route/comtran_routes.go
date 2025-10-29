@@ -11,10 +11,10 @@ import (
 	"dubai-auto/pkg/auth"
 )
 
-func SetupComtranRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool) {
+func SetupComtranRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, validator *auth.Validator) {
 	comtransRepository := repository.NewComtransRepository(config, db)
 	comtransService := service.NewComtransService(comtransRepository)
-	comtransHandler := http.NewComtransHandler(comtransService)
+	comtransHandler := http.NewComtransHandler(comtransService, validator)
 
 	{
 		// get comtrans categories

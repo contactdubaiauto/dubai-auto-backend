@@ -11,10 +11,10 @@ import (
 	"dubai-auto/pkg/auth"
 )
 
-func SetupAuthRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool) {
+func SetupAuthRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, validator *auth.Validator) {
 	authRepository := repository.NewAuthRepository(config, db)
 	authService := service.NewAuthService(authRepository)
-	authHandler := http.NewAuthHandler(authService)
+	authHandler := http.NewAuthHandler(authService, validator)
 
 	{
 		r.Post("/admin-login", authHandler.AdminLogin)

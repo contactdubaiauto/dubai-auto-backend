@@ -33,7 +33,7 @@ func (r *AdminRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (model.Ad
 }
 
 // Application CRUD operations
-func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx, qRole int, qStatus int) ([]model.AdminApplicationResponse, error) {
+func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx, qRole int, qStatus int, limit, lastID int) ([]model.AdminApplicationResponse, error) {
 	applications := make([]model.AdminApplicationResponse, 0)
 	q := ``
 
@@ -54,8 +54,9 @@ func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx, qRole int, q
 			FROM users u
 			left join profiles p on p.user_id = u.id
 			left join documents d on d.id = p.documents_id
-			WHERE role_id = $1
+			WHERE role_id = $1 and u.id > $2
 			ORDER BY id DESC
+			limit $3
 		`
 	default:
 		q = `
@@ -70,12 +71,13 @@ func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx, qRole int, q
 				status, 
 				created_at 
 			FROM temp_users 
-			WHERE role_id = $1
+			WHERE role_id = $1 and u.id > $2
 			ORDER BY id DESC
+			limit $3
 		`
 	}
 
-	rows, err := r.db.Query(ctx, q, qRole)
+	rows, err := r.db.Query(ctx, q, qRole, lastID, limit)
 
 	if err != nil {
 		return applications, err
@@ -848,52 +850,6 @@ func (r *AdminRepository) UpdateServiceType(ctx *fasthttp.RequestCtx, id int, re
 
 func (r *AdminRepository) DeleteServiceType(ctx *fasthttp.RequestCtx, id int) error {
 	q := `DELETE FROM service_types WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id)
-	return err
-}
-
-// Services CRUD operations
-func (r *AdminRepository) GetServices(ctx *fasthttp.RequestCtx) ([]model.AdminServiceResponse, error) {
-	services := make([]model.AdminServiceResponse, 0)
-	q := `
-		SELECT s.id, s.name, s.service_type_id, st.name as service_type_name, s.created_at 
-		FROM services s
-		LEFT JOIN service_types st ON s.service_type_id = st.id
-		ORDER BY s.id DESC
-	`
-
-	rows, err := r.db.Query(ctx, q)
-	if err != nil {
-		return services, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var service model.AdminServiceResponse
-		if err := rows.Scan(&service.ID, &service.Name, &service.ServiceTypeID, &service.ServiceTypeName, &service.CreatedAt); err != nil {
-			return services, err
-		}
-		services = append(services, service)
-	}
-
-	return services, err
-}
-
-func (r *AdminRepository) CreateService(ctx *fasthttp.RequestCtx, req *model.CreateServiceRequest) (int, error) {
-	q := `INSERT INTO services (name, service_type_id) VALUES ($1, $2) RETURNING id`
-	var id int
-	err := r.db.QueryRow(ctx, q, req.Name, req.ServiceTypeID).Scan(&id)
-	return id, err
-}
-
-func (r *AdminRepository) UpdateService(ctx *fasthttp.RequestCtx, id int, req *model.CreateServiceRequest) error {
-	q := `UPDATE services SET name = $2, service_type_id = $3 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.ServiceTypeID)
-	return err
-}
-
-func (r *AdminRepository) DeleteService(ctx *fasthttp.RequestCtx, id int) error {
-	q := `DELETE FROM services WHERE id = $1`
 	_, err := r.db.Exec(ctx, q, id)
 	return err
 }

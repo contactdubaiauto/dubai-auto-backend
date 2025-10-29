@@ -390,19 +390,6 @@ definitions:
       username:
         type: string
     type: object
-  model.AdminServiceResponse:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      service_type_id:
-        type: integer
-      service_type_name:
-        type: string
-    type: object
   model.AdminServiceTypeResponse:
     properties:
       created_at:
@@ -979,18 +966,6 @@ definitions:
         type: string
     required:
     - name
-    type: object
-  model.CreateServiceRequest:
-    properties:
-      name:
-        maxLength: 255
-        minLength: 2
-        type: string
-      service_type_id:
-        type: integer
-    required:
-    - name
-    - service_type_id
     type: object
   model.CreateServiceTypeRequest:
     properties:
@@ -2223,6 +2198,14 @@ paths:
         name: status
         required: true
         type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: Last item ID
+        in: query
+        name: last_id
+        type: string
       produces:
       - application/json
       responses:
@@ -7158,159 +7141,6 @@ paths:
       summary: Update a service type
       tags:
       - admin-service-types
-  /api/v1/admin/services:
-    get:
-      description: Returns a list of all services
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.AdminServiceResponse'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get all services
-      tags:
-      - admin-services
-    post:
-      consumes:
-      - application/json
-      description: Creates a new service
-      parameters:
-      - description: Service data
-        in: body
-        name: service
-        required: true
-        schema:
-          $ref: '#/definitions/model.CreateServiceRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.SuccessWithId'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Create a service
-      tags:
-      - admin-services
-  /api/v1/admin/services/{id}:
-    delete:
-      description: Deletes a service by ID
-      parameters:
-      - description: Service ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Delete a service
-      tags:
-      - admin-services
-    put:
-      consumes:
-      - application/json
-      description: Updates a service by ID
-      parameters:
-      - description: Service ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Service data
-        in: body
-        name: service
-        required: true
-        schema:
-          $ref: '#/definitions/model.CreateServiceRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Update a service
-      tags:
-      - admin-services
   /api/v1/admin/transmissions:
     get:
       description: Returns a list of all transmissions
@@ -8964,6 +8794,15 @@ paths:
   /api/v1/third-party/profile/my-cars:
     get:
       description: Returns my cars
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: Last item ID
+        in: query
+        name: last_id
+        type: string
       produces:
       - application/json
       responses:
@@ -9406,6 +9245,15 @@ paths:
   /api/v1/users/brokers:
     get:
       description: Returns a list of all brokers (users with role_id = 4)
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: Last item ID
+        in: query
+        name: last_id
+        type: string
       produces:
       - application/json
       responses:
@@ -9576,6 +9424,14 @@ paths:
       - description: Filter by price to
         in: query
         name: price_to
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: Last item ID
+        in: query
+        name: last_id
         type: string
       produces:
       - application/json
@@ -10649,6 +10505,15 @@ paths:
   /api/v1/users/logists:
     get:
       description: Returns a list of all logists (users with role_id = 3)
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: Last item ID
+        in: query
+        name: last_id
+        type: string
       produces:
       - application/json
       responses:
@@ -10846,6 +10711,15 @@ paths:
   /api/v1/users/profile/my-cars:
     get:
       description: Returns the cars associated with the authenticated user's profile
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: Last item ID
+        in: query
+        name: last_id
+        type: string
       produces:
       - application/json
       responses:
@@ -10883,6 +10757,15 @@ paths:
   /api/v1/users/profile/on-sale:
     get:
       description: Returns the cars associated with the authenticated user's profile
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: Last item ID
+        in: query
+        name: last_id
+        type: string
       produces:
       - application/json
       responses:
@@ -10920,6 +10803,15 @@ paths:
   /api/v1/users/services:
     get:
       description: Returns a list of all car services (users with role_id = 5)
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: Last item ID
+        in: query
+        name: last_id
+        type: string
       produces:
       - application/json
       responses:

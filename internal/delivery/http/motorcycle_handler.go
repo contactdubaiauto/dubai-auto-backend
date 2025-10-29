@@ -10,15 +10,17 @@ import (
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
 	"dubai-auto/internal/utils"
+	"dubai-auto/pkg/auth"
 	"dubai-auto/pkg/files"
 )
 
 type MotorcycleHandler struct {
-	service *service.MotorcycleService
+	service   *service.MotorcycleService
+	validator *auth.Validator
 }
 
-func NewMotorcycleHandler(service *service.MotorcycleService) *MotorcycleHandler {
-	return &MotorcycleHandler{service}
+func NewMotorcycleHandler(service *service.MotorcycleService, validator *auth.Validator) *MotorcycleHandler {
+	return &MotorcycleHandler{service, validator}
 }
 
 // GetMotorcycleCategories godoc

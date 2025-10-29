@@ -4,6 +4,7 @@ import (
 	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
+	"dubai-auto/internal/utils"
 	"dubai-auto/pkg/files"
 	"errors"
 	"mime/multipart"
@@ -39,8 +40,9 @@ func (s *ThirdPartyService) GetProfile(ctx *fasthttp.RequestCtx, id int) model.R
 	return model.Response{Data: profile}
 }
 
-func (s *ThirdPartyService) GetMyCars(ctx *fasthttp.RequestCtx, userID int) model.Response {
-	cars, err := s.repo.GetMyCars(ctx, userID)
+func (s *ThirdPartyService) GetMyCars(ctx *fasthttp.RequestCtx, userID int, limit, lastID string) model.Response {
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
+	cars, err := s.repo.GetMyCars(ctx, userID, limitInt, lastIDInt)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}

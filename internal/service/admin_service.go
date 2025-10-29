@@ -39,7 +39,8 @@ func (s *AdminService) GetProfile(ctx *fasthttp.RequestCtx, id int) model.Respon
 }
 
 // Application service methods
-func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx, qRole string, qStatus string) model.Response {
+func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx, qRole, qStatus, limit, lastID string) model.Response {
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
 	qRoleInt, err := strconv.Atoi(qRole)
 
 	if err != nil {
@@ -56,7 +57,7 @@ func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx, qRole string, q
 		return model.Response{Error: errors.New("invalid role or status"), Status: http.StatusBadRequest}
 	}
 
-	applications, err := s.repo.GetApplications(ctx, qRoleInt, qStatusInt)
+	applications, err := s.repo.GetApplications(ctx, qRoleInt, qStatusInt, limitInt, lastIDInt)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -676,43 +677,6 @@ func (s *AdminService) DeleteServiceType(ctx *fasthttp.RequestCtx, id int) model
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 	return model.Response{Data: model.Success{Message: "Service type deleted successfully"}}
-}
-
-// Services service methods
-func (s *AdminService) GetServices(ctx *fasthttp.RequestCtx) model.Response {
-	services, err := s.repo.GetServices(ctx)
-
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: services}
-}
-
-func (s *AdminService) CreateService(ctx *fasthttp.RequestCtx, req *model.CreateServiceRequest) model.Response {
-	id, err := s.repo.CreateService(ctx, req)
-
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Service created successfully"}}
-}
-
-func (s *AdminService) UpdateService(ctx *fasthttp.RequestCtx, id int, req *model.CreateServiceRequest) model.Response {
-	err := s.repo.UpdateService(ctx, id, req)
-
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Service updated successfully"}}
-}
-
-func (s *AdminService) DeleteService(ctx *fasthttp.RequestCtx, id int) model.Response {
-	err := s.repo.DeleteService(ctx, id)
-
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Service deleted successfully"}}
 }
 
 // Generations service methods
