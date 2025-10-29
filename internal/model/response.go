@@ -520,7 +520,8 @@ type LogistDestinationResponse struct {
 
 // User role responses (brokers, logists, services)
 type ThirdPartyUserResponse struct {
-	Username *string `json:"username"`
-	Avatar   *string `json:"avatar"`
-	ID       int     `json:"id"`
+	Registered *time.Time `json:"registered"`
+	Username   *string    `json:"username"`
+	Avatar     *string    `json:"avatar"`
+	ID         int        `json:"id"`
 }

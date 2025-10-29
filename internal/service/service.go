@@ -510,24 +510,9 @@ func (s *UserService) GetUserByID(ctx *fasthttp.RequestCtx, userID string) model
 }
 
 func (s *UserService) GetThirdPartyUsers(ctx *fasthttp.RequestCtx, roleID, fromID, toID, search string) model.Response {
-	roleIDInt, err := strconv.Atoi(roleID)
-
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusBadRequest}
-	}
-
-	fromIDInt, err := strconv.Atoi(fromID)
-
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusBadRequest}
-	}
-
-	toIDInt, err := strconv.Atoi(toID)
-
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusBadRequest}
-	}
-
+	roleIDInt, _ := strconv.Atoi(roleID)
+	fromIDInt, _ := strconv.Atoi(fromID)
+	toIDInt, _ := strconv.Atoi(toID)
 	user, err := s.UserRepository.GetThirdPartyUsers(ctx, roleIDInt, fromIDInt, toIDInt, search)
 
 	if err != nil {

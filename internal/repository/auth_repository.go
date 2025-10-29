@@ -34,9 +34,8 @@ func (r *AuthRepository) UserLoginGoogle(ctx *fasthttp.RequestCtx, claims model.
 		INSERT INTO users (email, password, username)
 		VALUES ($1, 'google', $2)
 		ON CONFLICT (email) DO UPDATE
-		SET email = EXCLUDED.email
+		SET email = EXCLUDED.email, username = EXCLUDED.username
 		RETURNING id, role_id;
-
 	`
 	row := r.db.QueryRow(ctx, q, claims.Email, claims.Name)
 	err := row.Scan(&userByEmail.ID, &userByEmail.RoleID)

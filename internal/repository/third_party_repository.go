@@ -466,7 +466,7 @@ func (r *ThirdPartyRepository) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, ca
 			json_build_object(
 				'id', bs.id,
 				'name', bs.name,
-				'logo', bs.logo,
+				'logo', $3 || bs.logo,
 				'model_count', bs.model_count
 			) as brand,
 			json_build_object(

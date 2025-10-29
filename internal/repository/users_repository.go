@@ -249,9 +249,15 @@ func (r *UserRepository) Sell(ctx *fasthttp.RequestCtx, carID, userID *int) erro
 
 func (r *UserRepository) GetBrands(ctx *fasthttp.RequestCtx, text string) ([]*model.GetBrandsResponse, error) {
 	q := `
-		SELECT id, name, logo, model_count FROM brands WHERE name ILIKE '%' || $1 || '%'
+		SELECT 
+			id, 
+			name, 
+			$2 || logo, 
+			model_count 
+		FROM brands 
+		WHERE name ILIKE '%' || $1 || '%'
 	`
-	rows, err := r.db.Query(ctx, q, text)
+	rows, err := r.db.Query(ctx, q, text, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return nil, err
@@ -706,51 +712,6 @@ func (r *UserRepository) GetBodysByModelID(ctx *fasthttp.RequestCtx, modelID int
 	return bodyTypes, err
 }
 
-// func (r *UserRepository) GetBodysByModels(ctx *fasthttp.RequestCtx, wheel bool, models, years []int) ([]model.BodyType, error) {
-// 	q := `
-// 		select DISTINCT ON (bts.id)
-// 			bts.id,
-// 			bts.name,
-// 			$4 || bts.image
-// 		from generation_modifications gms
-// 		left join body_types bts on bts.id = gms.body_type_id
-// 		where gms.generation_id in (
-// 			select
-// 				gs.id
-// 			from generations gs
-// 			WHERE
-// 				EXISTS (
-// 					SELECT 1
-// 					FROM UNNEST($1::int[]) AS year_val
-// 					WHERE gs.start_year <= year_val
-// 					AND gs.end_year >= year_val
-// 				)
-// 				and gs.model_id = any ($2) and gs.wheel = $3
-// 		)
-// 	`
-
-// 	rows, err := r.db.Query(ctx, q, years, models, wheel, r.config.IMAGE_BASE_URL)
-
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	defer rows.Close()
-// 	bodyTypes := make([]model.BodyType, 0)
-
-// 	for rows.Next() {
-// 		var bodyType model.BodyType
-
-// 		if err := rows.Scan(&bodyType.ID, &bodyType.Name, &bodyType.Image); err != nil {
-// 			return nil, err
-// 		}
-
-// 		bodyTypes = append(bodyTypes, bodyType)
-// 	}
-
-// 	return bodyTypes, err
-// }
-
 func (r *UserRepository) GetBodyTypes(ctx *fasthttp.RequestCtx) ([]model.BodyType, error) {
 	q := `
 		SELECT id, name, $1 || image as image FROM body_types
@@ -991,6 +952,7 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int) (model.Ho
 
 	for rows.Next() {
 		var car model.GetCarsResponse
+
 		if err := rows.Scan(
 			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
 			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
@@ -999,6 +961,7 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int) (model.Ho
 		); err != nil {
 			return home, err
 		}
+
 		cars = append(cars, car)
 	}
 	home.Popular = cars
@@ -1011,7 +974,6 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 	engines, drivetrains, body_types, fuel_types, ownership_types, colors []string,
 	year_from, year_to, credit, price_from, price_to, tradeIn, owners,
 	crash, odometer string, new, wheel *bool, limit, lastID int) ([]model.GetCarsResponse, error) {
-
 	var qWhere string
 	var qValues []any
 	qValues = append(qValues, userID)
@@ -1210,7 +1172,7 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 			json_build_object(
 				'id', pf.user_id,
 				'username', pf.username,
-				'avatar', pf.avatar,
+				'avatar', '` + r.config.IMAGE_BASE_URL + `' || pf.avatar,
 				'role_id', u.role_id
 			) as owner,
 			vs.description,
@@ -1359,7 +1321,7 @@ func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int)
 			json_build_object(
 				'id', pf.user_id,
 				'username', pf.username,
-				'avatar', pf.avatar
+				'avatar', $3 || pf.avatar
 			) as owner,
 			 vs.description,
 			CASE 
@@ -1379,7 +1341,7 @@ func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int)
 		LEFT JOIN drivetrains ds ON gms.drivetrain_id = ds.id
 		LEFT JOIN body_types bts ON gms.body_type_id = bts.id
 		LEFT JOIN fuel_types fts ON gms.fuel_type_id = fts.id
-		left join user_likes ul on ul.vehicle_id = vs.id AND ul.user_id = $1
+		left join user_likes ul on ul.vehicle_id = vs.id AND ul.user_id = $2
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -1401,7 +1363,7 @@ func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int)
 		WHERE vs.id = $1;
 	`
 
-	err := r.db.QueryRow(ctx, q, carID, userID).Scan(
+	err := r.db.QueryRow(ctx, q, carID, userID, r.config.IMAGE_BASE_URL).Scan(
 		&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
 		&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
 		&car.Credit, &car.New, &car.Status, &car.CreatedAt, &car.TradeIn, &car.Owners,
@@ -1420,7 +1382,7 @@ func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID 
 			json_build_object(
 				'id', bs.id,
 				'name', bs.name,
-				'logo', bs.logo,
+				'logo', $3 || bs.logo,
 				'model_count', bs.model_count
 			) as brand,
 			json_build_object(
@@ -1513,7 +1475,7 @@ func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID 
 		) videos ON true
 		where vs.id = $1 and vs.user_id = $2;
 	`
-	err := r.db.QueryRow(ctx, q, carID, userID).Scan(
+	err := r.db.QueryRow(ctx, q, carID, userID, r.config.IMAGE_BASE_URL).Scan(
 		&car.ID, &car.Brand, &car.Region, &car.City, &car.Model, &car.Modification,
 		&car.Color, &car.BodyType, &car.Generation, &car.Year, &car.Price, &car.Odometer, &car.VinCode,
 		&car.Wheel, &car.TradeIN, &car.Crash,
@@ -1769,8 +1731,8 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 			telegram,
 			address,
 			coordinates,
-			avatar,
-			banner,
+			$2 || avatar,
+			$2 || banner,
 			company_name,
 			message,
 			vat_number,
@@ -1805,7 +1767,7 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
         where users.id = $1;
 	`
 	var profile model.ThirdPartyGetProfileRes
-	err := r.db.QueryRow(ctx, q, userID).Scan(
+	err := r.db.QueryRow(ctx, q, userID, r.config.IMAGE_BASE_URL).Scan(
 		&profile.AboutUs, &profile.Whatsapp,
 		&profile.Telegram, &profile.Address,
 		&profile.Coordinates, &profile.Avatar,
@@ -1834,30 +1796,31 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 }
 
 func (r *UserRepository) GetThirdPartyUsers(ctx *fasthttp.RequestCtx, roleID, fromID, toID int, search string) ([]model.ThirdPartyUserResponse, error) {
-
 	qWhere := ""
 
 	if search != "" {
-		qWhere = fmt.Sprintf(" AND (users.company_name ILIKE '%s' OR users.username ILIKE '%s') ", search, search)
+		qWhere = fmt.Sprintf(" AND u.username ILIKE '%%%s%%' ", search)
 	}
 
-	if fromID != 0 && toID != 0 {
+	if fromID > 0 && toID > 0 {
 		qWhere = fmt.Sprintf(" AND ds.from_id = %d AND ds.to_id = %d %s", fromID, toID, qWhere)
 	}
 
 	q := `
 		select
 			u.id,
-			u.username,
-			p.avatar
+			p.company_name,
+			p.created_at,
+			$2 || p.avatar
 		from users u
         left join profiles p on p.user_id = u.id
+        left join user_destinations ds on ds.user_id = u.id
         where u.role_id = $1 %s;
 	`
 	var users []model.ThirdPartyUserResponse
 	var user model.ThirdPartyUserResponse
 
-	rows, err := r.db.Query(ctx, fmt.Sprintf(q, qWhere), roleID)
+	rows, err := r.db.Query(ctx, fmt.Sprintf(q, qWhere), roleID, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return users, err
@@ -1866,7 +1829,7 @@ func (r *UserRepository) GetThirdPartyUsers(ctx *fasthttp.RequestCtx, roleID, fr
 	defer rows.Close()
 
 	for rows.Next() {
-		if err := rows.Scan(&user.ID, &user.Username, &user.Avatar); err != nil {
+		if err := rows.Scan(&user.ID, &user.Username, &user.Registered, &user.Avatar); err != nil {
 			return users, err
 		}
 		users = append(users, user)

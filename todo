@@ -2,7 +2,7 @@
 
 
 1. get by id third part, if dealer give cars
-2. 
+2. dilerin cary opshyda gelmedi
 3. 
 4. mode, modification count
 5. 
@@ -18,3 +18,9 @@ add countries cities (with their own flags)
 applicationsda type bn status islanok
 
 
+
+Oct 29 19:57:17 srv225949807.host da[366362]: asodfsodi
+Oct 29 19:57:17 srv225949807.host da[366362]: {"level":"error","time":"2025-10-29T19:57:17Z","message":"ERROR: invalid reference to FROM-clause entry for table \"users\" (SQLSTATE 42P01)"}
+Oct 29 19:57:17 srv225949807.host da[366362]: [19:57:17] 127.0.0.1 404 - GET /api/v1/users/third-party    1.201403ms
+Oct 29 19:57:19 srv225949807.host da[366362]: asodfsodi
+Oct 29 19:57:19 srv225949807.host da[366362]: [19:57:19] 127.0.0.1 200 - GET /api/v1/users/third-party 
