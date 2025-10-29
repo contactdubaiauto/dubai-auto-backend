@@ -92,7 +92,6 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 		wsMutex.Lock()
 		wsUserConns[user.ID] = append(wsUserConns[user.ID], c)
 		wsMutex.Unlock()
-		log.Printf("✅ User %d connected via WebSocket", user.ID)
 
 		welcomeMsg := model.WSMessage{
 			Event: "connected",
@@ -106,7 +105,7 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 						{
 							CreatedAt: time.Now(),
 							Message:   "Successfully connected to messaging service",
-							Type:      1,
+							Type:      1, // 1-text, 2-item, 3-video, 4-image,
 						},
 					},
 				},
@@ -142,7 +141,6 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 			}
 
 			wsMutex.Unlock()
-			log.Printf("🔌 User %d disconnected", user.ID)
 			err = h.service.UpdateUserStatus(user.ID, false)
 
 			if err != nil {
@@ -170,8 +168,6 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 				break
 			}
 
-			log.Printf("📨 Received message from user %d: %s", user.ID, msg.Event)
-
 			switch msg.Event {
 			case "ping":
 				pongData := []model.UserMessage{
@@ -180,7 +176,7 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 							{
 								CreatedAt:  time.Now(),
 								Message:    "pong",
-								Type:       1,
+								Type:       1, // 1-text, 2-item, 3-video, 4-image,
 								SenderID:   user.ID,
 								ReceiverID: user.ID,
 								ID:         1,
@@ -206,7 +202,6 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 						log.Printf("❌ Error writing to database: %v", err)
 					}
 
-					log.Printf("❌ User %d not connected", msg.TargetUserID)
 					continue
 				}
 
@@ -236,9 +231,6 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 			}
 		}
 	}))
-
-	log.Println("🔌 WebSocket messaging service initialized at /ws")
-	log.Println("📖 Connect with: ws://localhost:8080/ws?token=YOUR_JWT_TOKEN")
 }
 
 func sendToUser(userID int, event string, data any) {

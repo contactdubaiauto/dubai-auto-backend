@@ -136,6 +136,7 @@ type Owner struct {
 	Avatar   *string `json:"avatar"`
 	Username *string `json:"username"`
 	Id       *int    `json:"id"`
+	RoleID   *int    `json:"role_id"`
 }
 
 type GetCarsResponse struct {
@@ -518,8 +519,8 @@ type LogistDestinationResponse struct {
 }
 
 // User role responses (brokers, logists, services)
-type UserRoleResponse struct {
-	ID       int     `json:"id"`
+type ThirdPartyUserResponse struct {
 	Username *string `json:"username"`
 	Avatar   *string `json:"avatar"`
+	ID       int     `json:"id"`
 }

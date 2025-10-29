@@ -50,8 +50,15 @@ type UserMessage struct {
 	ID             int       `json:"id"`
 }
 
+type FirebaseMessageData struct {
+	Time     time.Time `json:"time"`
+	Message  string    `json:"message"`
+	Username string    `json:"username"`
+	Avatar   string    `json:"avatar"`
+	Type     int       `json:"type"`
+}
+
 type FirebaseMessage struct {
-	Message string    `json:"message"`
-	Time    time.Time `json:"time"`
-	Type    int       `json:"type"`
+	Data FirebaseMessageData `json:"data"`
+	Type int                 `json:"type"`
 }

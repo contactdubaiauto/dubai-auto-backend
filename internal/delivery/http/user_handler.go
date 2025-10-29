@@ -54,6 +54,7 @@ func NewUserHandler(service *service.UserService, validator *auth.Validator) *Us
 // @Param   price_to          query   string  false  "Filter by price to"
 // @Param   limit             query   string  false  "Limit"
 // @Param   last_id           query   string  false  "Last item ID"
+// @Param   user_id           query   string  false  "User ID"
 // @Success      200  {array}  model.GetCarsResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -76,6 +77,7 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 	body_types := auth.QueryParamToArray(c.Query("body_types"))
 	fuel_types := auth.QueryParamToArray(c.Query("fuel_types"))
 	ownership_types := auth.QueryParamToArray(c.Query("ownership_types"))
+	targetUserID := c.Query("user_id")
 	year_from := c.Query("year_from")
 	limit := c.Query("limit")
 	lastID := c.Query("last_id")
@@ -115,7 +117,7 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 	}
 
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
-	data := h.UserService.GetCars(ctx, userID, brands, models,
+	data := h.UserService.GetCars(ctx, userID, targetUserID, brands, models,
 		regions, cities, generations, transmissions, engines, drivetrains,
 		body_types, fuel_types, ownership_types, colors,
 		year_from, year_to, credit, price_from, price_to,
@@ -1305,161 +1307,50 @@ func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
-// GetBrokers godoc
-// @Summary      Get brokers
-// @Description  Returns a list of all brokers (users with role_id = 4)
+// GetUserByID godoc
+// @Summary      Get user by ID
+// @Description  Returns a single user by ID
 // @Tags         user
 // @Produce      json
 // @Security     BearerAuth
-// @Param        limit   query      string  false  "Limit"
-// @Param        last_id   query      string  false  "Last item ID"
-// @Success      200  {array}  model.UserRoleResponse
+// @Param        id   path      int  true  "User ID"
+// @Success      200  {object}  model.ThirdPartyGetProfileRes
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/users/brokers [get]
-func (h *UserHandler) GetBrokers(c *fiber.Ctx) error {
+// @Router       /api/v1/users/{id} [get]
+func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
+	userID := c.Params("id")
 	ctx := c.Context()
-	limit := c.Query("limit")
-	lastID := c.Query("last_id")
-	data := h.UserService.GetBrokers(ctx, limit, lastID)
+	data := h.UserService.GetUserByID(ctx, userID)
 	return utils.FiberResponse(c, data)
 }
 
-// GetBrokerByID godoc
-// @Summary      Get broker by ID
-// @Description  Returns a single broker by ID (users with role_id = 4)
+// GetUserByID godoc
+// @Summary      Get user by ID
+// @Description  Returns a single user by ID
 // @Tags         user
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id   path      int  true  "Broker ID"
-// @Success      200  {object}  model.UserRoleResponse
+// @Param        from_id   query      int  false  "From ID"
+// @Param        to_id   query      int  false  "To ID"
+// @Param        role_id   query      int  false  "Role ID"
+// @Param        search   query      string  false  "Search"
+// @Success      200  {array}  model.ThirdPartyUserResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/users/brokers/{id} [get]
-func (h *UserHandler) GetBrokerByID(c *fiber.Ctx) error {
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("broker id must be integer"),
-		})
-	}
-
+// @Router       /api/v1/users/third-party [get]
+func (h *UserHandler) GetThirdPartyUsers(c *fiber.Ctx) error {
+	fromID := c.Query("from_id")
+	toID := c.Query("to_id")
+	roleID := c.Query("role_id")
+	search := c.Query("search")
 	ctx := c.Context()
-	data := h.UserService.GetBrokerByID(ctx, id)
-	return utils.FiberResponse(c, data)
-}
-
-// GetLogists godoc
-// @Summary      Get logists
-// @Description  Returns a list of all logists (users with role_id = 3)
-// @Tags         user
-// @Produce      json
-// @Security     BearerAuth
-// @Param        limit   query      string  false  "Limit"
-// @Param        last_id   query      string  false  "Last item ID"
-// @Success      200  {array}  model.UserRoleResponse
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      404  {object}  model.ResultMessage
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/users/logists [get]
-func (h *UserHandler) GetLogists(c *fiber.Ctx) error {
-	ctx := c.Context()
-	limit := c.Query("limit")
-	lastID := c.Query("last_id")
-	data := h.UserService.GetLogists(ctx, limit, lastID)
-	return utils.FiberResponse(c, data)
-}
-
-// GetLogistByID godoc
-// @Summary      Get logist by ID
-// @Description  Returns a single logist by ID (users with role_id = 3)
-// @Tags         user
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id   path      int  true  "Logist ID"
-// @Success      200  {object}  model.UserRoleResponse
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      404  {object}  model.ResultMessage
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/users/logists/{id} [get]
-func (h *UserHandler) GetLogistByID(c *fiber.Ctx) error {
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("logist id must be integer"),
-		})
-	}
-
-	ctx := c.Context()
-	data := h.UserService.GetLogistByID(ctx, id)
-	return utils.FiberResponse(c, data)
-}
-
-// GetServices godoc
-// @Summary      Get car services
-// @Description  Returns a list of all car services (users with role_id = 5)
-// @Tags         user
-// @Produce      json
-// @Security     BearerAuth
-// @Param        limit   query      string  false  "Limit"
-// @Param        last_id   query      string  false  "Last item ID"
-// @Success      200  {array}  model.UserRoleResponse
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      404  {object}  model.ResultMessage
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/users/services [get]
-func (h *UserHandler) GetServices(c *fiber.Ctx) error {
-	ctx := c.Context()
-	limit := c.Query("limit")
-	lastID := c.Query("last_id")
-	data := h.UserService.GetServices(ctx, limit, lastID)
-	return utils.FiberResponse(c, data)
-}
-
-// GetServiceByID godoc
-// @Summary      Get car service by ID
-// @Description  Returns a single car service by ID (users with role_id = 5)
-// @Tags         user
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id   path      int  true  "Service ID"
-// @Success      200  {object}  model.UserRoleResponse
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      404  {object}  model.ResultMessage
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/users/services/{id} [get]
-func (h *UserHandler) GetServiceByID(c *fiber.Ctx) error {
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("service id must be integer"),
-		})
-	}
-
-	ctx := c.Context()
-	data := h.UserService.GetServiceByID(ctx, id)
+	data := h.UserService.GetThirdPartyUsers(ctx, roleID, fromID, toID, search)
 	return utils.FiberResponse(c, data)
 }

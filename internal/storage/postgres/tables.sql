@@ -148,8 +148,6 @@ create table user_destinations (
     unique(user_id, from_id, to_id)
 );
 
-
-
 create table profiles (
     "id" serial primary key, 
     "user_id" int not null,

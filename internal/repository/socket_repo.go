@@ -2,18 +2,23 @@ package repository
 
 import (
 	"context"
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
+	"dubai-auto/pkg/firebase"
 	"fmt"
 
+	"firebase.google.com/go/v4/messaging"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type SocketRepository struct {
-	db *pgxpool.Pool
+	db              *pgxpool.Pool
+	firebaseService *firebase.FirebaseService
+	config          *config.Config
 }
 
-func NewSocketRepository(db *pgxpool.Pool) *SocketRepository {
-	return &SocketRepository{db}
+func NewSocketRepository(db *pgxpool.Pool, firebaseService *firebase.FirebaseService, config *config.Config) *SocketRepository {
+	return &SocketRepository{db, firebaseService, config}
 }
 
 func (r *SocketRepository) UpdateUserStatus(userID int, status bool) error {
@@ -91,14 +96,45 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 	if status {
 		s = 2
 	}
-	fmt.Println("message data: ", senderUserID, msg.TargetUserID, s, msg.Message, msg.Type, msg.Time)
+
 	q := `
 		INSERT INTO messages (
 			sender_id, receiver_id, status, message, type, created_at
 		) VALUES ($1, $2, $3, $4, $5, $6)
 	`
 	_, err := r.db.Exec(context.Background(), q, senderUserID, msg.TargetUserID, s, msg.Message, msg.Type, msg.Time)
+
+	if err != nil {
+		return err
+	}
+
+	userFcmToken := ""
+	q = `
+		select device_token from user_tokens where user_id = $1
+	`
+	r.db.QueryRow(context.Background(), q, msg.TargetUserID).Scan(&userFcmToken)
+	username, avatar, _ := r.GetUserAvatarName(msg.TargetUserID)
+	r.firebaseService.SendToToken(userFcmToken, messaging.Notification{
+		Title:    username,
+		Body:     msg.Message,
+		ImageURL: avatar,
+	})
+
 	return err
+}
+
+func (r *SocketRepository) GetUserAvatarName(userID int) (string, string, error) {
+	q := `
+		SELECT 
+			username,
+			$2 || avatar
+		FROM profile 
+		WHERE user_id = $1
+	`
+	var username string
+	var avatar string
+	err := r.db.QueryRow(context.Background(), q, userID, r.config.IMAGE_BASE_URL).Scan(&username, &avatar)
+	return username, avatar, err
 }
 
 func (r *SocketRepository) CheckUserExists(userID int) error {

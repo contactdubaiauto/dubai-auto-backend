@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/valyala/fasthttp"
 
@@ -308,11 +309,11 @@ func (s *UserService) GetHome(ctx *fasthttp.RequestCtx, userID int) model.Respon
 	return model.Response{Data: data}
 }
 
-func (s *UserService) GetCars(ctx *fasthttp.RequestCtx, userID int, brands, models, regions, cities,
+func (s *UserService) GetCars(ctx *fasthttp.RequestCtx, userID int, targetUserID string, brands, models, regions, cities,
 	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors []string,
 	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer string, new, wheel *bool, limit, lastID int) model.Response {
 
-	cars, err := s.UserRepository.GetCars(ctx, userID, brands, models, regions, cities,
+	cars, err := s.UserRepository.GetCars(ctx, userID, targetUserID, brands, models, regions, cities,
 		generations, transmissions, engines, drivetrains, body_types, fuel_types,
 		ownership_types, colors, year_from, year_to, credit,
 		price_from, price_to, tradeIn, owners, crash, odometer, new, wheel, limit, lastID)
@@ -490,71 +491,48 @@ func (s *UserService) DeleteCarVideo(ctx *fasthttp.RequestCtx, carID int, videoP
 	return model.Response{Data: model.Success{Message: "Car video deleted successfully"}}
 }
 
-// GetBrokers returns all users with role_id = 4 (brokers)
-func (s *UserService) GetBrokers(ctx *fasthttp.RequestCtx, limit, lastID string) model.Response {
-	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
-	const brokerRoleID = 4
-	brokers, err := s.UserRepository.GetUsersByRole(ctx, brokerRoleID, limitInt, lastIDInt)
-
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: brokers}
-}
-
 // GetBrokerByID returns a single broker by ID
-func (s *UserService) GetBrokerByID(ctx *fasthttp.RequestCtx, brokerID int) model.Response {
-	const brokerRoleID = 4
-	broker, err := s.UserRepository.GetUserByRoleAndID(ctx, brokerRoleID, brokerID)
+func (s *UserService) GetUserByID(ctx *fasthttp.RequestCtx, userID string) model.Response {
+
+	userIDInt, err := strconv.Atoi(userID)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusBadRequest}
+	}
+
+	user, err := s.UserRepository.GetUserByRoleAndID(ctx, userIDInt)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusNotFound}
 	}
-	return model.Response{Data: broker}
+
+	return model.Response{Data: user}
 }
 
-// GetLogists returns all users with role_id = 3 (logists)
-func (s *UserService) GetLogists(ctx *fasthttp.RequestCtx, limit, lastID string) model.Response {
-	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
-	const logistRoleID = 3
-	logists, err := s.UserRepository.GetUsersByRole(ctx, logistRoleID, limitInt, lastIDInt)
+func (s *UserService) GetThirdPartyUsers(ctx *fasthttp.RequestCtx, roleID, fromID, toID, search string) model.Response {
+	roleIDInt, err := strconv.Atoi(roleID)
 
 	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusBadRequest}
 	}
-	return model.Response{Data: logists}
-}
 
-// GetLogistByID returns a single logist by ID
-func (s *UserService) GetLogistByID(ctx *fasthttp.RequestCtx, logistID int) model.Response {
-	const logistRoleID = 3
-	logist, err := s.UserRepository.GetUserByRoleAndID(ctx, logistRoleID, logistID)
+	fromIDInt, err := strconv.Atoi(fromID)
 
 	if err != nil {
-		return model.Response{Error: err, Status: http.StatusNotFound}
+		return model.Response{Error: err, Status: http.StatusBadRequest}
 	}
-	return model.Response{Data: logist}
-}
 
-// GetServices returns all users with role_id = 5 (car services)
-func (s *UserService) GetServices(ctx *fasthttp.RequestCtx, limit, lastID string) model.Response {
-	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
-	const serviceRoleID = 5
-	services, err := s.UserRepository.GetUsersByRole(ctx, serviceRoleID, limitInt, lastIDInt)
+	toIDInt, err := strconv.Atoi(toID)
 
 	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
+		return model.Response{Error: err, Status: http.StatusBadRequest}
 	}
-	return model.Response{Data: services}
-}
 
-// GetServiceByID returns a single car service by ID
-func (s *UserService) GetServiceByID(ctx *fasthttp.RequestCtx, serviceID int) model.Response {
-	const serviceRoleID = 5
-	service, err := s.UserRepository.GetUserByRoleAndID(ctx, serviceRoleID, serviceID)
+	user, err := s.UserRepository.GetThirdPartyUsers(ctx, roleIDInt, fromIDInt, toIDInt, search)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusNotFound}
 	}
-	return model.Response{Data: service}
+
+	return model.Response{Data: user}
 }

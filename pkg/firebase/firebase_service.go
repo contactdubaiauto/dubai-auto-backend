@@ -40,14 +40,10 @@ func InitFirebase(cfg *config.Config) (*FirebaseService, error) {
 }
 
 // Send notification to a specific device token
-func (fs *FirebaseService) SendToToken(token, title, body string, data map[string]string) (string, error) {
+func (fs *FirebaseService) SendToToken(token string, notification messaging.Notification) (string, error) {
 	message := &messaging.Message{
-		Token: token,
-		Notification: &messaging.Notification{
-			Title: title,
-			Body:  body,
-		},
-		Data: data,
+		Token:        token,
+		Notification: &notification,
 		Android: &messaging.AndroidConfig{
 			Priority: "high",
 			Notification: &messaging.AndroidNotification{

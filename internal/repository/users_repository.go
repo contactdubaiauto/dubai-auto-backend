@@ -319,6 +319,16 @@ func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, pro
 	`, strings.Join(setClause, ", "), len(args))
 
 	_, err := r.db.Exec(ctx, q, args...)
+	if err != nil {
+		return err
+	}
+
+	q = `
+		UPDATE users 
+		SET username = $2
+		WHERE id = $1
+	`
+	_, err = r.db.Exec(ctx, q, userID, profile.Username)
 	return err
 }
 
@@ -331,7 +341,7 @@ func (r *UserRepository) GetFilterBrands(ctx *fasthttp.RequestCtx, text string) 
 					json_build_object(
 						'id', id, 
 						'name', name, 
-						'logo', logo, 
+						'logo', $2 || logo, 
 						'model_count', model_count 
 					)
 				) as popular_brands
@@ -343,7 +353,7 @@ func (r *UserRepository) GetFilterBrands(ctx *fasthttp.RequestCtx, text string) 
 					json_build_object(
 						'id', id, 
 						'name', name, 
-						'logo', logo, 
+						'logo', $2 || logo, 
 						'model_count', model_count 
 					)
 				) as all_brands
@@ -357,7 +367,7 @@ func (r *UserRepository) GetFilterBrands(ctx *fasthttp.RequestCtx, text string) 
 		left join all_brands as ab on true;
 
 	`
-	err := r.db.QueryRow(ctx, q, text).Scan(&brand.PopularBrands, &brand.AllBrands)
+	err := r.db.QueryRow(ctx, q, text, r.config.IMAGE_BASE_URL).Scan(&brand.PopularBrands, &brand.AllBrands)
 
 	return brand, err
 }
@@ -996,6 +1006,7 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int) (model.Ho
 }
 
 func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
+	targetUserID string,
 	brands, models, regions, cities, generations, transmissions,
 	engines, drivetrains, body_types, fuel_types, ownership_types, colors []string,
 	year_from, year_to, credit, price_from, price_to, tradeIn, owners,
@@ -1150,6 +1161,18 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 		qValues = append(qValues, odometer)
 	}
 
+	if targetUserID != "" {
+		targetUserIDInt, err := strconv.Atoi(targetUserID)
+
+		if err != nil {
+			return nil, err
+		}
+
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.user_id = $%d", i)
+		qValues = append(qValues, targetUserIDInt)
+	}
+
 	cars := make([]model.GetCarsResponse, 0)
 	q := `
 		select 
@@ -1187,7 +1210,8 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 			json_build_object(
 				'id', pf.user_id,
 				'username', pf.username,
-				'avatar', pf.avatar
+				'avatar', pf.avatar,
+				'role_id', u.role_id
 			) as owner,
 			vs.description,
 			CASE 
@@ -1198,6 +1222,7 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 		left join generation_modifications gms on gms.id = vs.modification_id
 		left join colors cls on vs.color_id = cls.id
 		left join profiles pf on pf.user_id = vs.user_id
+		left join users u on u.id = vs.user_id
 		left join brands bs on vs.brand_id = bs.id
 		left join regions rs on vs.region_id = rs.id
 		left join cities cs on vs.city_id = cs.id
@@ -1734,42 +1759,9 @@ func (r *UserRepository) DeleteCarVideo(ctx *fasthttp.RequestCtx, carID int, vid
 	return err
 }
 
-// GetUsersByRole fetches users by their role_id (brokers=4, logists=3, services=5)
-func (r *UserRepository) GetUsersByRole(ctx *fasthttp.RequestCtx, roleID int, limit, lastID int) ([]model.UserRoleResponse, error) {
-	q := `
-		SELECT 
-			u.id,
-			u.username,
-			p.avatar
-		FROM users u
-		LEFT JOIN profiles p ON p.user_id = u.id
-		WHERE u.role_id = $1 and u.id > $2
-		ORDER BY u.id DESC
-		limit $3
-	`
-
-	rows, err := r.db.Query(ctx, q, roleID, lastID, limit)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-	users := make([]model.UserRoleResponse, 0)
-
-	for rows.Next() {
-		var user model.UserRoleResponse
-		if err := rows.Scan(&user.ID, &user.Username, &user.Avatar); err != nil {
-			return nil, err
-		}
-		users = append(users, user)
-	}
-
-	return users, nil
-}
-
 // GetUserByRoleAndID fetches a single user by role_id and user id
-func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, roleID, userID int) (model.ThirdPartyGetProfileRes, error) {
+func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int) (model.ThirdPartyGetProfileRes, error) {
+
 	q := `
 		select
 			about_me,
@@ -1839,4 +1831,46 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, roleID, us
 	`
 	err = r.db.QueryRow(ctx, q, userID).Scan(&profile.Email, &profile.Phone, &profile.RoleID)
 	return profile, err
+}
+
+func (r *UserRepository) GetThirdPartyUsers(ctx *fasthttp.RequestCtx, roleID, fromID, toID int, search string) ([]model.ThirdPartyUserResponse, error) {
+
+	qWhere := ""
+
+	if search != "" {
+		qWhere = fmt.Sprintf(" AND (users.company_name ILIKE '%s' OR users.username ILIKE '%s') ", search, search)
+	}
+
+	if fromID != 0 && toID != 0 {
+		qWhere = fmt.Sprintf(" AND ds.from_id = %d AND ds.to_id = %d %s", fromID, toID, qWhere)
+	}
+
+	q := `
+		select
+			u.id,
+			u.username,
+			p.avatar
+		from users u
+        left join profiles p on p.user_id = u.id
+        where u.role_id = $1 %s;
+	`
+	var users []model.ThirdPartyUserResponse
+	var user model.ThirdPartyUserResponse
+
+	rows, err := r.db.Query(ctx, fmt.Sprintf(q, qWhere), roleID)
+
+	if err != nil {
+		return users, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		if err := rows.Scan(&user.ID, &user.Username, &user.Avatar); err != nil {
+			return users, err
+		}
+		users = append(users, user)
+	}
+
+	return users, err
 }

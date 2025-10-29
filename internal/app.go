@@ -17,12 +17,13 @@ import (
 
 func InitApp(db *pgxpool.Pool, conf *config.Config) *fiber.App {
 	firebaseService, err := firebase.InitFirebase(conf)
-	validator := auth.NewValidator()
 
 	if err != nil {
 		log.Fatalf("Failed to initialize Firebase: %v", err)
 	}
 
+	// fbToken := "ei4Af4xzQgChqC-Rw6Emfa:APA91bGJ5L7PTh2KWR9atMbQANKJEoIKk4cVdT4VxCrc7grfgzzL1d72BaSZtq9uuAqGNZHiYI6xZZpcnQ45nyXX2PHPnxpqT4Y742Sw1eiHt-u1N32RfY4"
+	validator := auth.NewValidator()
 	appConfig := fiber.Config{
 		BodyLimit: 50 * 1024 * 1024,
 	}

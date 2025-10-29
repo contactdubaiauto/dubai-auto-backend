@@ -30,6 +30,6 @@ func Init(app *fiber.App, config *config.Config, db *pgxpool.Pool, firebaseServi
 	thirdPartyRoute := app.Group("/api/v1/third-party")
 	SetupThirdPartyRoutes(thirdPartyRoute, config, db, validator)
 
-	SetupWebSocketRoutes(app, db, firebaseService)
+	SetupWebSocketRoutes(app, db, firebaseService, config)
 
 }
