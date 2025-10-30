@@ -491,17 +491,17 @@ func (r *ThirdPartyRepository) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, ca
 			json_build_object(
 				'id', cls.id,
 				'name', cls.name,
-				'image', $3 || cls.image as image
+				'image', $3 || cls.image
 			) as color,
 			json_build_object(
 				'id', bts.id,
 				'name', bts.name,
-				'image', $3 || bts.image as image
+				'image', $3 || bts.image
 			) as body_type,
 			json_build_object(
 				'id', gs.id,
 				'name', gs.name,
-				'image', $3 || gs.image as image,
+				'image', $3 || gs.image,
 				'start_year', gs.start_year,
 				'end_year', gs.end_year
 			) as generation,

@@ -17540,6 +17540,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "registered": {
+                    "type": "string"
+                },
                 "username": {
                     "type": "string"
                 }

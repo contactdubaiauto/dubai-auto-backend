@@ -47,7 +47,8 @@ func (fs *FirebaseService) SendToToken(token string, notification messaging.Noti
 		Android: &messaging.AndroidConfig{
 			Priority: "high",
 			Notification: &messaging.AndroidNotification{
-				Sound: "default",
+				Sound:    "default",
+				ImageURL: notification.ImageURL,
 			},
 		},
 		APNS: &messaging.APNSConfig{

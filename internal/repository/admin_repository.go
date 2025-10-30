@@ -71,7 +71,7 @@ func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx, qRole int, q
 				status, 
 				created_at 
 			FROM temp_users 
-			WHERE role_id = $1 and u.id > $2
+			WHERE role_id = $1 and id > $2
 			ORDER BY id DESC
 			limit $3
 		`

@@ -1780,6 +1780,8 @@ definitions:
         type: string
       id:
         type: integer
+      registered:
+        type: string
       username:
         type: string
     type: object

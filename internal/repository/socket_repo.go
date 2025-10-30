@@ -113,14 +113,18 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 		select device_token from user_tokens where user_id = $1
 	`
 	r.db.QueryRow(context.Background(), q, msg.TargetUserID).Scan(&userFcmToken)
-	username, avatar, _ := r.GetUserAvatarName(msg.TargetUserID)
-	r.firebaseService.SendToToken(userFcmToken, messaging.Notification{
+	username, avatar, _ := r.GetUserAvatarName(senderUserID)
+	_, err = r.firebaseService.SendToToken(userFcmToken, messaging.Notification{
 		Title:    username,
 		Body:     msg.Message,
 		ImageURL: avatar,
 	})
 
-	return err
+	if err != nil {
+		fmt.Println("error sending notification: ", err)
+	}
+
+	return nil
 }
 
 func (r *SocketRepository) GetUserAvatarName(userID int) (string, string, error) {
