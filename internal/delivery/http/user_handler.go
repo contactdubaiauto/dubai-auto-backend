@@ -90,7 +90,7 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 	price_from := c.Query("price_from")
 	price_to := c.Query("price_to")
 	wheelQ := c.Query("wheel")
-	newQ := c.Query("wheel")
+	newQ := c.Query("new")
 	var wheel *bool
 	var new *bool
 

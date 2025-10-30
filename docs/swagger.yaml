@@ -444,6 +444,15 @@ definitions:
       name:
         type: string
     type: object
+  model.CompanyType:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      nameRu:
+        type: string
+    type: object
   model.ComtransOwner:
     properties:
       avatar:
@@ -558,6 +567,16 @@ definitions:
     required:
     - image
     - name
+    type: object
+  model.CreateCompanyTypeRequest:
+    properties:
+      name:
+        type: string
+      name_ru:
+        type: string
+    required:
+    - name
+    - name_ru
     type: object
   model.CreateComtransBrandRequest:
     properties:
@@ -1668,7 +1687,6 @@ definitions:
     - model_id
     - modification_id
     - odometer
-    - owners
     - phone_numbers
     - price
     - trade_in
@@ -1824,8 +1842,6 @@ definitions:
         type: integer
       trade_in:
         type: integer
-      vin_code:
-        type: string
       wheel:
         description: left true, right false
         type: boolean
@@ -1843,7 +1859,6 @@ definitions:
     - phone_numbers
     - price
     - trade_in
-    - vin_code
     - wheel
     - year
     type: object
@@ -2188,6 +2203,195 @@ info:
   title: Project name
   version: "1.0"
 paths:
+  /api/v1/admin/activity-fields:
+    get:
+      description: Returns a list of all activity fields
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.CompanyType'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all activity fields
+      tags:
+      - admin-activity-fields
+    post:
+      consumes:
+      - application/json
+      description: Creates a new activity field
+      parameters:
+      - description: Activity field data
+        in: body
+        name: activityField
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateCompanyTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create an activity field
+      tags:
+      - admin-activity-fields
+  /api/v1/admin/activity-fields/{id}:
+    delete:
+      description: Deletes an activity field by ID
+      parameters:
+      - description: Activity field ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete an activity field
+      tags:
+      - admin-activity-fields
+    get:
+      description: Returns an activity field by ID
+      parameters:
+      - description: Activity field ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.CompanyType'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get an activity field by ID
+      tags:
+      - admin-activity-fields
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing activity field
+      parameters:
+      - description: Activity field ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Activity field data
+        in: body
+        name: activityField
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateCompanyTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update an activity field
+      tags:
+      - admin-activity-fields
   /api/v1/admin/applications:
     get:
       description: Returns a list of all applications
@@ -3617,6 +3821,195 @@ paths:
       summary: Create a color image
       tags:
       - admin-colors
+  /api/v1/admin/company-types:
+    get:
+      description: Returns a list of all company types
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminCityResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all company types
+      tags:
+      - admin-company-types
+    post:
+      consumes:
+      - application/json
+      description: Creates a new company type
+      parameters:
+      - description: Company type data
+        in: body
+        name: companyType
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateCompanyTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a company type
+      tags:
+      - admin-company-types
+  /api/v1/admin/company-types/{id}:
+    delete:
+      description: Deletes a company type by ID
+      parameters:
+      - description: Company type ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a company type
+      tags:
+      - admin-company-types
+    get:
+      description: Returns a company type by ID
+      parameters:
+      - description: Company type ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AdminCityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get company type by ID
+      tags:
+      - admin-company-types
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing company type
+      parameters:
+      - description: Company type ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Company type data
+        in: body
+        name: companyType
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateCompanyTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a company type
+      tags:
+      - admin-company-types
   /api/v1/admin/comtrans-brands:
     get:
       description: Returns a list of all comtrans brands

@@ -435,6 +435,111 @@ func (r *AdminRepository) DeleteCity(ctx *fasthttp.RequestCtx, id int) error {
 	return err
 }
 
+// Company Types CRUD operations
+func (r *AdminRepository) GetCompanyTypes(ctx *fasthttp.RequestCtx) ([]model.CompanyType, error) {
+	companyTypes := make([]model.CompanyType, 0)
+	q := `SELECT id, name, name_ru FROM company_types ORDER BY id DESC`
+
+	rows, err := r.db.Query(ctx, q)
+	if err != nil {
+		return companyTypes, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var item model.CompanyType
+		if err := rows.Scan(&item.ID, &item.Name, &item.NameRu); err != nil {
+			return companyTypes, err
+		}
+		companyTypes = append(companyTypes, item)
+	}
+
+	return companyTypes, err
+}
+
+func (r *AdminRepository) GetCompanyType(ctx *fasthttp.RequestCtx, id int) (*model.CompanyType, error) {
+	q := `SELECT id, name, name_ru FROM company_types WHERE id = $1`
+	var item model.CompanyType
+	err := r.db.QueryRow(ctx, q, id).Scan(&item.ID, &item.Name, &item.NameRu)
+	if err != nil {
+		return nil, err
+	}
+	return &item, nil
+}
+
+func (r *AdminRepository) CreateCompanyType(ctx *fasthttp.RequestCtx, req *model.CreateCompanyTypeRequest) (int, error) {
+	q := `INSERT INTO company_types (name, name_ru) VALUES ($1, $2) RETURNING id`
+	var id int
+	err := r.db.QueryRow(ctx, q, req.Name, req.NameRu).Scan(&id)
+	return id, err
+}
+
+func (r *AdminRepository) UpdateCompanyType(ctx *fasthttp.RequestCtx, id int, req *model.CreateCompanyTypeRequest) error {
+	q := `UPDATE company_types SET name = $2, name_ru = $3 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu)
+	return err
+}
+
+func (r *AdminRepository) DeleteCompanyType(ctx *fasthttp.RequestCtx, id int) error {
+	q := `DELETE FROM company_types WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id)
+	return err
+}
+
+// Activity Fields CRUD operations
+func (r *AdminRepository) GetActivityFields(ctx *fasthttp.RequestCtx) ([]model.CompanyType, error) {
+	items := make([]model.CompanyType, 0)
+	q := `
+		SELECT 
+			id, 
+			name, 
+			name_ru 
+		FROM activity_fields 
+		ORDER BY id DESC`
+
+	rows, err := r.db.Query(ctx, q)
+	if err != nil {
+		return items, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var item model.CompanyType
+		if err := rows.Scan(&item.ID, &item.Name, &item.NameRu); err != nil {
+			return items, err
+		}
+		items = append(items, item)
+	}
+
+	return items, err
+}
+
+func (r *AdminRepository) GetActivityField(ctx *fasthttp.RequestCtx, id int) (*model.CompanyType, error) {
+	q := `SELECT id, name, name_ru FROM activity_fields WHERE id = $1`
+	var item model.CompanyType
+	err := r.db.QueryRow(ctx, q, id).Scan(&item.ID, &item.Name, &item.NameRu)
+	return &item, err
+}
+
+func (r *AdminRepository) CreateActivityField(ctx *fasthttp.RequestCtx, req *model.CreateCompanyTypeRequest) (int, error) {
+	q := `INSERT INTO activity_fields (name, name_ru) VALUES ($1, $2) RETURNING id`
+	var id int
+	err := r.db.QueryRow(ctx, q, req.Name, req.NameRu).Scan(&id)
+	return id, err
+}
+
+func (r *AdminRepository) UpdateActivityField(ctx *fasthttp.RequestCtx, id int, req *model.CreateCompanyTypeRequest) error {
+	q := `UPDATE activity_fields SET name = $2, name_ru = $3 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu)
+	return err
+}
+
+func (r *AdminRepository) DeleteActivityField(ctx *fasthttp.RequestCtx, id int) error {
+	q := `DELETE FROM activity_fields WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id)
+	return err
+}
+
 // Brands CRUD operations
 func (r *AdminRepository) GetBrands(ctx *fasthttp.RequestCtx) ([]model.AdminBrandResponse, error) {
 	brands := make([]model.AdminBrandResponse, 0)

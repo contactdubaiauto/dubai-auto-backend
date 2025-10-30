@@ -275,4 +275,23 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, v
 		comtransParameters.Delete("/:parameter_id/values/:id", adminHandler.DeleteComtransParameterValue)
 	}
 
+	// company types
+	companyTypes := r.Group("/company-types")
+	{
+		companyTypes.Get("/", adminHandler.GetCompanyTypes)
+		companyTypes.Get("/:id", adminHandler.GetCompanyType)
+		companyTypes.Post("/", adminHandler.CreateCompanyType)
+		companyTypes.Put("/:id", adminHandler.UpdateCompanyType)
+		companyTypes.Delete("/:id", adminHandler.DeleteCompanyType)
+	}
+
+	// activity fields
+	activityFields := r.Group("/activity-fields")
+	{
+		activityFields.Get("/", adminHandler.GetActivityFields)
+		activityFields.Get("/:id", adminHandler.GetActivityField)
+		activityFields.Post("/", adminHandler.CreateActivityField)
+		activityFields.Put("/:id", adminHandler.UpdateActivityField)
+		activityFields.Delete("/:id", adminHandler.DeleteActivityField)
+	}
 }

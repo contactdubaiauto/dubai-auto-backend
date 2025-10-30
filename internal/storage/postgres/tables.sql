@@ -47,12 +47,14 @@ create table countries (
 create table company_types (
     "id" serial primary key,
     "name" varchar(50) not null,
+    "name_ru" varchar(50) default 'name_ru',
     "created_at" timestamp default now()
 );
 
 create table activity_fields (
     "id" serial primary key,
     "name" varchar(50) not null,
+    "name_ru" varchar(50) default 'name_ru',
     "created_at" timestamp default now()
 );
 
@@ -249,6 +251,7 @@ create table admins (
 create table brands (
     "id" serial primary key,
     "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
     "logo" varchar(255),
     "model_count" int not null default 0,
     "popular" boolean default false,
@@ -262,6 +265,7 @@ alter table brands alter column logo drop not null;
 create table models (
     "id" serial primary key,
     "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
     "brand_id" int not null,
     "popular" boolean default false,
     "updated_at" timestamp default now(),
@@ -277,6 +281,7 @@ create table models (
 create table body_types (
     "id" serial primary key,
     "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
     "image" character varying(255) not null,
     "created_at" timestamp default now()
 );
@@ -284,6 +289,7 @@ create table body_types (
 create table transmissions (
     "id" serial primary key,
     "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
     "created_at" timestamp default now(),
     unique("name")
 );
@@ -298,6 +304,7 @@ create table engines (
 create table drivetrains (
     "id" serial primary key,
     "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
     "created_at" timestamp default now(),
     unique("name")
 );
@@ -305,6 +312,7 @@ create table drivetrains (
 create table fuel_types (
     "id" serial primary key,
     "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
     "created_at" timestamp default now(),
     unique("name")
 );
@@ -312,6 +320,7 @@ create table fuel_types (
 create table regions (
     "id" serial primary key,
     "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
     "city_id" int not null,
     "created_at" timestamp default now(),
     constraint fk_regions_city_id
@@ -321,29 +330,10 @@ create table regions (
                 on update cascade
 );
 
-
--- create table service_types (
---     "id" serial primary key,
---     "name" varchar(255) not null,
---     "created_at" timestamp default now()
--- );
-
--- create table services (
---     "id" serial primary key,
---     "name" varchar(255) not null,
---     "service_type_id" int not null,
---     "created_at" timestamp default now(),
---     constraint fk_services_service_type_id
---         foreign key (service_type_id)
---             references service_types(id)
---                 on delete cascade
---                 on update cascade
--- );
-
-
 create table generations (
     "id" serial primary key,
     "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
     "model_id" int not null,
     "start_year" int not null,
     "end_year" int not null,
@@ -416,6 +406,7 @@ create table generation_modifications (
 create table ownership_types (
     "id" serial primary key,
     "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
     "created_at" timestamp default now()
 );
 
@@ -423,6 +414,7 @@ create table ownership_types (
 create table colors (
     "id" serial primary key,
     "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
     "image" varchar(255) not null,
     "created_at" timestamp default now()
 );
@@ -541,12 +533,14 @@ create table videos (
 create table moto_categories (
     "id" serial primary key,
     "name" varchar(100) not null,
+    "name_ru" varchar(100) default 'name_ru',
     "created_at" timestamp not null default now()
 );
 
 create table moto_brands (
     "id" serial primary key,
     "name" varchar(100) not null,
+    "name_ru" varchar(100) default 'name_ru',
     "image" varchar(255),
     "moto_category_id" integer not null,
     "created_at" timestamp not null default now(),
@@ -558,10 +552,10 @@ create table moto_brands (
 );
 
 
-
 create table moto_models (
     "id" serial primary key,
     "name" varchar(100) not null,
+    "name_ru" varchar(100) default 'name_ru',
     "moto_brand_id" integer not null,
     "created_at" timestamp not null default now(),
     constraint fk_moto_brand_models_moto_brand_id
@@ -575,6 +569,7 @@ create table moto_parameters (
     "id" serial primary key,
     "moto_category_id" int not null,
     "name" varchar(100) not null,
+    "name_ru" varchar(100) default 'name_ru',
     "created_at" timestamp default now(),
     constraint fk_moto_parameters_moto_category_id
         foreign key (moto_category_id)
@@ -588,6 +583,7 @@ create table moto_parameter_values (
     "id" serial primary key,
     "moto_parameter_id" int not null,
     "name" varchar(100) not null,
+    "name_ru" varchar(100) default 'name_ru',
     "created_at" timestamp default now(),
     constraint fk_moto_parameter_values_moto_parameter_id
         foreign key (moto_parameter_id)
@@ -751,12 +747,14 @@ drop table if exists com_categories;
 create table com_categories (
     "id" serial primary key,
     "name" varchar(100) not null,
+    "name_ru" varchar(100) default 'name_ru',
     "created_at" timestamp not null default now()
 );
 
 create table com_brands (
     "id" serial primary key,
     "name" varchar(100) not null,
+    "name_ru" varchar(100) default 'name_ru',
     "image" varchar(255),
     "comtran_category_id" integer not null,
     "created_at" timestamp not null default now(),
@@ -772,6 +770,7 @@ create table com_brands (
 create table com_models (
     "id" serial primary key,
     "name" varchar(100) not null,
+    "name_ru" varchar(100) default 'name_ru',
     "comtran_brand_id" integer not null,
     "created_at" timestamp not null default now(),
     constraint fk_com_brand_models_comtran_brand_id
@@ -785,6 +784,7 @@ create table com_parameters (
     "id" serial primary key,
     "comtran_category_id" int not null,
     "name" varchar(100) not null,
+    "name_ru" varchar(100) default 'name_ru',
     "created_at" timestamp default now(),
     constraint fk_com_parameters_comtran_category_id
         foreign key (comtran_category_id)
@@ -799,6 +799,7 @@ create table com_parameter_values (
     "id" serial primary key,
     "comtran_parameter_id" int not null,
     "name" varchar(100) not null,
+    "name_ru" varchar(100) default 'name_ru',
     "created_at" timestamp default now(),
     constraint fk_com_parameter_values_comtran_parameter_id
         foreign key (comtran_parameter_id)

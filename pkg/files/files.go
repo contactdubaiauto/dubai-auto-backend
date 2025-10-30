@@ -277,7 +277,7 @@ func SaveOriginal(file *multipart.FileHeader, folder string) (string, error) {
 	// Generate a UUID for the output file name
 	outputID := uuid.New().String()
 	// Save the uploaded file temporarily
-	tempVideoPath := filepath.Join(folder, outputID+"_upload"+filepath.Ext(file.Filename))
+	tempVideoPath := filepath.Join(folder, outputID+filepath.Ext(file.Filename))
 	dst, err := os.Create("." + tempVideoPath)
 
 	if err != nil {

@@ -1,5 +1,10 @@
 package model
 
+type CreateCompanyTypeRequest struct {
+	Name   string `json:"name" validate:"required"`
+	NameRu string `json:"name_ru" validate:"required"`
+}
+
 type CreateNameRequest struct {
 	Name string `json:"name" validate:"required,min=2,max=255"`
 }

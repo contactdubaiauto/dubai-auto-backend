@@ -149,3 +149,27 @@ alter table users add column temp_password varchar(100);
 
 drop table services;
 drop table service_types;
+
+30.10.2025
+alter table company_types add column "name_ru" varchar(50) default 'name_ru';
+alter table activity_fields add column "name_ru" varchar(50) default 'name_ru';
+alter table brands add column "name_ru" varchar(50) default 'name_ru';
+alter table models add column "name_ru" varchar(50) default 'name_ru';
+alter table body_types add column "name_ru" varchar(50) default 'name_ru';
+alter table transmissions add column "name_ru" varchar(50) default 'name_ru';
+alter table drivetrains add column "name_ru" varchar(50) default 'name_ru';
+alter table fuel_types add column "name_ru" varchar(50) default 'name_ru';
+alter table generations add column "name_ru" varchar(50) default 'name_ru';
+alter table ownership_types add column "name_ru" varchar(50) default 'name_ru';
+alter table colors add column "name_ru" varchar(50) default 'name_ru';
+alter table moto_categories add column "name_ru" varchar(50) default 'name_ru';
+alter table moto_brands add column "name_ru" varchar(50) default 'name_ru';
+alter table moto_models add column "name_ru" varchar(50) default 'name_ru';
+alter table moto_parameters add column "name_ru" varchar(50) default 'name_ru';
+alter table moto_parameter_values add column "name_ru" varchar(50) default 'name_ru';
+alter table com_categories add column "name_ru" varchar(50) default 'name_ru';
+alter table com_brands add column "name_ru" varchar(50) default 'name_ru';
+alter table com_models add column "name_ru" varchar(50) default 'name_ru';
+alter table com_parameters add column "name_ru" varchar(50) default 'name_ru';
+alter table com_parameter_values add column "name_ru" varchar(50) default 'name_ru';
+

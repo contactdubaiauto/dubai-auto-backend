@@ -262,6 +262,89 @@ func (s *AdminService) DeleteCity(ctx *fasthttp.RequestCtx, id int) model.Respon
 	return model.Response{Data: model.Success{Message: "City deleted successfully"}}
 }
 
+// Company Types service methods
+func (s *AdminService) GetCompanyTypes(ctx *fasthttp.RequestCtx) model.Response {
+	items, err := s.repo.GetCompanyTypes(ctx)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: items}
+}
+
+func (s *AdminService) GetCompanyType(ctx *fasthttp.RequestCtx, id int) model.Response {
+	item, err := s.repo.GetCompanyType(ctx, id)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: item}
+}
+
+func (s *AdminService) CreateCompanyType(ctx *fasthttp.RequestCtx, req *model.CreateCompanyTypeRequest) model.Response {
+	id, err := s.repo.CreateCompanyType(ctx, req)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Company type created successfully"}}
+}
+
+func (s *AdminService) UpdateCompanyType(ctx *fasthttp.RequestCtx, id int, req *model.CreateCompanyTypeRequest) model.Response {
+	err := s.repo.UpdateCompanyType(ctx, id, req)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: model.Success{Message: "Company type updated successfully"}}
+}
+
+func (s *AdminService) DeleteCompanyType(ctx *fasthttp.RequestCtx, id int) model.Response {
+	err := s.repo.DeleteCompanyType(ctx, id)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: model.Success{Message: "Company type deleted successfully"}}
+}
+
+// Activity Fields service methods
+func (s *AdminService) GetActivityFields(ctx *fasthttp.RequestCtx) model.Response {
+	items, err := s.repo.GetActivityFields(ctx)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: items}
+}
+
+func (s *AdminService) GetActivityField(ctx *fasthttp.RequestCtx, id int) model.Response {
+	item, err := s.repo.GetActivityField(ctx, id)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: item}
+}
+
+func (s *AdminService) CreateActivityField(ctx *fasthttp.RequestCtx, req *model.CreateCompanyTypeRequest) model.Response {
+	id, err := s.repo.CreateActivityField(ctx, req)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Activity field created successfully"}}
+}
+
+func (s *AdminService) UpdateActivityField(ctx *fasthttp.RequestCtx, id int, req *model.CreateCompanyTypeRequest) model.Response {
+	err := s.repo.UpdateActivityField(ctx, id, req)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: model.Success{Message: "Activity field updated successfully"}}
+}
+
+func (s *AdminService) DeleteActivityField(ctx *fasthttp.RequestCtx, id int) model.Response {
+	err := s.repo.DeleteActivityField(ctx, id)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: model.Success{Message: "Activity field deleted successfully"}}
+}
+
 // Brands service methods
 func (s *AdminService) GetBrands(ctx *fasthttp.RequestCtx) model.Response {
 	brands, err := s.repo.GetBrands(ctx)

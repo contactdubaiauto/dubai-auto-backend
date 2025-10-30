@@ -31,12 +31,22 @@ func (r *ThirdPartyRepository) Profile(ctx *fasthttp.RequestCtx, id int, profile
 			telegram = $3,
 			address = $4,
 			coordinates = $5,
-			message = $6,
-			phone = $7
+			message = $6
 		where user_id = $7
 	`
 	_, err := r.db.Exec(ctx, q, profile.AboutUs, profile.Whatsapp,
-		profile.Telegram, profile.Address, profile.Coordinates, profile.Message, profile.Phone, id)
+		profile.Telegram, profile.Address, profile.Coordinates, profile.Message, id)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	q = `
+		update users set
+			phone = $1
+		where id = $2
+	`
+	_, err = r.db.Exec(ctx, q, profile.Phone, id)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -522,7 +532,7 @@ func (r *ThirdPartyRepository) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, ca
 			vs.view_count,
 			vs.description,
 			CASE
-				WHEN vs.user_id = $3 THEN TRUE
+				WHEN vs.user_id = $2 THEN TRUE
 				ELSE FALSE
 			END AS my_car,
 			vs.owners

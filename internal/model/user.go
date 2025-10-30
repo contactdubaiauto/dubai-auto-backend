@@ -25,7 +25,7 @@ type ThirdPartyCreateCarRequest struct {
 	Odometer       int      `json:"odometer" validate:"required"`
 	Price          int      `json:"price" validate:"required"`
 	ColorID        int      `json:"color_id" validate:"required"`
-	Owners         int      `json:"owners" validate:"required"`
+	Owners         int      `json:"owners"`
 	TradeIn        int      `json:"trade_in" validate:"required"`
 	New            bool     `json:"new"`
 	Crash          bool     `json:"crash"`
@@ -56,7 +56,7 @@ type CreateCarRequest struct {
 	Odometer       int      `json:"odometer" validate:"required"`
 	Price          int      `json:"price" validate:"required"`
 	ColorID        int      `json:"color_id" validate:"required"`
-	Owners         int      `json:"owners" omitempty:"true"`
+	Owners         int      `json:"owners"`
 	TradeIn        int      `json:"trade_in" validate:"required"`
 	New            bool     `json:"new"`
 	Crash          bool     `json:"crash"`
@@ -79,7 +79,6 @@ type DeleteCarVideoRequest struct {
 type UpdateCarRequest struct {
 	PhoneNumbers   []string `json:"phone_numbers" validate:"required"`
 	Wheel          *bool    `json:"wheel" validate:"required"` // left true, right false
-	VinCode        string   `json:"vin_code" validate:"required"`
 	Description    string   `json:"description"`
 	ID             int      `json:"id" validate:"required"`
 	CityID         int      `json:"city_id" validate:"required"`

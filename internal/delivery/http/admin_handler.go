@@ -398,6 +398,328 @@ func (h *AdminHandler) DeleteCity(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
+// Company Types handlers
+
+// GetCompanyTypes godoc
+// @Summary      Get all company types
+// @Description  Returns a list of all company types
+// @Tags         admin-company-types
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}  model.AdminCityResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/company-types [get]
+func (h *AdminHandler) GetCompanyTypes(c *fiber.Ctx) error {
+	ctx := c.Context()
+	data := h.service.GetCompanyTypes(ctx)
+	return utils.FiberResponse(c, data)
+}
+
+// GetCompanyType godoc
+// @Summary      Get company type by ID
+// @Description  Returns a company type by ID
+// @Tags         admin-company-types
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Company type ID"
+// @Success      200  {object}  model.AdminCityResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/company-types/{id} [get]
+func (h *AdminHandler) GetCompanyType(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("company type id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.GetCompanyType(ctx, id)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateCompanyType godoc
+// @Summary      Create a company type
+// @Description  Creates a new company type
+// @Tags         admin-company-types
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        companyType  body      model.CreateCompanyTypeRequest  true  "Company type data"
+// @Success      200  {object}  model.SuccessWithId
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/company-types [post]
+func (h *AdminHandler) CreateCompanyType(c *fiber.Ctx) error {
+	var req model.CreateCompanyTypeRequest
+	ctx := c.Context()
+
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	if err := h.validator.Validate(req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	data := h.service.CreateCompanyType(ctx, &req)
+	return utils.FiberResponse(c, data)
+}
+
+// UpdateCompanyType godoc
+// @Summary      Update a company type
+// @Description  Updates an existing company type
+// @Tags         admin-company-types
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id           path      int                      true  "Company type ID"
+// @Param        companyType  body      model.CreateCompanyTypeRequest  true  "Company type data"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/company-types/{id} [put]
+func (h *AdminHandler) UpdateCompanyType(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("company type id must be integer"),
+		})
+	}
+
+	var req model.CreateCompanyTypeRequest
+	ctx := c.Context()
+
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	if err := h.validator.Validate(req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	data := h.service.UpdateCompanyType(ctx, id, &req)
+	return utils.FiberResponse(c, data)
+}
+
+// DeleteCompanyType godoc
+// @Summary      Delete a company type
+// @Description  Deletes a company type by ID
+// @Tags         admin-company-types
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Company type ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/company-types/{id} [delete]
+func (h *AdminHandler) DeleteCompanyType(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("company type id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.DeleteCompanyType(ctx, id)
+	return utils.FiberResponse(c, data)
+}
+
+// Activity Fields handlers
+
+// GetActivityFields godoc
+// @Summary      Get all activity fields
+// @Description  Returns a list of all activity fields
+// @Tags         admin-activity-fields
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}  model.CompanyType
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/activity-fields [get]
+func (h *AdminHandler) GetActivityFields(c *fiber.Ctx) error {
+	ctx := c.Context()
+	data := h.service.GetActivityFields(ctx)
+	return utils.FiberResponse(c, data)
+}
+
+// GetActivityField godoc
+// @Summary      Get an activity field by ID
+// @Description  Returns an activity field by ID
+// @Tags         admin-activity-fields
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Activity field ID"
+// @Success      200  {object}  model.CompanyType
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/activity-fields/{id} [get]
+func (h *AdminHandler) GetActivityField(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("activity field id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.GetActivityField(ctx, id)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateActivityField godoc
+// @Summary      Create an activity field
+// @Description  Creates a new activity field
+// @Tags         admin-activity-fields
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        activityField  body      model.CreateCompanyTypeRequest  true  "Activity field data"
+// @Success      200  {object}  model.SuccessWithId
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/activity-fields [post]
+func (h *AdminHandler) CreateActivityField(c *fiber.Ctx) error {
+	var req model.CreateCompanyTypeRequest
+	ctx := c.Context()
+
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	if err := h.validator.Validate(req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	data := h.service.CreateActivityField(ctx, &req)
+	return utils.FiberResponse(c, data)
+}
+
+// UpdateActivityField godoc
+// @Summary      Update an activity field
+// @Description  Updates an existing activity field
+// @Tags         admin-activity-fields
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id             path      int                      true  "Activity field ID"
+// @Param        activityField  body      model.CreateCompanyTypeRequest  true  "Activity field data"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/activity-fields/{id} [put]
+func (h *AdminHandler) UpdateActivityField(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("activity field id must be integer"),
+		})
+	}
+
+	var req model.CreateCompanyTypeRequest
+	ctx := c.Context()
+
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	if err := h.validator.Validate(req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	data := h.service.UpdateActivityField(ctx, id, &req)
+	return utils.FiberResponse(c, data)
+}
+
+// DeleteActivityField godoc
+// @Summary      Delete an activity field
+// @Description  Deletes an activity field by ID
+// @Tags         admin-activity-fields
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Activity field ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/activity-fields/{id} [delete]
+func (h *AdminHandler) DeleteActivityField(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("activity field id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.DeleteActivityField(ctx, id)
+	return utils.FiberResponse(c, data)
+}
+
 // Brands handlers
 
 // GetBrands godoc

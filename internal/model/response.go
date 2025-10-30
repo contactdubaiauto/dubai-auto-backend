@@ -272,6 +272,12 @@ type AdminCityResponse struct {
 	ID        int       `json:"id"`
 }
 
+type CompanyType struct {
+	Name   string
+	NameRu string
+	ID     int
+}
+
 type AdminCountryResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 	Name      string    `json:"name"`

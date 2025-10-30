@@ -28,15 +28,15 @@ func SetupThirdPartyRoutes(r fiber.Router, config *config.Config, db *pgxpool.Po
 
 		// dealer routes
 		r.Post("/dealer/car", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.CreateDealerCar)
-		r.Post("/dealer/car/:id", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.UpdateDealerCar)
 		r.Get("/dealer/car/:id/edit", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.GetEditCarByID)
-		r.Post("/dealer/car/:id/images", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.CreateDealerCarImages)
-		r.Post("/dealer/car/:id/videos", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.CreateDealerCarVideos)
 		r.Post("/dealer/car/:id/sell", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.StatusDealer)
 		r.Post("/dealer/car/:id/dont-sell", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.StatusDealer)
+		r.Post("/dealer/car/:id", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.UpdateDealerCar)
+		r.Delete("/dealer/car/:id", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.DeleteDealerCar)
+		r.Post("/dealer/car/:id/images", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.CreateDealerCarImages)
+		r.Post("/dealer/car/:id/videos", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.CreateDealerCarVideos)
 		r.Delete("/dealer/car/:id/images", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.DeleteDealerCarImage)
 		r.Delete("/dealer/car/:id/videos", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.DeleteDealerCarVideo)
-		r.Delete("/dealer/car/:id", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.DeleteDealerCar)
 
 		// logist routes
 		r.Get("/logist/destinations", auth.TokenGuard, auth.LogistGuard, thirdPartyHandler.GetLogistDestinations)
