@@ -209,15 +209,28 @@ func (s *AdminService) AcceptApplication(ctx *fasthttp.RequestCtx, id int, req m
 	return model.Response{Data: model.Success{Message: "Application accepted successfully"}}
 }
 
-func (s *AdminService) RejectApplication(ctx *fasthttp.RequestCtx, id int) model.Response {
+func (s *AdminService) RejectApplication(ctx *fasthttp.RequestCtx, idStr string, qStatus string, qMessage string) model.Response {
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusBadRequest}
+	}
+
+	qStatusInt, err := strconv.Atoi(qStatus)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusBadRequest}
+	}
+
 	// todo: remove files/folders after reject
 	// todo: send email to user
-	err := s.repo.RejectApplication(ctx, id)
+	email, err := s.repo.RejectApplication(ctx, id, qStatusInt)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
+	go utils.SendEmail("Application rejected", "Your application has been rejected. Reason: "+qMessage, email)
 	return model.Response{Data: model.Success{Message: "Application rejected successfully"}}
 }
 

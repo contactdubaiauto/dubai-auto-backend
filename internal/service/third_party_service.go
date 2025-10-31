@@ -30,8 +30,8 @@ func (s *ThirdPartyService) FirstLogin(ctx *fasthttp.RequestCtx, id int, profile
 	return s.repo.FirstLogin(ctx, id, profile)
 }
 
-func (s *ThirdPartyService) GetProfile(ctx *fasthttp.RequestCtx, id int) model.Response {
-	profile, err := s.repo.GetProfile(ctx, id)
+func (s *ThirdPartyService) GetProfile(ctx *fasthttp.RequestCtx, id int, nameColumn string) model.Response {
+	profile, err := s.repo.GetProfile(ctx, id, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -40,9 +40,9 @@ func (s *ThirdPartyService) GetProfile(ctx *fasthttp.RequestCtx, id int) model.R
 	return model.Response{Data: profile}
 }
 
-func (s *ThirdPartyService) GetMyCars(ctx *fasthttp.RequestCtx, userID int, limit, lastID string) model.Response {
+func (s *ThirdPartyService) GetMyCars(ctx *fasthttp.RequestCtx, userID int, limit, lastID string, nameColumn string) model.Response {
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
-	cars, err := s.repo.GetMyCars(ctx, userID, limitInt, lastIDInt)
+	cars, err := s.repo.GetMyCars(ctx, userID, limitInt, lastIDInt, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -51,8 +51,8 @@ func (s *ThirdPartyService) GetMyCars(ctx *fasthttp.RequestCtx, userID int, limi
 	return model.Response{Data: cars}
 }
 
-func (s *ThirdPartyService) OnSale(ctx *fasthttp.RequestCtx, userID int) model.Response {
-	cars, err := s.repo.OnSale(ctx, userID)
+func (s *ThirdPartyService) OnSale(ctx *fasthttp.RequestCtx, userID int, nameColumn string) model.Response {
+	cars, err := s.repo.OnSale(ctx, userID, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -61,8 +61,8 @@ func (s *ThirdPartyService) OnSale(ctx *fasthttp.RequestCtx, userID int) model.R
 	return model.Response{Data: cars}
 }
 
-func (s *ThirdPartyService) GetRegistrationData(ctx *fasthttp.RequestCtx) model.Response {
-	return s.repo.GetRegistrationData(ctx)
+func (s *ThirdPartyService) GetRegistrationData(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
+	return s.repo.GetRegistrationData(ctx, nameColumn)
 }
 
 func (s *ThirdPartyService) CreateAvatarImages(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) model.Response {
@@ -173,8 +173,8 @@ func (s *ThirdPartyService) UpdateDealerCar(ctx *fasthttp.RequestCtx, car *model
 	}
 }
 
-func (s *ThirdPartyService) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, carID, dealerID int) model.Response {
-	car, err := s.repo.GetEditDealerCarByID(ctx, carID, dealerID)
+func (s *ThirdPartyService) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, carID, dealerID int, nameColumn string) model.Response {
+	car, err := s.repo.GetEditDealerCarByID(ctx, carID, dealerID, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusNotFound}

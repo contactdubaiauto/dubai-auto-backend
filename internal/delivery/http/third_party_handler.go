@@ -100,7 +100,8 @@ func (h *ThirdPartyHandler) FirstLogin(c *fiber.Ctx) error {
 func (h *ThirdPartyHandler) GetProfile(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Locals("id").(int)
-	data := h.service.GetProfile(ctx, id)
+	nameColumn := c.Locals("lang").(string)
+	data := h.service.GetProfile(ctx, id, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -124,7 +125,8 @@ func (h *ThirdPartyHandler) GetMyCars(c *fiber.Ctx) error {
 	id := c.Locals("id").(int)
 	limit := c.Query("limit")
 	lastID := c.Query("last_id")
-	data := h.service.GetMyCars(ctx, id, limit, lastID)
+	nameColumn := c.Locals("lang").(string)
+	data := h.service.GetMyCars(ctx, id, limit, lastID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -144,7 +146,8 @@ func (h *ThirdPartyHandler) GetMyCars(c *fiber.Ctx) error {
 func (h *ThirdPartyHandler) OnSale(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Locals("id").(int)
-	data := h.service.OnSale(ctx, id)
+	nameColumn := c.Locals("lang").(string)
+	data := h.service.OnSale(ctx, id, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -153,7 +156,6 @@ func (h *ThirdPartyHandler) OnSale(c *fiber.Ctx) error {
 // @Description  Returns registration data
 // @Tags         third-party
 // @Produce      json
-// @Security     BearerAuth
 // @Success      200      {object}  model.ThirdPartyGetRegistrationDataRes
 // @Failure      400      {object}  model.ResultMessage
 // @Failure      401      {object}  auth.ErrorResponse
@@ -163,7 +165,8 @@ func (h *ThirdPartyHandler) OnSale(c *fiber.Ctx) error {
 // @Router       /api/v1/third-party/registration-data [get]
 func (h *ThirdPartyHandler) GetRegistrationData(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.service.GetRegistrationData(ctx)
+	nameColumn := c.Locals("lang").(string)
+	data := h.service.GetRegistrationData(ctx, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -313,7 +316,8 @@ func (h *ThirdPartyHandler) GetEditCarByID(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.service.GetEditDealerCarByID(ctx, id, dealerID)
+	nameColumn := c.Locals("lang").(string)
+	data := h.service.GetEditDealerCarByID(ctx, id, dealerID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 

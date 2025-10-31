@@ -385,10 +385,16 @@ func (r *AdminRepository) AcceptApplication(ctx *fasthttp.RequestCtx, id int, pa
 	return *tempUser.Email, err
 }
 
-func (r *AdminRepository) RejectApplication(ctx *fasthttp.RequestCtx, id int) error {
-	q := `UPDATE temp_users SET status = 2 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id)
-	return err
+func (r *AdminRepository) RejectApplication(ctx *fasthttp.RequestCtx, id int, qStatus int) (string, error) {
+	q := `delete from temp_users WHERE id = $1 returning email`
+	var email string
+
+	if qStatus == model.APPLICATION_STATUS_APPROVED {
+		q = `delete from users where id = $1 returning email`
+	}
+
+	err := r.db.QueryRow(ctx, q, id).Scan(&email)
+	return email, err
 }
 
 // Cities CRUD operations

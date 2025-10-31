@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -52,14 +51,14 @@ func TokenGuard(c *fiber.Ctx) error {
 
 // Language checker middleware: sets "lang" in fiber.Locals based on Accept-Language or X-Language header
 func LanguageChecker(c *fiber.Ctx) error {
-	lang := c.Get("X-Language")
+	lang := c.Get("Accept-Language")
 
-	if lang == "" {
-		lang = "en"
-		fmt.Println(c.Get("Accept-Language"))
+	if lang == "ru" {
+		c.Locals("lang", "name_ru")
+		return c.Next()
 	}
 
-	c.Locals("lang", lang)
+	c.Locals("lang", "name")
 	return c.Next()
 }
 

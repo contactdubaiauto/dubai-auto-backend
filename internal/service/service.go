@@ -21,9 +21,9 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 	return &UserService{repo}
 }
 
-func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID *int, limit, lastID string) model.Response {
+func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID *int, limit, lastID, nameColumn string) model.Response {
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
-	cars, err := s.UserRepository.GetMyCars(ctx, userID, limitInt, lastIDInt)
+	cars, err := s.UserRepository.GetMyCars(ctx, userID, limitInt, lastIDInt, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -32,9 +32,9 @@ func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID *int, limit, la
 	return model.Response{Data: cars}
 }
 
-func (s *UserService) OnSale(ctx *fasthttp.RequestCtx, userID *int, limit, lastID string) model.Response {
+func (s *UserService) OnSale(ctx *fasthttp.RequestCtx, userID *int, limit, lastID, nameColumn string) model.Response {
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
-	cars, err := s.UserRepository.OnSale(ctx, userID, limitInt, lastIDInt)
+	cars, err := s.UserRepository.OnSale(ctx, userID, limitInt, lastIDInt, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -85,8 +85,8 @@ func (s *UserService) Sell(ctx *fasthttp.RequestCtx, carID, userID *int) model.R
 	return model.Response{Data: model.Success{Message: "succesfully updated status"}}
 }
 
-func (s *UserService) GetBrands(ctx *fasthttp.RequestCtx, text string) model.Response {
-	brands, err := s.UserRepository.GetBrands(ctx, text)
+func (s *UserService) GetBrands(ctx *fasthttp.RequestCtx, text, nameColumn string) model.Response {
+	brands, err := s.UserRepository.GetBrands(ctx, text, nameColumn)
 
 	if err != nil {
 		return model.Response{
@@ -127,8 +127,8 @@ func (s *UserService) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, profil
 	}
 }
 
-func (s *UserService) GetFilterBrands(ctx *fasthttp.RequestCtx, text string) model.Response {
-	brands, err := s.UserRepository.GetFilterBrands(ctx, text)
+func (s *UserService) GetFilterBrands(ctx *fasthttp.RequestCtx, text, nameColumn string) model.Response {
+	brands, err := s.UserRepository.GetFilterBrands(ctx, text, nameColumn)
 
 	if err != nil {
 		return model.Response{
@@ -155,8 +155,8 @@ func (s *UserService) GetCities(ctx *fasthttp.RequestCtx, text string) model.Res
 	}
 }
 
-func (s *UserService) GetModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text string) model.Response {
-	data, err := s.UserRepository.GetModelsByBrandID(ctx, brandID, text)
+func (s *UserService) GetModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text, nameColumn string) model.Response {
+	data, err := s.UserRepository.GetModelsByBrandID(ctx, brandID, text, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: 400}
@@ -164,8 +164,8 @@ func (s *UserService) GetModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64
 	return model.Response{Data: data}
 }
 
-func (s *UserService) GetFilterModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text string) model.Response {
-	data, err := s.UserRepository.GetFilterModelsByBrandID(ctx, brandID, text)
+func (s *UserService) GetFilterModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text, nameColumn string) model.Response {
+	data, err := s.UserRepository.GetFilterModelsByBrandID(ctx, brandID, text, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: 400}
@@ -173,8 +173,8 @@ func (s *UserService) GetFilterModelsByBrandID(ctx *fasthttp.RequestCtx, brandID
 	return model.Response{Data: data}
 }
 
-func (s *UserService) GetFilterModelsByBrands(ctx *fasthttp.RequestCtx, brands []int, text string) model.Response {
-	data, err := s.UserRepository.GetFilterModelsByBrands(ctx, brands, text)
+func (s *UserService) GetFilterModelsByBrands(ctx *fasthttp.RequestCtx, brands []int, text, nameColumn string) model.Response {
+	data, err := s.UserRepository.GetFilterModelsByBrands(ctx, brands, text, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: 400}
@@ -182,8 +182,8 @@ func (s *UserService) GetFilterModelsByBrands(ctx *fasthttp.RequestCtx, brands [
 	return model.Response{Data: data}
 }
 
-func (s *UserService) GetGenerationsByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year, bodyTypeID string) model.Response {
-	data, err := s.UserRepository.GetGenerationsByModelID(ctx, modelID, wheel, year, bodyTypeID)
+func (s *UserService) GetGenerationsByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year, bodyTypeID, nameColumn string) model.Response {
+	data, err := s.UserRepository.GetGenerationsByModelID(ctx, modelID, wheel, year, bodyTypeID, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: 400}
@@ -191,8 +191,8 @@ func (s *UserService) GetGenerationsByModelID(ctx *fasthttp.RequestCtx, modelID 
 	return model.Response{Data: data}
 }
 
-func (s *UserService) GetGenerationsByModels(ctx *fasthttp.RequestCtx, models []int) model.Response {
-	data, err := s.UserRepository.GetGenerationsByModels(ctx, models)
+func (s *UserService) GetGenerationsByModels(ctx *fasthttp.RequestCtx, models []int, nameColumn string) model.Response {
+	data, err := s.UserRepository.GetGenerationsByModels(ctx, models, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: 400}
@@ -218,8 +218,8 @@ func (s *UserService) GetYearsByModels(ctx *fasthttp.RequestCtx, models []int, w
 	return model.Response{Data: data}
 }
 
-func (s *UserService) GetBodysByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year string) model.Response {
-	data, err := s.UserRepository.GetBodysByModelID(ctx, modelID, wheel, year)
+func (s *UserService) GetBodysByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year string, nameColumn string) model.Response {
+	data, err := s.UserRepository.GetBodysByModelID(ctx, modelID, wheel, year, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: 400}
@@ -236,8 +236,8 @@ func (s *UserService) GetBodysByModelID(ctx *fasthttp.RequestCtx, modelID int, w
 // 	return model.Response{Data: data}
 // }
 
-func (s *UserService) GetBodyTypes(ctx *fasthttp.RequestCtx) model.Response {
-	data, err := s.UserRepository.GetBodyTypes(ctx)
+func (s *UserService) GetBodyTypes(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
+	data, err := s.UserRepository.GetBodyTypes(ctx, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -246,8 +246,8 @@ func (s *UserService) GetBodyTypes(ctx *fasthttp.RequestCtx) model.Response {
 	return model.Response{Data: data}
 }
 
-func (s *UserService) GetTransmissions(ctx *fasthttp.RequestCtx) model.Response {
-	data, err := s.UserRepository.GetTransmissions(ctx)
+func (s *UserService) GetTransmissions(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
+	data, err := s.UserRepository.GetTransmissions(ctx, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -264,8 +264,8 @@ func (s *UserService) GetEngines(ctx *fasthttp.RequestCtx) model.Response {
 	return model.Response{Data: data}
 }
 
-func (s *UserService) GetDrivetrains(ctx *fasthttp.RequestCtx) model.Response {
-	data, err := s.UserRepository.GetDrivetrains(ctx)
+func (s *UserService) GetDrivetrains(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
+	data, err := s.UserRepository.GetDrivetrains(ctx, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -273,8 +273,8 @@ func (s *UserService) GetDrivetrains(ctx *fasthttp.RequestCtx) model.Response {
 	return model.Response{Data: data}
 }
 
-func (s *UserService) GetFuelTypes(ctx *fasthttp.RequestCtx) model.Response {
-	data, err := s.UserRepository.GetFuelTypes(ctx)
+func (s *UserService) GetFuelTypes(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
+	data, err := s.UserRepository.GetFuelTypes(ctx, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -282,8 +282,8 @@ func (s *UserService) GetFuelTypes(ctx *fasthttp.RequestCtx) model.Response {
 	return model.Response{Data: data}
 }
 
-func (s *UserService) GetColors(ctx *fasthttp.RequestCtx) model.Response {
-	data, err := s.UserRepository.GetColors(ctx)
+func (s *UserService) GetColors(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
+	data, err := s.UserRepository.GetColors(ctx, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -300,8 +300,8 @@ func (s *UserService) GetCountries(ctx *fasthttp.RequestCtx) model.Response {
 	return model.Response{Data: data}
 }
 
-func (s *UserService) GetHome(ctx *fasthttp.RequestCtx, userID int) model.Response {
-	data, err := s.UserRepository.GetHome(ctx, userID)
+func (s *UserService) GetHome(ctx *fasthttp.RequestCtx, userID int, nameColumn string) model.Response {
+	data, err := s.UserRepository.GetHome(ctx, userID, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -311,12 +311,13 @@ func (s *UserService) GetHome(ctx *fasthttp.RequestCtx, userID int) model.Respon
 
 func (s *UserService) GetCars(ctx *fasthttp.RequestCtx, userID int, targetUserID string, brands, models, regions, cities,
 	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors []string,
-	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer string, new, wheel *bool, limit, lastID int) model.Response {
+	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer string,
+	new, wheel *bool, limit, lastID int, nameColumn string) model.Response {
 
 	cars, err := s.UserRepository.GetCars(ctx, userID, targetUserID, brands, models, regions, cities,
 		generations, transmissions, engines, drivetrains, body_types, fuel_types,
 		ownership_types, colors, year_from, year_to, credit,
-		price_from, price_to, tradeIn, owners, crash, odometer, new, wheel, limit, lastID)
+		price_from, price_to, tradeIn, owners, crash, odometer, new, wheel, limit, lastID, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -339,8 +340,8 @@ func (s *UserService) GetPriceRecommendation(ctx *fasthttp.RequestCtx, filter mo
 	return model.Response{Data: model.GetPriceRecommendationResponse{MaxPrice: prices[0], MinPrice: prices[len(prices)-1], AvgPrice: prices[len(prices)/2]}}
 }
 
-func (s *UserService) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int) model.Response {
-	car, err := s.UserRepository.GetCarByID(ctx, carID, userID)
+func (s *UserService) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int, nameColumn string) model.Response {
+	car, err := s.UserRepository.GetCarByID(ctx, carID, userID, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusNotFound}
@@ -349,8 +350,8 @@ func (s *UserService) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int) mo
 	return model.Response{Data: car}
 }
 
-func (s *UserService) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID int) model.Response {
-	car, err := s.UserRepository.GetEditCarByID(ctx, carID, userID)
+func (s *UserService) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID int, nameColumn string) model.Response {
+	car, err := s.UserRepository.GetEditCarByID(ctx, carID, userID, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusNotFound}
@@ -430,8 +431,8 @@ func (s *UserService) RemoveLike(ctx *fasthttp.RequestCtx, carID, userID *int) m
 	}
 }
 
-func (s *UserService) Likes(ctx *fasthttp.RequestCtx, userID *int) model.Response {
-	data, err := s.UserRepository.Likes(ctx, userID)
+func (s *UserService) Likes(ctx *fasthttp.RequestCtx, userID *int, nameColumn string) model.Response {
+	data, err := s.UserRepository.Likes(ctx, userID, nameColumn)
 
 	if err != nil {
 		return model.Response{
@@ -492,7 +493,7 @@ func (s *UserService) DeleteCarVideo(ctx *fasthttp.RequestCtx, carID int, videoP
 }
 
 // GetBrokerByID returns a single broker by ID
-func (s *UserService) GetUserByID(ctx *fasthttp.RequestCtx, userID string) model.Response {
+func (s *UserService) GetUserByID(ctx *fasthttp.RequestCtx, userID string, nameColumn string) model.Response {
 
 	userIDInt, err := strconv.Atoi(userID)
 
@@ -500,7 +501,7 @@ func (s *UserService) GetUserByID(ctx *fasthttp.RequestCtx, userID string) model
 		return model.Response{Error: err, Status: http.StatusBadRequest}
 	}
 
-	user, err := s.UserRepository.GetUserByRoleAndID(ctx, userIDInt)
+	user, err := s.UserRepository.GetUserByRoleAndID(ctx, userIDInt, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusNotFound}

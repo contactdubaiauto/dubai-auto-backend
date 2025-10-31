@@ -70,7 +70,7 @@ func (r *ThirdPartyRepository) FirstLogin(ctx *fasthttp.RequestCtx, id int, prof
 	return model.Response{Data: model.Success{Message: "First login updated successfully"}}
 }
 
-func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (model.ThirdPartyGetProfileRes, error) {
+func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int, nameColumn string) (model.ThirdPartyGetProfileRes, error) {
 	q := `
 		with ds as (
 			select
@@ -107,8 +107,8 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (mod
 			p.company_name,
 			p.message,
 			p.vat_number,
-			company_types.name as company_type,
-			activity_fields.name as activity_field,
+			company_types.` + nameColumn + ` as company_type,
+			activity_fields.` + nameColumn + ` as activity_field,
 			p.created_at,
 			ds.destinations
 		from profiles p
@@ -147,21 +147,21 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (mod
 	return profile, err
 }
 
-func (r *ThirdPartyRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID int, limit, lastID int) ([]model.GetCarsResponse, error) {
+func (r *ThirdPartyRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, lastID int, nameColumn string) ([]model.GetCarsResponse, error) {
 	cars := make([]model.GetCarsResponse, 0)
 	q := `
 		select 
 			vs.id,
-			bs.name as brand,
+			bs.` + nameColumn + ` as brand,
 			rs.name as region,
 			cs.name as city,
-			cls.name as color,
-			ms.name as model,
-			ts.name as transmission,
+			cls.` + nameColumn + ` as color,
+			ms.` + nameColumn + ` as model,
+			ts.` + nameColumn + ` as transmission,
 			es.value as engine,
-			ds.name as drive,
-			bts.name as body_type,
-			fts.name as fuel_type,
+			ds.` + nameColumn + ` as drive,
+			bts.` + nameColumn + ` as body_type,
+			fts.` + nameColumn + ` as fuel_type,
 			vs.year,
 			vs.price,
 			vs.odometer,
@@ -240,21 +240,21 @@ func (r *ThirdPartyRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID int, l
 	return cars, err
 }
 
-func (r *ThirdPartyRepository) OnSale(ctx *fasthttp.RequestCtx, userID int) ([]model.GetCarsResponse, error) {
+func (r *ThirdPartyRepository) OnSale(ctx *fasthttp.RequestCtx, userID int, nameColumn string) ([]model.GetCarsResponse, error) {
 	cars := make([]model.GetCarsResponse, 0)
 	q := `
 		select 
 			vs.id,
-			bs.name as brand,
+			bs.` + nameColumn + ` as brand,
 			rs.name as region,
 			cs.name as city,
-			cls.name as color,
-			ms.name as model,
-			ts.name as transmission,
+			cls.` + nameColumn + ` as color,
+			ms.` + nameColumn + ` as model,
+			ts.` + nameColumn + ` as transmission,
 			es.value as engine,
-			ds.name as drive,
-			bts.name as body_type,
-			fts.name as fuel_type,
+			ds.` + nameColumn + ` as drive,
+			bts.` + nameColumn + ` as body_type,
+			fts.` + nameColumn + ` as fuel_type,
 			vs.year,
 			vs.price,
 			vs.odometer,
@@ -332,9 +332,10 @@ func (r *ThirdPartyRepository) OnSale(ctx *fasthttp.RequestCtx, userID int) ([]m
 	return cars, err
 }
 
-func (r *ThirdPartyRepository) GetRegistrationData(ctx *fasthttp.RequestCtx) model.Response {
+func (r *ThirdPartyRepository) GetRegistrationData(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
+
 	q := `
-		select id, name from company_types
+		select id, ` + nameColumn + ` from company_types
 	`
 	var companyTypes []model.Model
 	rows, err := r.db.Query(ctx, q)
@@ -357,7 +358,7 @@ func (r *ThirdPartyRepository) GetRegistrationData(ctx *fasthttp.RequestCtx) mod
 	}
 
 	q = `
-		select id, name from activity_fields
+		select id, ` + nameColumn + ` from activity_fields
 	`
 	var activityFields []model.Model
 	rows, err = r.db.Query(ctx, q)
@@ -467,7 +468,7 @@ func (r *ThirdPartyRepository) UpdateDealerCar(ctx *fasthttp.RequestCtx, car *mo
 	return err
 }
 
-func (r *ThirdPartyRepository) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, carID, dealerID int) (model.GetEditCarsResponse, error) {
+func (r *ThirdPartyRepository) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, carID, dealerID int, nameColumn string) (model.GetEditCarsResponse, error) {
 	car := model.GetEditCarsResponse{}
 
 	q := `
@@ -475,7 +476,7 @@ func (r *ThirdPartyRepository) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, ca
 			vs.id,
 			json_build_object(
 				'id', bs.id,
-				'name', bs.name,
+				'name', bs.` + nameColumn + `,
 				'logo', $3 || bs.logo,
 				'model_count', bs.model_count
 			) as brand,
@@ -489,28 +490,28 @@ func (r *ThirdPartyRepository) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, ca
 			) as city,
 			json_build_object(
 				'id', ms.id,
-				'name', ms.name
+				'name', ms.` + nameColumn + `,
 			) as model,
 			json_build_object(
 				'id', mfs.id,
 				'engine', es.value,
-				'fuel_type', fts.name,
-				'drivetrain', ds.name,
-				'transmission', ts.name
+				'fuel_type', fts.` + nameColumn + `,
+				'drivetrain', ds.` + nameColumn + `,
+				'transmission', ts.` + nameColumn + `,
 			) as modification,
 			json_build_object(
 				'id', cls.id,
-				'name', cls.name,
+				'name', cls.` + nameColumn + `,
 				'image', $3 || cls.image
 			) as color,
 			json_build_object(
 				'id', bts.id,
-				'name', bts.name,
+				'name', bts.` + nameColumn + `,
 				'image', $3 || bts.image
 			) as body_type,
 			json_build_object(
 				'id', gs.id,
-				'name', gs.name,
+				'name', gs.` + nameColumn + `,
 				'image', $3 || gs.image,
 				'start_year', gs.start_year,
 				'end_year', gs.end_year

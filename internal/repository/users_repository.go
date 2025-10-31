@@ -22,21 +22,21 @@ func NewUserRepository(config *config.Config, db *pgxpool.Pool) *UserRepository 
 	return &UserRepository{config, db}
 }
 
-func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int, limit, lastID int) ([]model.GetCarsResponse, error) {
+func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int, limit, lastID int, nameColumn string) ([]model.GetCarsResponse, error) {
 	cars := make([]model.GetCarsResponse, 0)
 	q := `
 		select 
 			vs.id,
-			bs.name as brand,
+			bs.` + nameColumn + ` as brand,
 			rs.name as region,
 			cs.name as city,
-			cls.name as color,
-			ms.name as model,
-			ts.name as transmission,
+			cls.` + nameColumn + ` as color,
+			ms.` + nameColumn + ` as model,
+			ts.` + nameColumn + ` as transmission,
 			es.value as engine,
-			ds.name as drive,
-			bts.name as body_type,
-			fts.name as fuel_type,
+			ds.` + nameColumn + ` as drive,
+			bts.` + nameColumn + ` as body_type,
+			fts.` + nameColumn + ` as fuel_type,
 			vs.year,
 			vs.price,
 			vs.odometer,
@@ -115,21 +115,21 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int, limit,
 	return cars, err
 }
 
-func (r *UserRepository) OnSale(ctx *fasthttp.RequestCtx, userID *int, limit, lastID int) ([]model.GetCarsResponse, error) {
+func (r *UserRepository) OnSale(ctx *fasthttp.RequestCtx, userID *int, limit, lastID int, nameColumn string) ([]model.GetCarsResponse, error) {
 	cars := make([]model.GetCarsResponse, 0)
 	q := `
 		select 
 			vs.id,
-			bs.name as brand,
+			bs.` + nameColumn + ` as brand,
 			rs.name as region,
 			cs.name as city,
-			cls.name as color,
-			ms.name as model,
-			ts.name as transmission,
+			cls.` + nameColumn + ` as color,
+			ms.` + nameColumn + ` as model,
+			ts.` + nameColumn + ` as transmission,
 			es.value as engine,
-			ds.name as drive,
-			bts.name as body_type,
-			fts.name as fuel_type,
+			ds.` + nameColumn + ` as drive,
+			bts.` + nameColumn + ` as body_type,
+			fts.` + nameColumn + ` as fuel_type,
 			vs.year,
 			vs.price,
 			vs.odometer,
@@ -247,11 +247,11 @@ func (r *UserRepository) Sell(ctx *fasthttp.RequestCtx, carID, userID *int) erro
 	return err
 }
 
-func (r *UserRepository) GetBrands(ctx *fasthttp.RequestCtx, text string) ([]*model.GetBrandsResponse, error) {
+func (r *UserRepository) GetBrands(ctx *fasthttp.RequestCtx, text string, nameColumn string) ([]*model.GetBrandsResponse, error) {
 	q := `
 		SELECT 
 			id, 
-			name, 
+			` + nameColumn + ` as name, 
 			$2 || logo, 
 			model_count 
 		FROM brands 
@@ -338,7 +338,7 @@ func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, pro
 	return err
 }
 
-func (r *UserRepository) GetFilterBrands(ctx *fasthttp.RequestCtx, text string) (model.GetFilterBrandsResponse, error) {
+func (r *UserRepository) GetFilterBrands(ctx *fasthttp.RequestCtx, text string, nameColumn string) (model.GetFilterBrandsResponse, error) {
 	var brand model.GetFilterBrandsResponse
 	q := `
 		with popular as (
@@ -346,7 +346,7 @@ func (r *UserRepository) GetFilterBrands(ctx *fasthttp.RequestCtx, text string) 
 				json_agg(
 					json_build_object(
 						'id', id, 
-						'name', name, 
+						'name', ` + nameColumn + `, 
 						'logo', $2 || logo, 
 						'model_count', model_count 
 					)
@@ -358,7 +358,7 @@ func (r *UserRepository) GetFilterBrands(ctx *fasthttp.RequestCtx, text string) 
 				json_agg(
 					json_build_object(
 						'id', id, 
-						'name', name, 
+						'name', ` + nameColumn + `, 
 						'logo', $2 || logo, 
 						'model_count', model_count 
 					)
@@ -414,9 +414,15 @@ func (r *UserRepository) GetCities(ctx *fasthttp.RequestCtx, text string) ([]mod
 	return cities, err
 }
 
-func (r *UserRepository) GetModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text string) ([]model.Model, error) {
+func (r *UserRepository) GetModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text string, nameColumn string) ([]model.Model, error) {
 	q := `
-			SELECT id, name FROM models WHERE brand_id = $1 AND name ILIKE '%' || $2 || '%'
+			SELECT 
+				id, 
+				` + nameColumn + ` as name, 
+			FROM models 
+			WHERE 
+				brand_id = $1 AND 
+				name ILIKE '%' || $2 || '%'
 		`
 	rows, err := r.db.Query(ctx, q, brandID, text)
 
@@ -439,7 +445,7 @@ func (r *UserRepository) GetModelsByBrandID(ctx *fasthttp.RequestCtx, brandID in
 	return models, err
 }
 
-func (r *UserRepository) GetFilterModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text string) (model.GetFilterModelsResponse, error) {
+func (r *UserRepository) GetFilterModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int64, text, nameColumn string) (model.GetFilterModelsResponse, error) {
 	responseModel := model.GetFilterModelsResponse{}
 	q := `
 		with popular as (
@@ -447,21 +453,21 @@ func (r *UserRepository) GetFilterModelsByBrandID(ctx *fasthttp.RequestCtx, bran
 				json_agg(
 					json_build_object(
 						'id', id, 
-						'name', name
+						'name', ` + nameColumn + `,
 					)
 				) as popular_models
 			FROM models 
-			models WHERE brand_id = $1 AND name ILIKE '%' || $2 || '%' and popular = true
+			WHERE brand_id = $1 AND (name ILIKE '%' || $2 || '%' or name_ru ILIKE '%' || $2 || '%') and popular = true
 		), all_models as (
 			SELECT 
 				json_agg(
 					json_build_object(
 						'id', id, 
-						'name', name
+						'name', ` + nameColumn + `,
 					)
 				) as all_models
 			FROM models 
-			models WHERE brand_id = $1 AND name ILIKE '%' || $2 || '%'
+			WHERE brand_id = $1 AND (name ILIKE '%' || $2 || '%' or name_ru ILIKE '%' || $2 || '%')
 		)
 		select 
 			pp.popular_models,
@@ -478,7 +484,7 @@ func (r *UserRepository) GetFilterModelsByBrandID(ctx *fasthttp.RequestCtx, bran
 	return responseModel, err
 }
 
-func (r *UserRepository) GetFilterModelsByBrands(ctx *fasthttp.RequestCtx, brands []int, text string) (model.GetFilterModelsResponse, error) {
+func (r *UserRepository) GetFilterModelsByBrands(ctx *fasthttp.RequestCtx, brands []int, text, nameColumn string) (model.GetFilterModelsResponse, error) {
 	responseModel := model.GetFilterModelsResponse{}
 	q := `
 		with popular as (
@@ -486,21 +492,21 @@ func (r *UserRepository) GetFilterModelsByBrands(ctx *fasthttp.RequestCtx, brand
 				json_agg(
 					json_build_object(
 						'id', id, 
-						'name', name
+						'name', ` + nameColumn + `,
 					)
 				) as popular_models
 			FROM models 
-			models WHERE brand_id = any ($1) AND name ILIKE '%' || $2 || '%' and popular = true
+			WHERE brand_id = any ($1) AND (name ILIKE '%' || $2 || '%' or name_ru ILIKE '%' || $2 || '%') and popular = true
 		), all_models as (
 			SELECT 
 				json_agg(
 					json_build_object(
 						'id', id, 
-						'name', name
+						'name', ` + nameColumn + `,
 					)
 				) as all_models
 			FROM models 
-			models WHERE brand_id = any ($1) AND name ILIKE '%' || $2 || '%'
+			WHERE brand_id = any ($1) AND (name ILIKE '%' || $2 || '%' or name_ru ILIKE '%' || $2 || '%')
 		)
 		select 
 			pp.popular_models,
@@ -517,7 +523,7 @@ func (r *UserRepository) GetFilterModelsByBrands(ctx *fasthttp.RequestCtx, brand
 	return responseModel, err
 }
 
-func (r *UserRepository) GetGenerationsByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year, bodyTypeID string) ([]model.Generation, error) {
+func (r *UserRepository) GetGenerationsByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year, bodyTypeID, nameColumn string) ([]model.Generation, error) {
 	q := `
 		with gms as (
 			select 
@@ -525,9 +531,9 @@ func (r *UserRepository) GetGenerationsByModelID(ctx *fasthttp.RequestCtx, model
 					json_build_object(
 						'id', gms.id,
 						'engine', es.value, 
-						'fuel_type', fts.name, 
-						'drivetrain', ds.name, 
-						'transmission', ts.name
+						'fuel_type', fts.` + nameColumn + `, 
+						'drivetrain', ds.` + nameColumn + `, 
+						'transmission', ts.` + nameColumn + `
 					)
 				) as modifications,
 				gms.generation_id
@@ -548,7 +554,7 @@ func (r *UserRepository) GetGenerationsByModelID(ctx *fasthttp.RequestCtx, model
 		)
 		select
 			gs.id,
-			gs.name,
+			gs.` + nameColumn + ` as name,
 			$5 || gs.image,
 			gs.start_year,
 			gs.end_year,
@@ -578,7 +584,7 @@ func (r *UserRepository) GetGenerationsByModelID(ctx *fasthttp.RequestCtx, model
 	return generations, err
 }
 
-func (r *UserRepository) GetGenerationsByModels(ctx *fasthttp.RequestCtx, models []int) ([]model.Generation, error) {
+func (r *UserRepository) GetGenerationsByModels(ctx *fasthttp.RequestCtx, models []int, nameColumn string) ([]model.Generation, error) {
 
 	q := `
 		with gms as (
@@ -587,9 +593,9 @@ func (r *UserRepository) GetGenerationsByModels(ctx *fasthttp.RequestCtx, models
 					json_build_object(
 						'id', gms.id,
 						'engine', es.value, 
-						'fuel_type', fts.name, 
-						'drivetrain', ds.name, 
-						'transmission', ts.name
+						'fuel_type', fts.` + nameColumn + `, 
+						'drivetrain', ds.` + nameColumn + `, 
+						'transmission', ts.` + nameColumn + `
 					)
 				) as modifications,
 				gms.generation_id
@@ -609,7 +615,7 @@ func (r *UserRepository) GetGenerationsByModels(ctx *fasthttp.RequestCtx, models
 		)
 		select
 			gs.id,
-			gs.name,
+			gs.` + nameColumn + ` as name,
 			$2 || gs.image,
 			gs.start_year,
 			gs.end_year,
@@ -673,11 +679,11 @@ func (r *UserRepository) GetYearsByModels(ctx *fasthttp.RequestCtx, models []int
 	return years, err
 }
 
-func (r *UserRepository) GetBodysByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year string) ([]model.BodyType, error) {
+func (r *UserRepository) GetBodysByModelID(ctx *fasthttp.RequestCtx, modelID int, wheel bool, year string, nameColumn string) ([]model.BodyType, error) {
 	q := `
 		select DISTINCT ON (bts.id)
 			bts.id,
-			bts.name,
+			bts.` + nameColumn + ` as name,
 			$4 || bts.image
 		from generation_modifications gms
 		left join body_types bts on bts.id = gms.body_type_id
@@ -712,9 +718,9 @@ func (r *UserRepository) GetBodysByModelID(ctx *fasthttp.RequestCtx, modelID int
 	return bodyTypes, err
 }
 
-func (r *UserRepository) GetBodyTypes(ctx *fasthttp.RequestCtx) ([]model.BodyType, error) {
+func (r *UserRepository) GetBodyTypes(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.BodyType, error) {
 	q := `
-		SELECT id, name, $1 || image as image FROM body_types
+		SELECT id, ` + nameColumn + ` as name, $1 || image as image FROM body_types
 	`
 
 	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
@@ -738,9 +744,9 @@ func (r *UserRepository) GetBodyTypes(ctx *fasthttp.RequestCtx) ([]model.BodyTyp
 	return bodyTypes, err
 }
 
-func (r *UserRepository) GetTransmissions(ctx *fasthttp.RequestCtx) ([]model.Transmission, error) {
+func (r *UserRepository) GetTransmissions(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.Transmission, error) {
 	q := `
-		SELECT id, name FROM transmissions
+		SELECT id, ` + nameColumn + ` as name FROM transmissions
 	`
 
 	rows, err := r.db.Query(ctx, q)
@@ -786,9 +792,9 @@ func (r *UserRepository) GetEngines(ctx *fasthttp.RequestCtx) ([]model.Engine, e
 	return engines, err
 }
 
-func (r *UserRepository) GetDrivetrains(ctx *fasthttp.RequestCtx) ([]model.Drivetrain, error) {
+func (r *UserRepository) GetDrivetrains(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.Drivetrain, error) {
 	q := `
-		SELECT id, name FROM drivetrains
+		SELECT id, ` + nameColumn + ` as name FROM drivetrains
 	`
 
 	rows, err := r.db.Query(ctx, q)
@@ -810,9 +816,9 @@ func (r *UserRepository) GetDrivetrains(ctx *fasthttp.RequestCtx) ([]model.Drive
 	return drivetrains, err
 }
 
-func (r *UserRepository) GetFuelTypes(ctx *fasthttp.RequestCtx) ([]model.FuelType, error) {
+func (r *UserRepository) GetFuelTypes(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.FuelType, error) {
 	q := `
-		SELECT id, name FROM fuel_types
+		SELECT id, ` + nameColumn + ` as name FROM fuel_types
 	`
 
 	rows, err := r.db.Query(ctx, q)
@@ -834,9 +840,9 @@ func (r *UserRepository) GetFuelTypes(ctx *fasthttp.RequestCtx) ([]model.FuelTyp
 	return fuelTypes, err
 }
 
-func (r *UserRepository) GetColors(ctx *fasthttp.RequestCtx) ([]model.Color, error) {
+func (r *UserRepository) GetColors(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.Color, error) {
 	q := `
-		SELECT id, name, $1 || image as image FROM colors
+		SELECT id, ` + nameColumn + ` as name, $1 || image as image FROM colors
 	`
 
 	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
@@ -884,23 +890,23 @@ func (r *UserRepository) GetCountries(ctx *fasthttp.RequestCtx) ([]model.Country
 	return countries, err
 }
 
-func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int) (model.Home, error) {
+func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int, nameColumn string) (model.Home, error) {
 	home := model.Home{}
 	cars := make([]model.GetCarsResponse, 0)
 
 	q := `
 		select 
 			vs.id,
-			bs.name as brand,
+			bs.` + nameColumn + ` as brand,
 			rs.name as region,
 			cs.name as city,
-			cls.name as color,
-			ms.name as model,
-			ts.name as transmission,
+			cls.` + nameColumn + ` as color,
+			ms.` + nameColumn + ` as model,
+			ts.` + nameColumn + ` as transmission,
 			es.value as engine,
-			ds.name as drive,
-			bts.name as body_type,
-			fts.name as fuel_type,
+			ds.` + nameColumn + ` as drive,
+			bts.` + nameColumn + ` as body_type,
+			fts.` + nameColumn + ` as fuel_type,
 			vs.year,
 			vs.price,
 			vs.odometer,
@@ -973,7 +979,7 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 	brands, models, regions, cities, generations, transmissions,
 	engines, drivetrains, body_types, fuel_types, ownership_types, colors []string,
 	year_from, year_to, credit, price_from, price_to, tradeIn, owners,
-	crash, odometer string, new, wheel *bool, limit, lastID int) ([]model.GetCarsResponse, error) {
+	crash, odometer string, new, wheel *bool, limit, lastID int, nameColumn string) ([]model.GetCarsResponse, error) {
 	var qWhere string
 	var qValues []any
 	qValues = append(qValues, userID)
@@ -1139,16 +1145,16 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 	q := `
 		select 
 			vs.id,
-			bs.name as brand,
+			bs.` + nameColumn + ` as brand,
 			rs.name as region,
 			cs.name as city,
-			cls.name as color,
-			ms.name as model,
-			ts.name as transmission,
+			cls.` + nameColumn + ` as color,
+			ms.` + nameColumn + ` as model,
+			ts.` + nameColumn + ` as transmission,
 			es.value as engine,
-			ds.name as drive,
-			bts.name as body_type,
-			fts.name as fuel_type,
+			ds.` + nameColumn + ` as drive,
+			bts.` + nameColumn + ` as body_type,
+			fts.` + nameColumn + ` as fuel_type,
 			vs.year,
 			vs.price,
 			vs.odometer,
@@ -1278,7 +1284,7 @@ func (r *UserRepository) GetPriceRecommendation(ctx *fasthttp.RequestCtx, filter
 	return prices, err
 }
 
-func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int) (model.GetCarsResponse, error) {
+func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int, nameColumn string) (model.GetCarsResponse, error) {
 	car := model.GetCarsResponse{}
 	q := `
 		WITH updated AS (
@@ -1289,16 +1295,16 @@ func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int)
 		)
 		SELECT 
 			vs.id,
-			bs.name as brand,
+			bs.` + nameColumn + ` as brand,
 			rs.name as region,
 			cs.name as city,
-			cls.name as color,
-			ms.name as model,
-			ts.name as transmission,
+			cls.` + nameColumn + ` as color,
+			ms.` + nameColumn + ` as model,
+			ts.` + nameColumn + ` as transmission,
 			es.value as engine,
-			ds.name as drive,
-			bts.name as body_type,
-			fts.name as fuel_type,
+			ds.` + nameColumn + ` as drive,
+			bts.` + nameColumn + ` as body_type,
+			fts.` + nameColumn + ` as fuel_type,
 			vs.year,
 			vs.price,
 			vs.odometer,
@@ -1373,7 +1379,7 @@ func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int)
 	return car, err
 }
 
-func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID int) (model.GetEditCarsResponse, error) {
+func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID int, nameColumn string) (model.GetEditCarsResponse, error) {
 	car := model.GetEditCarsResponse{}
 
 	q := `
@@ -1381,7 +1387,7 @@ func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID 
 			vs.id,
 			json_build_object(
 				'id', bs.id,
-				'name', bs.name,
+				'name', bs.` + nameColumn + `,
 				'logo', $3 || bs.logo,
 				'model_count', bs.model_count
 			) as brand,
@@ -1395,28 +1401,28 @@ func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID 
 			) as city,
 			json_build_object(
 				'id', ms.id,
-				'name', ms.name
+				'name', ms.` + nameColumn + `,
 			) as model,
 			json_build_object(
 				'id', mfs.id,
 				'engine', es.value,
-				'fuel_type', fts.name,
-				'drivetrain', ds.name,
-				'transmission', ts.name
+				'fuel_type', fts.` + nameColumn + `,
+				'drivetrain', ds.` + nameColumn + `,
+				'transmission', ts.` + nameColumn + `,
 			) as modification,
 			json_build_object(
 				'id', cls.id,
-				'name', cls.name,
+				'name', cls.` + nameColumn + `,
 				'image', cls.image
 			) as color,
 			json_build_object(
 				'id', bts.id,
-				'name', bts.name,
+				'name', bts.` + nameColumn + `,
 				'image', bts.image
 			) as body_type,
 			json_build_object(
 				'id', gs.id,
-				'name', gs.name,
+				'name', gs.` + nameColumn + `,
 				'image', gs.image,
 				'start_year', gs.start_year,
 				'end_year', gs.end_year
@@ -1583,21 +1589,21 @@ func (r *UserRepository) RemoveLike(ctx *fasthttp.RequestCtx, carID, userID *int
 	return err
 }
 
-func (r *UserRepository) Likes(ctx *fasthttp.RequestCtx, userID *int) ([]model.GetCarsResponse, error) {
+func (r *UserRepository) Likes(ctx *fasthttp.RequestCtx, userID *int, nameColumn string) ([]model.GetCarsResponse, error) {
 	cars := make([]model.GetCarsResponse, 0)
 	q := `
 		select 
 			vs.id,
-			bs.name as brand,
+			bs.` + nameColumn + ` as brand,
 			rs.name as region,
 			cs.name as city,
-			cls.name as color,
-			ms.name as model,
-			ts.name as transmission,
+			cls.` + nameColumn + ` as color,
+			ms.` + nameColumn + ` as model,
+			ts.` + nameColumn + ` as transmission,
 			es.value as engine,
-			ds.name as drive,
-			bts.name as body_type,
-			fts.name as fuel_type,
+			ds.` + nameColumn + ` as drive,
+			bts.` + nameColumn + ` as body_type,
+			fts.` + nameColumn + ` as fuel_type,
 			vs.year,
 			vs.price,
 			vs.odometer,
@@ -1722,7 +1728,7 @@ func (r *UserRepository) DeleteCarVideo(ctx *fasthttp.RequestCtx, carID int, vid
 }
 
 // GetUserByRoleAndID fetches a single user by role_id and user id
-func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int) (model.ThirdPartyGetProfileRes, error) {
+func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int, nameColumn string) (model.ThirdPartyGetProfileRes, error) {
 
 	q := `
 		select
@@ -1736,8 +1742,8 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 			company_name,
 			message,
 			vat_number,
-			company_types.name as company_type,
-			activity_fields.name as activity_field,
+			company_types.` + nameColumn + ` as company_type,
+			activity_fields.` + nameColumn + ` as activity_field,
 			profiles.created_at,
             destinations.countries as destinations
 		from users 

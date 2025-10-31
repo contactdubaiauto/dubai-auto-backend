@@ -32,7 +32,6 @@ func NewMotorcycleHandler(service *service.MotorcycleService, validator *auth.Va
 // @Success 200 {array} model.GetMotorcycleCategoriesResponse
 // @Failure 500 {object} model.ResultMessage
 // @Router /motorcycles/categories [get]
-
 func (h *MotorcycleHandler) GetMotorcycleCategories(c *fiber.Ctx) error {
 
 	ctx := c.Context()

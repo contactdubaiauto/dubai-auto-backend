@@ -17,10 +17,10 @@ func SetupThirdPartyRoutes(r fiber.Router, config *config.Config, db *pgxpool.Po
 	thirdPartyHandler := http.NewThirdPartyHandler(thirdPartyService, validator)
 
 	{
-		r.Get("/registration-data", thirdPartyHandler.GetRegistrationData)
-		r.Get("/profile", auth.TokenGuard, thirdPartyHandler.GetProfile)
-		r.Get("/profile/my-cars", auth.TokenGuard, thirdPartyHandler.GetMyCars)
-		r.Get("/profile/on-sale", auth.TokenGuard, thirdPartyHandler.OnSale)
+		r.Get("/registration-data", auth.LanguageChecker, thirdPartyHandler.GetRegistrationData)
+		r.Get("/profile", auth.TokenGuard, auth.LanguageChecker, thirdPartyHandler.GetProfile)
+		r.Get("/profile/my-cars", auth.TokenGuard, auth.LanguageChecker, thirdPartyHandler.GetMyCars)
+		r.Get("/profile/on-sale", auth.TokenGuard, auth.LanguageChecker, thirdPartyHandler.OnSale)
 		r.Post("/first-login", auth.TokenGuard, thirdPartyHandler.FirstLogin)
 		r.Post("/profile/banner", auth.TokenGuard, thirdPartyHandler.BannerImage)
 		r.Post("/profile/images", auth.TokenGuard, thirdPartyHandler.AvatarImages)
@@ -28,7 +28,7 @@ func SetupThirdPartyRoutes(r fiber.Router, config *config.Config, db *pgxpool.Po
 
 		// dealer routes
 		r.Post("/dealer/car", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.CreateDealerCar)
-		r.Get("/dealer/car/:id/edit", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.GetEditCarByID)
+		r.Get("/dealer/car/:id/edit", auth.TokenGuard, auth.DealerGuard, auth.LanguageChecker, thirdPartyHandler.GetEditCarByID)
 		r.Post("/dealer/car/:id/sell", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.StatusDealer)
 		r.Post("/dealer/car/:id/dont-sell", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.StatusDealer)
 		r.Post("/dealer/car/:id", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.UpdateDealerCar)

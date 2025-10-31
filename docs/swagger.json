@@ -689,6 +689,20 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "description": "Status ID (1: Pending, 2: Approved, 3: Rejected)",
+                        "name": "status",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "reasoning Message",
+                        "name": "message",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
                         "description": "Application ID",
                         "name": "id",
                         "in": "path",
@@ -10755,11 +10769,6 @@
         },
         "/api/v1/third-party/registration-data": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Returns registration data",
                 "produces": [
                     "application/json"
@@ -10818,6 +10827,14 @@
                     "filter"
                 ],
                 "summary": "Get body types",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -10872,6 +10889,12 @@
                 ],
                 "summary": "Get car brands",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "Filter brands by text",
@@ -10933,6 +10956,12 @@
                 ],
                 "summary": "Get filter models by brand ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "Brand ID",
@@ -10998,6 +11027,12 @@
                 ],
                 "summary": "Get models by brand ID for create cars",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "Brand ID",
@@ -11066,6 +11101,12 @@
                 ],
                 "summary": "Get bodys by model ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "Brand ID",
@@ -11149,6 +11190,12 @@
                 ],
                 "summary": "Get generations by model ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "brand id ID",
@@ -11320,6 +11367,12 @@
                 ],
                 "summary": "Get cars",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "Filter by brand IDs",
@@ -11767,6 +11820,12 @@
                 "summary": "Get car by ID",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
+                    {
                         "type": "integer",
                         "description": "Car ID",
                         "name": "car_id",
@@ -12084,6 +12143,12 @@
                 ],
                 "summary": "Get Edit car by ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "Car ID",
@@ -12567,6 +12632,14 @@
                     "filter"
                 ],
                 "summary": "Get colors",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -12673,6 +12746,14 @@
                     "filter"
                 ],
                 "summary": "Get drivetrains",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -12785,6 +12866,12 @@
                         "description": "Filter brands by text",
                         "name": "text",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
                     }
                 ],
                 "responses": {
@@ -12837,6 +12924,14 @@
                     "filter"
                 ],
                 "summary": "Get fuel types",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -12895,6 +12990,14 @@
                     "filter"
                 ],
                 "summary": "Get home",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -12950,6 +13053,14 @@
                     "like"
                 ],
                 "summary": "My liked cars",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -13130,6 +13241,12 @@
                 ],
                 "summary": "Get generations by model ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "Model IDs",
@@ -13330,6 +13447,12 @@
                         "description": "Last item ID",
                         "name": "last_id",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
                     }
                 ],
                 "responses": {
@@ -13391,6 +13514,12 @@
                 ],
                 "summary": "Get user's profile cars",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "Limit",
@@ -13541,6 +13670,14 @@
                     "filter"
                 ],
                 "summary": "Get transmissions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -13600,6 +13737,12 @@
                 ],
                 "summary": "Get user by ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "User ID",
@@ -14401,6 +14544,38 @@
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/motorcycles/categories": {
+            "get": {
+                "description": "Get motorcycle categories",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "motorcycles"
+                ],
+                "summary": "Get motorcycle categories",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.GetMotorcycleCategoriesResponse"
+                            }
                         }
                     },
                     "500": {
@@ -15338,6 +15513,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -15392,6 +15570,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -15404,6 +15585,9 @@
                 "comtrans_category_name": {
                     "type": "string"
                 },
+                "comtrans_category_name_ru": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -15414,6 +15598,9 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15428,6 +15615,9 @@
                     "type": "integer"
                 },
                 "comtrans_parameter_name": {
+                    "type": "string"
+                },
+                "comtrans_parameter_name_ru": {
                     "type": "string"
                 },
                 "created_at": {
@@ -15449,6 +15639,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -15461,6 +15654,9 @@
                 "comtrans_brand_name": {
                     "type": "string"
                 },
+                "comtrans_brand_name_ru": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -15468,6 +15664,9 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15481,6 +15680,9 @@
                 "comtrans_category_name": {
                     "type": "string"
                 },
+                "comtrans_category_name_ru": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -15488,6 +15690,9 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15505,6 +15710,9 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15554,6 +15762,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -15582,6 +15793,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -15594,10 +15808,16 @@
                 "body_type_name": {
                     "type": "string"
                 },
+                "body_type_name_ru": {
+                    "type": "string"
+                },
                 "drivetrain_id": {
                     "type": "integer"
                 },
                 "drivetrain_name": {
+                    "type": "string"
+                },
+                "drivetrain_name_ru": {
                     "type": "string"
                 },
                 "engine_id": {
@@ -15612,6 +15832,9 @@
                 "fuel_type_name": {
                     "type": "string"
                 },
+                "fuel_type_name_ru": {
+                    "type": "string"
+                },
                 "generation_id": {
                     "type": "integer"
                 },
@@ -15622,6 +15845,9 @@
                     "type": "integer"
                 },
                 "transmission_name": {
+                    "type": "string"
+                },
+                "transmission_name_ru": {
                     "type": "string"
                 }
             }
@@ -15647,7 +15873,13 @@
                 "model_name": {
                     "type": "string"
                 },
+                "model_name_ru": {
+                    "type": "string"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 },
                 "start_year": {
@@ -15682,10 +15914,16 @@
                 "brand_name": {
                     "type": "string"
                 },
+                "brand_name_ru": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 },
                 "popular": {
@@ -15714,7 +15952,13 @@
                 "moto_category_name": {
                     "type": "string"
                 },
+                "moto_category_name_ru": {
+                    "type": "string"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15733,6 +15977,9 @@
                 },
                 "moto_parameter_name": {
                     "type": "string"
+                },
+                "moto_parameter_name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -15746,6 +15993,9 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15765,7 +16015,13 @@
                 "moto_brand_name": {
                     "type": "string"
                 },
+                "moto_brand_name_ru": {
+                    "type": "string"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15785,7 +16041,13 @@
                 "moto_category_name": {
                     "type": "string"
                 },
+                "moto_category_name_ru": {
+                    "type": "string"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15803,6 +16065,9 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15831,6 +16096,9 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -16071,6 +16339,9 @@
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16102,6 +16373,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16126,6 +16400,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16143,6 +16420,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16160,6 +16440,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16173,6 +16456,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 1
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16406,6 +16692,9 @@
                     "maxLength": 255,
                     "minLength": 2
                 },
+                "name_ru": {
+                    "type": "string"
+                },
                 "start_year": {
                     "type": "integer"
                 },
@@ -16440,6 +16729,9 @@
                     "maxLength": 255,
                     "minLength": 2
                 },
+                "name_ru": {
+                    "type": "string"
+                },
                 "popular": {
                     "type": "boolean"
                 }
@@ -16459,6 +16751,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16483,6 +16778,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16500,6 +16798,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16517,6 +16818,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16530,6 +16834,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 1
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -17275,6 +17582,17 @@
                 },
                 "image": {
                     "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.GetMotorcycleCategoriesResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"

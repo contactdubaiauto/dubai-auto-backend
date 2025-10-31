@@ -695,6 +695,20 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "description": "Status ID (1: Pending, 2: Approved, 3: Rejected)",
+                        "name": "status",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "reasoning Message",
+                        "name": "message",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
                         "description": "Application ID",
                         "name": "id",
                         "in": "path",
@@ -10761,11 +10775,6 @@ const docTemplate = `{
         },
         "/api/v1/third-party/registration-data": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Returns registration data",
                 "produces": [
                     "application/json"
@@ -10824,6 +10833,14 @@ const docTemplate = `{
                     "filter"
                 ],
                 "summary": "Get body types",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -10878,6 +10895,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get car brands",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "Filter brands by text",
@@ -10939,6 +10962,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get filter models by brand ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "Brand ID",
@@ -11004,6 +11033,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get models by brand ID for create cars",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "Brand ID",
@@ -11072,6 +11107,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get bodys by model ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "Brand ID",
@@ -11155,6 +11196,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get generations by model ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "brand id ID",
@@ -11326,6 +11373,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get cars",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "Filter by brand IDs",
@@ -11773,6 +11826,12 @@ const docTemplate = `{
                 "summary": "Get car by ID",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
+                    {
                         "type": "integer",
                         "description": "Car ID",
                         "name": "car_id",
@@ -12090,6 +12149,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get Edit car by ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "Car ID",
@@ -12573,6 +12638,14 @@ const docTemplate = `{
                     "filter"
                 ],
                 "summary": "Get colors",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -12679,6 +12752,14 @@ const docTemplate = `{
                     "filter"
                 ],
                 "summary": "Get drivetrains",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -12791,6 +12872,12 @@ const docTemplate = `{
                         "description": "Filter brands by text",
                         "name": "text",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
                     }
                 ],
                 "responses": {
@@ -12843,6 +12930,14 @@ const docTemplate = `{
                     "filter"
                 ],
                 "summary": "Get fuel types",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -12901,6 +12996,14 @@ const docTemplate = `{
                     "filter"
                 ],
                 "summary": "Get home",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -12956,6 +13059,14 @@ const docTemplate = `{
                     "like"
                 ],
                 "summary": "My liked cars",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -13136,6 +13247,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get generations by model ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "Model IDs",
@@ -13336,6 +13453,12 @@ const docTemplate = `{
                         "description": "Last item ID",
                         "name": "last_id",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
                     }
                 ],
                 "responses": {
@@ -13397,6 +13520,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get user's profile cars",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "Limit",
@@ -13547,6 +13676,14 @@ const docTemplate = `{
                     "filter"
                 ],
                 "summary": "Get transmissions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -13606,6 +13743,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get user by ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "User ID",
@@ -14407,6 +14550,38 @@ const docTemplate = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/motorcycles/categories": {
+            "get": {
+                "description": "Get motorcycle categories",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "motorcycles"
+                ],
+                "summary": "Get motorcycle categories",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.GetMotorcycleCategoriesResponse"
+                            }
                         }
                     },
                     "500": {
@@ -15344,6 +15519,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -15398,6 +15576,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -15410,6 +15591,9 @@ const docTemplate = `{
                 "comtrans_category_name": {
                     "type": "string"
                 },
+                "comtrans_category_name_ru": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -15420,6 +15604,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15434,6 +15621,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "comtrans_parameter_name": {
+                    "type": "string"
+                },
+                "comtrans_parameter_name_ru": {
                     "type": "string"
                 },
                 "created_at": {
@@ -15455,6 +15645,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -15467,6 +15660,9 @@ const docTemplate = `{
                 "comtrans_brand_name": {
                     "type": "string"
                 },
+                "comtrans_brand_name_ru": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -15474,6 +15670,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15487,6 +15686,9 @@ const docTemplate = `{
                 "comtrans_category_name": {
                     "type": "string"
                 },
+                "comtrans_category_name_ru": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -15494,6 +15696,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15511,6 +15716,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15560,6 +15768,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -15588,6 +15799,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -15600,10 +15814,16 @@ const docTemplate = `{
                 "body_type_name": {
                     "type": "string"
                 },
+                "body_type_name_ru": {
+                    "type": "string"
+                },
                 "drivetrain_id": {
                     "type": "integer"
                 },
                 "drivetrain_name": {
+                    "type": "string"
+                },
+                "drivetrain_name_ru": {
                     "type": "string"
                 },
                 "engine_id": {
@@ -15618,6 +15838,9 @@ const docTemplate = `{
                 "fuel_type_name": {
                     "type": "string"
                 },
+                "fuel_type_name_ru": {
+                    "type": "string"
+                },
                 "generation_id": {
                     "type": "integer"
                 },
@@ -15628,6 +15851,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "transmission_name": {
+                    "type": "string"
+                },
+                "transmission_name_ru": {
                     "type": "string"
                 }
             }
@@ -15653,7 +15879,13 @@ const docTemplate = `{
                 "model_name": {
                     "type": "string"
                 },
+                "model_name_ru": {
+                    "type": "string"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 },
                 "start_year": {
@@ -15688,10 +15920,16 @@ const docTemplate = `{
                 "brand_name": {
                     "type": "string"
                 },
+                "brand_name_ru": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 },
                 "popular": {
@@ -15720,7 +15958,13 @@ const docTemplate = `{
                 "moto_category_name": {
                     "type": "string"
                 },
+                "moto_category_name_ru": {
+                    "type": "string"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15739,6 +15983,9 @@ const docTemplate = `{
                 },
                 "moto_parameter_name": {
                     "type": "string"
+                },
+                "moto_parameter_name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -15752,6 +15999,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15771,7 +16021,13 @@ const docTemplate = `{
                 "moto_brand_name": {
                     "type": "string"
                 },
+                "moto_brand_name_ru": {
+                    "type": "string"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15791,7 +16047,13 @@ const docTemplate = `{
                 "moto_category_name": {
                     "type": "string"
                 },
+                "moto_category_name_ru": {
+                    "type": "string"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15809,6 +16071,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15837,6 +16102,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -16077,6 +16345,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16108,6 +16379,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16132,6 +16406,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16149,6 +16426,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16166,6 +16446,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16179,6 +16462,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 1
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16412,6 +16698,9 @@ const docTemplate = `{
                     "maxLength": 255,
                     "minLength": 2
                 },
+                "name_ru": {
+                    "type": "string"
+                },
                 "start_year": {
                     "type": "integer"
                 },
@@ -16446,6 +16735,9 @@ const docTemplate = `{
                     "maxLength": 255,
                     "minLength": 2
                 },
+                "name_ru": {
+                    "type": "string"
+                },
                 "popular": {
                     "type": "boolean"
                 }
@@ -16465,6 +16757,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16489,6 +16784,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16506,6 +16804,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16523,6 +16824,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -16536,6 +16840,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 1
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -17281,6 +17588,17 @@ const docTemplate = `{
                 },
                 "image": {
                     "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.GetMotorcycleCategoriesResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"

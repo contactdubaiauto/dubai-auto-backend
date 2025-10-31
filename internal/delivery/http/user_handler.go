@@ -29,6 +29,7 @@ func NewUserHandler(service *service.UserService, validator *auth.Validator) *Us
 // @Tags         car
 // @Produce      json
 // @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param   brands            query   string  false  "Filter by brand IDs"
 // @Param   models            query   string  false  "Filter by model IDs"
 // @Param   regions           query   string  false  "Filter by region IDs"
@@ -64,6 +65,7 @@ func NewUserHandler(service *service.UserService, validator *auth.Validator) *Us
 // @Router       /api/v1/users/cars [get]
 func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 	ctx := c.Context()
+	nameColumn := c.Locals("lang").(string)
 	userID := c.Locals("id").(int)
 	brands := auth.QueryParamToArray(c.Query("brands"))
 	models := auth.QueryParamToArray(c.Query("models"))
@@ -121,7 +123,7 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 		regions, cities, generations, transmissions, engines, drivetrains,
 		body_types, fuel_types, ownership_types, colors,
 		year_from, year_to, credit, price_from, price_to,
-		tradeIn, owners, crash, odometer, new, wheel, limitInt, lastIDInt)
+		tradeIn, owners, crash, odometer, new, wheel, limitInt, lastIDInt, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -177,6 +179,7 @@ func (h *UserHandler) GetPriceRecommendation(c *fiber.Ctx) error {
 // @Tags         car
 // @Produce      json
 // @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param        car_id   path      int  true  "Car ID"
 // @Success      200  {object}  model.GetCarsResponse
 // @Failure      400  {object}  model.ResultMessage
@@ -187,6 +190,7 @@ func (h *UserHandler) GetPriceRecommendation(c *fiber.Ctx) error {
 // @Router       /api/v1/users/cars/{car_id} [get]
 func (h *UserHandler) GetCarByID(c *fiber.Ctx) error {
 	idStr := c.Params("id")
+	nameColumn := c.Locals("lang").(string)
 	userID := c.Locals("id").(int)
 	id, err := strconv.Atoi(idStr)
 
@@ -198,7 +202,7 @@ func (h *UserHandler) GetCarByID(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.UserService.GetCarByID(ctx, id, userID)
+	data := h.UserService.GetCarByID(ctx, id, userID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -207,8 +211,9 @@ func (h *UserHandler) GetCarByID(c *fiber.Ctx) error {
 // @Description  Returns a car by its ID
 // @Tags         car
 // @Produce      json
-// @Param        car_id   path      int  true  "Car ID"
 // @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
+// @Param        car_id   path      int  true  "Car ID"
 // @Success      200  {object}  model.GetEditCarsResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -218,6 +223,7 @@ func (h *UserHandler) GetCarByID(c *fiber.Ctx) error {
 // @Router       /api/v1/users/cars/{car_id}/edit [get]
 func (h *UserHandler) GetEditCarByID(c *fiber.Ctx) error {
 	idStr := c.Params("id")
+	nameColumn := c.Locals("lang").(string)
 	userID := c.Locals("id").(int)
 	id, err := strconv.Atoi(idStr)
 
@@ -229,7 +235,7 @@ func (h *UserHandler) GetEditCarByID(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.UserService.GetEditCarByID(ctx, id, userID)
+	data := h.UserService.GetEditCarByID(ctx, id, userID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -697,6 +703,7 @@ func (h *UserHandler) DeleteCar(c *fiber.Ctx) error {
 // @Description  Returns a list of car brands, optionally filtered by text
 // @Tags         brand
 // @Produce      json
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param        text  query     string  false  "Filter brands by text"
 // @Success      200   {array}  model.GetBrandsResponse
 // @Failure      400   {object}  model.ResultMessage
@@ -707,8 +714,9 @@ func (h *UserHandler) DeleteCar(c *fiber.Ctx) error {
 // @Router       /api/v1/users/brands [get]
 func (h *UserHandler) GetBrands(c *fiber.Ctx) error {
 	text := c.Query("text")
+	nameColumn := c.Locals("lang").(string)
 	ctx := c.Context()
-	data := h.UserService.GetBrands(ctx, text)
+	data := h.UserService.GetBrands(ctx, text, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -718,6 +726,7 @@ func (h *UserHandler) GetBrands(c *fiber.Ctx) error {
 // @Tags         filter
 // @Produce      json
 // @Param        text  query     string  false  "Filter brands by text"
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success      200   {object}  model.GetFilterBrandsResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  auth.ErrorResponse
@@ -727,8 +736,9 @@ func (h *UserHandler) GetBrands(c *fiber.Ctx) error {
 // @Router       /api/v1/users/filter-brands [get]
 func (h *UserHandler) GetFilterBrands(c *fiber.Ctx) error {
 	text := c.Query("text")
+	nameColumn := c.Locals("lang").(string)
 	ctx := c.Context()
-	data := h.UserService.GetFilterBrands(ctx, text)
+	data := h.UserService.GetFilterBrands(ctx, text, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -757,6 +767,7 @@ func (h *UserHandler) GetCities(c *fiber.Ctx) error {
 // @Description  Returns a list of car models for a given brand ID, optionally filtered by text
 // @Tags         brand
 // @Produce      json
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param        id    path      int     true   "Brand ID"
 // @Param        text  query     string  false  "coroll"
 // @Success      200   {array}  model.Model
@@ -769,6 +780,7 @@ func (h *UserHandler) GetCities(c *fiber.Ctx) error {
 func (h *UserHandler) GetModelsByBrandID(c *fiber.Ctx) error {
 	brandID := c.Params("id")
 	text := c.Query("text")
+	nameColumn := c.Locals("lang").(string)
 	brandIDInt, err := strconv.ParseInt(brandID, 10, 64)
 
 	if err != nil {
@@ -779,7 +791,7 @@ func (h *UserHandler) GetModelsByBrandID(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.UserService.GetModelsByBrandID(ctx, brandIDInt, text)
+	data := h.UserService.GetModelsByBrandID(ctx, brandIDInt, text, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -788,6 +800,7 @@ func (h *UserHandler) GetModelsByBrandID(c *fiber.Ctx) error {
 // @Description  Returns a list of car models for a given brand ID, optionally filtered by text
 // @Tags         brand
 // @Produce      json
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param        id    path      int     true   "Brand ID"
 // @Param        text  query     string  false  "coroll"
 // @Success      200   {object}  model.GetFilterModelsResponse
@@ -800,6 +813,7 @@ func (h *UserHandler) GetModelsByBrandID(c *fiber.Ctx) error {
 func (h *UserHandler) GetFilterModelsByBrandID(c *fiber.Ctx) error {
 	brandID := c.Params("id")
 	text := c.Query("text")
+	nameColumn := c.Locals("lang").(string)
 	brandIDInt, err := strconv.ParseInt(brandID, 10, 64)
 
 	if err != nil {
@@ -810,7 +824,7 @@ func (h *UserHandler) GetFilterModelsByBrandID(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.UserService.GetFilterModelsByBrandID(ctx, brandIDInt, text)
+	data := h.UserService.GetFilterModelsByBrandID(ctx, brandIDInt, text, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -819,6 +833,7 @@ func (h *UserHandler) GetFilterModelsByBrandID(c *fiber.Ctx) error {
 // @Description  Returns a list of generations for a given model ID
 // @Tags         brand
 // @Produce      json
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param        id  path  int  true  "brand id ID"
 // @Param        model_id  path  int  true  "Model ID"
 // @Param   	 year   		query   string    	true  "Selected year"
@@ -834,6 +849,7 @@ func (h *UserHandler) GetFilterModelsByBrandID(c *fiber.Ctx) error {
 func (h *UserHandler) GetGenerationsByModelID(c *fiber.Ctx) error {
 	modelID := c.Params("model_id")
 	year := c.Query("year")
+	nameColumn := c.Locals("lang").(string)
 	bodyTypeID := c.Query("body_type_id")
 	wheel := true
 
@@ -851,7 +867,7 @@ func (h *UserHandler) GetGenerationsByModelID(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.UserService.GetGenerationsByModelID(ctx, modelIDInt, wheel, year, bodyTypeID)
+	data := h.UserService.GetGenerationsByModelID(ctx, modelIDInt, wheel, year, bodyTypeID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -860,6 +876,7 @@ func (h *UserHandler) GetGenerationsByModelID(c *fiber.Ctx) error {
 // @Description  Returns a list of generations for a given model ID
 // @Tags         filter
 // @Produce      json
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param        models			query		string		true  "Model IDs"
 // @Success      200   {array}  model.Generation
 // @Failure      400   {object}  model.ResultMessage
@@ -870,6 +887,7 @@ func (h *UserHandler) GetGenerationsByModelID(c *fiber.Ctx) error {
 // @Router       /api/v1/users/models/generations [get]
 func (h *UserHandler) GetGenerationsByModels(c *fiber.Ctx) error {
 	models, err := auth.QueryParamToIntArray(c.Query("models"))
+	nameColumn := c.Locals("lang").(string)
 
 	if err != nil {
 		return utils.FiberResponse(c, model.Response{
@@ -879,7 +897,7 @@ func (h *UserHandler) GetGenerationsByModels(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.UserService.GetGenerationsByModels(ctx, models)
+	data := h.UserService.GetGenerationsByModels(ctx, models, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -924,6 +942,7 @@ func (h *UserHandler) GetYearsByModelID(c *fiber.Ctx) error {
 // @Description  Returns a list of bodys for a given model ID
 // @Tags         brand
 // @Produce      json
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param        id        	path    int  		true  "Brand ID"
 // @Param        model_id  	path    int  		true  "Model ID"
 // @Param   	 year   	query   string    	true  "Selected year"
@@ -939,6 +958,7 @@ func (h *UserHandler) GetBodyTypesByModelID(c *fiber.Ctx) error {
 	modelID := c.Params("model_id")
 	year := c.Query("year")
 	wheel := true
+	nameColumn := c.Locals("lang").(string)
 
 	if c.Query("wheel", "true") == "false" {
 		wheel = false
@@ -954,7 +974,7 @@ func (h *UserHandler) GetBodyTypesByModelID(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.UserService.GetBodysByModelID(ctx, modelIDInt, wheel, year)
+	data := h.UserService.GetBodysByModelID(ctx, modelIDInt, wheel, year, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -963,6 +983,7 @@ func (h *UserHandler) GetBodyTypesByModelID(c *fiber.Ctx) error {
 // @Description  Returns a list of car body types
 // @Tags         filter
 // @Produce      json
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success      200  {array}  model.BodyType
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -972,7 +993,8 @@ func (h *UserHandler) GetBodyTypesByModelID(c *fiber.Ctx) error {
 // @Router       /api/v1/users/body-types [get]
 func (h *UserHandler) GetBodyTypes(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.UserService.GetBodyTypes(ctx)
+	nameColumn := c.Locals("lang").(string)
+	data := h.UserService.GetBodyTypes(ctx, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -981,6 +1003,7 @@ func (h *UserHandler) GetBodyTypes(c *fiber.Ctx) error {
 // @Description  Returns a list of car transmissions
 // @Tags         filter
 // @Produce      json
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success      200  {array}  model.Transmission
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -990,7 +1013,8 @@ func (h *UserHandler) GetBodyTypes(c *fiber.Ctx) error {
 // @Router       /api/v1/users/transmissions [get]
 func (h *UserHandler) GetTransmissions(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.UserService.GetTransmissions(ctx)
+	nameColumn := c.Locals("lang").(string)
+	data := h.UserService.GetTransmissions(ctx, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1017,6 +1041,7 @@ func (h *UserHandler) GetEngines(c *fiber.Ctx) error {
 // @Description  Returns a list of car drivetrains
 // @Tags         filter
 // @Produce      json
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success      200  {array}  model.Drivetrain
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -1026,7 +1051,8 @@ func (h *UserHandler) GetEngines(c *fiber.Ctx) error {
 // @Router       /api/v1/users/drivetrains [get]
 func (h *UserHandler) GetDrivetrains(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.UserService.GetDrivetrains(ctx)
+	nameColumn := c.Locals("lang").(string)
+	data := h.UserService.GetDrivetrains(ctx, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1035,6 +1061,7 @@ func (h *UserHandler) GetDrivetrains(c *fiber.Ctx) error {
 // @Description  Returns a list of car fuel types
 // @Tags         filter
 // @Produce      json
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success      200  {array}  model.FuelType
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -1044,7 +1071,8 @@ func (h *UserHandler) GetDrivetrains(c *fiber.Ctx) error {
 // @Router       /api/v1/users/fuel-types [get]
 func (h *UserHandler) GetFuelTypes(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.UserService.GetFuelTypes(ctx)
+	nameColumn := c.Locals("lang").(string)
+	data := h.UserService.GetFuelTypes(ctx, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1053,6 +1081,7 @@ func (h *UserHandler) GetFuelTypes(c *fiber.Ctx) error {
 // @Description  Returns a list of car colors
 // @Tags         filter
 // @Produce      json
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success      200  {array}  model.Color
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -1062,7 +1091,8 @@ func (h *UserHandler) GetFuelTypes(c *fiber.Ctx) error {
 // @Router       /api/v1/users/colors [get]
 func (h *UserHandler) GetColors(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.UserService.GetColors(ctx)
+	nameColumn := c.Locals("lang").(string)
+	data := h.UserService.GetColors(ctx, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1090,6 +1120,7 @@ func (h *UserHandler) GetCountries(c *fiber.Ctx) error {
 // @Tags         filter
 // @Produce      json
 // @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success      200  {object}  model.Home
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -1100,8 +1131,8 @@ func (h *UserHandler) GetCountries(c *fiber.Ctx) error {
 func (h *UserHandler) GetHome(c *fiber.Ctx) error {
 	ctx := c.Context()
 	userID := c.Locals("id").(int)
-
-	data := h.UserService.GetHome(ctx, userID)
+	nameColumn := c.Locals("lang").(string)
+	data := h.UserService.GetHome(ctx, userID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1111,6 +1142,7 @@ func (h *UserHandler) GetHome(c *fiber.Ctx) error {
 // @Tags         like
 // @Security     BearerAuth
 // @Produce      json
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success      200  {array}  model.GetCarsResponse
 // @Failure      400  {object} model.ResultMessage
 // @Failure      401  {object} auth.ErrorResponse
@@ -1122,7 +1154,8 @@ func (h *UserHandler) Likes(c *fiber.Ctx) error {
 	// todo: delete images if exist
 	ctx := c.Context()
 	userID := c.Locals("id").(int)
-	data := h.UserService.Likes(ctx, &userID)
+	nameColumn := c.Locals("lang").(string)
+	data := h.UserService.Likes(ctx, &userID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1207,6 +1240,7 @@ func (h *UserHandler) RemoveLike(c *fiber.Ctx) error {
 // @Produce      json
 // @Param        limit   query      string  false  "Limit"
 // @Param        last_id   query      string  false  "Last item ID"
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success      200  {array}  model.GetCarsResponse
 // @Failure      400  {object} model.ResultMessage
 // @Failure      401  {object} auth.ErrorResponse
@@ -1219,7 +1253,8 @@ func (h *UserHandler) GetMyCars(c *fiber.Ctx) error {
 	limit := c.Query("limit")
 	lastID := c.Query("last_id")
 	userID := c.Locals("id").(int)
-	data := h.UserService.GetMyCars(ctx, &userID, limit, lastID)
+	nameColumn := c.Locals("lang").(string)
+	data := h.UserService.GetMyCars(ctx, &userID, limit, lastID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1229,6 +1264,7 @@ func (h *UserHandler) GetMyCars(c *fiber.Ctx) error {
 // @Tags         profile
 // @Security     BearerAuth
 // @Produce      json
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param        limit   query      string  false  "Limit"
 // @Param        last_id   query      string  false  "Last item ID"
 // @Success      200  {array}  model.GetCarsResponse
@@ -1243,7 +1279,8 @@ func (h *UserHandler) OnSale(c *fiber.Ctx) error {
 	limit := c.Query("limit")
 	lastID := c.Query("last_id")
 	userID := c.Locals("id").(int)
-	data := h.UserService.OnSale(ctx, &userID, limit, lastID)
+	nameColumn := c.Locals("lang").(string)
+	data := h.UserService.OnSale(ctx, &userID, limit, lastID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1313,6 +1350,7 @@ func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
 // @Tags         user
 // @Produce      json
 // @Security     BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param        id   path      int  true  "User ID"
 // @Success      200  {object}  model.ThirdPartyGetProfileRes
 // @Failure      400  {object}  model.ResultMessage
@@ -1324,7 +1362,8 @@ func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
 func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
 	userID := c.Params("id")
 	ctx := c.Context()
-	data := h.UserService.GetUserByID(ctx, userID)
+	nameColumn := c.Locals("lang").(string)
+	data := h.UserService.GetUserByID(ctx, userID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 

@@ -244,6 +244,8 @@ func (h *AdminHandler) AcceptApplication(c *fiber.Ctx) error {
 // @Tags         admin-applications
 // @Produce      json
 // @Security     BearerAuth
+// @Param        status   query      int  true  "Status ID (1: Pending, 2: Approved, 3: Rejected)"
+// @Param        message  query      string  true  "reasoning Message"
 // @Param        id   path      int  true  "Application ID"
 // @Success      200  {object}  model.Success
 // @Failure      400  {object}  model.ResultMessage
@@ -253,16 +255,10 @@ func (h *AdminHandler) AcceptApplication(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/applications/{id}/reject [post]
 func (h *AdminHandler) RejectApplication(c *fiber.Ctx) error {
 	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("application id must be integer"),
-		})
-	}
+	qStatus := c.Query("status")
+	qMessage := c.Query("message")
 	ctx := c.Context()
-	data := h.service.RejectApplication(ctx, id)
+	data := h.service.RejectApplication(ctx, idStr, qStatus, qMessage)
 	return utils.FiberResponse(c, data)
 }
 
