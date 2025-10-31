@@ -725,42 +725,42 @@ func (s *AdminService) DeleteFuelType(ctx *fasthttp.RequestCtx, id int) model.Re
 	return model.Response{Data: model.Success{Message: "Fuel type deleted successfully"}}
 }
 
-// Service Types service methods
-func (s *AdminService) GetServiceTypes(ctx *fasthttp.RequestCtx) model.Response {
-	serviceTypes, err := s.repo.GetServiceTypes(ctx)
+// // Service Types service methods
+// func (s *AdminService) GetServiceTypes(ctx *fasthttp.RequestCtx) model.Response {
+// 	serviceTypes, err := s.repo.GetServiceTypes(ctx)
 
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: serviceTypes}
-}
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: serviceTypes}
+// }
 
-func (s *AdminService) CreateServiceType(ctx *fasthttp.RequestCtx, req *model.CreateServiceTypeRequest) model.Response {
-	id, err := s.repo.CreateServiceType(ctx, req)
+// func (s *AdminService) CreateServiceType(ctx *fasthttp.RequestCtx, req *model.CreateServiceTypeRequest) model.Response {
+// 	id, err := s.repo.CreateServiceType(ctx, req)
 
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Service type created successfully"}}
-}
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Service type created successfully"}}
+// }
 
-func (s *AdminService) UpdateServiceType(ctx *fasthttp.RequestCtx, id int, req *model.CreateServiceTypeRequest) model.Response {
-	err := s.repo.UpdateServiceType(ctx, id, req)
+// func (s *AdminService) UpdateServiceType(ctx *fasthttp.RequestCtx, id int, req *model.CreateServiceTypeRequest) model.Response {
+// 	err := s.repo.UpdateServiceType(ctx, id, req)
 
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Service type updated successfully"}}
-}
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.Success{Message: "Service type updated successfully"}}
+// }
 
-func (s *AdminService) DeleteServiceType(ctx *fasthttp.RequestCtx, id int) model.Response {
-	err := s.repo.DeleteServiceType(ctx, id)
+// func (s *AdminService) DeleteServiceType(ctx *fasthttp.RequestCtx, id int) model.Response {
+// 	err := s.repo.DeleteServiceType(ctx, id)
 
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Service type deleted successfully"}}
-}
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.Success{Message: "Service type deleted successfully"}}
+// }
 
 // Generations service methods
 func (s *AdminService) GetGenerations(ctx *fasthttp.RequestCtx) model.Response {

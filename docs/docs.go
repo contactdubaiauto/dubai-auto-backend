@@ -2551,7 +2551,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.AdminCityResponse"
+                                "$ref": "#/definitions/model.CompanyType"
                             }
                         }
                     },
@@ -2671,7 +2671,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.AdminCityResponse"
+                            "$ref": "#/definitions/model.CompanyType"
                         }
                     },
                     "400": {
@@ -8052,245 +8052,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.AdminProfileResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/admin/service-types": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Returns a list of all service types",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-service-types"
-                ],
-                "summary": "Get all service types",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.AdminServiceTypeResponse"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Creates a new service type",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-service-types"
-                ],
-                "summary": "Create a service type",
-                "parameters": [
-                    {
-                        "description": "Service type data",
-                        "name": "serviceType",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.CreateServiceTypeRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.SuccessWithId"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/admin/service-types/{id}": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Updates a service type by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-service-types"
-                ],
-                "summary": "Update a service type",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Service type ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Service type data",
-                        "name": "serviceType",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.CreateServiceTypeRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Success"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Deletes a service type by ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-service-types"
-                ],
-                "summary": "Delete a service type",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Service type ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Success"
                         }
                     },
                     "400": {
@@ -16066,20 +15827,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AdminServiceTypeResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "model.AdminTransmissionResponse": {
             "type": "object",
             "properties": {
@@ -16159,7 +15906,7 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "nameRu": {
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -16212,10 +15959,16 @@ const docTemplate = `{
         "model.CreateBodyTypeRequest": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                },
+                "name_ru": {
                     "type": "string",
                     "maxLength": 50,
                     "minLength": 2
@@ -16225,10 +15978,16 @@ const docTemplate = `{
         "model.CreateBrandRequest": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                },
+                "name_ru": {
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 2
@@ -16568,10 +16327,16 @@ const docTemplate = `{
         "model.CreateDrivetrainRequest": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                },
+                "name_ru": {
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 2
@@ -16594,10 +16359,16 @@ const docTemplate = `{
         "model.CreateFuelTypeRequest": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                },
+                "name_ru": {
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 2
@@ -16929,26 +16700,19 @@ const docTemplate = `{
                 }
             }
         },
-        "model.CreateServiceTypeRequest": {
+        "model.CreateTransmissionRequest": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "name": {
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 2
-                }
-            }
-        },
-        "model.CreateTransmissionRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "name": {
+                },
+                "name_ru": {
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 2
@@ -18253,13 +18017,19 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "image",
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "image": {
                     "type": "string"
                 },
                 "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                },
+                "name_ru": {
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 2
@@ -18270,13 +18040,19 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "comtrans_category_id",
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "comtrans_category_id": {
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
+                },
+                "name_ru": {
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
@@ -18297,10 +18073,16 @@ const docTemplate = `{
         "model.UpdateComtransCategoryRequest": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
+                },
+                "name_ru": {
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
@@ -18311,13 +18093,19 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "comtrans_brand_id",
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "comtrans_brand_id": {
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
+                },
+                "name_ru": {
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
@@ -18328,7 +18116,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "comtrans_category_id",
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "comtrans_category_id": {
@@ -18338,16 +18127,27 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
                 }
             }
         },
         "model.UpdateComtransParameterValueRequest": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                },
+                "name_ru": {
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 1
@@ -18402,6 +18202,7 @@ const docTemplate = `{
                 "end_year",
                 "model_id",
                 "name",
+                "name_ru",
                 "start_year"
             ],
             "properties": {
@@ -18419,6 +18220,11 @@ const docTemplate = `{
                     "maxLength": 255,
                     "minLength": 2
                 },
+                "name_ru": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                },
                 "start_year": {
                     "type": "integer"
                 },
@@ -18431,13 +18237,19 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "brand_id",
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "brand_id": {
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                },
+                "name_ru": {
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 2
@@ -18452,7 +18264,8 @@ const docTemplate = `{
             "required": [
                 "image",
                 "moto_category_id",
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "image": {
@@ -18462,6 +18275,11 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
+                },
+                "name_ru": {
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
@@ -18482,10 +18300,16 @@ const docTemplate = `{
         "model.UpdateMotoCategoryRequest": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
+                },
+                "name_ru": {
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
@@ -18496,13 +18320,19 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "moto_brand_id",
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "moto_brand_id": {
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
+                },
+                "name_ru": {
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
@@ -18513,7 +18343,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "moto_category_id",
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "moto_category_id": {
@@ -18523,16 +18354,27 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ru": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
                 }
             }
         },
         "model.UpdateMotoParameterValueRequest": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "name_ru"
             ],
             "properties": {
                 "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                },
+                "name_ru": {
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 1

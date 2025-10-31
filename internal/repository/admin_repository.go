@@ -588,8 +588,8 @@ func (r *AdminRepository) CreateBrandImage(ctx *fasthttp.RequestCtx, id int, pat
 }
 
 func (r *AdminRepository) UpdateBrand(ctx *fasthttp.RequestCtx, id int, req *model.CreateBrandRequest) error {
-	q := `UPDATE brands SET name = $2, popular = $3, updated_at = NOW() WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.Popular)
+	q := `UPDATE brands SET name = $2, name_ru = $3, popular = $4, updated_at = NOW() WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.Popular)
 	return err
 }
 
@@ -637,8 +637,8 @@ func (r *AdminRepository) CreateModel(ctx *fasthttp.RequestCtx, brand_id int, re
 }
 
 func (r *AdminRepository) UpdateModel(ctx *fasthttp.RequestCtx, id int, req *model.UpdateModelRequest) error {
-	q := `UPDATE models SET name = $2, brand_id = $3, popular = $4, updated_at = NOW() WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.BrandID, req.Popular)
+	q := `UPDATE models SET name = $2, name_ru = $3, brand_id = $4, popular = $5, updated_at = NOW() WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.BrandID, req.Popular)
 	return err
 }
 
@@ -700,8 +700,8 @@ func (r *AdminRepository) DeleteBodyTypeImage(ctx *fasthttp.RequestCtx, id int) 
 }
 
 func (r *AdminRepository) UpdateBodyType(ctx *fasthttp.RequestCtx, id int, req *model.CreateBodyTypeRequest) error {
-	q := `UPDATE body_types SET name = $2 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name)
+	q := `UPDATE body_types SET name = $2, name_ru = $3 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu)
 	return err
 }
 
@@ -784,8 +784,8 @@ func (r *AdminRepository) CreateTransmission(ctx *fasthttp.RequestCtx, req *mode
 }
 
 func (r *AdminRepository) UpdateTransmission(ctx *fasthttp.RequestCtx, id int, req *model.CreateTransmissionRequest) error {
-	q := `UPDATE transmissions SET name = $2 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name)
+	q := `UPDATE transmissions SET name = $2, name_ru = $3 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu)
 	return err
 }
 
@@ -866,8 +866,8 @@ func (r *AdminRepository) CreateDrivetrain(ctx *fasthttp.RequestCtx, req *model.
 }
 
 func (r *AdminRepository) UpdateDrivetrain(ctx *fasthttp.RequestCtx, id int, req *model.CreateDrivetrainRequest) error {
-	q := `UPDATE drivetrains SET name = $2 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name)
+	q := `UPDATE drivetrains SET name = $2, name_ru = $3 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu)
 	return err
 }
 
@@ -907,8 +907,8 @@ func (r *AdminRepository) CreateFuelType(ctx *fasthttp.RequestCtx, req *model.Cr
 }
 
 func (r *AdminRepository) UpdateFuelType(ctx *fasthttp.RequestCtx, id int, req *model.CreateFuelTypeRequest) error {
-	q := `UPDATE fuel_types SET name = $2 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name)
+	q := `UPDATE fuel_types SET name = $2, name_ru = $3 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu)
 	return err
 }
 
@@ -918,46 +918,46 @@ func (r *AdminRepository) DeleteFuelType(ctx *fasthttp.RequestCtx, id int) error
 	return err
 }
 
-// Service Types CRUD operations
-func (r *AdminRepository) GetServiceTypes(ctx *fasthttp.RequestCtx) ([]model.AdminServiceTypeResponse, error) {
-	serviceTypes := make([]model.AdminServiceTypeResponse, 0)
-	q := `SELECT id, name, created_at FROM service_types ORDER BY id DESC`
+// // Service Types CRUD operations
+// func (r *AdminRepository) GetServiceTypes(ctx *fasthttp.RequestCtx) ([]model.AdminServiceTypeResponse, error) {
+// 	serviceTypes := make([]model.AdminServiceTypeResponse, 0)
+// 	q := `SELECT id, name, created_at FROM service_types ORDER BY id DESC`
 
-	rows, err := r.db.Query(ctx, q)
-	if err != nil {
-		return serviceTypes, err
-	}
-	defer rows.Close()
+// 	rows, err := r.db.Query(ctx, q)
+// 	if err != nil {
+// 		return serviceTypes, err
+// 	}
+// 	defer rows.Close()
 
-	for rows.Next() {
-		var serviceType model.AdminServiceTypeResponse
-		if err := rows.Scan(&serviceType.ID, &serviceType.Name, &serviceType.CreatedAt); err != nil {
-			return serviceTypes, err
-		}
-		serviceTypes = append(serviceTypes, serviceType)
-	}
+// 	for rows.Next() {
+// 		var serviceType model.AdminServiceTypeResponse
+// 		if err := rows.Scan(&serviceType.ID, &serviceType.Name, &serviceType.CreatedAt); err != nil {
+// 			return serviceTypes, err
+// 		}
+// 		serviceTypes = append(serviceTypes, serviceType)
+// 	}
 
-	return serviceTypes, err
-}
+// 	return serviceTypes, err
+// }
 
-func (r *AdminRepository) CreateServiceType(ctx *fasthttp.RequestCtx, req *model.CreateServiceTypeRequest) (int, error) {
-	q := `INSERT INTO service_types (name) VALUES ($1) RETURNING id`
-	var id int
-	err := r.db.QueryRow(ctx, q, req.Name).Scan(&id)
-	return id, err
-}
+// func (r *AdminRepository) CreateServiceType(ctx *fasthttp.RequestCtx, req *model.CreateServiceTypeRequest) (int, error) {
+// 	q := `INSERT INTO service_types (name) VALUES ($1) RETURNING id`
+// 	var id int
+// 	err := r.db.QueryRow(ctx, q, req.Name).Scan(&id)
+// 	return id, err
+// }
 
-func (r *AdminRepository) UpdateServiceType(ctx *fasthttp.RequestCtx, id int, req *model.CreateServiceTypeRequest) error {
-	q := `UPDATE service_types SET name = $2 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name)
-	return err
-}
+// func (r *AdminRepository) UpdateServiceType(ctx *fasthttp.RequestCtx, id int, req *model.CreateServiceTypeRequest) error {
+// 	q := `UPDATE service_types SET name = $2 WHERE id = $1`
+// 	_, err := r.db.Exec(ctx, q, id, req.Name)
+// 	return err
+// }
 
-func (r *AdminRepository) DeleteServiceType(ctx *fasthttp.RequestCtx, id int) error {
-	q := `DELETE FROM service_types WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id)
-	return err
-}
+// func (r *AdminRepository) DeleteServiceType(ctx *fasthttp.RequestCtx, id int) error {
+// 	q := `DELETE FROM service_types WHERE id = $1`
+// 	_, err := r.db.Exec(ctx, q, id)
+// 	return err
+// }
 
 // Generations CRUD operations
 func (r *AdminRepository) GetGenerations(ctx *fasthttp.RequestCtx) ([]model.AdminGenerationResponse, error) {
@@ -1045,8 +1045,8 @@ func (r *AdminRepository) CreateGeneration(ctx *fasthttp.RequestCtx, req *model.
 }
 
 func (r *AdminRepository) UpdateGeneration(ctx *fasthttp.RequestCtx, id int, req *model.UpdateGenerationRequest) error {
-	q := `UPDATE generations SET name = $2, model_id = $3, start_year = $4, end_year = $5, wheel = $6, image = $7 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.ModelID, req.StartYear, req.EndYear, req.Wheel, req.Image)
+	q := `UPDATE generations SET name = $2, name_ru = $3, model_id = $4, start_year = $5, end_year = $6, wheel = $7, image = $8 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.ModelID, req.StartYear, req.EndYear, req.Wheel, req.Image)
 	return err
 }
 
@@ -1201,8 +1201,8 @@ func (r *AdminRepository) CreateColorImage(ctx *fasthttp.RequestCtx, id int, pat
 }
 
 func (r *AdminRepository) UpdateColor(ctx *fasthttp.RequestCtx, id int, req *model.UpdateColorRequest) error {
-	q := `UPDATE colors SET name = $2, image = $3 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.Image)
+	q := `UPDATE colors SET name = $2, name_ru = $3, image = $4 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.Image)
 	return err
 }
 
@@ -1271,8 +1271,8 @@ func (r *AdminRepository) GetMotoBrandsByCategoryID(ctx *fasthttp.RequestCtx, id
 }
 
 func (r *AdminRepository) UpdateMotoCategory(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoCategoryRequest) error {
-	q := `UPDATE moto_categories SET name = $2 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name)
+	q := `UPDATE moto_categories SET name = $2, name_ru = $3 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu)
 	return err
 }
 
@@ -1353,8 +1353,8 @@ func (r *AdminRepository) CreateMotoBrandImage(ctx *fasthttp.RequestCtx, id int,
 }
 
 func (r *AdminRepository) UpdateMotoBrand(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoBrandRequest) error {
-	q := `UPDATE moto_brands SET name = $2, moto_category_id = $3 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.MotoCategoryID)
+	q := `UPDATE moto_brands SET name = $2, name_ru = $3, moto_category_id = $4 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.MotoCategoryID)
 	return err
 }
 
@@ -1400,8 +1400,8 @@ func (r *AdminRepository) CreateMotoModel(ctx *fasthttp.RequestCtx, req *model.C
 }
 
 func (r *AdminRepository) UpdateMotoModel(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoModelRequest) error {
-	q := `UPDATE moto_models SET name = $2, moto_brand_id = $3 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.MotoBrandID)
+	q := `UPDATE moto_models SET name = $2, name_ru = $3, moto_brand_id = $4 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.MotoBrandID)
 	return err
 }
 
@@ -1447,8 +1447,8 @@ func (r *AdminRepository) CreateMotoParameter(ctx *fasthttp.RequestCtx, req *mod
 }
 
 func (r *AdminRepository) UpdateMotoParameter(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoParameterRequest) error {
-	q := `UPDATE moto_parameters SET name = $2, moto_category_id = $3 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.MotoCategoryID)
+	q := `UPDATE moto_parameters SET name = $2, name_ru = $3, moto_category_id = $4 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.MotoCategoryID)
 	return err
 }
 
@@ -1489,8 +1489,8 @@ func (r *AdminRepository) CreateMotoParameterValue(ctx *fasthttp.RequestCtx, mot
 }
 
 func (r *AdminRepository) UpdateMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamID int, id int, req *model.UpdateMotoParameterValueRequest) error {
-	q := `UPDATE moto_parameter_values SET name = $3 WHERE moto_parameter_id = $1 AND id = $2`
-	_, err := r.db.Exec(ctx, q, motoParamID, id, req.Name)
+	q := `UPDATE moto_parameter_values SET name = $3, name_ru = $4 WHERE moto_parameter_id = $1 AND id = $2`
+	_, err := r.db.Exec(ctx, q, motoParamID, id, req.Name, req.NameRu)
 	return err
 }
 
@@ -1611,8 +1611,8 @@ func (r *AdminRepository) CreateComtransCategory(ctx *fasthttp.RequestCtx, req *
 }
 
 func (r *AdminRepository) UpdateComtransCategory(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransCategoryRequest) error {
-	q := `UPDATE com_categories SET name = $2 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name)
+	q := `UPDATE com_categories SET name = $2, name_ru = $3 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu)
 	return err
 }
 
@@ -1741,8 +1741,8 @@ func (r *AdminRepository) CreateComtransBrandImage(ctx *fasthttp.RequestCtx, id 
 }
 
 func (r *AdminRepository) UpdateComtransBrand(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransBrandRequest) error {
-	q := `UPDATE com_brands SET name = $2, comtran_category_id = $3 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.ComtransCategoryID)
+	q := `UPDATE com_brands SET name = $2, name_ru = $3, comtran_category_id = $4 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.ComtransCategoryID)
 	return err
 }
 
@@ -1788,8 +1788,8 @@ func (r *AdminRepository) CreateComtransModel(ctx *fasthttp.RequestCtx, req *mod
 }
 
 func (r *AdminRepository) UpdateComtransModel(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransModelRequest) error {
-	q := `UPDATE com_models SET name = $2, comtran_brand_id = $3 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.ComtransBrandID)
+	q := `UPDATE com_models SET name = $2, name_ru = $3, comtran_brand_id = $4 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.ComtransBrandID)
 	return err
 }
 
@@ -1835,8 +1835,8 @@ func (r *AdminRepository) CreateComtransParameter(ctx *fasthttp.RequestCtx, req 
 }
 
 func (r *AdminRepository) UpdateComtransParameter(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransParameterRequest) error {
-	q := `UPDATE com_parameters SET name = $2, comtran_category_id = $3 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.ComtransCategoryID)
+	q := `UPDATE com_parameters SET name = $2, name_ru = $3, comtran_category_id = $4 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.ComtransCategoryID)
 	return err
 }
 
@@ -1877,8 +1877,8 @@ func (r *AdminRepository) CreateComtransParameterValue(ctx *fasthttp.RequestCtx,
 }
 
 func (r *AdminRepository) UpdateComtransParameterValue(ctx *fasthttp.RequestCtx, parameterID int, id int, req *model.UpdateComtransParameterValueRequest) error {
-	q := `UPDATE com_parameter_values SET name = $3 WHERE comtran_parameter_id = $1 AND id = $2`
-	_, err := r.db.Exec(ctx, q, parameterID, id, req.Name)
+	q := `UPDATE com_parameter_values SET name = $3, name_ru = $4 WHERE comtran_parameter_id = $1 AND id = $2`
+	_, err := r.db.Exec(ctx, q, parameterID, id, req.Name, req.NameRu)
 	return err
 }
 

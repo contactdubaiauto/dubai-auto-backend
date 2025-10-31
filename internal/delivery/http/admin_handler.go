@@ -406,7 +406,7 @@ func (h *AdminHandler) DeleteCity(c *fiber.Ctx) error {
 // @Tags         admin-company-types
 // @Produce      json
 // @Security     BearerAuth
-// @Success      200  {array}  model.AdminCityResponse
+// @Success      200  {array}  model.CompanyType
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
@@ -425,7 +425,7 @@ func (h *AdminHandler) GetCompanyTypes(c *fiber.Ctx) error {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id   path      int  true  "Company type ID"
-// @Success      200  {object}  model.AdminCityResponse
+// @Success      200  {object}  model.CompanyType
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
@@ -3859,138 +3859,6 @@ func (h *AdminHandler) DeleteComtransParameterValue(c *fiber.Ctx) error {
 
 	ctx := c.Context()
 	data := h.service.DeleteComtransParameterValue(ctx, parameterId, id)
-	return utils.FiberResponse(c, data)
-}
-
-// Service Type handlers
-
-// GetServiceTypes godoc
-// @Summary      Get all service types
-// @Description  Returns a list of all service types
-// @Tags         admin-service-types
-// @Produce      json
-// @Security     BearerAuth
-// @Success      200  {array}  model.AdminServiceTypeResponse
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/service-types [get]
-func (h *AdminHandler) GetServiceTypes(c *fiber.Ctx) error {
-	ctx := c.Context()
-	data := h.service.GetServiceTypes(ctx)
-	return utils.FiberResponse(c, data)
-}
-
-// CreateServiceType godoc
-// @Summary      Create a service type
-// @Description  Creates a new service type
-// @Tags         admin-service-types
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        serviceType  body      model.CreateServiceTypeRequest  true  "Service type data"
-// @Success      200  {object}  model.SuccessWithId
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/service-types [post]
-func (h *AdminHandler) CreateServiceType(c *fiber.Ctx) error {
-	var req model.CreateServiceTypeRequest
-
-	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("invalid request body"),
-		})
-	}
-
-	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  err,
-		})
-	}
-
-	ctx := c.Context()
-	data := h.service.CreateServiceType(ctx, &req)
-	return utils.FiberResponse(c, data)
-}
-
-// UpdateServiceType godoc
-// @Summary      Update a service type
-// @Description  Updates a service type by ID
-// @Tags         admin-service-types
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id           path      int                          true  "Service type ID"
-// @Param        serviceType  body      model.CreateServiceTypeRequest  true  "Service type data"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/service-types/{id} [put]
-func (h *AdminHandler) UpdateServiceType(c *fiber.Ctx) error {
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("service type id must be integer"),
-		})
-	}
-
-	var req model.CreateServiceTypeRequest
-
-	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("invalid request body"),
-		})
-	}
-
-	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  err,
-		})
-	}
-
-	ctx := c.Context()
-	data := h.service.UpdateServiceType(ctx, id, &req)
-	return utils.FiberResponse(c, data)
-}
-
-// DeleteServiceType godoc
-// @Summary      Delete a service type
-// @Description  Deletes a service type by ID
-// @Tags         admin-service-types
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id   path      int  true  "Service type ID"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/service-types/{id} [delete]
-func (h *AdminHandler) DeleteServiceType(c *fiber.Ctx) error {
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("service type id must be integer"),
-		})
-	}
-
-	ctx := c.Context()
-	data := h.service.DeleteServiceType(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 

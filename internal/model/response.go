@@ -273,8 +273,8 @@ type AdminCityResponse struct {
 }
 
 type CompanyType struct {
-	Name   string
-	NameRu string
+	Name   string `json:"name"`
+	NameRu string `json:"name_ru"`
 	ID     int
 }
 

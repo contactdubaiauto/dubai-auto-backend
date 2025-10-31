@@ -390,15 +390,6 @@ definitions:
       username:
         type: string
     type: object
-  model.AdminServiceTypeResponse:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-    type: object
   model.AdminTransmissionResponse:
     properties:
       created_at:
@@ -450,7 +441,7 @@ definitions:
         type: integer
       name:
         type: string
-      nameRu:
+      name_ru:
         type: string
     type: object
   model.ComtransOwner:
@@ -488,8 +479,13 @@ definitions:
         maxLength: 50
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 50
+        minLength: 2
+        type: string
     required:
     - name
+    - name_ru
     type: object
   model.CreateBrandRequest:
     properties:
@@ -497,10 +493,15 @@ definitions:
         maxLength: 255
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 255
+        minLength: 2
+        type: string
       popular:
         type: boolean
     required:
     - name
+    - name_ru
     type: object
   model.CreateCarRequest:
     properties:
@@ -739,8 +740,13 @@ definitions:
         maxLength: 255
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 255
+        minLength: 2
+        type: string
     required:
     - name
+    - name_ru
     type: object
   model.CreateEngineRequest:
     properties:
@@ -757,8 +763,13 @@ definitions:
         maxLength: 255
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 255
+        minLength: 2
+        type: string
     required:
     - name
+    - name_ru
     type: object
   model.CreateGenerationModificationRequest:
     properties:
@@ -986,23 +997,19 @@ definitions:
     required:
     - name
     type: object
-  model.CreateServiceTypeRequest:
-    properties:
-      name:
-        maxLength: 255
-        minLength: 2
-        type: string
-    required:
-    - name
-    type: object
   model.CreateTransmissionRequest:
     properties:
       name:
         maxLength: 255
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 255
+        minLength: 2
+        type: string
     required:
     - name
+    - name_ru
     type: object
   model.DeleteCarImageRequest:
     properties:
@@ -1870,9 +1877,14 @@ definitions:
         maxLength: 255
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 255
+        minLength: 2
+        type: string
     required:
     - image
     - name
+    - name_ru
     type: object
   model.UpdateComtransBrandRequest:
     properties:
@@ -1882,9 +1894,14 @@ definitions:
         maxLength: 100
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 100
+        minLength: 2
+        type: string
     required:
     - comtrans_category_id
     - name
+    - name_ru
     type: object
   model.UpdateComtransCategoryParameterRequest:
     properties:
@@ -1899,8 +1916,13 @@ definitions:
         maxLength: 100
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 100
+        minLength: 2
+        type: string
     required:
     - name
+    - name_ru
     type: object
   model.UpdateComtransModelRequest:
     properties:
@@ -1910,9 +1932,14 @@ definitions:
         maxLength: 100
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 100
+        minLength: 2
+        type: string
     required:
     - comtrans_brand_id
     - name
+    - name_ru
     type: object
   model.UpdateComtransParameterRequest:
     properties:
@@ -1922,9 +1949,14 @@ definitions:
         maxLength: 100
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 100
+        minLength: 2
+        type: string
     required:
     - comtrans_category_id
     - name
+    - name_ru
     type: object
   model.UpdateComtransParameterValueRequest:
     properties:
@@ -1932,8 +1964,13 @@ definitions:
         maxLength: 100
         minLength: 1
         type: string
+      name_ru:
+        maxLength: 100
+        minLength: 1
+        type: string
     required:
     - name
+    - name_ru
     type: object
   model.UpdateConfigurationRequest:
     properties:
@@ -1976,6 +2013,10 @@ definitions:
         maxLength: 255
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 255
+        minLength: 2
+        type: string
       start_year:
         type: integer
       wheel:
@@ -1984,6 +2025,7 @@ definitions:
     - end_year
     - model_id
     - name
+    - name_ru
     - start_year
     type: object
   model.UpdateModelRequest:
@@ -1994,11 +2036,16 @@ definitions:
         maxLength: 255
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 255
+        minLength: 2
+        type: string
       popular:
         type: boolean
     required:
     - brand_id
     - name
+    - name_ru
     type: object
   model.UpdateMotoBrandRequest:
     properties:
@@ -2010,10 +2057,15 @@ definitions:
         maxLength: 100
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 100
+        minLength: 2
+        type: string
     required:
     - image
     - moto_category_id
     - name
+    - name_ru
     type: object
   model.UpdateMotoCategoryParameterRequest:
     properties:
@@ -2028,8 +2080,13 @@ definitions:
         maxLength: 100
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 100
+        minLength: 2
+        type: string
     required:
     - name
+    - name_ru
     type: object
   model.UpdateMotoModelRequest:
     properties:
@@ -2039,9 +2096,14 @@ definitions:
         maxLength: 100
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 100
+        minLength: 2
+        type: string
     required:
     - moto_brand_id
     - name
+    - name_ru
     type: object
   model.UpdateMotoParameterRequest:
     properties:
@@ -2051,9 +2113,14 @@ definitions:
         maxLength: 100
         minLength: 2
         type: string
+      name_ru:
+        maxLength: 100
+        minLength: 2
+        type: string
     required:
     - moto_category_id
     - name
+    - name_ru
     type: object
   model.UpdateMotoParameterValueRequest:
     properties:
@@ -2061,8 +2128,13 @@ definitions:
         maxLength: 100
         minLength: 1
         type: string
+      name_ru:
+        maxLength: 100
+        minLength: 1
+        type: string
     required:
     - name
+    - name_ru
     type: object
   model.UpdateProfileRequest:
     properties:
@@ -3831,7 +3903,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.AdminCityResponse'
+              $ref: '#/definitions/model.CompanyType'
             type: array
         "400":
           description: Bad Request
@@ -3944,7 +4016,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.AdminCityResponse'
+            $ref: '#/definitions/model.CompanyType'
         "400":
           description: Bad Request
           schema:
@@ -7385,159 +7457,6 @@ paths:
       summary: Get profile
       tags:
       - admin-profile
-  /api/v1/admin/service-types:
-    get:
-      description: Returns a list of all service types
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.AdminServiceTypeResponse'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get all service types
-      tags:
-      - admin-service-types
-    post:
-      consumes:
-      - application/json
-      description: Creates a new service type
-      parameters:
-      - description: Service type data
-        in: body
-        name: serviceType
-        required: true
-        schema:
-          $ref: '#/definitions/model.CreateServiceTypeRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.SuccessWithId'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Create a service type
-      tags:
-      - admin-service-types
-  /api/v1/admin/service-types/{id}:
-    delete:
-      description: Deletes a service type by ID
-      parameters:
-      - description: Service type ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Delete a service type
-      tags:
-      - admin-service-types
-    put:
-      consumes:
-      - application/json
-      description: Updates a service type by ID
-      parameters:
-      - description: Service type ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Service type data
-        in: body
-        name: serviceType
-        required: true
-        schema:
-          $ref: '#/definitions/model.CreateServiceTypeRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Update a service type
-      tags:
-      - admin-service-types
   /api/v1/admin/transmissions:
     get:
       description: Returns a list of all transmissions
