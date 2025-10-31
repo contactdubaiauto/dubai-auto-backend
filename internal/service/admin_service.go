@@ -990,9 +990,11 @@ func (s *AdminService) UpdateColor(ctx *fasthttp.RequestCtx, id int, req *model.
 
 func (s *AdminService) DeleteColor(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteColor(ctx, id)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+	// todo: delete image if exists
 	return model.Response{Data: model.Success{Message: "Color deleted successfully"}}
 }
 

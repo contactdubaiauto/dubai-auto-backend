@@ -2,7 +2,7 @@ package model
 
 type CreateCompanyTypeRequest struct {
 	Name   string `json:"name" validate:"required"`
-	NameRu string `json:"name_ru" validate:"required"`
+	NameRu string `json:"name_ru"`
 }
 
 type CreateNameRequest struct {
@@ -11,25 +11,26 @@ type CreateNameRequest struct {
 
 type CreateBodyTypeRequest struct {
 	Name   string `json:"name" validate:"required,min=2,max=50"`
-	NameRu string `json:"name_ru" validate:"required,min=2,max=50"`
+	NameRu string `json:"name_ru"`
 }
 
 // Brand requests
 type CreateBrandRequest struct {
 	Name    string `json:"name" validate:"required,min=2,max=255"`
-	NameRu  string `json:"name_ru" validate:"required,min=2,max=255"`
+	NameRu  string `json:"name_ru"`
 	Popular bool   `json:"popular"`
 }
 
 // Model requests
 type CreateModelRequest struct {
 	Name    string `json:"name" validate:"required,min=2,max=255"`
+	NameRu  string `json:"name_ru"`
 	Popular bool   `json:"popular"`
 }
 
 type UpdateModelRequest struct {
 	Name    string `json:"name" validate:"required,min=2,max=255"`
-	NameRu  string `json:"name_ru" validate:"required,min=2,max=255"`
+	NameRu  string `json:"name_ru"`
 	BrandID int    `json:"brand_id" validate:"required"`
 	Popular bool   `json:"popular"`
 }
@@ -37,7 +38,7 @@ type UpdateModelRequest struct {
 // Transmission requests
 type CreateTransmissionRequest struct {
 	Name   string `json:"name" validate:"required,min=2,max=255"`
-	NameRu string `json:"name_ru" validate:"required,min=2,max=255"`
+	NameRu string `json:"name_ru"`
 }
 
 // Engine requests
@@ -48,13 +49,13 @@ type CreateEngineRequest struct {
 // Drivetrain requests
 type CreateDrivetrainRequest struct {
 	Name   string `json:"name" validate:"required,min=2,max=255"`
-	NameRu string `json:"name_ru" validate:"required,min=2,max=255"`
+	NameRu string `json:"name_ru"`
 }
 
 // Fuel Type requests
 type CreateFuelTypeRequest struct {
 	Name   string `json:"name" validate:"required,min=2,max=255"`
-	NameRu string `json:"name_ru" validate:"required,min=2,max=255"`
+	NameRu string `json:"name_ru"`
 }
 
 // Service Type requests
@@ -91,6 +92,7 @@ type AdminLoginReq struct {
 // Generation requests
 type CreateGenerationRequest struct {
 	Name      string `json:"name" validate:"required,min=2,max=255"`
+	NameRu    string `json:"name_ru"`
 	Image     string `json:"image"`
 	ModelID   int    `json:"model_id" validate:"required"`
 	StartYear int    `json:"start_year" validate:"required"`
@@ -100,7 +102,7 @@ type CreateGenerationRequest struct {
 
 type UpdateGenerationRequest struct {
 	Name      string `json:"name" validate:"required,min=2,max=255"`
-	NameRu    string `json:"name_ru" validate:"required,min=2,max=255"`
+	NameRu    string `json:"name_ru"`
 	Image     string `json:"image"`
 	ModelID   int    `json:"model_id" validate:"required"`
 	StartYear int    `json:"start_year" validate:"required"`
@@ -138,35 +140,38 @@ type UpdateConfigurationRequest struct {
 
 // Color requests
 type CreateColorRequest struct {
-	Name  string `json:"name" validate:"required,min=2,max=255"`
-	Image string `json:"image" validate:"required"`
+	Name   string `json:"name" validate:"required,min=2,max=255"`
+	NameRu string `json:"name_ru"`
+	Image  string `json:"image" validate:"required"`
 }
 
 type UpdateColorRequest struct {
 	Name   string `json:"name" validate:"required,min=2,max=255"`
-	NameRu string `json:"name_ru" validate:"required,min=2,max=255"`
+	NameRu string `json:"name_ru"`
 	Image  string `json:"image" validate:"required"`
 }
 
 // Moto Category requests
 type CreateMotoCategoryRequest struct {
-	Name string `json:"name" validate:"required,min=2,max=100"`
+	Name   string `json:"name" validate:"required,min=2,max=100"`
+	NameRu string `json:"name_ru"`
 }
 
 type UpdateMotoCategoryRequest struct {
 	Name   string `json:"name" validate:"required,min=2,max=100"`
-	NameRu string `json:"name_ru" validate:"required,min=2,max=100"`
+	NameRu string `json:"name_ru"`
 }
 
 // Moto Brand requests
 type CreateMotoBrandRequest struct {
 	Name           string `json:"name" validate:"required,min=2,max=100"`
+	NameRu         string `json:"name_ru"`
 	MotoCategoryID int    `json:"moto_category_id" validate:"required"`
 }
 
 type UpdateMotoBrandRequest struct {
 	Name           string `json:"name" validate:"required,min=2,max=100"`
-	NameRu         string `json:"name_ru" validate:"required,min=2,max=100"`
+	NameRu         string `json:"name_ru"`
 	Image          string `json:"image" validate:"required"`
 	MotoCategoryID int    `json:"moto_category_id" validate:"required"`
 }
@@ -174,35 +179,38 @@ type UpdateMotoBrandRequest struct {
 // Moto Model requests
 type CreateMotoModelRequest struct {
 	Name        string `json:"name" validate:"required,min=2,max=100"`
+	NameRu      string `json:"name_ru"`
 	MotoBrandID int    `json:"moto_brand_id" validate:"required"`
 }
 
 type UpdateMotoModelRequest struct {
 	Name        string `json:"name" validate:"required,min=2,max=100"`
-	NameRu      string `json:"name_ru" validate:"required,min=2,max=100"`
+	NameRu      string `json:"name_ru"`
 	MotoBrandID int    `json:"moto_brand_id" validate:"required"`
 }
 
 // Moto Parameter requests
 type CreateMotoParameterRequest struct {
 	Name           string `json:"name" validate:"required,min=2,max=100"`
+	NameRu         string `json:"name_ru"`
 	MotoCategoryID int    `json:"moto_category_id" validate:"required"`
 }
 
 type UpdateMotoParameterRequest struct {
 	Name           string `json:"name" validate:"required,min=2,max=100"`
-	NameRu         string `json:"name_ru" validate:"required,min=2,max=100"`
+	NameRu         string `json:"name_ru"`
 	MotoCategoryID int    `json:"moto_category_id" validate:"required"`
 }
 
 // Moto Parameter Value requests
 type CreateMotoParameterValueRequest struct {
-	Name string `json:"name" validate:"required,min=1,max=100"`
+	Name   string `json:"name" validate:"required,min=1,max=100"`
+	NameRu string `json:"name_ru"`
 }
 
 type UpdateMotoParameterValueRequest struct {
 	Name   string `json:"name" validate:"required,min=1,max=100"`
-	NameRu string `json:"name_ru" validate:"required,min=1,max=100"`
+	NameRu string `json:"name_ru"`
 }
 
 // Moto Category Parameter requests
@@ -216,58 +224,63 @@ type UpdateMotoCategoryParameterRequest struct {
 
 // Comtrans Category requests
 type CreateComtransCategoryRequest struct {
-	Name string `json:"name" validate:"required,min=2,max=100"`
+	Name   string `json:"name" validate:"required,min=2,max=100"`
+	NameRu string `json:"name_ru"`
 }
 
 type UpdateComtransCategoryRequest struct {
 	Name   string `json:"name" validate:"required,min=2,max=100"`
-	NameRu string `json:"name_ru" validate:"required,min=2,max=100"`
+	NameRu string `json:"name_ru"`
 }
 
 // Comtrans Brand requests
 type CreateComtransBrandRequest struct {
 	Name               string `json:"name" validate:"required,min=2,max=100"`
+	NameRu             string `json:"name_ru"`
 	ComtransCategoryID int    `json:"comtrans_category_id" validate:"required"`
 }
 
 type UpdateComtransBrandRequest struct {
 	Name               string `json:"name" validate:"required,min=2,max=100"`
-	NameRu             string `json:"name_ru" validate:"required,min=2,max=100"`
+	NameRu             string `json:"name_ru"`
 	ComtransCategoryID int    `json:"comtrans_category_id" validate:"required"`
 }
 
 // Comtrans Model requests
 type CreateComtransModelRequest struct {
 	Name            string `json:"name" validate:"required,min=2,max=100"`
+	NameRu          string `json:"name_ru"`
 	ComtransBrandID int    `json:"comtrans_brand_id" validate:"required"`
 }
 
 type UpdateComtransModelRequest struct {
 	Name            string `json:"name" validate:"required,min=2,max=100"`
-	NameRu          string `json:"name_ru" validate:"required,min=2,max=100"`
+	NameRu          string `json:"name_ru"`
 	ComtransBrandID int    `json:"comtrans_brand_id" validate:"required"`
 }
 
 // Comtrans Parameter requests
 type CreateComtransParameterRequest struct {
 	Name               string `json:"name" validate:"required,min=2,max=100"`
+	NameRu             string `json:"name_ru"`
 	ComtransCategoryID int    `json:"comtrans_category_id" validate:"required"`
 }
 
 type UpdateComtransParameterRequest struct {
 	Name               string `json:"name" validate:"required,min=2,max=100"`
-	NameRu             string `json:"name_ru" validate:"required,min=2,max=100"`
+	NameRu             string `json:"name_ru"`
 	ComtransCategoryID int    `json:"comtrans_category_id" validate:"required"`
 }
 
 // Comtrans Parameter Value requests
 type CreateComtransParameterValueRequest struct {
-	Name string `json:"name" validate:"required,min=1,max=100"`
+	Name   string `json:"name" validate:"required,min=1,max=100"`
+	NameRu string `json:"name_ru"`
 }
 
 type UpdateComtransParameterValueRequest struct {
 	Name   string `json:"name" validate:"required,min=1,max=100"`
-	NameRu string `json:"name_ru" validate:"required,min=1,max=100"`
+	NameRu string `json:"name_ru"`
 }
 
 // Comtrans Category Parameter requests

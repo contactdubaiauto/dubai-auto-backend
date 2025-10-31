@@ -4,7 +4,7 @@
 1. get by id third part, if dealer give cars
 2. dilerin cary opshyda gelmedi
 3. mode, modification count
-4. 
+4. add name_ru to admin select
 5. 
 
 
@@ -12,3 +12,8 @@
 admin-company-types
 admin-activity-fields
 
+
+
+1. added name_ru to create model
+2. added name_ru to create body_types
+3. 

@@ -275,7 +275,7 @@ type AdminCityResponse struct {
 type CompanyType struct {
 	Name   string `json:"name"`
 	NameRu string `json:"name_ru"`
-	ID     int
+	ID     int    `json:"id"`
 }
 
 type AdminCountryResponse struct {
@@ -301,17 +301,20 @@ type AdminBrandResponse struct {
 }
 
 type AdminModelResponse struct {
-	UpdatedAt time.Time `json:"updated_at"`
-	Name      string    `json:"name"`
-	BrandName string    `json:"brand_name"`
-	ID        int       `json:"id"`
-	BrandID   int       `json:"brand_id"`
-	Popular   bool      `json:"popular"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	Name        string    `json:"name"`
+	NameRu      string    `json:"name_ru"`
+	BrandName   string    `json:"brand_name"`
+	BrandNameRu string    `json:"brand_name_ru"`
+	ID          int       `json:"id"`
+	BrandID     int       `json:"brand_id"`
+	Popular     bool      `json:"popular"`
 }
 
 type AdminBodyTypeResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 	Name      string    `json:"name"`
+	NameRu    string    `json:"name_ru"`
 	Image     string    `json:"image"`
 	ID        int       `json:"id"`
 }
@@ -319,6 +322,7 @@ type AdminBodyTypeResponse struct {
 type AdminTransmissionResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 	Name      string    `json:"name"`
+	NameRu    string    `json:"name_ru"`
 	ID        int       `json:"id"`
 }
 
@@ -331,12 +335,14 @@ type AdminEngineResponse struct {
 type AdminDrivetrainResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 	Name      string    `json:"name"`
+	NameRu    string    `json:"name_ru"`
 	ID        int       `json:"id"`
 }
 
 type AdminFuelTypeResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 	Name      string    `json:"name"`
+	NameRu    string    `json:"name_ru"`
 	ID        int       `json:"id"`
 }
 
@@ -355,30 +361,36 @@ type AdminServiceResponse struct {
 }
 
 type AdminGenerationResponse struct {
-	CreatedAt time.Time `json:"created_at"`
-	Name      string    `json:"name"`
-	ModelName string    `json:"model_name"`
-	Image     string    `json:"image"`
-	ID        int       `json:"id"`
-	ModelID   int       `json:"model_id"`
-	StartYear int       `json:"start_year"`
-	EndYear   int       `json:"end_year"`
-	Wheel     bool      `json:"wheel"`
+	CreatedAt   time.Time `json:"created_at"`
+	Name        string    `json:"name"`
+	NameRu      string    `json:"name_ru"`
+	ModelName   string    `json:"model_name"`
+	Image       string    `json:"image"`
+	ModelNameRu string    `json:"model_name_ru"`
+	ID          int       `json:"id"`
+	ModelID     int       `json:"model_id"`
+	StartYear   int       `json:"start_year"`
+	EndYear     int       `json:"end_year"`
+	Wheel       bool      `json:"wheel"`
 }
 
 type AdminGenerationModificationResponse struct {
-	BodyTypeName     string `json:"body_type_name"`
-	EngineValue      string `json:"engine_value"`
-	FuelTypeName     string `json:"fuel_type_name"`
-	DrivetrainName   string `json:"drivetrain_name"`
-	TransmissionName string `json:"transmission_name"`
-	ID               int    `json:"id"`
-	GenerationID     int    `json:"generation_id"`
-	BodyTypeID       int    `json:"body_type_id"`
-	EngineID         int    `json:"engine_id"`
-	FuelTypeID       int    `json:"fuel_type_id"`
-	DrivetrainID     int    `json:"drivetrain_id"`
-	TransmissionID   int    `json:"transmission_id"`
+	BodyTypeName       string `json:"body_type_name"`
+	BodyTypeNameRu     string `json:"body_type_name_ru"`
+	EngineValue        string `json:"engine_value"`
+	FuelTypeName       string `json:"fuel_type_name"`
+	FuelTypeNameRu     string `json:"fuel_type_name_ru"`
+	DrivetrainName     string `json:"drivetrain_name"`
+	DrivetrainNameRu   string `json:"drivetrain_name_ru"`
+	TransmissionName   string `json:"transmission_name"`
+	TransmissionNameRu string `json:"transmission_name_ru"`
+	ID                 int    `json:"id"`
+	GenerationID       int    `json:"generation_id"`
+	BodyTypeID         int    `json:"body_type_id"`
+	EngineID           int    `json:"engine_id"`
+	FuelTypeID         int    `json:"fuel_type_id"`
+	DrivetrainID       int    `json:"drivetrain_id"`
+	TransmissionID     int    `json:"transmission_id"`
 }
 
 type AdminConfigurationResponse struct {
@@ -391,6 +403,7 @@ type AdminConfigurationResponse struct {
 type AdminColorResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 	Name      string    `json:"name"`
+	NameRu    string    `json:"name_ru"`
 	Image     string    `json:"image"`
 	ID        int       `json:"id"`
 }
@@ -398,92 +411,110 @@ type AdminColorResponse struct {
 type AdminMotoCategoryResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 	Name      string    `json:"name"`
+	NameRu    string    `json:"name_ru"`
 	ID        int       `json:"id"`
 }
 
 type AdminMotoBrandResponse struct {
-	CreatedAt        time.Time `json:"created_at"`
-	Name             string    `json:"name"`
-	Image            string    `json:"image"`
-	MotoCategoryName string    `json:"moto_category_name"`
-	ID               int       `json:"id"`
-	MotoCategoryID   int       `json:"moto_category_id"`
+	CreatedAt          time.Time `json:"created_at"`
+	Name               string    `json:"name"`
+	NameRu             string    `json:"name_ru"`
+	Image              string    `json:"image"`
+	MotoCategoryName   string    `json:"moto_category_name"`
+	MotoCategoryNameRu string    `json:"moto_category_name_ru"`
+	ID                 int       `json:"id"`
+	MotoCategoryID     int       `json:"moto_category_id"`
 }
 
 type AdminMotoModelResponse struct {
-	CreatedAt     time.Time `json:"created_at"`
-	Name          string    `json:"name"`
-	MotoBrandName string    `json:"moto_brand_name"`
-	ID            int       `json:"id"`
-	MotoBrandID   int       `json:"moto_brand_id"`
+	CreatedAt       time.Time `json:"created_at"`
+	Name            string    `json:"name"`
+	NameRu          string    `json:"name_ru"`
+	MotoBrandName   string    `json:"moto_brand_name"`
+	MotoBrandNameRu string    `json:"moto_brand_name_ru"`
+	ID              int       `json:"id"`
+	MotoBrandID     int       `json:"moto_brand_id"`
 }
 
 type AdminMotoParameterResponse struct {
-	CreatedAt        time.Time `json:"created_at"`
-	Name             string    `json:"name"`
-	MotoCategoryName string    `json:"moto_category_name"`
-	ID               int       `json:"id"`
-	MotoCategoryID   int       `json:"moto_category_id"`
+	CreatedAt          time.Time `json:"created_at"`
+	Name               string    `json:"name"`
+	NameRu             string    `json:"name_ru"`
+	MotoCategoryName   string    `json:"moto_category_name"`
+	MotoCategoryNameRu string    `json:"moto_category_name_ru"`
+	ID                 int       `json:"id"`
+	MotoCategoryID     int       `json:"moto_category_id"`
 }
 
 type AdminMotoParameterValueResponse struct {
 	CreatedAt       time.Time `json:"created_at"`
 	Name            string    `json:"name"`
+	NameRu          string    `json:"name_ru"`
 	ID              int       `json:"id"`
 	MotoParameterID int       `json:"moto_parameter_id"`
 }
 
 type AdminMotoCategoryParameterResponse struct {
-	CreatedAt         time.Time `json:"created_at"`
-	MotoParameterName string    `json:"moto_parameter_name"`
-	MotoCategoryID    int       `json:"moto_category_id"`
-	MotoParameterID   int       `json:"moto_parameter_id"`
+	CreatedAt           time.Time `json:"created_at"`
+	MotoParameterName   string    `json:"moto_parameter_name"`
+	MotoParameterNameRu string    `json:"moto_parameter_name_ru"`
+	MotoCategoryID      int       `json:"moto_category_id"`
+	MotoParameterID     int       `json:"moto_parameter_id"`
 }
 
 type AdminComtransCategoryResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 	Name      string    `json:"name"`
+	NameRu    string    `json:"name_ru"`
 	ID        int       `json:"id"`
 }
 
 type AdminComtransBrandResponse struct {
-	CreatedAt            time.Time `json:"created_at"`
-	Name                 string    `json:"name"`
-	Image                string    `json:"image"`
-	ComtransCategoryName string    `json:"comtrans_category_name"`
-	ID                   int       `json:"id"`
-	ComtransCategoryID   int       `json:"comtrans_category_id"`
+	CreatedAt              time.Time `json:"created_at"`
+	Name                   string    `json:"name"`
+	NameRu                 string    `json:"name_ru"`
+	Image                  string    `json:"image"`
+	ComtransCategoryName   string    `json:"comtrans_category_name"`
+	ComtransCategoryNameRu string    `json:"comtrans_category_name_ru"`
+	ID                     int       `json:"id"`
+	ComtransCategoryID     int       `json:"comtrans_category_id"`
 }
 
 type AdminComtransModelResponse struct {
-	CreatedAt         time.Time `json:"created_at"`
-	Name              string    `json:"name"`
-	ComtransBrandName string    `json:"comtrans_brand_name"`
-	ID                int       `json:"id"`
-	ComtransBrandID   int       `json:"comtrans_brand_id"`
+	CreatedAt           time.Time `json:"created_at"`
+	Name                string    `json:"name"`
+	NameRu              string    `json:"name_ru"`
+	ComtransBrandName   string    `json:"comtrans_brand_name"`
+	ComtransBrandNameRu string    `json:"comtrans_brand_name_ru"`
+	ID                  int       `json:"id"`
+	ComtransBrandID     int       `json:"comtrans_brand_id"`
 }
 
 type AdminComtransParameterResponse struct {
-	CreatedAt            time.Time `json:"created_at"`
-	Name                 string    `json:"name"`
-	ComtransCategoryName string    `json:"comtrans_category_name"`
-	ID                   int       `json:"id"`
-	ComtransCategoryID   int       `json:"comtrans_category_id"`
+	CreatedAt              time.Time `json:"created_at"`
+	Name                   string    `json:"name"`
+	NameRu                 string    `json:"name_ru"`
+	ComtransCategoryName   string    `json:"comtrans_category_name"`
+	ComtransCategoryNameRu string    `json:"comtrans_category_name_ru"`
+	ID                     int       `json:"id"`
+	ComtransCategoryID     int       `json:"comtrans_category_id"`
 }
 
 type AdminComtransParameterValueResponse struct {
 	CreatedAt           time.Time `json:"created_at"`
 	Name                string    `json:"name"`
+	NameRu              string    `json:"name_ru"`
 	ID                  int       `json:"id"`
 	ComtransParameterID int       `json:"comtrans_parameter_id"`
 }
 
 type AdminComtransCategoryParameterResponse struct {
-	CreatedAt             time.Time `json:"created_at"`
-	ComtransParameterName string    `json:"comtrans_parameter_name"`
-	ID                    int       `json:"id"`
-	ComtransCategoryID    int       `json:"comtrans_category_id"`
-	ComtransParameterID   int       `json:"comtrans_parameter_id"`
+	CreatedAt               time.Time `json:"created_at"`
+	ComtransParameterName   string    `json:"comtrans_parameter_name"`
+	ComtransParameterNameRu string    `json:"comtrans_parameter_name_ru"`
+	ID                      int       `json:"id"`
+	ComtransCategoryID      int       `json:"comtrans_category_id"`
+	ComtransParameterID     int       `json:"comtrans_parameter_id"`
 }
 
 type ThirdPartProfileDestinationsRes struct {

@@ -15959,8 +15959,7 @@ const docTemplate = `{
         "model.CreateBodyTypeRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -15969,17 +15968,14 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 50,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
         "model.CreateBrandRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -15988,9 +15984,7 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
+                    "type": "string"
                 },
                 "popular": {
                     "type": "boolean"
@@ -16089,8 +16083,7 @@ const docTemplate = `{
         "model.CreateCompanyTypeRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -16327,8 +16320,7 @@ const docTemplate = `{
         "model.CreateDrivetrainRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -16337,9 +16329,7 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -16359,8 +16349,7 @@ const docTemplate = `{
         "model.CreateFuelTypeRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -16369,9 +16358,7 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -16703,8 +16690,7 @@ const docTemplate = `{
         "model.CreateTransmissionRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -16713,9 +16699,7 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18017,8 +18001,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "image",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "image": {
@@ -18030,9 +18013,7 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18040,8 +18021,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "comtrans_category_id",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "comtrans_category_id": {
@@ -18053,9 +18033,7 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18073,8 +18051,7 @@ const docTemplate = `{
         "model.UpdateComtransCategoryRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -18083,9 +18060,7 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18093,8 +18068,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "comtrans_brand_id",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "comtrans_brand_id": {
@@ -18106,9 +18080,7 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18116,8 +18088,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "comtrans_category_id",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "comtrans_category_id": {
@@ -18129,17 +18100,14 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
         "model.UpdateComtransParameterValueRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -18148,9 +18116,7 @@ const docTemplate = `{
                     "minLength": 1
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
+                    "type": "string"
                 }
             }
         },
@@ -18202,7 +18168,6 @@ const docTemplate = `{
                 "end_year",
                 "model_id",
                 "name",
-                "name_ru",
                 "start_year"
             ],
             "properties": {
@@ -18221,9 +18186,7 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
+                    "type": "string"
                 },
                 "start_year": {
                     "type": "integer"
@@ -18237,8 +18200,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "brand_id",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "brand_id": {
@@ -18250,9 +18212,7 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
+                    "type": "string"
                 },
                 "popular": {
                     "type": "boolean"
@@ -18264,8 +18224,7 @@ const docTemplate = `{
             "required": [
                 "image",
                 "moto_category_id",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "image": {
@@ -18280,9 +18239,7 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18300,8 +18257,7 @@ const docTemplate = `{
         "model.UpdateMotoCategoryRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -18310,9 +18266,7 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18320,8 +18274,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "moto_brand_id",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "moto_brand_id": {
@@ -18333,9 +18286,7 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18343,8 +18294,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "moto_category_id",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "moto_category_id": {
@@ -18356,17 +18306,14 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
         "model.UpdateMotoParameterValueRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -18375,9 +18322,7 @@ const docTemplate = `{
                     "minLength": 1
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
+                    "type": "string"
                 }
             }
         },

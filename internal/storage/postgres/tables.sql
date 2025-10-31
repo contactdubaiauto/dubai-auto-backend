@@ -106,7 +106,6 @@ create table temp_users (
     unique("phone")
 );
 
-
 create table users (
     "id" serial primary key,
     "email" varchar(100),

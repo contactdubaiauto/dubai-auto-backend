@@ -480,12 +480,9 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 50
-        minLength: 2
         type: string
     required:
     - name
-    - name_ru
     type: object
   model.CreateBrandRequest:
     properties:
@@ -494,14 +491,11 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 255
-        minLength: 2
         type: string
       popular:
         type: boolean
     required:
     - name
-    - name_ru
     type: object
   model.CreateCarRequest:
     properties:
@@ -577,7 +571,6 @@ definitions:
         type: string
     required:
     - name
-    - name_ru
     type: object
   model.CreateComtransBrandRequest:
     properties:
@@ -741,12 +734,9 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 255
-        minLength: 2
         type: string
     required:
     - name
-    - name_ru
     type: object
   model.CreateEngineRequest:
     properties:
@@ -764,12 +754,9 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 255
-        minLength: 2
         type: string
     required:
     - name
-    - name_ru
     type: object
   model.CreateGenerationModificationRequest:
     properties:
@@ -1004,12 +991,9 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 255
-        minLength: 2
         type: string
     required:
     - name
-    - name_ru
     type: object
   model.DeleteCarImageRequest:
     properties:
@@ -1878,13 +1862,10 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 255
-        minLength: 2
         type: string
     required:
     - image
     - name
-    - name_ru
     type: object
   model.UpdateComtransBrandRequest:
     properties:
@@ -1895,13 +1876,10 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 100
-        minLength: 2
         type: string
     required:
     - comtrans_category_id
     - name
-    - name_ru
     type: object
   model.UpdateComtransCategoryParameterRequest:
     properties:
@@ -1917,12 +1895,9 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 100
-        minLength: 2
         type: string
     required:
     - name
-    - name_ru
     type: object
   model.UpdateComtransModelRequest:
     properties:
@@ -1933,13 +1908,10 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 100
-        minLength: 2
         type: string
     required:
     - comtrans_brand_id
     - name
-    - name_ru
     type: object
   model.UpdateComtransParameterRequest:
     properties:
@@ -1950,13 +1922,10 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 100
-        minLength: 2
         type: string
     required:
     - comtrans_category_id
     - name
-    - name_ru
     type: object
   model.UpdateComtransParameterValueRequest:
     properties:
@@ -1965,12 +1934,9 @@ definitions:
         minLength: 1
         type: string
       name_ru:
-        maxLength: 100
-        minLength: 1
         type: string
     required:
     - name
-    - name_ru
     type: object
   model.UpdateConfigurationRequest:
     properties:
@@ -2014,8 +1980,6 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 255
-        minLength: 2
         type: string
       start_year:
         type: integer
@@ -2025,7 +1989,6 @@ definitions:
     - end_year
     - model_id
     - name
-    - name_ru
     - start_year
     type: object
   model.UpdateModelRequest:
@@ -2037,15 +2000,12 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 255
-        minLength: 2
         type: string
       popular:
         type: boolean
     required:
     - brand_id
     - name
-    - name_ru
     type: object
   model.UpdateMotoBrandRequest:
     properties:
@@ -2058,14 +2018,11 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 100
-        minLength: 2
         type: string
     required:
     - image
     - moto_category_id
     - name
-    - name_ru
     type: object
   model.UpdateMotoCategoryParameterRequest:
     properties:
@@ -2081,12 +2038,9 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 100
-        minLength: 2
         type: string
     required:
     - name
-    - name_ru
     type: object
   model.UpdateMotoModelRequest:
     properties:
@@ -2097,13 +2051,10 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 100
-        minLength: 2
         type: string
     required:
     - moto_brand_id
     - name
-    - name_ru
     type: object
   model.UpdateMotoParameterRequest:
     properties:
@@ -2114,13 +2065,10 @@ definitions:
         minLength: 2
         type: string
       name_ru:
-        maxLength: 100
-        minLength: 2
         type: string
     required:
     - moto_category_id
     - name
-    - name_ru
     type: object
   model.UpdateMotoParameterValueRequest:
     properties:
@@ -2129,12 +2077,9 @@ definitions:
         minLength: 1
         type: string
       name_ru:
-        maxLength: 100
-        minLength: 1
         type: string
     required:
     - name
-    - name_ru
     type: object
   model.UpdateProfileRequest:
     properties:

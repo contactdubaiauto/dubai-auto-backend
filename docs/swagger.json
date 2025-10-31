@@ -15953,8 +15953,7 @@
         "model.CreateBodyTypeRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -15963,17 +15962,14 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 50,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
         "model.CreateBrandRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -15982,9 +15978,7 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
+                    "type": "string"
                 },
                 "popular": {
                     "type": "boolean"
@@ -16083,8 +16077,7 @@
         "model.CreateCompanyTypeRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -16321,8 +16314,7 @@
         "model.CreateDrivetrainRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -16331,9 +16323,7 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -16353,8 +16343,7 @@
         "model.CreateFuelTypeRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -16363,9 +16352,7 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -16697,8 +16684,7 @@
         "model.CreateTransmissionRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -16707,9 +16693,7 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18011,8 +17995,7 @@
             "type": "object",
             "required": [
                 "image",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "image": {
@@ -18024,9 +18007,7 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18034,8 +18015,7 @@
             "type": "object",
             "required": [
                 "comtrans_category_id",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "comtrans_category_id": {
@@ -18047,9 +18027,7 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18067,8 +18045,7 @@
         "model.UpdateComtransCategoryRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -18077,9 +18054,7 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18087,8 +18062,7 @@
             "type": "object",
             "required": [
                 "comtrans_brand_id",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "comtrans_brand_id": {
@@ -18100,9 +18074,7 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18110,8 +18082,7 @@
             "type": "object",
             "required": [
                 "comtrans_category_id",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "comtrans_category_id": {
@@ -18123,17 +18094,14 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
         "model.UpdateComtransParameterValueRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -18142,9 +18110,7 @@
                     "minLength": 1
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
+                    "type": "string"
                 }
             }
         },
@@ -18196,7 +18162,6 @@
                 "end_year",
                 "model_id",
                 "name",
-                "name_ru",
                 "start_year"
             ],
             "properties": {
@@ -18215,9 +18180,7 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
+                    "type": "string"
                 },
                 "start_year": {
                     "type": "integer"
@@ -18231,8 +18194,7 @@
             "type": "object",
             "required": [
                 "brand_id",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "brand_id": {
@@ -18244,9 +18206,7 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
+                    "type": "string"
                 },
                 "popular": {
                     "type": "boolean"
@@ -18258,8 +18218,7 @@
             "required": [
                 "image",
                 "moto_category_id",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "image": {
@@ -18274,9 +18233,7 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18294,8 +18251,7 @@
         "model.UpdateMotoCategoryRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -18304,9 +18260,7 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18314,8 +18268,7 @@
             "type": "object",
             "required": [
                 "moto_brand_id",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "moto_brand_id": {
@@ -18327,9 +18280,7 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
@@ -18337,8 +18288,7 @@
             "type": "object",
             "required": [
                 "moto_category_id",
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "moto_category_id": {
@@ -18350,17 +18300,14 @@
                     "minLength": 2
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
+                    "type": "string"
                 }
             }
         },
         "model.UpdateMotoParameterValueRequest": {
             "type": "object",
             "required": [
-                "name",
-                "name_ru"
+                "name"
             ],
             "properties": {
                 "name": {
@@ -18369,9 +18316,7 @@
                     "minLength": 1
                 },
                 "name_ru": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
+                    "type": "string"
                 }
             }
         },
