@@ -47,7 +47,7 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Get("/models/generations", auth.LanguageChecker, userHandler.GetGenerationsByModels)
 		r.Get("/body-types", auth.LanguageChecker, userHandler.GetBodyTypes)
 		r.Get("/transmissions", auth.LanguageChecker, userHandler.GetTransmissions)
-		r.Get("/engines", userHandler.GetEngines)
+		r.Get("/engines", auth.LanguageChecker, userHandler.GetEngines)
 		r.Get("/drivetrains", auth.LanguageChecker, userHandler.GetDrivetrains)
 		r.Get("/fuel-types", auth.LanguageChecker, userHandler.GetFuelTypes)
 		r.Get("/colors", auth.LanguageChecker, userHandler.GetColors)

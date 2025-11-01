@@ -90,6 +90,8 @@ definitions:
         type: integer
       name:
         type: string
+      name_ru:
+        type: string
       popular:
         type: boolean
       updated_at:
@@ -248,7 +250,9 @@ definitions:
         type: string
       id:
         type: integer
-      value:
+      name:
+        type: string
+      name_ru:
         type: string
     type: object
   model.AdminFuelTypeResponse:
@@ -278,7 +282,9 @@ definitions:
         type: string
       engine_id:
         type: integer
-      engine_value:
+      engine_name:
+        type: string
+      engine_name_ru:
         type: string
       fuel_type_id:
         type: integer
@@ -615,8 +621,6 @@ definitions:
     type: object
   model.CreateColorRequest:
     properties:
-      image:
-        type: string
       name:
         maxLength: 255
         minLength: 2
@@ -624,7 +628,6 @@ definitions:
       name_ru:
         type: string
     required:
-    - image
     - name
     type: object
   model.CreateCompanyTypeRequest:
@@ -814,12 +817,14 @@ definitions:
     type: object
   model.CreateEngineRequest:
     properties:
-      value:
+      name:
         maxLength: 255
         minLength: 1
         type: string
+      name_ru:
+        type: string
     required:
-    - value
+    - name
     type: object
   model.CreateFuelTypeRequest:
     properties:
@@ -2066,8 +2071,6 @@ definitions:
     properties:
       end_year:
         type: integer
-      image:
-        type: string
       model_id:
         type: integer
       name:
@@ -2104,8 +2107,6 @@ definitions:
     type: object
   model.UpdateMotoBrandRequest:
     properties:
-      image:
-        type: string
       moto_category_id:
         type: integer
       name:
@@ -2115,7 +2116,6 @@ definitions:
       name_ru:
         type: string
     required:
-    - image
     - moto_category_id
     - name
     type: object
@@ -10617,6 +10617,11 @@ paths:
   /api/v1/users/engines:
     get:
       description: Returns a list of car engines
+      parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       produces:
       - application/json
       responses:

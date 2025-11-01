@@ -553,6 +553,7 @@ func (r *AdminRepository) GetBrands(ctx *fasthttp.RequestCtx) ([]model.AdminBran
 			SELECT 
 				id, 
 				name, 
+				name_ru,
 				$1 || logo, 
 				model_count, 
 				popular, 
@@ -571,7 +572,7 @@ func (r *AdminRepository) GetBrands(ctx *fasthttp.RequestCtx) ([]model.AdminBran
 
 	for rows.Next() {
 		var brand model.AdminBrandResponse
-		if err := rows.Scan(&brand.ID, &brand.Name, &brand.Logo, &brand.ModelCount, &brand.Popular, &brand.UpdatedAt); err != nil {
+		if err := rows.Scan(&brand.ID, &brand.Name, &brand.NameRu, &brand.Logo, &brand.ModelCount, &brand.Popular, &brand.UpdatedAt); err != nil {
 			return brands, err
 		}
 		brands = append(brands, brand)
@@ -581,9 +582,9 @@ func (r *AdminRepository) GetBrands(ctx *fasthttp.RequestCtx) ([]model.AdminBran
 }
 
 func (r *AdminRepository) CreateBrand(ctx *fasthttp.RequestCtx, req *model.CreateBrandRequest) (int, error) {
-	q := `INSERT INTO brands (name, popular, updated_at) VALUES ($1, $2, NOW()) RETURNING id`
+	q := `INSERT INTO brands (name, name_ru, popular, updated_at) VALUES ($1, $2, $3, NOW()) RETURNING id`
 	var id int
-	err := r.db.QueryRow(ctx, q, req.Name, req.Popular).Scan(&id)
+	err := r.db.QueryRow(ctx, q, req.Name, req.NameRu, req.Popular).Scan(&id)
 	return id, err
 }
 
@@ -701,7 +702,7 @@ func (r *AdminRepository) CreateBodyTypeImage(ctx *fasthttp.RequestCtx, id int, 
 func (r *AdminRepository) DeleteBodyTypeImage(ctx *fasthttp.RequestCtx, id int) error {
 	q := `
 		UPDATE body_types 
-		SET image = NULL 
+		SET image = 'NULL' 
 		WHERE id = $1
 	`
 	_, err := r.db.Exec(ctx, q, id)
@@ -807,7 +808,7 @@ func (r *AdminRepository) DeleteTransmission(ctx *fasthttp.RequestCtx, id int) e
 // Engines CRUD operations
 func (r *AdminRepository) GetEngines(ctx *fasthttp.RequestCtx) ([]model.AdminEngineResponse, error) {
 	engines := make([]model.AdminEngineResponse, 0)
-	q := `SELECT id, value, created_at FROM engines ORDER BY id DESC`
+	q := `SELECT id, name, name_ru, created_at FROM engines ORDER BY id DESC`
 
 	rows, err := r.db.Query(ctx, q)
 	if err != nil {
@@ -817,7 +818,7 @@ func (r *AdminRepository) GetEngines(ctx *fasthttp.RequestCtx) ([]model.AdminEng
 
 	for rows.Next() {
 		var engine model.AdminEngineResponse
-		if err := rows.Scan(&engine.ID, &engine.Value, &engine.CreatedAt); err != nil {
+		if err := rows.Scan(&engine.ID, &engine.Name, &engine.NameRu, &engine.CreatedAt); err != nil {
 			return engines, err
 		}
 		engines = append(engines, engine)
@@ -827,15 +828,15 @@ func (r *AdminRepository) GetEngines(ctx *fasthttp.RequestCtx) ([]model.AdminEng
 }
 
 func (r *AdminRepository) CreateEngine(ctx *fasthttp.RequestCtx, req *model.CreateEngineRequest) (int, error) {
-	q := `INSERT INTO engines (value) VALUES ($1) RETURNING id`
+	q := `INSERT INTO engines (name, name_ru) VALUES ($1, $2) RETURNING id`
 	var id int
-	err := r.db.QueryRow(ctx, q, req.Value).Scan(&id)
+	err := r.db.QueryRow(ctx, q, req.Name, req.NameRu).Scan(&id)
 	return id, err
 }
 
 func (r *AdminRepository) UpdateEngine(ctx *fasthttp.RequestCtx, id int, req *model.CreateEngineRequest) error {
-	q := `UPDATE engines SET value = $2 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Value)
+	q := `UPDATE engines SET name = $2, name_ru = $3 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu)
 	return err
 }
 
@@ -1024,10 +1025,9 @@ func (r *AdminRepository) UpdateGeneration(ctx *fasthttp.RequestCtx, id int, req
 	q := `
 		UPDATE generations 
 			SET name = $2, name_ru = $3, model_id = $4, 
-			start_year = $5, end_year = $6, wheel = $7, 
-			image = $8 
+			start_year = $5, end_year = $6, wheel = $7
 		WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.ModelID, req.StartYear, req.EndYear, req.Wheel, req.Image)
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.ModelID, req.StartYear, req.EndYear, req.Wheel)
 	return err
 }
 
@@ -1051,7 +1051,7 @@ func (r *AdminRepository) GetGenerationModifications(ctx *fasthttp.RequestCtx, g
 			gm.id, gm.generation_id,
 			gm.body_type_id, bt.name as body_type_name, 
 			bt.name_ru as body_type_name_ru,
-			gm.engine_id, e.value as engine_value, 
+			gm.engine_id, e.name as engine_name, e.name_ru as engine_name_ru,
 			gm.fuel_type_id, ft.name as fuel_type_name,
 			ft.name_ru as fuel_type_name_ru, gm.drivetrain_id, 
 			dt.name as drivetrain_name, dt.name_ru as drivetrain_name_ru, 
@@ -1079,7 +1079,7 @@ func (r *AdminRepository) GetGenerationModifications(ctx *fasthttp.RequestCtx, g
 			&modification.ID, &modification.GenerationID,
 			&modification.BodyTypeID, &modification.BodyTypeName,
 			&modification.BodyTypeNameRu,
-			&modification.EngineID, &modification.EngineValue,
+			&modification.EngineID, &modification.EngineName, &modification.EngineNameRu,
 			&modification.FuelTypeID, &modification.FuelTypeName,
 			&modification.FuelTypeNameRu,
 			&modification.DrivetrainID, &modification.DrivetrainName,
@@ -1218,7 +1218,7 @@ func (r *AdminRepository) GetColors(ctx *fasthttp.RequestCtx) ([]model.AdminColo
 func (r *AdminRepository) CreateColor(ctx *fasthttp.RequestCtx, req *model.CreateColorRequest) (int, error) {
 	q := `INSERT INTO colors (name, name_ru, image) VALUES ($1, $2, $3) RETURNING id`
 	var id int
-	err := r.db.QueryRow(ctx, q, req.Name, req.NameRu, req.Image).Scan(&id)
+	err := r.db.QueryRow(ctx, q, req.Name, req.NameRu, "req.Image").Scan(&id)
 	return id, err
 }
 
@@ -1229,8 +1229,8 @@ func (r *AdminRepository) CreateColorImage(ctx *fasthttp.RequestCtx, id int, pat
 }
 
 func (r *AdminRepository) UpdateColor(ctx *fasthttp.RequestCtx, id int, req *model.UpdateColorRequest) error {
-	q := `UPDATE colors SET name = $2, name_ru = $3, image = $4 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.Image)
+	q := `UPDATE colors SET name = $2, name_ru = $3 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu)
 	return err
 }
 
@@ -1382,8 +1382,8 @@ func (r *AdminRepository) CreateMotoBrandImage(ctx *fasthttp.RequestCtx, id int,
 }
 
 func (r *AdminRepository) UpdateMotoBrand(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoBrandRequest) error {
-	q := `UPDATE moto_brands SET name = $2, name_ru = $3, image = $4, moto_category_id = $5 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.Image, req.MotoCategoryID)
+	q := `UPDATE moto_brands SET name = $2, name_ru = $3, moto_category_id = $5 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.MotoCategoryID)
 	return err
 }
 

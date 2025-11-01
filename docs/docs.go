@@ -12813,6 +12813,14 @@ const docTemplate = `{
                     "filter"
                 ],
                 "summary": "Get engines",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -15540,6 +15548,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "name_ru": {
+                    "type": "string"
+                },
                 "popular": {
                     "type": "boolean"
                 },
@@ -15783,7 +15794,10 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "value": {
+                "name": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15829,7 +15843,10 @@ const docTemplate = `{
                 "engine_id": {
                     "type": "integer"
                 },
-                "engine_value": {
+                "engine_name": {
+                    "type": "string"
+                },
+                "engine_name_ru": {
                     "type": "string"
                 },
                 "fuel_type_id": {
@@ -16334,13 +16351,9 @@ const docTemplate = `{
         "model.CreateColorRequest": {
             "type": "object",
             "required": [
-                "image",
                 "name"
             ],
             "properties": {
-                "image": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string",
                     "maxLength": 255,
@@ -16622,13 +16635,16 @@ const docTemplate = `{
         "model.CreateEngineRequest": {
             "type": "object",
             "required": [
-                "value"
+                "name"
             ],
             "properties": {
-                "value": {
+                "name": {
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 1
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -18492,9 +18508,6 @@ const docTemplate = `{
                 "end_year": {
                     "type": "integer"
                 },
-                "image": {
-                    "type": "string"
-                },
                 "model_id": {
                     "type": "integer"
                 },
@@ -18540,14 +18553,10 @@ const docTemplate = `{
         "model.UpdateMotoBrandRequest": {
             "type": "object",
             "required": [
-                "image",
                 "moto_category_id",
                 "name"
             ],
             "properties": {
-                "image": {
-                    "type": "string"
-                },
                 "moto_category_id": {
                     "type": "integer"
                 },

@@ -295,7 +295,8 @@ create table transmissions (
 
 create table engines (
     "id" serial primary key,
-    "value" varchar(255) not null,
+    "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
     "created_at" timestamp default now(),
     unique("value")
 );

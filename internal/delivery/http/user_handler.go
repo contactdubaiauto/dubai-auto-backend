@@ -1023,6 +1023,7 @@ func (h *UserHandler) GetTransmissions(c *fiber.Ctx) error {
 // @Description  Returns a list of car engines
 // @Tags         filter
 // @Produce      json
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success      200  {array}  model.Engine
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -1032,7 +1033,8 @@ func (h *UserHandler) GetTransmissions(c *fiber.Ctx) error {
 // @Router       /api/v1/users/engines [get]
 func (h *UserHandler) GetEngines(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.UserService.GetEngines(ctx)
+	nameColumn := c.Locals("lang").(string)
+	data := h.UserService.GetEngines(ctx, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 

@@ -951,6 +951,7 @@ func (s *AdminService) GetColors(ctx *fasthttp.RequestCtx) model.Response {
 
 func (s *AdminService) CreateColor(ctx *fasthttp.RequestCtx, req *model.CreateColorRequest) model.Response {
 	id, err := s.repo.CreateColor(ctx, req)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}

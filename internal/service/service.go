@@ -255,8 +255,8 @@ func (s *UserService) GetTransmissions(ctx *fasthttp.RequestCtx, nameColumn stri
 	return model.Response{Data: data}
 }
 
-func (s *UserService) GetEngines(ctx *fasthttp.RequestCtx) model.Response {
-	data, err := s.UserRepository.GetEngines(ctx)
+func (s *UserService) GetEngines(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
+	data, err := s.UserRepository.GetEngines(ctx, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}

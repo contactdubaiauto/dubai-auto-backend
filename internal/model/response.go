@@ -25,10 +25,10 @@ type Brand struct {
 }
 
 type GetBrandsResponse struct {
-	Name       string `json:"name"`
-	Logo       string `json:"logo"`
-	ID         int    `json:"id"`
-	ModelCount int    `json:"model_count"`
+	Name       string  `json:"name"`
+	Logo       *string `json:"logo"`
+	ID         int     `json:"id"`
+	ModelCount int     `json:"model_count"`
 }
 
 type GetProfileResponse struct {
@@ -294,6 +294,7 @@ type Country struct {
 type AdminBrandResponse struct {
 	UpdatedAt  *time.Time `json:"updated_at"`
 	Name       *string    `json:"name"`
+	NameRu     *string    `json:"name_ru"`
 	Logo       *string    `json:"logo"`
 	ID         *int       `json:"id"`
 	ModelCount *int       `json:"model_count"`
@@ -328,7 +329,8 @@ type AdminTransmissionResponse struct {
 
 type AdminEngineResponse struct {
 	CreatedAt time.Time `json:"created_at"`
-	Value     string    `json:"value"`
+	Name      string    `json:"name"`
+	NameRu    string    `json:"name_ru"`
 	ID        int       `json:"id"`
 }
 
@@ -377,7 +379,8 @@ type AdminGenerationResponse struct {
 type AdminGenerationModificationResponse struct {
 	BodyTypeName       string `json:"body_type_name"`
 	BodyTypeNameRu     string `json:"body_type_name_ru"`
-	EngineValue        string `json:"engine_value"`
+	EngineName         string `json:"engine_name"`
+	EngineNameRu       string `json:"engine_name_ru"`
 	FuelTypeName       string `json:"fuel_type_name"`
 	FuelTypeNameRu     string `json:"fuel_type_name_ru"`
 	DrivetrainName     string `json:"drivetrain_name"`

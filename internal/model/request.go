@@ -43,7 +43,8 @@ type CreateTransmissionRequest struct {
 
 // Engine requests
 type CreateEngineRequest struct {
-	Value string `json:"value" validate:"required,min=1,max=255"`
+	Name   string `json:"name" validate:"required,min=1,max=255"`
+	NameRu string `json:"name_ru"`
 }
 
 // Drivetrain requests
@@ -103,7 +104,6 @@ type CreateGenerationRequest struct {
 type UpdateGenerationRequest struct {
 	Name      string `json:"name" validate:"required,min=2,max=255"`
 	NameRu    string `json:"name_ru"`
-	Image     string `json:"image"`
 	ModelID   int    `json:"model_id" validate:"required"`
 	StartYear int    `json:"start_year" validate:"required"`
 	EndYear   int    `json:"end_year" validate:"required"`
@@ -142,7 +142,6 @@ type UpdateConfigurationRequest struct {
 type CreateColorRequest struct {
 	Name   string `json:"name" validate:"required,min=2,max=255"`
 	NameRu string `json:"name_ru"`
-	Image  string `json:"image" validate:"required"`
 }
 
 type UpdateColorRequest struct {
@@ -172,7 +171,6 @@ type CreateMotoBrandRequest struct {
 type UpdateMotoBrandRequest struct {
 	Name           string `json:"name" validate:"required,min=2,max=100"`
 	NameRu         string `json:"name_ru"`
-	Image          string `json:"image" validate:"required"`
 	MotoCategoryID int    `json:"moto_category_id" validate:"required"`
 }
 
