@@ -18,10 +18,10 @@ func SetupComtranRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool,
 
 	{
 		// get comtrans categories
-		r.Get("/categories", auth.TokenGuard, comtransHandler.GetComtransCategories)
-		r.Get("/categories/:category_id/parameters", auth.TokenGuard, comtransHandler.GetComtransParameters)
-		r.Get("/categories/:category_id/brands", auth.TokenGuard, comtransHandler.GetComtransBrands)
-		r.Get("/categories/:category_id/brands/:brand_id/models", auth.TokenGuard, comtransHandler.GetComtransModelsByBrandID)
+		r.Get("/categories", auth.TokenGuard, auth.LanguageChecker, comtransHandler.GetComtransCategories)
+		r.Get("/categories/:category_id/parameters", auth.TokenGuard, auth.LanguageChecker, comtransHandler.GetComtransParameters)
+		r.Get("/categories/:category_id/brands", auth.TokenGuard, auth.LanguageChecker, comtransHandler.GetComtransBrands)
+		r.Get("/categories/:category_id/brands/:brand_id/models", auth.TokenGuard, auth.LanguageChecker, comtransHandler.GetComtransModelsByBrandID)
 
 		// comtrans
 		r.Get("/", auth.TokenGuard, comtransHandler.GetComtrans)

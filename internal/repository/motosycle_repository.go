@@ -22,10 +22,10 @@ func NewMotorcycleRepository(config *config.Config, db *pgxpool.Pool) *Motorcycl
 	return &MotorcycleRepository{config, db}
 }
 
-func (r *MotorcycleRepository) GetMotorcycleCategories(ctx *fasthttp.RequestCtx) ([]model.GetMotorcycleCategoriesResponse, error) {
+func (r *MotorcycleRepository) GetMotorcycleCategories(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.GetMotorcycleCategoriesResponse, error) {
 	data := make([]model.GetMotorcycleCategoriesResponse, 0)
 	q := `
-		SELECT id, name FROM moto_categories
+		SELECT id, ` + nameColumn + ` FROM moto_categories
 	`
 
 	rows, err := r.db.Query(ctx, q)
@@ -50,22 +50,22 @@ func (r *MotorcycleRepository) GetMotorcycleCategories(ctx *fasthttp.RequestCtx)
 	return data, nil
 }
 
-func (r *MotorcycleRepository) GetMotorcycleParameters(ctx *fasthttp.RequestCtx, categoryID string) ([]model.GetMotorcycleParametersResponse, error) {
+func (r *MotorcycleRepository) GetMotorcycleParameters(ctx *fasthttp.RequestCtx, categoryID string, nameColumn string) ([]model.GetMotorcycleParametersResponse, error) {
 	data := make([]model.GetMotorcycleParametersResponse, 0)
 	q := `
 		SELECT 
 			moto_parameters.id,
-			moto_parameters.name,
+			moto_parameters.` + nameColumn + `,
 			json_agg(
 				json_build_object(
 					'id', moto_parameter_values.id,
-					'name', moto_parameter_values.name
+					'name', moto_parameter_values.` + nameColumn + `
 				)
 			) as values
 		FROM moto_parameters
 		LEFT JOIN moto_parameter_values ON moto_parameters.id = moto_parameter_values.moto_parameter_id
 		WHERE moto_parameters.moto_category_id = $1
-		GROUP BY moto_parameters.id, moto_parameters.name
+		GROUP BY moto_parameters.id, moto_parameters.` + nameColumn + `
 	`
 
 	rows, err := r.db.Query(ctx, q, categoryID)
@@ -89,10 +89,10 @@ func (r *MotorcycleRepository) GetMotorcycleParameters(ctx *fasthttp.RequestCtx,
 	return data, nil
 }
 
-func (r *MotorcycleRepository) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, categoryID string) ([]model.GetMotorcycleBrandsResponse, error) {
+func (r *MotorcycleRepository) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, categoryID string, nameColumn string) ([]model.GetMotorcycleBrandsResponse, error) {
 	data := make([]model.GetMotorcycleBrandsResponse, 0)
 	q := `
-		SELECT id, name, $2 || image as image FROM moto_brands
+		SELECT id, ` + nameColumn + `, $2 || image as image FROM moto_brands
 		WHERE moto_category_id = $1
 	`
 
@@ -117,10 +117,10 @@ func (r *MotorcycleRepository) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, cat
 	return data, nil
 }
 
-func (r *MotorcycleRepository) GetMotorcycleModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID string, brandID string) ([]model.GetMotorcycleModelsResponse, error) {
+func (r *MotorcycleRepository) GetMotorcycleModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID, brandID, nameColumn string) ([]model.GetMotorcycleModelsResponse, error) {
 	data := make([]model.GetMotorcycleModelsResponse, 0)
 	q := `
-		SELECT id, name FROM moto_models
+		SELECT id, ` + nameColumn + ` FROM moto_models
 		WHERE moto_brand_id = $1
 	`
 
@@ -189,7 +189,7 @@ func (r *MotorcycleRepository) CreateMotorcycle(ctx *fasthttp.RequestCtx, req mo
 	return data, err
 }
 
-func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx) ([]model.GetMotorcyclesResponse, error) {
+func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.GetMotorcyclesResponse, error) {
 	data := make([]model.GetMotorcyclesResponse, 0)
 	q := `
 		select 
@@ -226,12 +226,12 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx) ([]model
 			mcs.status,
 			mcs.updated_at,
 			mcs.created_at,
-			mocs.name as moto_category,
-			mbs.name as moto_brand,
-			mms.name as moto_model,
-			fts.name as fuel_type,
+			mocs.` + nameColumn + ` as moto_category,
+			mbs.` + nameColumn + ` as moto_brand,
+			mms.` + nameColumn + ` as moto_model,
+			fts.` + nameColumn + ` as fuel_type,
 			cs.name as city,
-			cls.name as color,
+			cls.` + nameColumn + ` as color,
 			CASE
 				WHEN mcs.user_id = 1 THEN TRUE
 				ELSE FALSE
@@ -252,8 +252,8 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx) ([]model
 				json_build_object(
 					'parameter_id', mcp.moto_parameter_id,
 					'parameter_value_id', mpv.id,
-					'parameter', mp.name,
-					'parameter_value', mpv.name
+					'parameter', mp.` + nameColumn + `,
+					'parameter_value', mpv.` + nameColumn + `
 				)
 			) AS parameters
 			FROM motorcycle_parameters mcp
@@ -373,7 +373,7 @@ func (r *MotorcycleRepository) DeleteMotorcycleVideo(ctx *fasthttp.RequestCtx, m
 	return nil
 }
 
-func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, userID int) (model.GetMotorcyclesResponse, error) {
+func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, userID int, nameColumn string) (model.GetMotorcyclesResponse, error) {
 	var motorcycle model.GetMotorcyclesResponse
 	q := `
 		WITH updated AS (
@@ -416,12 +416,12 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 			mcs.status,
 			mcs.updated_at,
 			mcs.created_at,
-			mocs.name as moto_category,
-			mbs.name as moto_brand,
-			mms.name as moto_model,
-			fts.name as fuel_type,
+			mocs.` + nameColumn + ` as moto_category,
+			mbs.` + nameColumn + ` as moto_brand,
+			mms.` + nameColumn + ` as moto_model,
+			fts.` + nameColumn + ` as fuel_type,
 			cs.name as city,
-			cls.name as color,
+			cls.` + nameColumn + ` as color,
 			CASE
 				WHEN mcs.user_id = $2 THEN TRUE
 				ELSE FALSE
@@ -442,8 +442,8 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 				json_build_object(
 					'parameter_id', mcp.moto_parameter_id,
 					'parameter_value_id', mpv.id,
-					'parameter', mp.name,
-					'parameter_value', mpv.name
+					'parameter', mp.` + nameColumn + `,
+					'parameter_value', mpv.` + nameColumn + `
 				)
 			) AS parameters
 			FROM motorcycle_parameters mcp
@@ -487,7 +487,7 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 	return motorcycle, err
 }
 
-func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, userID int) (model.GetMotorcyclesResponse, error) {
+func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, userID int, nameColumn string) (model.GetMotorcyclesResponse, error) {
 	var motorcycle model.GetMotorcyclesResponse
 	q := `
 		select 
@@ -524,12 +524,12 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 			mcs.status,
 			mcs.updated_at,
 			mcs.created_at,
-			mocs.name as moto_category,
-			mbs.name as moto_brand,
-			mms.name as moto_model,
-			fts.name as fuel_type,
+			mocs.` + nameColumn + ` as moto_category,
+			mbs.` + nameColumn + ` as moto_brand,
+			mms.` + nameColumn + ` as moto_model,
+			fts.` + nameColumn + ` as fuel_type,
 			cs.name as city,
-			cls.name as color,
+			cls.` + nameColumn + ` as color,
 			CASE
 				WHEN mcs.user_id = $2 THEN TRUE
 				ELSE FALSE
@@ -550,8 +550,8 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 				json_build_object(
 					'parameter_id', mcp.moto_parameter_id,
 					'parameter_value_id', mpv.id,
-					'parameter', mp.name,
-					'parameter_value', mpv.name
+					'parameter', mp.` + nameColumn + `,
+					'parameter_value', mpv.` + nameColumn + `
 				)
 			) AS parameters
 			FROM motorcycle_parameters mcp

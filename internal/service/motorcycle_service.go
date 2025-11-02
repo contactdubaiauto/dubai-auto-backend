@@ -18,8 +18,8 @@ func NewMotorcycleService(repository *repository.MotorcycleRepository) *Motorcyc
 	return &MotorcycleService{repository}
 }
 
-func (s *MotorcycleService) GetMotorcycleCategories(ctx *fasthttp.RequestCtx) model.Response {
-	data, err := s.repository.GetMotorcycleCategories(ctx)
+func (s *MotorcycleService) GetMotorcycleCategories(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
+	data, err := s.repository.GetMotorcycleCategories(ctx, nameColumn)
 
 	if err != nil {
 		return model.Response{
@@ -33,8 +33,8 @@ func (s *MotorcycleService) GetMotorcycleCategories(ctx *fasthttp.RequestCtx) mo
 	}
 }
 
-func (s *MotorcycleService) GetMotorcycleParameters(ctx *fasthttp.RequestCtx, categoryID string) model.Response {
-	data, err := s.repository.GetMotorcycleParameters(ctx, categoryID)
+func (s *MotorcycleService) GetMotorcycleParameters(ctx *fasthttp.RequestCtx, categoryID string, nameColumn string) model.Response {
+	data, err := s.repository.GetMotorcycleParameters(ctx, categoryID, nameColumn)
 	if err != nil {
 		return model.Response{
 			Status: 500,
@@ -47,8 +47,8 @@ func (s *MotorcycleService) GetMotorcycleParameters(ctx *fasthttp.RequestCtx, ca
 	}
 }
 
-func (s *MotorcycleService) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, categoryID string) model.Response {
-	data, err := s.repository.GetMotorcycleBrands(ctx, categoryID)
+func (s *MotorcycleService) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, categoryID string, nameColumn string) model.Response {
+	data, err := s.repository.GetMotorcycleBrands(ctx, categoryID, nameColumn)
 	if err != nil {
 		return model.Response{
 			Status: 500,
@@ -61,8 +61,8 @@ func (s *MotorcycleService) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, catego
 	}
 }
 
-func (s *MotorcycleService) GetMotorcycleModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID string, brandID string) model.Response {
-	data, err := s.repository.GetMotorcycleModelsByBrandID(ctx, categoryID, brandID)
+func (s *MotorcycleService) GetMotorcycleModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID string, brandID string, nameColumn string) model.Response {
+	data, err := s.repository.GetMotorcycleModelsByBrandID(ctx, categoryID, brandID, nameColumn)
 	if err != nil {
 		return model.Response{
 			Status: 500,
@@ -89,8 +89,8 @@ func (s *MotorcycleService) CreateMotorcycle(ctx *fasthttp.RequestCtx, motorcycl
 	}
 }
 
-func (s *MotorcycleService) GetMotorcycles(ctx *fasthttp.RequestCtx) model.Response {
-	data, err := s.repository.GetMotorcycles(ctx)
+func (s *MotorcycleService) GetMotorcycles(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
+	data, err := s.repository.GetMotorcycles(ctx, nameColumn)
 	if err != nil {
 		return model.Response{
 			Status: 500,
@@ -170,8 +170,8 @@ func (s *MotorcycleService) DeleteMotorcycleVideo(ctx *fasthttp.RequestCtx, moto
 	}
 }
 
-func (s *MotorcycleService) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, userID int) model.Response {
-	motorcycle, err := s.repository.GetMotorcycleByID(ctx, motorcycleID, userID)
+func (s *MotorcycleService) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, userID int, nameColumn string) model.Response {
+	motorcycle, err := s.repository.GetMotorcycleByID(ctx, motorcycleID, userID, nameColumn)
 	if err != nil {
 		return model.Response{
 			Status: 404,
@@ -184,8 +184,8 @@ func (s *MotorcycleService) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motorcyc
 	}
 }
 
-func (s *MotorcycleService) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, userID int) model.Response {
-	motorcycle, err := s.repository.GetEditMotorcycleByID(ctx, motorcycleID, userID)
+func (s *MotorcycleService) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, userID int, nameColumn string) model.Response {
+	motorcycle, err := s.repository.GetEditMotorcycleByID(ctx, motorcycleID, userID, nameColumn)
 	if err != nil {
 		return model.Response{
 			Status: 404,

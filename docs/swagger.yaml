@@ -8224,6 +8224,11 @@ paths:
       consumes:
       - application/json
       description: Get commercial transports
+      parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       produces:
       - application/json
       responses:
@@ -8278,6 +8283,11 @@ paths:
       consumes:
       - application/json
       description: Get commercial transport categories
+      parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       produces:
       - application/json
       responses:
@@ -8291,6 +8301,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
       summary: Get commercial transport categories
       tags:
       - comtrans
@@ -8300,6 +8312,10 @@ paths:
       - application/json
       description: Get commercial transport brands
       parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       - description: Category ID
         in: path
         name: category_id
@@ -8318,6 +8334,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
       summary: Get commercial transport brands
       tags:
       - comtrans
@@ -8327,6 +8345,10 @@ paths:
       - application/json
       description: Get commercial transport models by brand ID
       parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       - description: Category ID
         in: path
         name: category_id
@@ -8350,6 +8372,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
       summary: Get commercial transport models by brand ID
       tags:
       - comtrans
@@ -8359,6 +8383,10 @@ paths:
       - application/json
       description: Get commercial transport parameters
       parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       - description: Category ID
         in: path
         name: category_id
@@ -8377,6 +8405,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
       summary: Get commercial transport parameters
       tags:
       - comtrans
@@ -11452,6 +11482,10 @@ paths:
     get:
       description: Returns a commercial transport by its ID
       parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       - description: Commercial Transport ID
         in: path
         name: id
@@ -11485,6 +11519,7 @@ paths:
           schema:
             $ref: '#/definitions/model.ResultMessage'
       security:
+      - BearerAuth: []
       - BearerAuth: []
       summary: Get commercial transport by ID
       tags:
@@ -11575,6 +11610,10 @@ paths:
     get:
       description: Returns a commercial transport by its ID for editing
       parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       - description: Commercial Transport ID
         in: path
         name: id
@@ -11608,6 +11647,7 @@ paths:
           schema:
             $ref: '#/definitions/model.ResultMessage'
       security:
+      - BearerAuth: []
       - BearerAuth: []
       summary: Get Edit commercial transport by ID
       tags:
@@ -11658,6 +11698,11 @@ paths:
       consumes:
       - application/json
       description: Get motorcycles
+      parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       produces:
       - application/json
       responses:
@@ -11751,6 +11796,10 @@ paths:
     get:
       description: Returns a motorcycle by its ID
       parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       - description: Motorcycle ID
         in: path
         name: id
@@ -11784,6 +11833,7 @@ paths:
           schema:
             $ref: '#/definitions/model.ResultMessage'
       security:
+      - BearerAuth: []
       - BearerAuth: []
       summary: Get motorcycle by ID
       tags:
@@ -11874,6 +11924,10 @@ paths:
     get:
       description: Returns a motorcycle by its ID for editing
       parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       - description: Motorcycle ID
         in: path
         name: id
@@ -11907,6 +11961,7 @@ paths:
           schema:
             $ref: '#/definitions/model.ResultMessage'
       security:
+      - BearerAuth: []
       - BearerAuth: []
       summary: Get Edit motorcycle by ID
       tags:
@@ -12149,6 +12204,11 @@ paths:
       consumes:
       - application/json
       description: Get motorcycle categories
+      parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       produces:
       - application/json
       responses:
@@ -12162,6 +12222,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
       summary: Get motorcycle categories
       tags:
       - motorcycles
@@ -12171,6 +12233,10 @@ paths:
       - application/json
       description: Get motorcycle brands
       parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       - description: Category ID
         in: path
         name: category_id
@@ -12189,6 +12255,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
       summary: Get motorcycle brands
       tags:
       - motorcycles
@@ -12198,6 +12266,10 @@ paths:
       - application/json
       description: Get motorcycle models by brand ID
       parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       - description: Category ID
         in: path
         name: category_id
@@ -12221,6 +12293,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
       summary: Get motorcycle models by brand ID
       tags:
       - motorcycles
@@ -12230,6 +12304,10 @@ paths:
       - application/json
       description: Get motorcycle parameters
       parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       - description: Category ID
         in: path
         name: category_id
@@ -12248,6 +12326,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
       summary: Get motorcycle parameters
       tags:
       - motorcycles

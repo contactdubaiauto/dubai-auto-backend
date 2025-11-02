@@ -18,15 +18,15 @@ func SetupMotorcycleRoutes(r fiber.Router, config *config.Config, db *pgxpool.Po
 
 	{
 		// get motorcycles categories
-		r.Get("/categories", auth.TokenGuard, motorcycleHandler.GetMotorcycleCategories)
-		r.Get("/categories/:category_id/parameters", auth.TokenGuard, motorcycleHandler.GetMotorcycleParameters)
-		r.Get("/categories/:category_id/brands", auth.TokenGuard, motorcycleHandler.GetMotorcycleBrands)
-		r.Get("/categories/:category_id/brands/:brand_id/models", auth.TokenGuard, motorcycleHandler.GetMotorcycleModelsByBrandID)
+		r.Get("/categories", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycleCategories)
+		r.Get("/categories/:category_id/parameters", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycleParameters)
+		r.Get("/categories/:category_id/brands", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycleBrands)
+		r.Get("/categories/:category_id/brands/:brand_id/models", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycleModelsByBrandID)
 
 		// motorcycles
-		r.Get("/", auth.TokenGuard, motorcycleHandler.GetMotorcycles)
-		r.Get("/:id", auth.TokenGuard, motorcycleHandler.GetMotorcycleByID)
-		r.Get("/:id/edit", auth.TokenGuard, motorcycleHandler.GetEditMotorcycleByID)
+		r.Get("/", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycles)
+		r.Get("/:id", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycleByID)
+		r.Get("/:id/edit", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetEditMotorcycleByID)
 		r.Post("/", auth.TokenGuard, motorcycleHandler.CreateMotorcycle)
 		r.Post("/:id/images", auth.TokenGuard, motorcycleHandler.CreateMotorcycleImages)
 		r.Post("/:id/videos", auth.TokenGuard, motorcycleHandler.CreateMotorcycleVideos)

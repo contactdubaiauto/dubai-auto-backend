@@ -18,8 +18,8 @@ func NewComtransService(repository *repository.ComtransRepository) *ComtransServ
 	return &ComtransService{repository}
 }
 
-func (s *ComtransService) GetComtransCategories(ctx *fasthttp.RequestCtx) model.Response {
-	data, err := s.repository.GetComtransCategories(ctx)
+func (s *ComtransService) GetComtransCategories(ctx *fasthttp.RequestCtx, lang string) model.Response {
+	data, err := s.repository.GetComtransCategories(ctx, lang)
 
 	if err != nil {
 		return model.Response{
@@ -33,8 +33,8 @@ func (s *ComtransService) GetComtransCategories(ctx *fasthttp.RequestCtx) model.
 	}
 }
 
-func (s *ComtransService) GetComtransParameters(ctx *fasthttp.RequestCtx, categoryID string) model.Response {
-	data, err := s.repository.GetComtransParameters(ctx, categoryID)
+func (s *ComtransService) GetComtransParameters(ctx *fasthttp.RequestCtx, categoryID string, lang string) model.Response {
+	data, err := s.repository.GetComtransParameters(ctx, categoryID, lang)
 	if err != nil {
 		return model.Response{
 			Status: 500,
@@ -47,8 +47,8 @@ func (s *ComtransService) GetComtransParameters(ctx *fasthttp.RequestCtx, catego
 	}
 }
 
-func (s *ComtransService) GetComtransBrands(ctx *fasthttp.RequestCtx, categoryID string) model.Response {
-	data, err := s.repository.GetComtransBrands(ctx, categoryID)
+func (s *ComtransService) GetComtransBrands(ctx *fasthttp.RequestCtx, categoryID string, lang string) model.Response {
+	data, err := s.repository.GetComtransBrands(ctx, categoryID, lang)
 	if err != nil {
 		return model.Response{
 			Status: 500,
@@ -61,8 +61,8 @@ func (s *ComtransService) GetComtransBrands(ctx *fasthttp.RequestCtx, categoryID
 	}
 }
 
-func (s *ComtransService) GetComtransModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID string, brandID string) model.Response {
-	data, err := s.repository.GetComtransModelsByBrandID(ctx, categoryID, brandID)
+func (s *ComtransService) GetComtransModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID string, brandID string, lang string) model.Response {
+	data, err := s.repository.GetComtransModelsByBrandID(ctx, categoryID, brandID, lang)
 	if err != nil {
 		return model.Response{
 			Status: 500,
@@ -89,8 +89,8 @@ func (s *ComtransService) CreateComtrans(ctx *fasthttp.RequestCtx, comtrans mode
 	}
 }
 
-func (s *ComtransService) GetComtrans(ctx *fasthttp.RequestCtx) model.Response {
-	data, err := s.repository.GetComtrans(ctx)
+func (s *ComtransService) GetComtrans(ctx *fasthttp.RequestCtx, lang string) model.Response {
+	data, err := s.repository.GetComtrans(ctx, lang)
 	if err != nil {
 		return model.Response{
 			Status: 500,
@@ -170,8 +170,8 @@ func (s *ComtransService) DeleteComtransVideo(ctx *fasthttp.RequestCtx, comtrans
 	}
 }
 
-func (s *ComtransService) GetComtransByID(ctx *fasthttp.RequestCtx, comtransID, userID int) model.Response {
-	comtrans, err := s.repository.GetComtransByID(ctx, comtransID, userID)
+func (s *ComtransService) GetComtransByID(ctx *fasthttp.RequestCtx, comtransID, userID int, lang string) model.Response {
+	comtrans, err := s.repository.GetComtransByID(ctx, comtransID, userID, lang)
 	if err != nil {
 		return model.Response{
 			Status: 404,
@@ -184,14 +184,16 @@ func (s *ComtransService) GetComtransByID(ctx *fasthttp.RequestCtx, comtransID, 
 	}
 }
 
-func (s *ComtransService) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtransID, userID int) model.Response {
-	comtrans, err := s.repository.GetEditComtransByID(ctx, comtransID, userID)
+func (s *ComtransService) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtransID, userID int, lang string) model.Response {
+	comtrans, err := s.repository.GetEditComtransByID(ctx, comtransID, userID, lang)
+
 	if err != nil {
 		return model.Response{
 			Status: 404,
 			Error:  err,
 		}
 	}
+
 	return model.Response{
 		Status: 200,
 		Data:   comtrans,
@@ -200,12 +202,14 @@ func (s *ComtransService) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtrans
 
 func (s *ComtransService) BuyComtrans(ctx *fasthttp.RequestCtx, comtransID, userID int) model.Response {
 	err := s.repository.BuyComtrans(ctx, comtransID, userID)
+
 	if err != nil {
 		return model.Response{
 			Status: 500,
 			Error:  err,
 		}
 	}
+
 	return model.Response{
 		Status: 200,
 		Data:   model.Success{Message: "Successfully bought the commercial transport"},

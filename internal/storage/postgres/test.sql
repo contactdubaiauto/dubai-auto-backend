@@ -22,12 +22,12 @@
                         'from_country', json_build_object(
                             'id', cf.id,
                             'name', cf.name,
-                            'flag', cf.flag
+                            'flag', cf.flag,
                         ),
                         'to_country', json_build_object(
                             'id', ct.id,
                             'name', ct.name,
-                            'flag', ct.flag
+                            'flag', ct.flag,
                         )
                         )
                     ) AS countries

@@ -9203,6 +9203,14 @@ const docTemplate = `{
                     "comtrans"
                 ],
                 "summary": "Get commercial transports",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -9273,6 +9281,11 @@ const docTemplate = `{
         },
         "/api/v1/comtrans/categories": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get commercial transport categories",
                 "consumes": [
                     "application/json"
@@ -9284,6 +9297,14 @@ const docTemplate = `{
                     "comtrans"
                 ],
                 "summary": "Get commercial transport categories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -9305,6 +9326,11 @@ const docTemplate = `{
         },
         "/api/v1/comtrans/categories/{category_id}/brands": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get commercial transport brands",
                 "consumes": [
                     "application/json"
@@ -9317,6 +9343,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get commercial transport brands",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "Category ID",
@@ -9346,6 +9378,11 @@ const docTemplate = `{
         },
         "/api/v1/comtrans/categories/{category_id}/brands/{brand_id}/models": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get commercial transport models by brand ID",
                 "consumes": [
                     "application/json"
@@ -9358,6 +9395,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get commercial transport models by brand ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "Category ID",
@@ -9394,6 +9437,11 @@ const docTemplate = `{
         },
         "/api/v1/comtrans/categories/{category_id}/parameters": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get commercial transport parameters",
                 "consumes": [
                     "application/json"
@@ -9406,6 +9454,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get commercial transport parameters",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "Category ID",
@@ -14106,6 +14160,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "BearerAuth": []
+                    },
+                    {
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Returns a commercial transport by its ID",
@@ -14117,6 +14174,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get commercial transport by ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "Commercial Transport ID",
@@ -14360,6 +14423,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "BearerAuth": []
+                    },
+                    {
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Returns a commercial transport by its ID for editing",
@@ -14371,6 +14437,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get Edit commercial transport by ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "Commercial Transport ID",
@@ -14501,6 +14573,14 @@ const docTemplate = `{
                     "motorcycles"
                 ],
                 "summary": "Get motorcycles",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -14571,6 +14651,11 @@ const docTemplate = `{
         },
         "/motorcycles/categories": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get motorcycle categories",
                 "consumes": [
                     "application/json"
@@ -14582,6 +14667,14 @@ const docTemplate = `{
                     "motorcycles"
                 ],
                 "summary": "Get motorcycle categories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -14603,6 +14696,11 @@ const docTemplate = `{
         },
         "/motorcycles/categories/{category_id}/brands": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get motorcycle brands",
                 "consumes": [
                     "application/json"
@@ -14615,6 +14713,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get motorcycle brands",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "Category ID",
@@ -14644,6 +14748,11 @@ const docTemplate = `{
         },
         "/motorcycles/categories/{category_id}/brands/{brand_id}/models": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get motorcycle models by brand ID",
                 "consumes": [
                     "application/json"
@@ -14656,6 +14765,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get motorcycle models by brand ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "Category ID",
@@ -14692,6 +14807,11 @@ const docTemplate = `{
         },
         "/motorcycles/categories/{category_id}/parameters": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get motorcycle parameters",
                 "consumes": [
                     "application/json"
@@ -14704,6 +14824,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get motorcycle parameters",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "Category ID",
@@ -14736,6 +14862,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "BearerAuth": []
+                    },
+                    {
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Returns a motorcycle by its ID",
@@ -14747,6 +14876,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get motorcycle by ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "Motorcycle ID",
@@ -14990,6 +15125,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "BearerAuth": []
+                    },
+                    {
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Returns a motorcycle by its ID for editing",
@@ -15001,6 +15139,12 @@ const docTemplate = `{
                 ],
                 "summary": "Get Edit motorcycle by ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
                     {
                         "type": "integer",
                         "description": "Motorcycle ID",

@@ -421,7 +421,7 @@ func (r *UserRepository) GetModelsByBrandID(ctx *fasthttp.RequestCtx, brandID in
 	q := `
 			SELECT 
 				id, 
-				` + nameColumn + ` as name, 
+				` + nameColumn + ` as name
 			FROM models 
 			WHERE 
 				brand_id = $1 AND 
@@ -456,7 +456,7 @@ func (r *UserRepository) GetFilterModelsByBrandID(ctx *fasthttp.RequestCtx, bran
 				json_agg(
 					json_build_object(
 						'id', id, 
-						'name', ` + nameColumn + `,
+						'name', ` + nameColumn + `
 					)
 				) as popular_models
 			FROM models 
@@ -466,7 +466,7 @@ func (r *UserRepository) GetFilterModelsByBrandID(ctx *fasthttp.RequestCtx, bran
 				json_agg(
 					json_build_object(
 						'id', id, 
-						'name', ` + nameColumn + `,
+						'name', ` + nameColumn + `
 					)
 				) as all_models
 			FROM models 
@@ -495,7 +495,7 @@ func (r *UserRepository) GetFilterModelsByBrands(ctx *fasthttp.RequestCtx, brand
 				json_agg(
 					json_build_object(
 						'id', id, 
-						'name', ` + nameColumn + `,
+						'name', ` + nameColumn + `
 					)
 				) as popular_models
 			FROM models 
@@ -505,7 +505,7 @@ func (r *UserRepository) GetFilterModelsByBrands(ctx *fasthttp.RequestCtx, brand
 				json_agg(
 					json_build_object(
 						'id', id, 
-						'name', ` + nameColumn + `,
+						'name', ` + nameColumn + `
 					)
 				) as all_models
 			FROM models 
@@ -1404,14 +1404,14 @@ func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID 
 			) as city,
 			json_build_object(
 				'id', ms.id,
-				'name', ms.` + nameColumn + `,
+				'name', ms.` + nameColumn + `
 			) as model,
 			json_build_object(
 				'id', mfs.id,
 				'engine', es.` + nameColumn + `,
 				'fuel_type', fts.` + nameColumn + `,
 				'drivetrain', ds.` + nameColumn + `,
-				'transmission', ts.` + nameColumn + `,
+				'transmission', ts.` + nameColumn + `
 			) as modification,
 			json_build_object(
 				'id', cls.id,
@@ -1805,14 +1805,14 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 }
 
 func (r *UserRepository) GetThirdPartyUsers(ctx *fasthttp.RequestCtx, roleID, fromID, toID int, search string) ([]model.ThirdPartyUserResponse, error) {
-	qWhere := ""
+	qWhere := " where u.role_id = $1 "
 
 	if search != "" {
-		qWhere = fmt.Sprintf(" AND u.username ILIKE '%%%s%%' ", search)
+		qWhere = fmt.Sprintf(" %s AND u.username ILIKE '%%%s%%' ", qWhere, search)
 	}
 
 	if fromID > 0 && toID > 0 {
-		qWhere = fmt.Sprintf(" AND ds.from_id = %d AND ds.to_id = %d %s", fromID, toID, qWhere)
+		qWhere = fmt.Sprintf(" right join user_destinations ds on ds.user_id = u.id %s AND ds.from_id = %d AND ds.to_id = %d ", qWhere, fromID, toID)
 	}
 
 	q := `
@@ -1823,12 +1823,10 @@ func (r *UserRepository) GetThirdPartyUsers(ctx *fasthttp.RequestCtx, roleID, fr
 			$2 || p.avatar
 		from users u
         left join profiles p on p.user_id = u.id
-        left join user_destinations ds on ds.user_id = u.id
-        where u.role_id = $1 %s;
+         %s;
 	`
 	var users []model.ThirdPartyUserResponse
 	var user model.ThirdPartyUserResponse
-
 	rows, err := r.db.Query(ctx, fmt.Sprintf(q, qWhere), roleID, r.config.IMAGE_BASE_URL)
 
 	if err != nil {

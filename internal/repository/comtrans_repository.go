@@ -22,10 +22,10 @@ func NewComtransRepository(config *config.Config, db *pgxpool.Pool) *ComtransRep
 	return &ComtransRepository{config, db}
 }
 
-func (r *ComtransRepository) GetComtransCategories(ctx *fasthttp.RequestCtx) ([]model.GetComtransCategoriesResponse, error) {
+func (r *ComtransRepository) GetComtransCategories(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.GetComtransCategoriesResponse, error) {
 	data := make([]model.GetComtransCategoriesResponse, 0)
 	q := `
-		SELECT id, name FROM com_categories
+		SELECT id, ` + nameColumn + ` FROM com_categories
 	`
 
 	rows, err := r.db.Query(ctx, q)
@@ -50,22 +50,22 @@ func (r *ComtransRepository) GetComtransCategories(ctx *fasthttp.RequestCtx) ([]
 	return data, nil
 }
 
-func (r *ComtransRepository) GetComtransParameters(ctx *fasthttp.RequestCtx, categoryID string) ([]model.GetComtransParametersResponse, error) {
+func (r *ComtransRepository) GetComtransParameters(ctx *fasthttp.RequestCtx, categoryID string, nameColumn string) ([]model.GetComtransParametersResponse, error) {
 	data := make([]model.GetComtransParametersResponse, 0)
 	q := `
 		SELECT 
 			comtran_parameters.id,
-			comtran_parameters.name,
+			comtran_parameters.` + nameColumn + `,
 			json_agg(
 				json_build_object(
 					'id', com_parameter_values.id,
-					'name', com_parameter_values.name
+					'name', com_parameter_values.` + nameColumn + `
 				)
 			) as values
 		FROM comtran_parameters
 		LEFT JOIN com_parameter_values ON comtran_parameters.id = com_parameter_values.comtran_parameter_id
 		WHERE comtran_parameters.comtran_category_id = $1
-		GROUP BY comtran_parameters.id, comtran_parameters.name
+		GROUP BY comtran_parameters.id, comtran_parameters.` + nameColumn + `
 	`
 
 	rows, err := r.db.Query(ctx, q, categoryID)
@@ -89,10 +89,10 @@ func (r *ComtransRepository) GetComtransParameters(ctx *fasthttp.RequestCtx, cat
 	return data, nil
 }
 
-func (r *ComtransRepository) GetComtransBrands(ctx *fasthttp.RequestCtx, categoryID string) ([]model.GetComtransBrandsResponse, error) {
+func (r *ComtransRepository) GetComtransBrands(ctx *fasthttp.RequestCtx, categoryID string, nameColumn string) ([]model.GetComtransBrandsResponse, error) {
 	data := make([]model.GetComtransBrandsResponse, 0)
 	q := `
-		SELECT id, name, $2 || image FROM com_brands
+		SELECT id, ` + nameColumn + `, $2 || image FROM com_brands
 		WHERE comtran_category_id = $1
 	`
 
@@ -117,10 +117,10 @@ func (r *ComtransRepository) GetComtransBrands(ctx *fasthttp.RequestCtx, categor
 	return data, nil
 }
 
-func (r *ComtransRepository) GetComtransModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID string, brandID string) ([]model.GetComtransModelsResponse, error) {
+func (r *ComtransRepository) GetComtransModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID string, brandID string, nameColumn string) ([]model.GetComtransModelsResponse, error) {
 	data := make([]model.GetComtransModelsResponse, 0)
 	q := `
-		SELECT id, name FROM com_models
+		SELECT id, ` + nameColumn + ` FROM com_models
 		WHERE comtran_brand_id = $1
 	`
 
@@ -189,7 +189,7 @@ func (r *ComtransRepository) CreateComtrans(ctx *fasthttp.RequestCtx, req model.
 	return data, err
 }
 
-func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx) ([]model.GetComtransResponse, error) {
+func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.GetComtransResponse, error) {
 	data := make([]model.GetComtransResponse, 0)
 	q := `
 		select 
@@ -226,12 +226,12 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx) ([]model.GetC
 			cts.status,
 			cts.updated_at,
 			cts.created_at,
-			cocs.name as comtran_category,
-			cbs.name as comtran_brand,
-			cms.name as comtran_model,
-			fts.name as fuel_type,
+			cocs.` + nameColumn + ` as comtran_category,
+			cbs.` + nameColumn + ` as comtran_brand,
+			cms.` + nameColumn + ` as comtran_model,
+			fts.` + nameColumn + ` as fuel_type,
 			cs.name as city,
-			cls.name as color,
+			cls.` + nameColumn + ` as color,
 			CASE
 				WHEN cts.user_id = 1 THEN TRUE
 				ELSE FALSE
@@ -252,8 +252,8 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx) ([]model.GetC
 				json_build_object(
 					'parameter_id', ccp.comtran_parameter_id,
 					'parameter_value_id', cpv.id,
-					'parameter', cp.name,
-					'parameter_value', cpv.name
+					'parameter', cp.` + nameColumn + `,
+					'parameter_value', cpv.` + nameColumn + `
 				)
 			) AS parameters
 			FROM comtran_parameters ccp
@@ -373,7 +373,7 @@ func (r *ComtransRepository) DeleteComtransVideo(ctx *fasthttp.RequestCtx, comtr
 	return nil
 }
 
-func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransID, userID int) (model.GetComtransResponse, error) {
+func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransID, userID int, nameColumn string) (model.GetComtransResponse, error) {
 	var comtrans model.GetComtransResponse
 	q := `
 		WITH updated AS (
@@ -416,12 +416,12 @@ func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransI
 			cts.status,
 			cts.updated_at,
 			cts.created_at,
-			cocs.name as comtran_category,
+			cocs.` + nameColumn + ` as comtran_category,
 			cbs.name as comtran_brand,
-			cms.name as comtran_model,
-			fts.name as fuel_type,
+			cms.` + nameColumn + ` as comtran_model,
+			fts.` + nameColumn + ` as fuel_type,
 			cs.name as city,
-			cls.name as color,
+			cls.` + nameColumn + ` as color,
 			CASE
 				WHEN cts.user_id = $2 THEN TRUE
 				ELSE FALSE
@@ -442,8 +442,8 @@ func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransI
 				json_build_object(
 					'parameter_id', ccp.comtran_parameter_id,
 					'parameter_value_id', cpv.id,
-					'parameter', cp.name,
-					'parameter_value', cpv.name
+					'parameter', cp.` + nameColumn + `,
+					'parameter_value', cpv.` + nameColumn + `
 				)
 			) AS parameters
 			FROM comtran_parameters ccp
@@ -487,7 +487,7 @@ func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransI
 	return comtrans, err
 }
 
-func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtransID, userID int) (model.GetComtransResponse, error) {
+func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtransID, userID int, nameColumn string) (model.GetComtransResponse, error) {
 	var comtrans model.GetComtransResponse
 	q := `
 		select 
@@ -524,12 +524,12 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 			cts.status,
 			cts.updated_at,
 			cts.created_at,
-			cocs.name as comtran_category,
+			cocs.` + nameColumn + ` as comtran_category,
 			cbs.name as comtran_brand,
-			cms.name as comtran_model,
-			fts.name as fuel_type,
+			cms.` + nameColumn + ` as comtran_model,
+			fts.` + nameColumn + ` as fuel_type,
 			cs.name as city,
-			cls.name as color,
+			cls.` + nameColumn + ` as color,
 			CASE
 				WHEN cts.user_id = $2 THEN TRUE
 				ELSE FALSE
@@ -550,8 +550,8 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 				json_build_object(
 					'parameter_id', ccp.comtran_parameter_id,
 					'parameter_value_id', cpv.id,
-					'parameter', cp.name,
-					'parameter_value', cpv.name
+					'parameter', cp.` + nameColumn + `,
+					'parameter_value', cpv.` + nameColumn + `
 				)
 			) AS parameters
 			FROM comtran_parameters ccp

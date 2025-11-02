@@ -29,13 +29,15 @@ func NewComtransHandler(service *service.ComtransService, validator *auth.Valida
 // @Tags comtrans
 // @Accept json
 // @Produce json
+// @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success 200 {array} model.GetComtransCategoriesResponse
 // @Failure 500 {object} model.ResultMessage
 // @Router /api/v1/comtrans/categories [get]
 func (h *ComtransHandler) GetComtransCategories(c *fiber.Ctx) error {
-
+	lang := c.Locals("lang").(string)
 	ctx := c.Context()
-	return utils.FiberResponse(c, h.service.GetComtransCategories(ctx))
+	return utils.FiberResponse(c, h.service.GetComtransCategories(ctx, lang))
 
 }
 
@@ -45,6 +47,8 @@ func (h *ComtransHandler) GetComtransCategories(c *fiber.Ctx) error {
 // @Tags comtrans
 // @Accept json
 // @Produce json
+// @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param category_id path string true "Category ID"
 // @Success 200 {array} model.GetComtransParametersResponse
 // @Failure 500 {object} model.ResultMessage
@@ -52,7 +56,8 @@ func (h *ComtransHandler) GetComtransCategories(c *fiber.Ctx) error {
 func (h *ComtransHandler) GetComtransParameters(c *fiber.Ctx) error {
 	ctx := c.Context()
 	categoryID := c.Params("category_id")
-	return utils.FiberResponse(c, h.service.GetComtransParameters(ctx, categoryID))
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.service.GetComtransParameters(ctx, categoryID, lang))
 
 }
 
@@ -62,6 +67,8 @@ func (h *ComtransHandler) GetComtransParameters(c *fiber.Ctx) error {
 // @Tags comtrans
 // @Accept json
 // @Produce json
+// @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param category_id path string true "Category ID"
 // @Success 200 {array} model.GetComtransBrandsResponse
 // @Failure 500 {object} model.ResultMessage
@@ -69,7 +76,8 @@ func (h *ComtransHandler) GetComtransParameters(c *fiber.Ctx) error {
 func (h *ComtransHandler) GetComtransBrands(c *fiber.Ctx) error {
 	ctx := c.Context()
 	categoryID := c.Params("category_id")
-	return utils.FiberResponse(c, h.service.GetComtransBrands(ctx, categoryID))
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.service.GetComtransBrands(ctx, categoryID, lang))
 
 }
 
@@ -79,6 +87,8 @@ func (h *ComtransHandler) GetComtransBrands(c *fiber.Ctx) error {
 // @Tags comtrans
 // @Accept json
 // @Produce json
+// @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param category_id path string true "Category ID"
 // @Param brand_id path string true "Brand ID"
 // @Success 200 {array} model.GetComtransModelsResponse
@@ -88,7 +98,8 @@ func (h *ComtransHandler) GetComtransModelsByBrandID(c *fiber.Ctx) error {
 	ctx := c.Context()
 	categoryID := c.Params("category_id")
 	brandID := c.Params("brand_id")
-	return utils.FiberResponse(c, h.service.GetComtransModelsByBrandID(ctx, categoryID, brandID))
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.service.GetComtransModelsByBrandID(ctx, categoryID, brandID, lang))
 }
 
 // GetComtrans godoc
@@ -98,12 +109,14 @@ func (h *ComtransHandler) GetComtransModelsByBrandID(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success 200 {array} model.GetComtransResponse
 // @Failure 500 {object} model.ResultMessage
 // @Router /api/v1/comtrans [get]
 func (h *ComtransHandler) GetComtrans(c *fiber.Ctx) error {
 	ctx := c.Context()
-	return utils.FiberResponse(c, h.service.GetComtrans(ctx))
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.service.GetComtrans(ctx, lang))
 
 }
 
@@ -355,6 +368,8 @@ func (h *ComtransHandler) DeleteComtransVideo(c *fiber.Ctx) error {
 // @Tags         comtrans
 // @Security     BearerAuth
 // @Produce      json
+// @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param        id   path      int  true  "Commercial Transport ID"
 // @Success      200  {object}  model.GetComtransResponse
 // @Failure      400  {object}  model.ResultMessage
@@ -376,7 +391,8 @@ func (h *ComtransHandler) GetComtransByID(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.service.GetComtransByID(ctx, id, userID)
+	lang := c.Locals("lang").(string)
+	data := h.service.GetComtransByID(ctx, id, userID, lang)
 	return utils.FiberResponse(c, data)
 }
 
@@ -386,6 +402,8 @@ func (h *ComtransHandler) GetComtransByID(c *fiber.Ctx) error {
 // @Tags         comtrans
 // @Security     BearerAuth
 // @Produce      json
+// @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param        id   path      int  true  "Commercial Transport ID"
 // @Success      200  {object}  model.GetComtransResponse
 // @Failure      400  {object}  model.ResultMessage
@@ -407,7 +425,8 @@ func (h *ComtransHandler) GetEditComtransByID(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.service.GetEditComtransByID(ctx, id, userID)
+	lang := c.Locals("lang").(string)
+	data := h.service.GetEditComtransByID(ctx, id, userID, lang)
 	return utils.FiberResponse(c, data)
 }
 
@@ -415,8 +434,8 @@ func (h *ComtransHandler) GetEditComtransByID(c *fiber.Ctx) error {
 // @Summary      Buy commercial transport
 // @Description  Returns a status response message
 // @Tags         comtrans
-// @Security     BearerAuth
 // @Produce      json
+// @Security     BearerAuth
 // @Param        id   path      int  true  "Commercial Transport ID"
 // @Success      200  {object}  model.Success
 // @Failure      400  {object}  model.ResultMessage

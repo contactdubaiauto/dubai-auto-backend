@@ -29,13 +29,16 @@ func NewMotorcycleHandler(service *service.MotorcycleService, validator *auth.Va
 // @Tags motorcycles
 // @Accept json
 // @Produce json
+// @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success 200 {array} model.GetMotorcycleCategoriesResponse
 // @Failure 500 {object} model.ResultMessage
 // @Router /motorcycles/categories [get]
 func (h *MotorcycleHandler) GetMotorcycleCategories(c *fiber.Ctx) error {
 
 	ctx := c.Context()
-	return utils.FiberResponse(c, h.service.GetMotorcycleCategories(ctx))
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.service.GetMotorcycleCategories(ctx, lang))
 
 }
 
@@ -45,6 +48,8 @@ func (h *MotorcycleHandler) GetMotorcycleCategories(c *fiber.Ctx) error {
 // @Tags motorcycles
 // @Accept json
 // @Produce json
+// @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param category_id path string true "Category ID"
 // @Success 200 {array} model.GetMotorcycleParametersResponse
 // @Failure 500 {object} model.ResultMessage
@@ -52,8 +57,8 @@ func (h *MotorcycleHandler) GetMotorcycleCategories(c *fiber.Ctx) error {
 func (h *MotorcycleHandler) GetMotorcycleParameters(c *fiber.Ctx) error {
 	ctx := c.Context()
 	categoryID := c.Params("category_id")
-	return utils.FiberResponse(c, h.service.GetMotorcycleParameters(ctx, categoryID))
-
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.service.GetMotorcycleParameters(ctx, categoryID, lang))
 }
 
 // GetMotorcycleBrands godoc
@@ -62,6 +67,8 @@ func (h *MotorcycleHandler) GetMotorcycleParameters(c *fiber.Ctx) error {
 // @Tags motorcycles
 // @Accept json
 // @Produce json
+// @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param category_id path string true "Category ID"
 // @Success 200 {array} model.GetMotorcycleBrandsResponse
 // @Failure 500 {object} model.ResultMessage
@@ -69,7 +76,8 @@ func (h *MotorcycleHandler) GetMotorcycleParameters(c *fiber.Ctx) error {
 func (h *MotorcycleHandler) GetMotorcycleBrands(c *fiber.Ctx) error {
 	ctx := c.Context()
 	categoryID := c.Params("category_id")
-	return utils.FiberResponse(c, h.service.GetMotorcycleBrands(ctx, categoryID))
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.service.GetMotorcycleBrands(ctx, categoryID, lang))
 
 }
 
@@ -79,6 +87,8 @@ func (h *MotorcycleHandler) GetMotorcycleBrands(c *fiber.Ctx) error {
 // @Tags motorcycles
 // @Accept json
 // @Produce json
+// @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param category_id path string true "Category ID"
 // @Param brand_id path string true "Brand ID"
 // @Success 200 {array} model.GetMotorcycleModelsResponse
@@ -88,7 +98,8 @@ func (h *MotorcycleHandler) GetMotorcycleModelsByBrandID(c *fiber.Ctx) error {
 	ctx := c.Context()
 	categoryID := c.Params("category_id")
 	brandID := c.Params("brand_id")
-	return utils.FiberResponse(c, h.service.GetMotorcycleModelsByBrandID(ctx, categoryID, brandID))
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.service.GetMotorcycleModelsByBrandID(ctx, categoryID, brandID, lang))
 }
 
 // GetMotorcycles godoc
@@ -98,12 +109,14 @@ func (h *MotorcycleHandler) GetMotorcycleModelsByBrandID(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success 200 {array} model.GetMotorcyclesResponse
 // @Failure 500 {object} model.ResultMessage
 // @Router /motorcycles [get]
 func (h *MotorcycleHandler) GetMotorcycles(c *fiber.Ctx) error {
 	ctx := c.Context()
-	return utils.FiberResponse(c, h.service.GetMotorcycles(ctx))
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.service.GetMotorcycles(ctx, lang))
 
 }
 
@@ -355,6 +368,8 @@ func (h *MotorcycleHandler) DeleteMotorcycleVideo(c *fiber.Ctx) error {
 // @Tags         motorcycles
 // @Security     BearerAuth
 // @Produce      json
+// @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param        id   path      int  true  "Motorcycle ID"
 // @Success      200  {object}  model.GetMotorcyclesResponse
 // @Failure      400  {object}  model.ResultMessage
@@ -376,7 +391,8 @@ func (h *MotorcycleHandler) GetMotorcycleByID(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.service.GetMotorcycleByID(ctx, id, userID)
+	lang := c.Locals("lang").(string)
+	data := h.service.GetMotorcycleByID(ctx, id, userID, lang)
 	return utils.FiberResponse(c, data)
 }
 
@@ -386,6 +402,8 @@ func (h *MotorcycleHandler) GetMotorcycleByID(c *fiber.Ctx) error {
 // @Tags         motorcycles
 // @Security     BearerAuth
 // @Produce      json
+// @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
 // @Param        id   path      int  true  "Motorcycle ID"
 // @Success      200  {object}  model.GetMotorcyclesResponse
 // @Failure      400  {object}  model.ResultMessage
@@ -407,7 +425,8 @@ func (h *MotorcycleHandler) GetEditMotorcycleByID(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.service.GetEditMotorcycleByID(ctx, id, userID)
+	lang := c.Locals("lang").(string)
+	data := h.service.GetEditMotorcycleByID(ctx, id, userID, lang)
 	return utils.FiberResponse(c, data)
 }
 
