@@ -114,14 +114,17 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 	`
 	r.db.QueryRow(context.Background(), q, msg.TargetUserID).Scan(&userFcmToken)
 	username, avatar, _ := r.GetUserAvatarName(senderUserID)
-	_, err = r.firebaseService.SendToToken(userFcmToken, messaging.Notification{
-		Title:    username,
-		Body:     msg.Message,
-		ImageURL: avatar,
-	})
 
-	if err != nil {
-		fmt.Println("error sending notification: ", err)
+	if !status {
+		_, err = r.firebaseService.SendToToken(userFcmToken, messaging.Notification{
+			Title:    username,
+			Body:     msg.Message,
+			ImageURL: avatar,
+		})
+
+		if err != nil {
+			fmt.Println("error sending notification: ", err)
+		}
 	}
 
 	return nil
@@ -158,4 +161,19 @@ func (r *SocketRepository) GetUserToken(userID int) (string, error) {
 	var token string
 	err := r.db.QueryRow(context.Background(), q, userID).Scan(&token)
 	return token, err
+}
+
+// SendPushForMessage sends a push notification for a given message without writing it to DB.
+func (r *SocketRepository) SendPushForMessage(senderUserID int, msg model.MessageReceived) error {
+	token, err := r.GetUserToken(msg.TargetUserID)
+	if err != nil {
+		return err
+	}
+	username, avatar, _ := r.GetUserAvatarName(senderUserID)
+	_, err = r.firebaseService.SendToToken(token, messaging.Notification{
+		Title:    username,
+		Body:     msg.Message,
+		ImageURL: avatar,
+	})
+	return err
 }

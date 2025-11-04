@@ -123,8 +123,6 @@ create table users (
     unique("phone")
 );
 
-
-
 create table user_destinations (
     "id" serial primary key,
     "user_id" int not null,

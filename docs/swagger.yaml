@@ -3097,6 +3097,12 @@ paths:
   /api/v1/admin/brands/:brand_id/models:
     get:
       description: Returns a list of all models
+      parameters:
+      - description: Brand ID
+        in: path
+        name: brand_id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:

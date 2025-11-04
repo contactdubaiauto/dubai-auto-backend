@@ -888,6 +888,7 @@ func (h *AdminHandler) DeleteBrand(c *fiber.Ctx) error {
 // @Tags         admin-models
 // @Produce      json
 // @Security     BearerAuth
+// @Param        brand_id   path      int                       true  "Brand ID"
 // @Success      200  {array}  model.AdminModelResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse

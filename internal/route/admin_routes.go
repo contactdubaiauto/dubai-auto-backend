@@ -146,14 +146,14 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, v
 		generations.Delete("/:generation_id/:id", adminHandler.DeleteGenerationModification)
 	}
 
-	// Configurations routes
-	configurations := r.Group("/configurations")
-	{
-		configurations.Get("/", adminHandler.GetConfigurations)
-		configurations.Post("/", adminHandler.CreateConfiguration)
-		configurations.Put("/:id", adminHandler.UpdateConfiguration)
-		configurations.Delete("/:id", adminHandler.DeleteConfiguration)
-	}
+	// // Configurations routes
+	// configurations := r.Group("/configurations")
+	// {
+	// 	configurations.Get("/", adminHandler.GetConfigurations)
+	// 	configurations.Post("/", adminHandler.CreateConfiguration)
+	// 	configurations.Put("/:id", adminHandler.UpdateConfiguration)
+	// 	configurations.Delete("/:id", adminHandler.DeleteConfiguration)
+	// }
 
 	// Colors routes
 	colors := r.Group("/colors")

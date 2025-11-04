@@ -555,7 +555,7 @@ func (r *AdminRepository) GetBrands(ctx *fasthttp.RequestCtx) ([]model.AdminBran
 				name, 
 				name_ru,
 				$1 || logo, 
-				model_count, 
+				(SELECT COUNT(*) FROM models WHERE brand_id = brands.id) as model_count, 
 				popular, 
 				updated_at 
 			FROM brands 
@@ -787,9 +787,9 @@ func (r *AdminRepository) GetTransmissions(ctx *fasthttp.RequestCtx) ([]model.Ad
 }
 
 func (r *AdminRepository) CreateTransmission(ctx *fasthttp.RequestCtx, req *model.CreateTransmissionRequest) (int, error) {
-	q := `INSERT INTO transmissions (name) VALUES ($1) RETURNING id`
+	q := `INSERT INTO transmissions (name, name_ru) VALUES ($1, $2) RETURNING id`
 	var id int
-	err := r.db.QueryRow(ctx, q, req.Name).Scan(&id)
+	err := r.db.QueryRow(ctx, q, req.Name, req.NameRu).Scan(&id)
 	return id, err
 }
 
@@ -869,9 +869,9 @@ func (r *AdminRepository) GetDrivetrains(ctx *fasthttp.RequestCtx) ([]model.Admi
 }
 
 func (r *AdminRepository) CreateDrivetrain(ctx *fasthttp.RequestCtx, req *model.CreateDrivetrainRequest) (int, error) {
-	q := `INSERT INTO drivetrains (name) VALUES ($1) RETURNING id`
+	q := `INSERT INTO drivetrains (name, name_ru) VALUES ($1, $2) RETURNING id`
 	var id int
-	err := r.db.QueryRow(ctx, q, req.Name).Scan(&id)
+	err := r.db.QueryRow(ctx, q, req.Name, req.NameRu).Scan(&id)
 	return id, err
 }
 

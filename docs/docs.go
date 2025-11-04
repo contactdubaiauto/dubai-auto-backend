@@ -1240,6 +1240,15 @@ const docTemplate = `{
                     "admin-models"
                 ],
                 "summary": "Get all models",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Brand ID",
+                        "name": "brand_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

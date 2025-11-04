@@ -42,3 +42,7 @@ func (s *SocketService) CheckUserExists(userID int) error {
 	err := s.repo.CheckUserExists(userID)
 	return err
 }
+
+func (s *SocketService) SendPushForMessage(senderUserID int, msg model.MessageReceived) error {
+	return s.repo.SendPushForMessage(senderUserID, msg)
+}

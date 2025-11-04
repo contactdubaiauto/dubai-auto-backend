@@ -20,9 +20,15 @@ type MessageReceived struct {
 }
 
 type WSMessageReceived struct {
-	Event        string          `json:"event"`
-	TargetUserID int             `json:"target_user_id"`
-	Data         MessageReceived `json:"data"`
+	Event        string `json:"event"`
+	TargetUserID int    `json:"target_user_id"`
+	Data         any    `json:"data"`
+}
+
+type WSMessageAck struct {
+	Event        string    `json:"event"`
+	TargetUserID int       `json:"target_user_id"`
+	Data         time.Time `json:"data"`
 }
 
 type WSUser struct {
