@@ -19,24 +19,10 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 	{
 
 		// users
+		r.Get("/:id", auth.LanguageChecker, userHandler.GetUserByID)
 
 		// countries
 		r.Get("/countries", userHandler.GetCountries)
-
-		// profile
-		r.Get("/profile/my-cars/:id", auth.TokenGuard, auth.LanguageChecker, userHandler.GetMyCars) //todo: write GetMyCarsByID
-		r.Get("/profile/my-cars", auth.TokenGuard, auth.LanguageChecker, userHandler.GetMyCars)
-		r.Get("/profile/on-sale", auth.TokenGuard, auth.LanguageChecker, userHandler.OnSale)
-		r.Get("/profile", auth.TokenGuard, userHandler.GetProfile)
-		r.Put("/profile", auth.TokenGuard, userHandler.UpdateProfile)
-
-		// brands
-		r.Get("/brands", auth.LanguageChecker, userHandler.GetBrands)
-		r.Get("/brands/:id/models", auth.LanguageChecker, userHandler.GetModelsByBrandID)
-		r.Get("/brands/:id/filter-models", auth.LanguageChecker, userHandler.GetFilterModelsByBrandID)
-		r.Get("/brands/:id/models/:model_id/years", userHandler.GetYearsByModelID)
-		r.Get("/brands/:id/models/:model_id/body-types", auth.LanguageChecker, userHandler.GetBodyTypesByModelID)
-		r.Get("/brands/:id/models/:model_id/generations", auth.LanguageChecker, userHandler.GetGenerationsByModelID)
 
 		// filter
 		r.Get("/filter-brands", auth.LanguageChecker, userHandler.GetFilterBrands)
@@ -52,30 +38,51 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Get("/fuel-types", auth.LanguageChecker, userHandler.GetFuelTypes)
 		r.Get("/colors", auth.LanguageChecker, userHandler.GetColors)
 		r.Get("/home", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetHome)
+		r.Get("/third-party", userHandler.GetThirdPartyUsers)
+
+		// profile
+		profilesR := r.Group("/profiles")
+		profilesR.Get("/profile/my-cars/:id", auth.TokenGuard, auth.LanguageChecker, userHandler.GetMyCars) //todo: write GetMyCarsByID
+		profilesR.Get("/profile/my-cars", auth.TokenGuard, auth.LanguageChecker, userHandler.GetMyCars)
+		profilesR.Get("/profile/on-sale", auth.TokenGuard, auth.LanguageChecker, userHandler.OnSale)
+		profilesR.Get("/profile", auth.TokenGuard, userHandler.GetProfile)
+		profilesR.Put("/profile", auth.TokenGuard, userHandler.UpdateProfile)
+
+		// brands
+		brandsR := r.Group("/brands")
+		brandsR.Get("/brands", auth.LanguageChecker, userHandler.GetBrands)
+		brandsR.Get("/brands/:id/models", auth.LanguageChecker, userHandler.GetModelsByBrandID)
+		brandsR.Get("/brands/:id/filter-models", auth.LanguageChecker, userHandler.GetFilterModelsByBrandID)
+		brandsR.Get("/brands/:id/models/:model_id/years", userHandler.GetYearsByModelID)
+		brandsR.Get("/brands/:id/models/:model_id/body-types", auth.LanguageChecker, userHandler.GetBodyTypesByModelID)
+		brandsR.Get("/brands/:id/models/:model_id/generations", auth.LanguageChecker, userHandler.GetGenerationsByModelID)
 
 		// cars
-		r.Get("/cars", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetCars)
-		r.Get("/cars/price-recommendation", auth.TokenGuard, userHandler.GetPriceRecommendation)
-		r.Get("/cars/:id", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetCarByID)
-		r.Get("/cars/:id/edit", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetEditCarByID)
-		r.Post("/cars/:id/buy", auth.TokenGuard, userHandler.BuyCar)
-		r.Post("/cars", auth.TokenGuard, userHandler.CreateCar)
-		r.Post("/cars/:id/images", auth.TokenGuard, userHandler.CreateCarImages)
-		r.Post("/cars/:id/videos", auth.TokenGuard, userHandler.CreateCarVideos)
-		r.Post("/cars/:id/cancel", auth.TokenGuard, userHandler.Cancel)
-		r.Post("/cars/:id/dont-sell", auth.TokenGuard, userHandler.DontSell)
-		r.Post("/cars/:id/sell", auth.TokenGuard, userHandler.Sell)
-		r.Put("/cars", auth.TokenGuard, userHandler.UpdateCar)
-		r.Delete("/cars/:id/images", auth.TokenGuard, userHandler.DeleteCarImage)
-		r.Delete("/cars/:id/videos", auth.TokenGuard, userHandler.DeleteCarVideo)
-		r.Delete("/cars/:id", auth.TokenGuard, userHandler.DeleteCar)
+		carsR := r.Group("/cars")
+		carsR.Get("/cars", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetCars)
+		carsR.Get("/cars/price-recommendation", auth.TokenGuard, userHandler.GetPriceRecommendation)
+		carsR.Get("/cars/:id", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetCarByID)
+		carsR.Get("/cars/:id/edit", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetEditCarByID)
+		carsR.Post("/cars/:id/buy", auth.TokenGuard, userHandler.BuyCar)
+		carsR.Post("/cars", auth.TokenGuard, userHandler.CreateCar)
+		carsR.Post("/cars/:id/images", auth.TokenGuard, userHandler.CreateCarImages)
+		carsR.Post("/cars/:id/videos", auth.TokenGuard, userHandler.CreateCarVideos)
+		carsR.Post("/cars/:id/cancel", auth.TokenGuard, userHandler.Cancel)
+		carsR.Post("/cars/:id/dont-sell", auth.TokenGuard, userHandler.DontSell)
+		carsR.Post("/cars/:id/sell", auth.TokenGuard, userHandler.Sell)
+		carsR.Put("/cars", auth.TokenGuard, userHandler.UpdateCar)
+		carsR.Delete("/cars/:id/images", auth.TokenGuard, userHandler.DeleteCarImage)
+		carsR.Delete("/cars/:id/videos", auth.TokenGuard, userHandler.DeleteCarVideo)
+		carsR.Delete("/cars/:id", auth.TokenGuard, userHandler.DeleteCar)
 
 		// likes
-		r.Get("/likes", auth.TokenGuard, auth.LanguageChecker, userHandler.Likes)
-		r.Post("/likes/:car_id", auth.TokenGuard, userHandler.CarLike)
-		r.Delete("/likes/:car_id", auth.TokenGuard, userHandler.RemoveLike)
+		likesR := r.Group("/likes")
+		likesR.Get("/likes", auth.TokenGuard, auth.LanguageChecker, userHandler.Likes)
+		likesR.Post("/likes/:car_id", auth.TokenGuard, userHandler.CarLike)
+		likesR.Delete("/likes/:car_id", auth.TokenGuard, userHandler.RemoveLike)
 
-		r.Get("/third-party", userHandler.GetThirdPartyUsers)
-		r.Get("/:id", auth.LanguageChecker, userHandler.GetUserByID)
+		// messages
+		messageR := r.Group("/messages")
+		messageR.Post("/files", auth.TokenGuard, userHandler.CreateMessageFile)
 	}
 }

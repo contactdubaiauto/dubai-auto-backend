@@ -228,6 +228,18 @@ create table messages (
                 on update cascade
 );
 
+create table message_files (
+    "id" serial primary key,
+    "sender_id" int,
+    "file_path" varchar(255) not null,
+    "created_at" timestamp without time zone not null default now(),
+    constraint fk_message_files_sernder_id
+        foreign key (sender_id)
+            references users(id)
+                on delete set null
+                on update set null
+);
+
 create table cities (
     "id" serial primary key,
     "name" varchar(255) not null,
@@ -946,25 +958,6 @@ create table comtran_videos (
                 on update cascade
 );
 
-
-create table messages (
-    "id" serial primary key,
-    "sender_id" int not null,
-    "receiver_id" int not null,
-    "message" varchar(500) not null,
-    "status" int not null default 1 -- 1 read, 2 unread
-    "created_at" timestamp default now(),
-    constraint fk_messages_sender_id
-        foreign key (sender_id)
-            references users(id)
-                on delete cascade
-                on update cascade,
-    constraint fk_messages_receiver_id
-        foreign key (receiver_id)
-            references users(id)
-                on delete cascade
-                on update cascade
-);
 
 
 create table user_tokens (

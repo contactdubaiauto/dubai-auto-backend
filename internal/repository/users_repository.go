@@ -1667,10 +1667,12 @@ func (r *UserRepository) Likes(ctx *fasthttp.RequestCtx, userID *int, nameColumn
 	if err != nil {
 		return cars, err
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
 		var car model.GetCarsResponse
+
 		if err := rows.Scan(
 			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
 			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
@@ -1696,6 +1698,7 @@ func (r *UserRepository) CreateCarImages(ctx *fasthttp.RequestCtx, carID int, im
 
 	for i := range images {
 		_, err := r.db.Exec(ctx, q, carID, images[i])
+
 		if err != nil {
 			return err
 		}
@@ -1705,16 +1708,18 @@ func (r *UserRepository) CreateCarImages(ctx *fasthttp.RequestCtx, carID int, im
 }
 
 func (r *UserRepository) CreateCarVideos(ctx *fasthttp.RequestCtx, carID int, video string) error {
-
 	q := `
 		INSERT INTO videos (vehicle_id, video) VALUES ($1, $2)
 	`
-
 	_, err := r.db.Exec(ctx, q, carID, video)
-	if err != nil {
-		return err
-	}
+	return err
+}
 
+func (r *UserRepository) CreateMessageFile(ctx *fasthttp.RequestCtx, senderID int, filePath string) error {
+	q := `
+		INSERT INTO message_files (sender_id, file_path) VALUES ($1, $2)
+	`
+	_, err := r.db.Exec(ctx, q, senderID, filePath)
 	return err
 }
 

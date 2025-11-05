@@ -4,6 +4,7 @@ import (
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
 	"dubai-auto/pkg/auth"
+	"encoding/json"
 	"fmt"
 	"log"
 	"sync"
@@ -17,17 +18,69 @@ type SocketHandler struct {
 	service *service.SocketService
 }
 
+// todo: update the handler file :(
+func closeConnGracefully(c *websocket.Conn) {
+	if c == nil {
+		return
+	}
+
+	// Get write mutex before closing
+	connWriteMuMux.Lock()
+	writeMu, exists := connWriteMutex[c]
+	if exists && writeMu != nil {
+		writeMu.Lock()
+		defer writeMu.Unlock()
+	}
+	connWriteMuMux.Unlock()
+
+	_ = c.WriteControl(websocket.CloseMessage, []byte{}, time.Now().Add(1*time.Second))
+	_ = c.Close()
+
+	// Clean up write mutex
+	connWriteMuMux.Lock()
+	delete(connWriteMutex, c)
+	connWriteMuMux.Unlock()
+}
+
+// safeWriteJSON safely writes JSON to a WebSocket connection using a per-connection mutex
+func safeWriteJSON(c *websocket.Conn, msg interface{}) error {
+	if c == nil {
+		return fmt.Errorf("connection is nil")
+	}
+
+	connWriteMuMux.RLock()
+	writeMu, exists := connWriteMutex[c]
+	connWriteMuMux.RUnlock()
+
+	if !exists {
+		// Create write mutex for this connection if it doesn't exist
+		connWriteMuMux.Lock()
+		writeMu, exists = connWriteMutex[c]
+		if !exists {
+			writeMu = &sync.Mutex{}
+			connWriteMutex[c] = writeMu
+		}
+		connWriteMuMux.Unlock()
+	}
+
+	writeMu.Lock()
+	defer writeMu.Unlock()
+
+	return c.WriteJSON(msg)
+}
+
 func NewSocketHandler(service *service.SocketService) *SocketHandler {
 	return &SocketHandler{service}
 }
 
 var (
-	wsClients   = make(map[*websocket.Conn]*model.WSUser) // connection -> user
-	wsUserConns = make(map[int][]*websocket.Conn)         // userID -> []connections
-	wsMutex     = sync.RWMutex{}
-	// pending messages awaiting ack; key: "<receiverID>|<RFC3339Nano time>" value: attempts count
-	tmpMessages = make(map[string]int)
-	tmpMutex    = sync.Mutex{}
+	wsClients      = make(map[*websocket.Conn]*model.WSUser)
+	wsUserConns    = make(map[int]*websocket.Conn)
+	wsMutex        = sync.RWMutex{}
+	tmpMessages    = make(map[string]int)
+	tmpMutex       = sync.Mutex{}
+	connWriteMutex = make(map[*websocket.Conn]*sync.Mutex)
+	connWriteMuMux = sync.RWMutex{}
 )
 
 //	{
@@ -62,7 +115,7 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 				},
 			}
 
-			c.WriteJSON(errMsg)
+			safeWriteJSON(c, errMsg)
 			c.Close()
 			return
 		}
@@ -84,14 +137,19 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 					},
 				},
 			}
-			c.WriteJSON(errMsg)
+			safeWriteJSON(c, errMsg)
 			c.Close()
 			return
 		}
 
 		user.Conn = c
 		wsMutex.Lock()
-		wsUserConns[user.ID] = append(wsUserConns[user.ID], c)
+
+		if old, exists := wsUserConns[user.ID]; exists && old != nil && old != c {
+			closeConnGracefully(old)
+		}
+
+		wsUserConns[user.ID] = c
 		wsMutex.Unlock()
 
 		welcomeMsg := model.WSMessage{
@@ -106,7 +164,7 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 						{
 							CreatedAt: time.Now(),
 							Message:   "Successfully connected to messaging service",
-							Type:      1, // 1-text, 2-item, 3-video, 4-image,
+							Type:      1,
 						},
 					},
 				},
@@ -116,7 +174,7 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 		user.Avatar = h.service.GetUserAvatar(user.ID)
 		wsClients[c] = user
 
-		c.WriteJSON(welcomeMsg)
+		safeWriteJSON(c, welcomeMsg)
 		err = h.service.UpdateUserStatus(user.ID, true)
 
 		if err != nil {
@@ -126,17 +184,9 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 		defer func() {
 			wsMutex.Lock()
 
-			if conns, exists := wsUserConns[user.ID]; exists {
+			if conn, exists := wsUserConns[user.ID]; exists {
 
-				for i, conn := range conns {
-
-					if conn == c {
-						wsUserConns[user.ID] = append(conns[:i], conns[i+1:]...)
-						break
-					}
-				}
-
-				if len(wsUserConns[user.ID]) == 0 {
+				if conn == c {
 					delete(wsUserConns, user.ID)
 				}
 			}
@@ -148,7 +198,7 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 				log.Printf("❌ Error updating user status: %v", err)
 			}
 
-			c.Close()
+			closeConnGracefully(c)
 		}()
 
 		data, err := h.service.GetNewMessages(user.ID)
@@ -159,12 +209,8 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 			sendToUser(user.ID, "new_message", data)
 		}
 
-		// Heartbeat: emit ping and expect any incoming event within 3s.
-		// Retry up to 2 additional times; disconnect if still no response.
 		heartbeatCh := make(chan struct{}, 1)
 		done := make(chan struct{})
-
-		// Stop heartbeat goroutine when connection handler exits
 		defer close(done)
 
 		go func(conn *websocket.Conn) {
@@ -176,20 +222,19 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 				default:
 				}
 
-				// send ping event to this connection
-				_ = conn.WriteJSON(model.WSMessage{Event: "ping"})
+				_ = safeWriteJSON(conn, model.WSMessage{Event: "ping"})
 
 				select {
 				case <-heartbeatCh:
-					// received any activity
 					missCount = 0
-					// small idle before next heartbeat cycle
 					time.Sleep(3 * time.Second)
 				case <-time.After(3 * time.Second):
 					missCount++
-					if missCount >= 3 { // initial try + 2 retries
+					fmt.Println("missCoun")
+					fmt.Println(missCount)
+					if missCount >= 3 {
 						log.Printf("⛔ Closing idle websocket for user %d due to heartbeat timeout", user.ID)
-						_ = conn.Close()
+						closeConnGracefully(conn)
 						return
 					}
 				}
@@ -204,7 +249,6 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 				break
 			}
 
-			// any received event counts as a heartbeat response
 			select {
 			case heartbeatCh <- struct{}{}:
 			default:
@@ -212,34 +256,27 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 
 			switch msg.Event {
 			case "ping":
-				pongData := []model.UserMessage{
-					{
-						Messages: []model.Message{
-							{
-								CreatedAt:  time.Now(),
-								Message:    "pong",
-								Type:       1, // 1-text, 2-item, 3-video, 4-image,
-								SenderID:   user.ID,
-								ReceiverID: user.ID,
-								ID:         1,
-							},
-						},
-					},
-				}
-
-				pongMsg := model.WSMessage{
-					Event: "pong",
-					Data:  pongData,
-				}
-				c.WriteJSON(pongMsg)
 
 			case "private_message":
 				s := false
 				targetC, exists := wsUserConns[msg.TargetUserID]
-				messageReceived := msg.Data.(model.MessageReceived)
+				var messageReceived model.MessageReceived
+
+				if b, err := json.Marshal(msg.Data); err == nil {
+
+					if err := json.Unmarshal(b, &messageReceived); err != nil {
+						log.Printf("❌ Error decoding private_message data: %v", err)
+						break
+					}
+
+				} else {
+					log.Printf("❌ Error marshaling private_message data: %v", err)
+					break
+				}
+
 				sendToUser(user.ID, "ack", messageReceived.Time)
 
-				if exists && len(targetC) > 0 {
+				if exists && targetC != nil {
 					s = true
 					data := []model.UserMessage{
 						{
@@ -260,11 +297,9 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 					}
 
 					sendToUser(msg.TargetUserID, "new_message", data)
-
-					// store pending message for ack tracking and retry
 					key := fmt.Sprintf("%d|%s", msg.TargetUserID, messageReceived.Time.Format(time.RFC3339Nano))
 					tmpMutex.Lock()
-					tmpMessages[key] = 1 // initial attempt just sent
+					tmpMessages[key] = 1
 					tmpMutex.Unlock()
 
 					go func(receiverID int, payload []model.UserMessage, original model.WSMessageReceived) {
@@ -275,15 +310,14 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 							attempts, exists := tmpMessages[k]
 
 							if !exists {
-								// ack received; stop retries
 								tmpMutex.Unlock()
 								return
 							}
 
 							if attempts >= 3 {
-								// give up: send push and disconnect receiver, then clear pending
 								delete(tmpMessages, k)
 								tmpMutex.Unlock()
+								fmt.Println("attempts for new message:", attempts)
 
 								if err := h.service.SendPushForMessage(user.ID, messageReceived); err != nil {
 									log.Printf("❌ Error sending push: %v", err)
@@ -293,13 +327,14 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 								return
 							}
 
-							// retry send
 							tmpMessages[k] = attempts + 1
 							tmpMutex.Unlock()
 							sendToUser(receiverID, "new_message", payload)
 						}
 					}(msg.TargetUserID, data, msg)
 				}
+
+				fmt.Println("new message time", messageReceived.Time)
 
 				err = h.service.MessageWriteToDatabase(user.ID, s, messageReceived)
 
@@ -308,10 +343,43 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 				}
 
 			case "ack":
-				// receiver acknowledged message delivery; clear pending attempt tracking
-				fmt.Println("ack", msg.Data)
-				t := msg.Data.(time.Time)
-				fmt.Println("ack - converted to time.Time", t)
+
+				fmt.Println("ack event", msg.Data)
+				var t time.Time
+				switch v := msg.Data.(type) {
+				case string:
+					parsed, err := time.Parse(time.RFC3339Nano, v)
+					if err != nil {
+
+						parsed, err = time.Parse(time.RFC3339, v)
+					}
+					if err != nil {
+						log.Printf("❌ Error parsing ack time: %v", err)
+						break
+					}
+					t = parsed
+				case map[string]any:
+
+					if s, ok := v["time"].(string); ok {
+						parsed, err := time.Parse(time.RFC3339Nano, s)
+						if err != nil {
+							parsed, err = time.Parse(time.RFC3339, s)
+						}
+						if err != nil {
+							log.Printf("❌ Error parsing ack time from map: %v", err)
+							break
+						}
+						t = parsed
+					} else {
+						log.Printf("❌ Unexpected ack data shape: %#v", v)
+						break
+					}
+				case float64:
+
+					t = time.Unix(int64(v), 0)
+				default:
+					log.Printf("❌ Unsupported ack data type: %T", v)
+				}
 				key := fmt.Sprintf("%d|%s", user.ID, t.Format(time.RFC3339Nano))
 				tmpMutex.Lock()
 				delete(tmpMessages, key)
@@ -326,18 +394,16 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 
 func sendToUser(userID int, event string, data any) {
 	wsMutex.RLock()
-	userConns, exists := wsUserConns[userID]
+	userConn, exists := wsUserConns[userID]
 
-	if !exists || len(userConns) == 0 {
+	if !exists || userConn == nil {
 		wsMutex.RUnlock()
 		log.Printf("❌ User %d not connected", userID)
 		return
 	}
 
-	connections := make([]*websocket.Conn, len(userConns))
-	copy(connections, userConns)
 	wsMutex.RUnlock()
-	log.Printf("📤 Sending %s to user %d (%d connections)", event, userID, len(connections))
+	log.Printf("📤 Sending %s to user %d", event, userID)
 
 	msg := model.WSMessage{
 		Event:        event,
@@ -345,24 +411,24 @@ func sendToUser(userID int, event string, data any) {
 		Data:         data,
 	}
 
-	for i := range connections {
-		go func(c *websocket.Conn) {
-			if err := c.WriteJSON(msg); err != nil {
-				log.Printf("❌ Send error: %v", err)
-			}
-		}(connections[i])
-	}
+	go func(c *websocket.Conn) {
+
+		if err := safeWriteJSON(c, msg); err != nil {
+			log.Printf("❌ Send error: %v", err)
+		}
+	}(userConn)
 }
 
 func disconnectUser(userID int) {
 	wsMutex.Lock()
-	conns, exists := wsUserConns[userID]
+	conn, exists := wsUserConns[userID]
+
 	if exists {
-		for _, conn := range conns {
-			_ = conn.Close()
+		fmt.Println("user disconnectiong ")
+		if conn != nil {
+			closeConnGracefully(conn)
 		}
 		delete(wsUserConns, userID)
 	}
 	wsMutex.Unlock()
-	log.Printf("🔌 Disconnected user %d due to missing ack", userID)
 }

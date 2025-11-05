@@ -7,6 +7,7 @@ import (
 
 	"github.com/valyala/fasthttp"
 
+	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/utils"
@@ -471,6 +472,21 @@ func (s *UserService) CreateCarVideos(ctx *fasthttp.RequestCtx, carID int, video
 
 	return model.Response{
 		Data: model.Success{Message: "Car videos created successfully"},
+	}
+}
+
+func (s *UserService) CreateMessageFile(ctx *fasthttp.RequestCtx, senderID int, filePath string) model.Response {
+	err := s.UserRepository.CreateMessageFile(ctx, senderID, filePath)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: model.Success{Message: config.ENV.IMAGE_BASE_URL + filePath},
 	}
 }
 

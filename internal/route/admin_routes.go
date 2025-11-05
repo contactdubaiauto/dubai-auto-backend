@@ -294,4 +294,5 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, v
 		activityFields.Put("/:id", adminHandler.UpdateActivityField)
 		activityFields.Delete("/:id", adminHandler.DeleteActivityField)
 	}
+
 }

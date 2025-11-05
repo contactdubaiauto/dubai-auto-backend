@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -462,6 +463,56 @@ func (h *UserHandler) CreateCarVideos(c *fiber.Ctx) error {
 	}
 
 	data := h.UserService.CreateCarVideos(ctx, id, path)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateMessageFile godoc
+// @Summary      Upload message file
+// @Description  Uploads file for a message (max 1 file)
+// @Tags         messages
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        file  formData  file    true   "Message file (max 1)"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure	 	 403  	 {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/users/messages/files [post]
+func (h *UserHandler) CreateMessageFile(c *fiber.Ctx) error {
+	ctx := c.Context()
+	senderID := c.Locals("id").(int)
+	form, _ := c.MultipartForm()
+	fmt.Println(senderID)
+
+	if form == nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the files"),
+		})
+	}
+
+	videos := form.File["file"]
+
+	if len(videos) > 1 {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 1 file(s)"),
+		})
+	}
+
+	path, err := files.SaveOriginal(videos[0], config.ENV.STATIC_PATH+"messages/"+fmt.Sprintf("%d", senderID)+"/files")
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	data := h.UserService.CreateMessageFile(ctx, senderID, path)
 	return utils.FiberResponse(c, data)
 }
 

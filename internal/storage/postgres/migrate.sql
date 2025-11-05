@@ -173,3 +173,16 @@ alter table com_models add column "name_ru" varchar(50) default 'name_ru';
 alter table com_parameters add column "name_ru" varchar(50) default 'name_ru';
 alter table com_parameter_values add column "name_ru" varchar(50) default 'name_ru';
 
+
+
+create table message_files (
+    "id" serial primary key,
+    "sender_id" int,
+    "file_path" varchar(255) not null,
+    "created_at" timestamp without time zone not null default now(),
+    constraint fk_message_files_sernder_id
+        foreign key (sender_id)
+            references users(id)
+                on delete set null
+                on update set null
+);
