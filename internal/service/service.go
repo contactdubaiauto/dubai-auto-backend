@@ -142,8 +142,8 @@ func (s *UserService) GetFilterBrands(ctx *fasthttp.RequestCtx, text, nameColumn
 	}
 }
 
-func (s *UserService) GetCities(ctx *fasthttp.RequestCtx, text string) model.Response {
-	cities, err := s.UserRepository.GetCities(ctx, text)
+func (s *UserService) GetCities(ctx *fasthttp.RequestCtx, text, nameColumn string) model.Response {
+	cities, err := s.UserRepository.GetCities(ctx, text, nameColumn)
 
 	if err != nil {
 		return model.Response{

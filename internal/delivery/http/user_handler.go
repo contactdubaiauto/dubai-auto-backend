@@ -799,6 +799,7 @@ func (h *UserHandler) GetFilterBrands(c *fiber.Ctx) error {
 // @Tags         filter
 // @Produce      json
 // @Param        text  query     string  false  "Filter cities by text"
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success      200   {array}  model.GetCitiesResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  auth.ErrorResponse
@@ -809,7 +810,8 @@ func (h *UserHandler) GetFilterBrands(c *fiber.Ctx) error {
 func (h *UserHandler) GetCities(c *fiber.Ctx) error {
 	text := c.Query("text")
 	ctx := c.Context()
-	data := h.UserService.GetCities(ctx, text)
+	nameColumn := c.Locals("lang").(string)
+	data := h.UserService.GetCities(ctx, text, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 

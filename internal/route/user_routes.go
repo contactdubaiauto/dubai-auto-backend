@@ -25,7 +25,7 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 
 		// filter
 		r.Get("/filter-brands", auth.LanguageChecker, userHandler.GetFilterBrands)
-		r.Get("/cities", userHandler.GetCities)
+		r.Get("/cities", auth.LanguageChecker, userHandler.GetCities)
 		// r.Get("/brands/filter-models", userHandler.GetFilterModelsByBrands)
 		// r.Get("/brands/models/years", userHandler.GetYearsByModels)
 		// r.Get("/brands/models/body-types", userHandler.GetBodyTypesByModels)

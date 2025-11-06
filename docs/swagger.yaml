@@ -10636,6 +10636,10 @@ paths:
         in: query
         name: text
         type: string
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
       produces:
       - application/json
       responses:

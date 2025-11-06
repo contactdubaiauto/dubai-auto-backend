@@ -12660,6 +12660,12 @@ const docTemplate = `{
                         "description": "Filter cities by text",
                         "name": "text",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
                     }
                 ],
                 "responses": {
