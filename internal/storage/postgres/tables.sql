@@ -33,7 +33,6 @@ drop table if exists body_types;
 drop table if exists models;
 drop table if exists brands;
 drop table if exists users;
-drop table if exists admins;
 drop table if exists ownership_types;
 
 create table countries (
@@ -113,10 +112,11 @@ create table users (
     "id" serial primary key,
     "email" varchar(100),
     "username" varchar(100) not null,
-    "role_id" int not null default 1, -- 1 user, 2 dealer, 3 logistic, 4 broker, 5 car service
+    "role_id" int not null default 1, -- 0 admin, 1 user, 2 dealer, 3 logistic, 4 broker, 5 car service
     "password" varchar(100) not null,
     "temp_password" varchar(100),
     "phone" varchar(100),
+    "permissions" jsonb default '[]',
     "online" boolean default false,
     "last_active_date" timestamp default now(),
     "status" int not null default 1, -- 1 active, 2 pending, 3 inactive
@@ -125,6 +125,7 @@ create table users (
     unique("email"),
     unique("phone")
 );
+
 
 create table user_destinations (
     "id" serial primary key,
@@ -252,14 +253,6 @@ create table cities (
 );
 
 
-create table admins (
-    "id" serial primary key,
-    "username" varchar(255) not null,
-    "email" varchar(255) not null,
-    "password" varchar(255) not null,
-    "last_active_date" timestamp default now(),
-    "created_at" timestamp default now()
-);
 
 
 create table brands (

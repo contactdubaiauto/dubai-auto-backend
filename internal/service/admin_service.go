@@ -27,6 +27,65 @@ func NewAdminService(repo *repository.AdminRepository) *AdminService {
 	return &AdminService{repo}
 }
 
+// Admin service methods
+func (s *AdminService) CreateAdmin(ctx *fasthttp.RequestCtx, req *model.CreateAdminRequest) model.Response {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	req.Password = string(hashedPassword)
+	userID, err := s.repo.CreateAdmin(ctx, req)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.SuccessWithId{Id: userID, Message: "Admin created successfully"}}
+}
+
+func (s *AdminService) GetAdmins(ctx *fasthttp.RequestCtx) model.Response {
+	admins, err := s.repo.GetAdmins(ctx)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: admins}
+}
+
+func (s *AdminService) GetAdmin(ctx *fasthttp.RequestCtx, id int) model.Response {
+	admin, err := s.repo.GetAdmin(ctx, id)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusNotFound}
+	}
+	return model.Response{Data: admin}
+}
+
+func (s *AdminService) UpdateAdmin(ctx *fasthttp.RequestCtx, id int, req *model.UpdateAdminRequest) model.Response {
+	// Hash password if provided
+	if req.Password != "" {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return model.Response{Error: err, Status: http.StatusInternalServerError}
+		}
+		req.Password = string(hashedPassword)
+	}
+
+	err := s.repo.UpdateAdmin(ctx, id, req)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Admin updated successfully"}}
+}
+
+func (s *AdminService) DeleteAdmin(ctx *fasthttp.RequestCtx, id int) model.Response {
+	err := s.repo.DeleteAdmin(ctx, id)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: model.Success{Message: "Admin deleted successfully"}}
+}
+
 // Profile service methods
 func (s *AdminService) GetProfile(ctx *fasthttp.RequestCtx, id int) model.Response {
 	profile, err := s.repo.GetProfile(ctx, id)
@@ -39,7 +98,7 @@ func (s *AdminService) GetProfile(ctx *fasthttp.RequestCtx, id int) model.Respon
 }
 
 // Application service methods
-func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx, qRole, qStatus, limit, lastID string) model.Response {
+func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx, qRole, qStatus, limit, lastID, search string) model.Response {
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
 	qRoleInt, err := strconv.Atoi(qRole)
 
@@ -57,7 +116,7 @@ func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx, qRole, qStatus,
 		return model.Response{Error: errors.New("invalid role or status"), Status: http.StatusBadRequest}
 	}
 
-	applications, err := s.repo.GetApplications(ctx, qRoleInt, qStatusInt, limitInt, lastIDInt)
+	applications, err := s.repo.GetApplications(ctx, qRoleInt, qStatusInt, limitInt, lastIDInt, search)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}

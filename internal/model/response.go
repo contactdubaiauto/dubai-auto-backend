@@ -229,9 +229,20 @@ type GoogleUserInfo struct {
 }
 
 type AdminProfileResponse struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	ID       int    `json:"id"`
+	Username    string   `json:"username"`
+	Email       string   `json:"email"`
+	Permissions []string `json:"permissions"`
+	ID          int      `json:"id"`
+}
+
+type AdminResponse struct {
+	ID          int      `json:"id"`
+	Username    string   `json:"username"`
+	Email       string   `json:"email"`
+	Permissions []string `json:"permissions"`
+	Status      int      `json:"status"`
+	CreatedAt   string   `json:"created_at"`
+	UpdatedAt   string   `json:"updated_at"`
 }
 
 type AdminApplicationResponse struct {

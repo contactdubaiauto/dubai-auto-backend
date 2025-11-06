@@ -499,6 +499,29 @@ definitions:
         type: string
       id:
         type: integer
+      permissions:
+        items:
+          type: string
+        type: array
+      username:
+        type: string
+    type: object
+  model.AdminResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      permissions:
+        items:
+          type: string
+        type: array
+      status:
+        type: integer
+      updated_at:
+        type: string
       username:
         type: string
     type: object
@@ -592,6 +615,27 @@ definitions:
         type: integer
       name:
         type: string
+    type: object
+  model.CreateAdminRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      permissions:
+        items:
+          type: string
+        type: array
+      username:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
+    - email
+    - password
+    - permissions
+    - username
     type: object
   model.CreateBodyTypeRequest:
     properties:
@@ -1999,6 +2043,22 @@ definitions:
       name:
         type: string
     type: object
+  model.UpdateAdminRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      permissions:
+        items:
+          type: string
+        type: array
+      username:
+        maxLength: 255
+        minLength: 2
+        type: string
+    type: object
   model.UpdateCarRequest:
     properties:
       brand_id:
@@ -2649,6 +2709,10 @@ paths:
       - description: Last item ID
         in: query
         name: last_id
+        type: string
+      - description: Search
+        in: query
+        name: search
         type: string
       produces:
       - application/json
@@ -7790,6 +7854,207 @@ paths:
       summary: Update a transmission
       tags:
       - admin-transmissions
+  /api/v1/admin/users:
+    get:
+      description: Returns a list of all admins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all admins
+      tags:
+      - admin-users
+    post:
+      consumes:
+      - application/json
+      description: Creates an admin
+      parameters:
+      - description: Admin
+        in: body
+        name: admin
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateAdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create an admin
+      tags:
+      - admin-users
+  /api/v1/admin/users/{id}:
+    delete:
+      description: Deletes an admin by ID
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete an admin
+      tags:
+      - admin-users
+    get:
+      description: Returns a single admin by ID
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AdminResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get an admin by ID
+      tags:
+      - admin-users
+    put:
+      consumes:
+      - application/json
+      description: Updates an admin by ID
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Admin
+        in: body
+        name: admin
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateAdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update an admin
+      tags:
+      - admin-users
   /api/v1/auth/account/{id}:
     delete:
       description: Deletes the authenticated user's account and related data

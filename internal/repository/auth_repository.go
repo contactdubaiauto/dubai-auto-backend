@@ -206,8 +206,8 @@ func (r *AuthRepository) AdminLogin(ctx *fasthttp.RequestCtx, email string) (mod
 		SELECT 
 			id, 
 			password
-		FROM admins 
-		WHERE email = $1
+		FROM users 
+		WHERE email = $1 and role_id = 0
 	`
 	err := r.db.QueryRow(ctx, query, email).Scan(&u.ID, &u.Password)
 	return u, err

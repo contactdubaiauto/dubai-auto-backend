@@ -24,7 +24,155 @@ func NewAdminHandler(service *service.AdminService, validator *auth.Validator) *
 	return &AdminHandler{service, validator}
 }
 
-// Application handlers
+// Users handlers
+
+// CreateAdmin godoc
+// @Summary      Create an admin
+// @Description  Creates an admin
+// @Tags         admin-users
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        admin  body      model.CreateAdminRequest  true  "Admin"
+// @Success      200   {object}  model.SuccessWithId
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/admin/users [post]
+func (h *AdminHandler) CreateAdmin(c *fiber.Ctx) error {
+	admin := &model.CreateAdminRequest{}
+
+	if err := c.BodyParser(admin); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.CreateAdmin(ctx, admin)
+	return utils.FiberResponse(c, data)
+}
+
+// GetAdmins godoc
+// @Summary      Get all admins
+// @Description  Returns a list of all admins
+// @Tags         admin-users
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200   {array}   model.AdminResponse
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/admin/users [get]
+func (h *AdminHandler) GetAdmins(c *fiber.Ctx) error {
+	ctx := c.Context()
+	data := h.service.GetAdmins(ctx)
+	return utils.FiberResponse(c, data)
+}
+
+// GetAdmin godoc
+// @Summary      Get an admin by ID
+// @Description  Returns a single admin by ID
+// @Tags         admin-users
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Admin ID"
+// @Success      200   {object}  model.AdminResponse
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/admin/users/{id} [get]
+func (h *AdminHandler) GetAdmin(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("admin id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.GetAdmin(ctx, id)
+	return utils.FiberResponse(c, data)
+}
+
+// UpdateAdmin godoc
+// @Summary      Update an admin
+// @Description  Updates an admin by ID
+// @Tags         admin-users
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Admin ID"
+// @Param        admin  body      model.UpdateAdminRequest  true  "Admin"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/admin/users/{id} [put]
+func (h *AdminHandler) UpdateAdmin(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("admin id must be integer"),
+		})
+	}
+
+	admin := &model.UpdateAdminRequest{}
+
+	if err := c.BodyParser(admin); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.UpdateAdmin(ctx, id, admin)
+	return utils.FiberResponse(c, data)
+}
+
+// DeleteAdmin godoc
+// @Summary      Delete an admin
+// @Description  Deletes an admin by ID
+// @Tags         admin-users
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Admin ID"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/admin/users/{id} [delete]
+func (h *AdminHandler) DeleteAdmin(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("admin id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.DeleteAdmin(ctx, id)
+	return utils.FiberResponse(c, data)
+}
 
 // Profile handlers
 
@@ -59,6 +207,7 @@ func (h *AdminHandler) GetProfile(c *fiber.Ctx) error {
 // @Param        status   query      int  true  "Status ID (1: Pending, 2: Approved, 3: Rejected)"
 // @Param        limit   query      string  false  "Limit"
 // @Param        last_id   query      string  false  "Last item ID"
+// @Param        search   query      string  false  "Search"
 // @Success      200  {array}  model.AdminApplicationResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -70,8 +219,9 @@ func (h *AdminHandler) GetApplications(c *fiber.Ctx) error {
 	qStatus := c.Query("status")
 	limit := c.Query("limit")
 	lastID := c.Query("last_id")
+	search := c.Query("search")
 	ctx := c.Context()
-	data := h.service.GetApplications(ctx, qRole, qStatus, limit, lastID)
+	data := h.service.GetApplications(ctx, qRole, qStatus, limit, lastID, search)
 	return utils.FiberResponse(c, data)
 }
 

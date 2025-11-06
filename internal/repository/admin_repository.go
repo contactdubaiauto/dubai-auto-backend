@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
 
@@ -17,6 +19,126 @@ func NewAdminRepository(config *config.Config, db *pgxpool.Pool) *AdminRepositor
 	return &AdminRepository{config, db}
 }
 
+// Admin CRUD operations
+func (r *AdminRepository) CreateAdmin(ctx *fasthttp.RequestCtx, req *model.CreateAdminRequest) (int, error) {
+	var id int
+	q := `
+		INSERT INTO users (username, email, password, permissions, role_id)
+		VALUES ($1, $2, $3, $4, 0)
+		RETURNING id`
+	err := r.db.QueryRow(ctx, q, req.Username, req.Email, req.Password, req.Permissions).Scan(&id)
+	return id, err
+}
+
+func (r *AdminRepository) GetAdmins(ctx *fasthttp.RequestCtx) ([]model.AdminResponse, error) {
+	admins := make([]model.AdminResponse, 0)
+	q := `
+		SELECT 
+			id, 
+			username, 
+			email, 
+			permissions, 
+			status, 
+			created_at::text, 
+			updated_at::text
+		FROM users 
+		WHERE role_id = 0
+		ORDER BY id DESC
+	`
+	rows, err := r.db.Query(ctx, q)
+	if err != nil {
+		return admins, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var admin model.AdminResponse
+		if err := rows.Scan(&admin.ID, &admin.Username, &admin.Email, &admin.Permissions, &admin.Status, &admin.CreatedAt, &admin.UpdatedAt); err != nil {
+			return admins, err
+		}
+		admins = append(admins, admin)
+	}
+	return admins, err
+}
+
+func (r *AdminRepository) GetAdmin(ctx *fasthttp.RequestCtx, id int) (model.AdminResponse, error) {
+	admin := model.AdminResponse{}
+	q := `
+		SELECT 
+			id, 
+			username, 
+			email, 
+			permissions, 
+			status, 
+			created_at::text, 
+			updated_at::text
+		FROM users 
+		WHERE id = $1 AND role_id = 0
+	`
+	err := r.db.QueryRow(ctx, q, id).Scan(&admin.ID, &admin.Username, &admin.Email, &admin.Permissions, &admin.Status, &admin.CreatedAt, &admin.UpdatedAt)
+	return admin, err
+}
+
+func (r *AdminRepository) UpdateAdmin(ctx *fasthttp.RequestCtx, id int, req *model.UpdateAdminRequest) error {
+	updates := []string{}
+	args := []any{}
+	argPos := 1
+
+	if req.Username != "" {
+		updates = append(updates, fmt.Sprintf("username = $%d", argPos))
+		args = append(args, req.Username)
+		argPos++
+	}
+
+	if req.Email != "" {
+		updates = append(updates, fmt.Sprintf("email = $%d", argPos))
+		args = append(args, req.Email)
+		argPos++
+	}
+
+	if req.Password != "" {
+		updates = append(updates, fmt.Sprintf("password = $%d", argPos))
+		args = append(args, req.Password)
+		argPos++
+	}
+
+	if req.Permissions != nil {
+		updates = append(updates, fmt.Sprintf("permissions = $%d", argPos))
+		args = append(args, req.Permissions)
+		argPos++
+	}
+
+	if len(updates) == 0 {
+		return nil // No updates to perform
+	}
+
+	updates = append(updates, "updated_at = now()")
+	args = append(args, id)
+
+	updateStr := ""
+	for i, update := range updates {
+		if i > 0 {
+			updateStr += ", "
+		}
+		updateStr += update
+	}
+
+	q := fmt.Sprintf(`
+		UPDATE users 
+		SET %s
+		WHERE id = $%d AND role_id = 0
+	`, updateStr, len(args))
+
+	_, err := r.db.Exec(ctx, q, args...)
+	return err
+}
+
+func (r *AdminRepository) DeleteAdmin(ctx *fasthttp.RequestCtx, id int) error {
+	q := `DELETE FROM users WHERE id = $1 AND role_id = 0`
+	_, err := r.db.Exec(ctx, q, id)
+	return err
+}
+
 // Profile CRUD operations
 func (r *AdminRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (model.AdminProfileResponse, error) {
 	profile := model.AdminProfileResponse{}
@@ -24,18 +146,24 @@ func (r *AdminRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (model.Ad
 		SELECT 
 			id, 
 			username, 
-			email
-		FROM admins 
+			email,
+			permissions
+		FROM users WHERE role_id = 0
 		WHERE id = $1`
-	err := r.db.QueryRow(ctx, q, id).Scan(&profile.ID, &profile.Username, &profile.Email)
+	err := r.db.QueryRow(ctx, q, id).Scan(&profile.ID, &profile.Username, &profile.Email, &profile.Permissions)
 
 	return profile, err
 }
 
 // Application CRUD operations
-func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx, qRole int, qStatus int, limit, lastID int) ([]model.AdminApplicationResponse, error) {
+func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx, qRole, qStatus, limit, lastID int, search string) ([]model.AdminApplicationResponse, error) {
 	applications := make([]model.AdminApplicationResponse, 0)
 	q := ``
+	qWhere := ``
+
+	if search != "" {
+		qWhere = fmt.Sprintf(" AND (u.username ILIKE '%%%s%%' OR p.company_name ILIKE '%%%s%%' or u.email ILIKE '%%%s%%' or u.phone ILIKE '%%%s%%') ", search, search, search, search)
+	}
 
 	switch qStatus {
 	case model.APPLICATION_STATUS_APPROVED:
@@ -54,7 +182,7 @@ func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx, qRole int, q
 			FROM users u
 			left join profiles p on p.user_id = u.id
 			left join documents d on d.id = p.documents_id
-			WHERE role_id = $1 and u.id > $2
+			WHERE role_id = $1 and u.id > $2` + qWhere + `
 			ORDER BY id DESC
 			limit $3
 		`
@@ -71,7 +199,7 @@ func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx, qRole int, q
 				status, 
 				created_at 
 			FROM temp_users 
-			WHERE role_id = $1 and id > $2
+			WHERE role_id = $1 and id > $2` + qWhere + `
 			ORDER BY id DESC
 			limit $3
 		`

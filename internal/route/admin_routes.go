@@ -24,6 +24,16 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, v
 		profile.Get("/", adminHandler.GetProfile)
 	}
 
+	// admin users CRUD
+	users := r.Group("/users")
+	{
+		users.Get("/", adminHandler.GetAdmins)
+		users.Get("/:id", adminHandler.GetAdmin)
+		users.Post("/", adminHandler.CreateAdmin)
+		users.Put("/:id", adminHandler.UpdateAdmin)
+		users.Delete("/:id", adminHandler.DeleteAdmin)
+	}
+
 	// countries routes
 	countries := r.Group("/countries")
 	{

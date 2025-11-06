@@ -1417,6 +1417,7 @@ func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/{id} [get]
 func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
+	fmt.Println("slfjdlsakfjdlsjkl")
 	userID := c.Params("id")
 	ctx := c.Context()
 	nameColumn := c.Locals("lang").(string)

@@ -207,6 +207,13 @@ alter table regions add column "name_ae" varchar(50) default 'name_ae';
 alter table regions add column "name_ru" varchar(50) default 'name_ru';
 
 
+drop table if exists admins;
+alter table users add column "permissions" jsonb default '[]';
+
+insert into users (email, username, role_id, password, phone, permissions) 
+values 
+    ('admin@admin.com', 'admin', 0, '$2a$10$H6OHFABvTjMScHwB6qIvte4teoXtGP1h/ViqTnVHg1R.iw4yy9xTq', '989898989', '["cars", "motorcycles", "comtrans"]');
+
 create table message_files (
     "id" serial primary key,
     "sender_id" int,
