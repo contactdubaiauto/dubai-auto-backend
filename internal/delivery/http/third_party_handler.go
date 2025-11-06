@@ -296,6 +296,7 @@ func (h *ThirdPartyHandler) UpdateDealerCar(c *fiber.Ctx) error {
 // @Produce      json
 // @Param        id   path      int  true  "Dealer Car ID"
 // @Security 	 BearerAuth
+// @Param        Accept-Language  header  string  false  "Language"
 // @Success      200  {object}  model.GetEditCarsResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -625,6 +626,7 @@ func (h *ThirdPartyHandler) DeleteDealerCar(c *fiber.Ctx) error {
 // @Tags         logist
 // @Produce      json
 // @Security     BearerAuth
+// @Param        Accept-Language  header  string  false  "Language"
 // @Success      200  {array}  model.LogistDestinationResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -634,7 +636,8 @@ func (h *ThirdPartyHandler) DeleteDealerCar(c *fiber.Ctx) error {
 // @Router       /api/v1/third-party/logist/destinations [get]
 func (h *ThirdPartyHandler) GetLogistDestinations(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.service.GetLogistDestinations(ctx)
+	nameColumn := c.Locals("lang").(string)
+	data := h.service.GetLogistDestinations(ctx, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 

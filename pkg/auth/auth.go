@@ -53,12 +53,14 @@ func TokenGuard(c *fiber.Ctx) error {
 func LanguageChecker(c *fiber.Ctx) error {
 	lang := c.Get("Accept-Language")
 
-	if lang == "ru" {
+	switch lang {
+	case "ru":
 		c.Locals("lang", "name_ru")
-		return c.Next()
+	case "ae":
+		c.Locals("lang", "name_ae")
+	default:
+		c.Locals("lang", "name")
 	}
-
-	c.Locals("lang", "name")
 	return c.Next()
 }
 

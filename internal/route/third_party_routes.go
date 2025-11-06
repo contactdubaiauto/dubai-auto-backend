@@ -39,7 +39,7 @@ func SetupThirdPartyRoutes(r fiber.Router, config *config.Config, db *pgxpool.Po
 		r.Delete("/dealer/car/:id/videos", auth.TokenGuard, auth.DealerGuard, thirdPartyHandler.DeleteDealerCarVideo)
 
 		// logist routes
-		r.Get("/logist/destinations", auth.TokenGuard, auth.LogistGuard, thirdPartyHandler.GetLogistDestinations)
+		r.Get("/logist/destinations", auth.TokenGuard, auth.LogistGuard, auth.LanguageChecker, thirdPartyHandler.GetLogistDestinations)
 		r.Post("/logist/destinations", auth.TokenGuard, auth.LogistGuard, thirdPartyHandler.CreateLogistDestination)
 		r.Delete("/logist/destinations/:id", auth.TokenGuard, auth.LogistGuard, thirdPartyHandler.DeleteLogistDestination)
 		// broker routes

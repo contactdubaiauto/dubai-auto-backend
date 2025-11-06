@@ -17,12 +17,11 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 	userHandler := http.NewUserHandler(userService, validator)
 
 	{
-
 		// users
 		r.Get("/:id", auth.LanguageChecker, userHandler.GetUserByID)
 
 		// countries
-		r.Get("/countries", userHandler.GetCountries)
+		r.Get("/countries", auth.LanguageChecker, userHandler.GetCountries)
 
 		// filter
 		r.Get("/filter-brands", auth.LanguageChecker, userHandler.GetFilterBrands)

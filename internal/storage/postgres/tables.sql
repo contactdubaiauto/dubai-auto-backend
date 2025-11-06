@@ -39,6 +39,9 @@ drop table if exists ownership_types;
 create table countries (
     "id" serial primary key,
     "name" varchar(50) not null,
+    "name_ru" varchar(50) default 'name_ru',
+    "name_ae" varchar(50) default 'name_ae',
+    "country_code" varchar(50) not null,
     "flag" varchar(200) not null,
     "created_at" timestamp default now()
 );
@@ -243,6 +246,8 @@ create table message_files (
 create table cities (
     "id" serial primary key,
     "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
+    "name_ae" varchar(255) default 'name_ae',
     "created_at" timestamp default now()
 );
 
@@ -331,6 +336,7 @@ create table regions (
     "id" serial primary key,
     "name" varchar(255) not null,
     "name_ru" varchar(255) default 'name_ru',
+    "name_ae" varchar(255) default 'name_ae',
     "city_id" int not null,
     "created_at" timestamp default now(),
     constraint fk_regions_city_id

@@ -274,8 +274,8 @@ func (s *ThirdPartyService) DeleteDealerCar(ctx *fasthttp.RequestCtx, id int) mo
 	return model.Response{Data: model.Success{Message: "Car deleted successfully"}}
 }
 
-func (s *ThirdPartyService) GetLogistDestinations(ctx *fasthttp.RequestCtx) model.Response {
-	destinations, err := s.repo.GetLogistDestinations(ctx)
+func (s *ThirdPartyService) GetLogistDestinations(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
+	destinations, err := s.repo.GetLogistDestinations(ctx, nameColumn)
 
 	if err != nil {
 		return model.Response{

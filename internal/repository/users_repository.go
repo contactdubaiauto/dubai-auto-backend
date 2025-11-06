@@ -28,8 +28,8 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int, limit,
 		select 
 			vs.id,
 			bs.` + nameColumn + ` as brand,
-			rs.name as region,
-			cs.name as city,
+			rs.` + nameColumn + ` as region,
+			cs.` + nameColumn + ` as city,
 			cls.` + nameColumn + ` as color,
 			ms.` + nameColumn + ` as model,
 			ts.` + nameColumn + ` as transmission,
@@ -121,8 +121,8 @@ func (r *UserRepository) OnSale(ctx *fasthttp.RequestCtx, userID *int, limit, la
 		select 
 			vs.id,
 			bs.` + nameColumn + ` as brand,
-			rs.name as region,
-			cs.name as city,
+			rs.` + nameColumn + ` as region,
+			cs.` + nameColumn + ` as city,
 			cls.` + nameColumn + ` as color,
 			ms.` + nameColumn + ` as model,
 			ts.` + nameColumn + ` as transmission,
@@ -381,29 +381,30 @@ func (r *UserRepository) GetFilterBrands(ctx *fasthttp.RequestCtx, text string, 
 	return brand, err
 }
 
-func (r *UserRepository) GetCities(ctx *fasthttp.RequestCtx, text string) ([]model.GetCitiesResponse, error) {
+func (r *UserRepository) GetCities(ctx *fasthttp.RequestCtx, text, nameColumn string) ([]model.GetCitiesResponse, error) {
 	var cities = make([]model.GetCitiesResponse, 0)
 	var city model.GetCitiesResponse
 	q := `
 		select 
 			c.id, 
-			c.name,
+			c.` + nameColumn + ` as name,
 			json_agg(
 				json_build_object(
 					'id', r.id,
-					'name', r.name
+					'name', r.` + nameColumn + `
 				)
 			) as regions
 		from cities c
 		left join regions r on r.city_id = c.id
-		where c.name ILIKE '%' || $1 || '%'
-		group by c.id, c.name;
+		where c.` + nameColumn + ` ILIKE '%' || $1 || '%'
+		group by c.id, c.` + nameColumn + `;
 	`
 	rows, err := r.db.Query(ctx, q, text)
 
 	if err != nil {
 		return cities, err
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
@@ -868,9 +869,9 @@ func (r *UserRepository) GetColors(ctx *fasthttp.RequestCtx, nameColumn string) 
 	return colors, err
 }
 
-func (r *UserRepository) GetCountries(ctx *fasthttp.RequestCtx) ([]model.Country, error) {
+func (r *UserRepository) GetCountries(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.Country, error) {
 	q := `
-		SELECT id, name, $1 || flag FROM countries
+		SELECT id, ` + nameColumn + ` as name, country_code, $1 || flag FROM countries
 	`
 
 	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
@@ -885,9 +886,10 @@ func (r *UserRepository) GetCountries(ctx *fasthttp.RequestCtx) ([]model.Country
 	for rows.Next() {
 		var country model.Country
 
-		if err := rows.Scan(&country.ID, &country.Name, &country.Flag); err != nil {
+		if err := rows.Scan(&country.ID, &country.Name, &country.CountryCode, &country.Flag); err != nil {
 			return nil, err
 		}
+
 		countries = append(countries, country)
 	}
 	return countries, err
@@ -901,8 +903,8 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int, nameColum
 		select 
 			vs.id,
 			bs.` + nameColumn + ` as brand,
-			rs.name as region,
-			cs.name as city,
+			rs.` + nameColumn + ` as region,
+			cs.` + nameColumn + ` as city,
 			cls.` + nameColumn + ` as color,
 			ms.` + nameColumn + ` as model,
 			ts.` + nameColumn + ` as transmission,
@@ -1149,8 +1151,8 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 		select 
 			vs.id,
 			bs.` + nameColumn + ` as brand,
-			rs.name as region,
-			cs.name as city,
+			rs.` + nameColumn + ` as region,
+			cs.` + nameColumn + ` as city,
 			cls.` + nameColumn + ` as color,
 			ms.` + nameColumn + ` as model,
 			ts.` + nameColumn + ` as transmission,
@@ -1299,8 +1301,8 @@ func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int,
 		SELECT 
 			vs.id,
 			bs.` + nameColumn + ` as brand,
-			rs.name as region,
-			cs.name as city,
+			rs.` + nameColumn + ` as region,
+			cs.` + nameColumn + ` as city,
 			cls.` + nameColumn + ` as color,
 			ms.` + nameColumn + ` as model,
 			ts.` + nameColumn + ` as transmission,
@@ -1396,11 +1398,11 @@ func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID 
 			) as brand,
 			json_build_object(
 				'id', rs.id,
-				'name', rs.name
+				'name', rs.` + nameColumn + `
 			) as region,
 			json_build_object(
 				'id', cs.id,
-				'name', cs.name
+				'name', cs.` + nameColumn + `
 			) as city,
 			json_build_object(
 				'id', ms.id,
@@ -1598,8 +1600,8 @@ func (r *UserRepository) Likes(ctx *fasthttp.RequestCtx, userID *int, nameColumn
 		select 
 			vs.id,
 			bs.` + nameColumn + ` as brand,
-			rs.name as region,
-			cs.name as city,
+			rs.` + nameColumn + ` as region,
+			cs.` + nameColumn + ` as city,
 			cls.` + nameColumn + ` as color,
 			ms.` + nameColumn + ` as model,
 			ts.` + nameColumn + ` as transmission,
@@ -1761,12 +1763,12 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
                         json_build_object(
                         'from_country', json_build_object(
                             'id', cf.id,
-                            'name', cf.name,
+                            'name', cf.` + nameColumn + `,
                             'flag', cf.flag
                         ),
                         'to_country', json_build_object(
                             'id', ct.id,
-                            'name', ct.name,
+                            'name', ct.` + nameColumn + `,
                             'flag', ct.flag
                         )
                         )

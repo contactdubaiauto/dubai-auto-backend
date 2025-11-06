@@ -63,6 +63,7 @@ func RandomUsername() string {
 	const length = 8
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	b := make([]byte, length)
+
 	for i := range b {
 		b[i] = charset[r.Intn(len(charset))]
 	}

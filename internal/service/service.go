@@ -292,8 +292,8 @@ func (s *UserService) GetColors(ctx *fasthttp.RequestCtx, nameColumn string) mod
 	return model.Response{Data: data}
 }
 
-func (s *UserService) GetCountries(ctx *fasthttp.RequestCtx) model.Response {
-	data, err := s.UserRepository.GetCountries(ctx)
+func (s *UserService) GetCountries(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
+	data, err := s.UserRepository.GetCountries(ctx, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}

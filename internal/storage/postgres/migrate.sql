@@ -175,6 +175,38 @@ alter table com_parameter_values add column "name_ru" varchar(50) default 'name_
 
 
 
+alter table company_types add column "name_ae" varchar(50) default 'name_ae';
+alter table activity_fields add column "name_ae" varchar(50) default 'name_ae';
+alter table brands add column "name_ae" varchar(50) default 'name_ae';
+alter table models add column "name_ae" varchar(50) default 'name_ae';
+alter table body_types add column "name_ae" varchar(50) default 'name_ae';
+alter table transmissions add column "name_ae" varchar(50) default 'name_ae';
+alter table drivetrains add column "name_ae" varchar(50) default 'name_ae';
+alter table fuel_types add column "name_ae" varchar(50) default 'name_ae';
+alter table generations add column "name_ae" varchar(50) default 'name_ae';
+alter table ownership_types add column "name_ae" varchar(50) default 'name_ae';
+alter table colors add column "name_ae" varchar(50) default 'name_ae';
+alter table moto_categories add column "name_ae" varchar(50) default 'name_ae';
+alter table moto_brands add column "name_ae" varchar(50) default 'name_ae';
+alter table moto_models add column "name_ae" varchar(50) default 'name_ae';
+alter table moto_parameters add column "name_ae" varchar(50) default 'name_ae';
+alter table moto_parameter_values add column "name_ae" varchar(50) default 'name_ae';
+alter table com_categories add column "name_ae" varchar(50) default 'name_ae';
+alter table com_brands add column "name_ae" varchar(50) default 'name_ae';
+alter table com_models add column "name_ae" varchar(50) default 'name_ae';
+alter table com_parameters add column "name_ae" varchar(50) default 'name_ae';
+alter table com_parameter_values add column "name_ae" varchar(50) default 'name_ae';
+alter table countries add column "name_ae" varchar(50) default 'name_ae';
+alter table countries add column "name_ru" varchar(50) default 'name_ru';
+alter table countries add column "country_code" varchar(50) default 'country_code';
+
+
+alter table cities add column "name_ae" varchar(50) default 'name_ae';
+alter table cities add column "name_ru" varchar(50) default 'name_ru';
+alter table regions add column "name_ae" varchar(50) default 'name_ae';
+alter table regions add column "name_ru" varchar(50) default 'name_ru';
+
+
 create table message_files (
     "id" serial primary key,
     "sender_id" int,

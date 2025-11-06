@@ -1154,6 +1154,7 @@ func (h *UserHandler) GetColors(c *fiber.Ctx) error {
 // @Description  Returns a list of countries
 // @Tags         filter
 // @Produce      json
+// @Param   Accept-Language  header  string  false  "Language"
 // @Success      200  {array}  model.Country
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -1163,7 +1164,8 @@ func (h *UserHandler) GetColors(c *fiber.Ctx) error {
 // @Router       /api/v1/users/countries [get]
 func (h *UserHandler) GetCountries(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.UserService.GetCountries(ctx)
+	nameColumn := c.Locals("lang").(string)
+	data := h.UserService.GetCountries(ctx, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 

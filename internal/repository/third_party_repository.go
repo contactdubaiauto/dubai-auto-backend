@@ -79,12 +79,12 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int, name
 					json_build_object(
 						'from_country', json_build_object(
 							'id', fc.id,
-							'name', fc.name,
+							'name', fc.` + nameColumn + `,
 							'flag', $2 || fc.flag
 						),
 						'to_country', json_build_object(
 							'id', tc.id,
-							'name', tc.name,
+							'name', tc.` + nameColumn + `,
 							'flag', $2 || tc.flag
 						)
 					)
@@ -659,19 +659,19 @@ func (r *ThirdPartyRepository) DeleteDealerCar(ctx *fasthttp.RequestCtx, id int)
 	return err
 }
 
-func (r *ThirdPartyRepository) GetLogistDestinations(ctx *fasthttp.RequestCtx) ([]model.LogistDestinationResponse, error) {
+func (r *ThirdPartyRepository) GetLogistDestinations(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.LogistDestinationResponse, error) {
 	q := `
 		SELECT 
 			r.id,
 			r.created_at,
 			json_build_object(
 				'id', cf.id,
-				'name', cf.name,
+				'name', cf.` + nameColumn + `,
 				'flag', $1 || cf.flag as flag
 			) as from_country,
 			json_build_object(
 				'id', ct.id,
-				'name', ct.name,
+				'name', ct.` + nameColumn + `,
 				'flag', $1 || ct.flag as flag
 			) as to_country
 		FROM user_destinations r

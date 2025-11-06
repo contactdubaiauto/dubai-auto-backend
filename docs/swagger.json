@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8080",
+    "host": "api.mashynbazar.com",
     "basePath": "/",
     "paths": {
         "/api/v1/admin/activity-fields": {
@@ -9931,6 +9931,12 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
                     }
                 ],
                 "responses": {
@@ -10270,6 +10276,14 @@
                     "logist"
                 ],
                 "summary": "Get logist destinations",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -12756,6 +12770,14 @@
                     "filter"
                 ],
                 "summary": "Get countries",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -15742,6 +15764,9 @@
                 "name": {
                     "type": "string"
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -15760,6 +15785,9 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ae": {
                     "type": "string"
                 },
                 "name_ru": {
@@ -15784,6 +15812,12 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "name_ae": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -15800,6 +15834,9 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ae": {
                     "type": "string"
                 },
                 "name_ru": {
@@ -15829,6 +15866,9 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ae": {
                     "type": "string"
                 },
                 "name_ru": {
@@ -15871,6 +15911,9 @@
                 "name": {
                     "type": "string"
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -15895,6 +15938,9 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ae": {
                     "type": "string"
                 },
                 "name_ru": {
@@ -15923,6 +15969,9 @@
                 "name": {
                     "type": "string"
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -15941,6 +15990,9 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ae": {
                     "type": "string"
                 },
                 "name_ru": {
@@ -15968,6 +16020,9 @@
         "model.AdminCountryResponse": {
             "type": "object",
             "properties": {
+                "country_code": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -15978,6 +16033,12 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ae": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -15992,6 +16053,9 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ae": {
                     "type": "string"
                 },
                 "name_ru": {
@@ -16011,6 +16075,9 @@
                 "name": {
                     "type": "string"
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -16026,6 +16093,9 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ae": {
                     "type": "string"
                 },
                 "name_ru": {
@@ -16116,6 +16186,9 @@
                 "name": {
                     "type": "string"
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 },
@@ -16160,6 +16233,9 @@
                 "name": {
                     "type": "string"
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 },
@@ -16193,6 +16269,9 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ae": {
                     "type": "string"
                 },
                 "name_ru": {
@@ -16232,6 +16311,9 @@
                 "name": {
                     "type": "string"
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -16256,6 +16338,9 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ae": {
                     "type": "string"
                 },
                 "name_ru": {
@@ -16284,6 +16369,9 @@
                 "name": {
                     "type": "string"
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -16302,6 +16390,9 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ae": {
                     "type": "string"
                 },
                 "name_ru": {
@@ -16333,6 +16424,9 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "name_ae": {
                     "type": "string"
                 },
                 "name_ru": {
@@ -16405,6 +16499,9 @@
                 "name": {
                     "type": "string"
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -16444,6 +16541,9 @@
         "model.Country": {
             "type": "object",
             "properties": {
+                "country_code": {
+                    "type": "string"
+                },
                 "flag": {
                     "type": "string"
                 },
@@ -16466,6 +16566,9 @@
                     "maxLength": 50,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -16481,6 +16584,9 @@
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 2
+                },
+                "name_ae": {
+                    "type": "string"
                 },
                 "name_ru": {
                     "type": "string"
@@ -16573,6 +16679,9 @@
                     "maxLength": 255,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -16585,6 +16694,9 @@
             ],
             "properties": {
                 "name": {
+                    "type": "string"
+                },
+                "name_ae": {
                     "type": "string"
                 },
                 "name_ru": {
@@ -16606,6 +16718,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ae": {
+                    "type": "string"
                 },
                 "name_ru": {
                     "type": "string"
@@ -16634,6 +16749,9 @@
                     "maxLength": 100,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -16653,6 +16771,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ae": {
+                    "type": "string"
                 },
                 "name_ru": {
                     "type": "string"
@@ -16674,6 +16795,9 @@
                     "maxLength": 100,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -16689,6 +16813,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 1
+                },
+                "name_ae": {
+                    "type": "string"
                 },
                 "name_ru": {
                     "type": "string"
@@ -16841,6 +16968,9 @@
                     "maxLength": 255,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -16857,6 +16987,9 @@
                     "maxLength": 255,
                     "minLength": 1
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -16872,6 +17005,9 @@
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 2
+                },
+                "name_ae": {
+                    "type": "string"
                 },
                 "name_ru": {
                     "type": "string"
@@ -16928,6 +17064,9 @@
                     "maxLength": 255,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 },
@@ -16965,6 +17104,9 @@
                     "maxLength": 255,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 },
@@ -16987,6 +17129,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ae": {
+                    "type": "string"
                 },
                 "name_ru": {
                     "type": "string"
@@ -17015,6 +17160,9 @@
                     "maxLength": 100,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -17034,6 +17182,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ae": {
+                    "type": "string"
                 },
                 "name_ru": {
                     "type": "string"
@@ -17055,6 +17206,9 @@
                     "maxLength": 100,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -17070,6 +17224,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 1
+                },
+                "name_ae": {
+                    "type": "string"
                 },
                 "name_ru": {
                     "type": "string"
@@ -17217,10 +17374,19 @@
                 "name"
             ],
             "properties": {
+                "country_code": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 2
+                },
+                "name_ae": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -17234,6 +17400,9 @@
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 2
+                },
+                "name_ae": {
+                    "type": "string"
                 },
                 "name_ru": {
                     "type": "string"
@@ -18560,6 +18729,9 @@
                     "maxLength": 255,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -18579,6 +18751,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ae": {
+                    "type": "string"
                 },
                 "name_ru": {
                     "type": "string"
@@ -18607,6 +18782,9 @@
                     "maxLength": 100,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -18626,6 +18804,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ae": {
+                    "type": "string"
                 },
                 "name_ru": {
                     "type": "string"
@@ -18647,6 +18828,9 @@
                     "maxLength": 100,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -18662,6 +18846,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 1
+                },
+                "name_ae": {
+                    "type": "string"
                 },
                 "name_ru": {
                     "type": "string"
@@ -18730,6 +18917,9 @@
                     "maxLength": 255,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 },
@@ -18756,6 +18946,9 @@
                     "maxLength": 255,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 },
@@ -18778,6 +18971,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ae": {
+                    "type": "string"
                 },
                 "name_ru": {
                     "type": "string"
@@ -18806,6 +19002,9 @@
                     "maxLength": 100,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -18825,6 +19024,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "name_ae": {
+                    "type": "string"
                 },
                 "name_ru": {
                     "type": "string"
@@ -18846,6 +19048,9 @@
                     "maxLength": 100,
                     "minLength": 2
                 },
+                "name_ae": {
+                    "type": "string"
+                },
                 "name_ru": {
                     "type": "string"
                 }
@@ -18861,6 +19066,9 @@
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 1
+                },
+                "name_ae": {
+                    "type": "string"
                 },
                 "name_ru": {
                     "type": "string"
