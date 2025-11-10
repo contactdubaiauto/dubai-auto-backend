@@ -23,7 +23,9 @@ func SetupThirdPartyRoutes(r fiber.Router, config *config.Config, db *pgxpool.Po
 		r.Get("/profile/on-sale", auth.TokenGuard, auth.LanguageChecker, thirdPartyHandler.OnSale)
 		r.Post("/first-login", auth.TokenGuard, thirdPartyHandler.FirstLogin)
 		r.Post("/profile/banner", auth.TokenGuard, thirdPartyHandler.BannerImage)
+		r.Delete("/profile/banner", auth.TokenGuard, thirdPartyHandler.DeleteBannerImage)
 		r.Post("/profile/images", auth.TokenGuard, thirdPartyHandler.AvatarImages)
+		r.Delete("/profile/images", auth.TokenGuard, thirdPartyHandler.DeleteAvatarImages)
 		r.Post("/profile", auth.TokenGuard, thirdPartyHandler.Profile)
 
 		// dealer routes

@@ -22,7 +22,7 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 	return &UserService{repo}
 }
 
-func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID *int, limit, lastID, nameColumn string) model.Response {
+func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID int, limit, lastID, nameColumn string) model.Response {
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
 	cars, err := s.UserRepository.GetMyCars(ctx, userID, limitInt, lastIDInt, nameColumn)
 

@@ -352,6 +352,8 @@ type ThirdPartyProfileReq struct {
 	Phone       string `json:"phone" validate:"required"`
 	Address     string `json:"address"`
 	Coordinates string `json:"coordinates"`
+	CompanyName string `json:"company_name"`
+	Username    string `json:"username"`
 }
 
 type ThirdPartyFirstLoginReq struct {

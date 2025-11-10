@@ -22,55 +22,27 @@ func NewUserRepository(config *config.Config, db *pgxpool.Pool) *UserRepository 
 	return &UserRepository{config, db}
 }
 
-func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int, limit, lastID int, nameColumn string) ([]model.GetCarsResponse, error) {
-	cars := make([]model.GetCarsResponse, 0)
+func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID int, limit, lastID int, nameColumn string) ([]model.GetMyCarsResponse, error) {
+	cars := make([]model.GetMyCarsResponse, 0)
 	q := `
 		select 
 			vs.id,
 			bs.` + nameColumn + ` as brand,
-			rs.` + nameColumn + ` as region,
-			cs.` + nameColumn + ` as city,
-			cls.` + nameColumn + ` as color,
 			ms.` + nameColumn + ` as model,
-			ts.` + nameColumn + ` as transmission,
-			es.` + nameColumn + ` as engine,
-			ds.` + nameColumn + ` as drive,
-			bts.` + nameColumn + ` as body_type,
-			fts.` + nameColumn + ` as fuel_type,
 			vs.year,
 			vs.price,
-			vs.odometer,
-			vs.vin_code,
 			vs.credit,
 			vs.new,
 			vs.status,
 			vs.created_at,
 			vs.trade_in,
-			vs.owners,
-			vs.updated_at,
 			images.images,
-			videos.videos,
-			vs.phone_numbers, 
 			vs.view_count,
 			true as my_car,
-			vs.description,
-			CASE 
-				WHEN ul.vehicle_id IS NOT NULL THEN true
-				ELSE false
-			END AS liked
+			vs.crash
 		from vehicles vs
-		left join generation_modifications gms on gms.id = vs.modification_id
-		left join colors cls on vs.color_id = cls.id
 		left join brands bs on vs.brand_id = bs.id
-		left join regions rs on vs.region_id = rs.id
-		left join cities cs on vs.city_id = cs.id
 		left join models ms on vs.model_id = ms.id
-		left join transmissions ts on gms.transmission_id = ts.id
-		left join engines es on gms.engine_id = es.id
-		left join drivetrains ds on gms.drivetrain_id = ds.id
-		left join body_types bts on gms.body_type_id = bts.id
-		left join fuel_types fts on gms.fuel_type_id = fts.id
-		left join user_likes ul on ul.vehicle_id = vs.id AND ul.user_id = $1
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -80,20 +52,10 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int, limit,
 				ORDER BY created_at DESC
 			) img
 		) images ON true
-		LEFT JOIN LATERAL (
-			SELECT json_agg(v.video) AS videos
-			FROM (
-				SELECT $2 || video as video
-				FROM videos
-				WHERE vehicle_id = vs.id
-				ORDER BY created_at DESC
-			) v
-		) videos ON true
-		where vs.user_id = $1 and status = 2 and vs.id > $3
+		where vs.user_id = $1 and status = 2
 		order by vs.id desc
-		limit $4
 	`
-	rows, err := r.db.Query(ctx, q, *userID, r.config.IMAGE_BASE_URL, lastID, limit)
+	rows, err := r.db.Query(ctx, q, userID, r.config.IMAGE_BASE_URL)
 
 	if err != nil {
 		return cars, err
@@ -101,12 +63,12 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID *int, limit,
 	defer rows.Close()
 
 	for rows.Next() {
-		var car model.GetCarsResponse
+		var car model.GetMyCarsResponse
 		if err := rows.Scan(
-			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
-			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
-			&car.Credit, &car.New, &car.Status, &car.CreatedAt, &car.TradeIn, &car.Owners,
-			&car.UpdatedAt, &car.Images, &car.Videos, &car.PhoneNumbers, &car.ViewCount, &car.MyCar, &car.Description, &car.Liked,
+			&car.ID, &car.Brand, &car.Model, &car.Year,
+			&car.Price, &car.Credit, &car.New, &car.Status,
+			&car.CreatedAt, &car.TradeIn, &car.Images,
+			&car.ViewCount, &car.MyCar, &car.Crash,
 		); err != nil {
 			return cars, err
 		}

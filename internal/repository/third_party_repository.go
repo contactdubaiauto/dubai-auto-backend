@@ -31,11 +31,12 @@ func (r *ThirdPartyRepository) Profile(ctx *fasthttp.RequestCtx, id int, profile
 			telegram = $3,
 			address = $4,
 			coordinates = $5,
-			message = $6
-		where user_id = $7
+			message = $6,
+			company_name = $7
+		where user_id = $8
 	`
 	_, err := r.db.Exec(ctx, q, profile.AboutUs, profile.Whatsapp,
-		profile.Telegram, profile.Address, profile.Coordinates, profile.Message, id)
+		profile.Telegram, profile.Address, profile.Coordinates, profile.Message, profile.CompanyName, id)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -43,10 +44,11 @@ func (r *ThirdPartyRepository) Profile(ctx *fasthttp.RequestCtx, id int, profile
 
 	q = `
 		update users set
-			phone = $1
-		where id = $2
+			phone = $1,
+			username = $2
+		where id = $3
 	`
-	_, err = r.db.Exec(ctx, q, profile.Phone, id)
+	_, err = r.db.Exec(ctx, q, profile.Phone, profile.Username, id)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -395,12 +397,28 @@ func (r *ThirdPartyRepository) CreateAvatarImages(ctx *fasthttp.RequestCtx, id i
 	return err
 }
 
+func (r *ThirdPartyRepository) DeleteAvatarImages(ctx *fasthttp.RequestCtx, id int) error {
+	q := `
+		update profiles set avatar = null where user_id = $1
+	`
+	_, err := r.db.Exec(ctx, q, id)
+	return err
+}
+
 func (r *ThirdPartyRepository) CreateBannerImage(ctx *fasthttp.RequestCtx, id int, paths []string) error {
 	q := `
 		update profiles set banner = $1 where user_id = $2
 	`
 	_, err := r.db.Exec(ctx, q, paths[0], id)
 
+	return err
+}
+
+func (r *ThirdPartyRepository) DeleteBannerImage(ctx *fasthttp.RequestCtx, id int) error {
+	q := `
+		update profiles set banner = null where user_id = $1
+	`
+	_, err := r.db.Exec(ctx, q, id)
 	return err
 }
 

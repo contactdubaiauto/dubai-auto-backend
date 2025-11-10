@@ -66,7 +66,7 @@ func (s *ThirdPartyService) GetRegistrationData(ctx *fasthttp.RequestCtx, nameCo
 }
 
 func (s *ThirdPartyService) CreateAvatarImages(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) model.Response {
-
+	// todo: delete the old image file
 	if form == nil {
 		return model.Response{
 			Status: 400,
@@ -102,6 +102,17 @@ func (s *ThirdPartyService) CreateAvatarImages(ctx *fasthttp.RequestCtx, form *m
 	}
 
 	return model.Response{Data: model.Success{Message: "Avatar images updated successfully"}}
+}
+
+func (s *ThirdPartyService) DeleteAvatarImages(ctx *fasthttp.RequestCtx, id int) model.Response {
+	// todo: delete the old image file
+	err := s.repo.DeleteAvatarImages(ctx, id)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Avatar images deleted successfully"}}
 }
 
 func (s *ThirdPartyService) CreateBannerImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) model.Response {
@@ -141,6 +152,17 @@ func (s *ThirdPartyService) CreateBannerImage(ctx *fasthttp.RequestCtx, form *mu
 	}
 
 	return model.Response{Data: model.Success{Message: "Banner image updated successfully"}}
+}
+
+func (s *ThirdPartyService) DeleteBannerImage(ctx *fasthttp.RequestCtx, id int) model.Response {
+	// todo: delete the old image file
+	err := s.repo.DeleteBannerImage(ctx, id)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Banner image deleted successfully"}}
 }
 
 func (s *ThirdPartyService) CreateDealerCar(ctx *fasthttp.RequestCtx, car *model.ThirdPartyCreateCarRequest, dealerID int) model.Response {

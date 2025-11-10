@@ -193,6 +193,28 @@ func (h *ThirdPartyHandler) AvatarImages(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
+// DeleteAvatarImages godoc
+// @Summary      Delete avatar images
+// @Description  Deletes avatar images
+// @Tags         third-party
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        avatar_image  formData  file    true   "Avatar image required"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure      403     {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/third-party/profile/images [delete]
+func (h *ThirdPartyHandler) DeleteAvatarImages(c *fiber.Ctx) error {
+	ctx := c.Context()
+	id := c.Locals("id").(int)
+	data := h.service.DeleteAvatarImages(ctx, id)
+	return utils.FiberResponse(c, data)
+}
+
 // BannerImage godoc
 // @Summary      Upload banner images
 // @Description  Uploads banner images
@@ -213,6 +235,27 @@ func (h *ThirdPartyHandler) BannerImage(c *fiber.Ctx) error {
 	id := c.Locals("id").(int)
 	form, _ := c.MultipartForm()
 	data := h.service.CreateBannerImage(ctx, form, id)
+	return utils.FiberResponse(c, data)
+}
+
+// DeleteBannerImage godoc
+// @Summary      Delete banner image
+// @Description  Deletes banner image
+// @Tags         third-party
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure      403     {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/third-party/profile/banner [delete]
+func (h *ThirdPartyHandler) DeleteBannerImage(c *fiber.Ctx) error {
+	ctx := c.Context()
+	id := c.Locals("id").(int)
+	data := h.service.DeleteBannerImage(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 

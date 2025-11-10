@@ -30,7 +30,6 @@ import (
 // @description Type "Bearer" followed by a space and JWT token.
 
 func main() {
-
 	conf := config.Init()
 	auth.Init(conf.ACCESS_KEY, conf.ACCESS_TIME, conf.REFRESH_KEY, conf.REFRESH_TIME)
 	err := logger.InitLogger(conf.LOGGER_FOLDER_PATH, conf.LOGGER_FILENAME, conf.APP_MODE)

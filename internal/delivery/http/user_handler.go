@@ -1311,7 +1311,7 @@ func (h *UserHandler) GetMyCars(c *fiber.Ctx) error {
 	lastID := c.Query("last_id")
 	userID := c.Locals("id").(int)
 	nameColumn := c.Locals("lang").(string)
-	data := h.UserService.GetMyCars(ctx, &userID, limit, lastID, nameColumn)
+	data := h.UserService.GetMyCars(ctx, userID, limit, lastID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 

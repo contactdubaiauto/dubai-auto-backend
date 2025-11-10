@@ -2012,6 +2012,8 @@ definitions:
         type: string
       address:
         type: string
+      company_name:
+        type: string
       coordinates:
         type: string
       message:
@@ -2019,6 +2021,8 @@ definitions:
       phone:
         type: string
       telegram:
+        type: string
+      username:
         type: string
       whatsapp:
         type: string
@@ -9506,6 +9510,42 @@ paths:
       tags:
       - third-party
   /api/v1/third-party/profile/banner:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes banner image
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete banner image
+      tags:
+      - third-party
     post:
       consumes:
       - multipart/form-data
@@ -9549,6 +9589,48 @@ paths:
       tags:
       - third-party
   /api/v1/third-party/profile/images:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes avatar images
+      parameters:
+      - description: Avatar image required
+        in: formData
+        name: avatar_image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete avatar images
+      tags:
+      - third-party
     post:
       consumes:
       - multipart/form-data

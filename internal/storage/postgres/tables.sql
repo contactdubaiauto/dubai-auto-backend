@@ -622,6 +622,8 @@ CREATE TYPE price_type_enum AS ENUM ('USD', 'AED', 'RUB', 'EUR');
 create table motorcycles (
     "id" serial primary key,
     "user_id" int not null,
+    "credit" boolean not null default false,
+    "view_count" int not null default 0,
     "moto_category_id" int not null,
     "moto_brand_id" int not null,
     "moto_model_id" int not null,
@@ -855,6 +857,8 @@ create table comtrans (
     "ptc" boolean,
     "vin_code" varchar(50) not null,
     "certificate" varchar(50),
+    "view_count" int not null default 0,
+    "credit" boolean not null default false,
     "description" text,
     "can_look_coordinate" varchar(50),
     "phone_number" varchar(50) not null,

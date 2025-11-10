@@ -148,8 +148,9 @@ func (r *AdminRepository) GetProfile(ctx *fasthttp.RequestCtx, id int) (model.Ad
 			username, 
 			email,
 			permissions
-		FROM users WHERE role_id = 0
-		WHERE id = $1`
+		FROM users 
+		WHERE role_id = 0
+		AND id = $1`
 	err := r.db.QueryRow(ctx, q, id).Scan(&profile.ID, &profile.Username, &profile.Email, &profile.Permissions)
 
 	return profile, err

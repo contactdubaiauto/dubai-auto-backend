@@ -156,12 +156,12 @@ type GetCarsResponse struct {
 	VinCode      *string    `json:"vin_code"`
 	Color        *string    `json:"color"`
 	Description  *string    `json:"description"`
-	Model        string     `json:"model"`
-	BodyType     string     `json:"body_type"`
 	Status       *int       `json:"status"`
 	TradeIn      *int       `json:"trade_in"`
 	Owners       *int       `json:"owners"`
 	Mileage      *int       `json:"mileage"` // todo: change it to odometer
+	Model        string     `json:"model"`
+	BodyType     string     `json:"body_type"`
 	ID           int        `json:"id"`
 	Year         int        `json:"year"`
 	Price        int        `json:"price"`
@@ -171,6 +171,23 @@ type GetCarsResponse struct {
 	Crash        *bool      `json:"crash"`
 	MyCar        *bool      `json:"my_car"`
 	Liked        *bool      `json:"liked"`
+}
+
+type GetMyCarsResponse struct {
+	CreatedAt *time.Time `json:"created_at"`
+	Images    *[]string  `json:"images"`
+	Brand     *string    `json:"brand"`
+	Status    *int       `json:"status"`
+	TradeIn   *int       `json:"trade_in"`
+	Model     string     `json:"model"`
+	ID        int        `json:"id"`
+	Year      int        `json:"year"`
+	Price     int        `json:"price"`
+	ViewCount int        `json:"view_count"`
+	Credit    *bool      `json:"credit"`
+	New       *bool      `json:"new"`
+	Crash     *bool      `json:"crash"`
+	MyCar     *bool      `json:"my_car"`
 }
 
 type City struct {
