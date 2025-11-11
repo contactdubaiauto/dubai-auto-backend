@@ -23,14 +23,14 @@ func (s *SocketService) GetNewMessages(userID int) ([]model.UserMessage, error) 
 	return messages, err
 }
 
-func (s *SocketService) GetUserAvatar(userID int) string {
-	avatar, err := s.repo.GetUserAvatar(userID)
+func (s *SocketService) GetUserAvatar(userID int) (string, string) {
+	avatar, username, err := s.repo.GetUserAvatar(userID)
 
 	if err != nil {
-		return ""
+		return "", ""
 	}
 
-	return avatar
+	return avatar, username
 }
 
 func (s *SocketService) MessageWriteToDatabase(senderUserID int, status bool, msg model.MessageReceived) error {

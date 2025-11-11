@@ -81,13 +81,13 @@ func (r *SocketRepository) GetNewMessages(userID int) ([]model.UserMessage, erro
 	return messages, err
 }
 
-func (r *SocketRepository) GetUserAvatar(userID int) (string, error) {
+func (r *SocketRepository) GetUserAvatar(userID int) (string, string, error) {
 	q := `
-		SELECT avatar FROM profiles WHERE user_id = $1
+		SELECT avatar, username FROM profiles WHERE user_id = $1
 	`
-	var avatar string
-	err := r.db.QueryRow(context.Background(), q, userID).Scan(&avatar)
-	return avatar, err
+	var avatar, username string
+	err := r.db.QueryRow(context.Background(), q, userID).Scan(&avatar, &username)
+	return avatar, username, err
 }
 
 func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool, msg model.MessageReceived) error {

@@ -205,6 +205,8 @@ alter table cities add column "name_ae" varchar(50) default 'name_ae';
 alter table cities add column "name_ru" varchar(50) default 'name_ru';
 alter table regions add column "name_ae" varchar(50) default 'name_ae';
 alter table regions add column "name_ru" varchar(50) default 'name_ru';
+alter table engines add column "name_ae" varchar(50) default 'name_ae';
+alter table engines add column "name_ru" varchar(50) default 'name_ru';
 
 
 drop table if exists admins;

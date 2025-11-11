@@ -171,7 +171,9 @@ func (h *SocketHandler) SetupWebSocket(app *fiber.App) {
 			},
 		}
 
-		user.Avatar = h.service.GetUserAvatar(user.ID)
+		avatar, username := h.service.GetUserAvatar(user.ID)
+		user.Avatar = avatar
+		user.Username = username
 		wsClients[c] = user
 
 		safeWriteJSON(c, welcomeMsg)
