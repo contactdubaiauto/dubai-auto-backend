@@ -1745,6 +1745,8 @@ definitions:
     properties:
       about_me:
         type: string
+      address:
+        type: string
       birthday:
         type: string
       city:
@@ -1763,7 +1765,11 @@ definitions:
         type: string
       registered_by:
         type: string
+      telegram:
+        type: string
       username:
+        type: string
+      whatsapp:
         type: string
     type: object
   model.Home:
@@ -2370,19 +2376,28 @@ definitions:
     properties:
       about_me:
         type: string
+      address:
+        type: string
       birthday:
         type: string
+      city_id:
+        type: integer
       driving_experience:
         type: integer
       google:
         type: string
       notification:
         type: boolean
+      telegram:
+        type: string
       username:
         maxLength: 20
         minLength: 3
         type: string
+      whatsapp:
+        type: string
     required:
+    - city_id
     - username
     type: object
   model.UserApplication:

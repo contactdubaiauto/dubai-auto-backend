@@ -18710,6 +18710,9 @@ const docTemplate = `{
                 "about_me": {
                     "type": "string"
                 },
+                "address": {
+                    "type": "string"
+                },
                 "birthday": {
                     "type": "string"
                 },
@@ -18737,7 +18740,13 @@ const docTemplate = `{
                 "registered_by": {
                     "type": "string"
                 },
+                "telegram": {
+                    "type": "string"
+                },
                 "username": {
+                    "type": "string"
+                },
+                "whatsapp": {
                     "type": "string"
                 }
             }
@@ -19626,14 +19635,21 @@ const docTemplate = `{
         "model.UpdateProfileRequest": {
             "type": "object",
             "required": [
+                "city_id",
                 "username"
             ],
             "properties": {
                 "about_me": {
                     "type": "string"
                 },
+                "address": {
+                    "type": "string"
+                },
                 "birthday": {
                     "type": "string"
+                },
+                "city_id": {
+                    "type": "integer"
                 },
                 "driving_experience": {
                     "type": "integer"
@@ -19644,10 +19660,16 @@ const docTemplate = `{
                 "notification": {
                     "type": "boolean"
                 },
+                "telegram": {
+                    "type": "string"
+                },
                 "username": {
                     "type": "string",
                     "maxLength": 20,
                     "minLength": 3
+                },
+                "whatsapp": {
+                    "type": "string"
                 }
             }
         },

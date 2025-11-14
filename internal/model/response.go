@@ -39,6 +39,9 @@ type GetProfileResponse struct {
 	Google            *string    `json:"google"`
 	RegisteredBy      *string    `json:"registered_by"`
 	City              *string    `json:"city"`
+	Telegram          *string    `json:"telegram"`
+	Whatsapp          *string    `json:"whatsapp"`
+	Address           *string    `json:"address"`
 	AboutMe           *string    `json:"about_me"`
 	DrivingExperience *int       `json:"driving_experience"`
 	ID                int        `json:"id"`

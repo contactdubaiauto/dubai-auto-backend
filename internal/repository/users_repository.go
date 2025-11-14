@@ -255,6 +255,9 @@ func (r *UserRepository) GetProfile(ctx *fasthttp.RequestCtx, userID int, nameCo
 			ps.birthday,
 			ps.about_me,
 			ps.registered_by,
+			ps.telegram,
+			ps.whatsapp,
+			ps.address,
 			cs.` + nameColumn + ` as city
 		from users us
 		left join profiles as ps on ps.user_id = us.id
@@ -264,7 +267,7 @@ func (r *UserRepository) GetProfile(ctx *fasthttp.RequestCtx, userID int, nameCo
 	`
 	var pf model.GetProfileResponse
 	err := r.db.QueryRow(ctx, q, userID).Scan(&pf.ID, &pf.Email, &pf.Phone,
-		&pf.DrivingExperience, &pf.Notification, &pf.Username, &pf.Google, &pf.Birthday, &pf.AboutMe, &pf.RegisteredBy, &pf.City)
+		&pf.DrivingExperience, &pf.Notification, &pf.Username, &pf.Google, &pf.Birthday, &pf.AboutMe, &pf.RegisteredBy, &pf.City, &pf.Telegram, &pf.Whatsapp, &pf.Address)
 
 	return pf, err
 }
@@ -278,6 +281,7 @@ func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, pro
 
 	// Build dynamic SET clause
 	var setClause []string
+
 	for i, key := range keys {
 		setClause = append(setClause, fmt.Sprintf("%s = $%d", key, i+1))
 	}
