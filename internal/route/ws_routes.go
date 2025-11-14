@@ -25,6 +25,5 @@ func SetupWebSocketRoutes(app *fiber.App, db *pgxpool.Pool, firebaseService *fir
 	socketService := service.NewSocketService(socketRepository)
 	socketHandler := http.NewSocketHandler(socketService)
 
-	socketHandler.SetupWebSocket(app)
-
+	app.Get("/ws", socketHandler.SetupWebSocketHandler())
 }

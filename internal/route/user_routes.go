@@ -40,7 +40,7 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		// r.Get("/profile/my-cars/:id", auth.TokenGuard, auth.LanguageChecker, userHandler.GetMyCars) //todo: write GetMyCarsByID
 		r.Get("/profile/my-cars", auth.TokenGuard, auth.LanguageChecker, userHandler.GetMyCars)
 		r.Get("/profile/on-sale", auth.TokenGuard, auth.LanguageChecker, userHandler.OnSale)
-		r.Get("/profile", auth.TokenGuard, userHandler.GetProfile)
+		r.Get("/profile", auth.TokenGuard, auth.LanguageChecker, userHandler.GetProfile)
 		r.Put("/profile", auth.TokenGuard, userHandler.UpdateProfile)
 
 		// brands

@@ -18713,6 +18713,9 @@ const docTemplate = `{
                 "birthday": {
                     "type": "string"
                 },
+                "city": {
+                    "type": "string"
+                },
                 "driving_experience": {
                     "type": "integer"
                 },

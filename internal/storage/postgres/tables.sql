@@ -1,14 +1,5 @@
 -- create user da with password '1234';
-drop table if exists moto_images;
-drop table if exists moto_videos;
-drop table if exists motorcycle_parameters;
-drop table if exists motorcycles;
-drop table if exists moto_category_parameters;
-drop table if exists moto_parameter_values;
-drop table if exists moto_parameters;
-drop table if exists moto_models;
-drop table if exists moto_brands;
-drop table if exists moto_categories;
+
 drop type if exists price_type_enum;
 
 drop table if exists user_likes;
@@ -538,6 +529,18 @@ create table videos (
                 on update cascade
 );
 
+
+
+drop table if exists moto_images;
+drop table if exists moto_videos;
+drop table if exists motorcycle_parameters;
+drop table if exists motorcycles;
+drop table if exists moto_category_parameters;
+drop table if exists moto_parameter_values;
+drop table if exists moto_parameters;
+drop table if exists moto_models;
+drop table if exists moto_brands;
+drop table if exists moto_categories;
 
 create table moto_categories (
     "id" serial primary key,

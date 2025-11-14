@@ -24,7 +24,7 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 
 func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID int, limit, lastID, nameColumn string) model.Response {
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
-	cars, err := s.UserRepository.GetMyCars(ctx, userID, limitInt, lastIDInt, nameColumn)
+	cars, err := s.UserRepository.GetMyCars(ctx, userID, limitInt, lastIDInt, 2, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -33,9 +33,9 @@ func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID int, limit, las
 	return model.Response{Data: cars}
 }
 
-func (s *UserService) OnSale(ctx *fasthttp.RequestCtx, userID *int, limit, lastID, nameColumn string) model.Response {
+func (s *UserService) OnSale(ctx *fasthttp.RequestCtx, userID int, limit, lastID, nameColumn string) model.Response {
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
-	cars, err := s.UserRepository.OnSale(ctx, userID, limitInt, lastIDInt, nameColumn)
+	cars, err := s.UserRepository.GetMyCars(ctx, userID, limitInt, lastIDInt, 2, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -100,8 +100,8 @@ func (s *UserService) GetBrands(ctx *fasthttp.RequestCtx, text, nameColumn strin
 	}
 }
 
-func (s *UserService) GetProfile(ctx *fasthttp.RequestCtx, userID int) model.Response {
-	profile, err := s.UserRepository.GetProfile(ctx, userID)
+func (s *UserService) GetProfile(ctx *fasthttp.RequestCtx, userID int, nameColumn string) model.Response {
+	profile, err := s.UserRepository.GetProfile(ctx, userID, nameColumn)
 
 	if err != nil {
 		return model.Response{

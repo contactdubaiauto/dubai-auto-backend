@@ -103,8 +103,9 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 		) VALUES ($1, $2, $3, $4, $5, $6)
 	`
 	_, err := r.db.Exec(context.Background(), q, senderUserID, msg.TargetUserID, s, msg.Message, msg.Type, msg.Time)
-
 	if err != nil {
+		fmt.Println("msg.TargetUserID")
+		fmt.Println(msg.TargetUserID)
 		return err
 	}
 
@@ -176,4 +177,31 @@ func (r *SocketRepository) SendPushForMessage(senderUserID int, msg model.Messag
 		ImageURL: avatar,
 	})
 	return err
+}
+
+// GetActiveAdminsWithChatPermission returns IDs of active admin users with "chat" permission
+func (r *SocketRepository) GetActiveAdminsWithChatPermission() ([]int, error) {
+	q := `
+		SELECT id 
+		FROM users 
+		WHERE role_id = 0 
+		AND status = 1 
+		AND permissions @> '["chat"]'::jsonb
+	`
+	rows, err := r.db.Query(context.Background(), q)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var adminIDs []int
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		adminIDs = append(adminIDs, id)
+	}
+
+	return adminIDs, nil
 }

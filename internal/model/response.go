@@ -38,6 +38,7 @@ type GetProfileResponse struct {
 	Username          *string    `json:"username"`
 	Google            *string    `json:"google"`
 	RegisteredBy      *string    `json:"registered_by"`
+	City              *string    `json:"city"`
 	AboutMe           *string    `json:"about_me"`
 	DrivingExperience *int       `json:"driving_experience"`
 	ID                int        `json:"id"`
@@ -174,20 +175,21 @@ type GetCarsResponse struct {
 }
 
 type GetMyCarsResponse struct {
+	Type      string     `json:"type"`
+	Model     *string    `json:"model"`
 	CreatedAt *time.Time `json:"created_at"`
 	Images    *[]string  `json:"images"`
 	Brand     *string    `json:"brand"`
 	Status    *int       `json:"status"`
 	TradeIn   *int       `json:"trade_in"`
-	Model     string     `json:"model"`
-	ID        int        `json:"id"`
-	Year      int        `json:"year"`
-	Price     int        `json:"price"`
-	ViewCount int        `json:"view_count"`
+	Year      *int       `json:"year"`
+	Price     *int       `json:"price"`
+	ViewCount *int       `json:"view_count"`
 	Credit    *bool      `json:"credit"`
 	New       *bool      `json:"new"`
 	Crash     *bool      `json:"crash"`
 	MyCar     *bool      `json:"my_car"`
+	ID        int        `json:"id"`
 }
 
 type City struct {

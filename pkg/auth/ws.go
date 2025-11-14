@@ -9,6 +9,7 @@ import (
 )
 
 func ValidateWSJWT(tokenString string) (*model.WSUser, error) {
+
 	if tokenString == "" {
 		return nil, fmt.Errorf("missing token")
 	}

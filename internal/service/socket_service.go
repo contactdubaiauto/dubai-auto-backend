@@ -46,3 +46,7 @@ func (s *SocketService) CheckUserExists(userID int) error {
 func (s *SocketService) SendPushForMessage(senderUserID int, msg model.MessageReceived) error {
 	return s.repo.SendPushForMessage(senderUserID, msg)
 }
+
+func (s *SocketService) GetActiveAdminsWithChatPermission() ([]int, error) {
+	return s.repo.GetActiveAdminsWithChatPermission()
+}
