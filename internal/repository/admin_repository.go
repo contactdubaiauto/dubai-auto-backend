@@ -1269,52 +1269,6 @@ func (r *AdminRepository) DeleteGenerationModification(ctx *fasthttp.RequestCtx,
 	return err
 }
 
-// Configurations CRUD operations
-func (r *AdminRepository) GetConfigurations(ctx *fasthttp.RequestCtx) ([]model.AdminConfigurationResponse, error) {
-	configurations := make([]model.AdminConfigurationResponse, 0)
-	q := `
-		SELECT c.id, c.body_type_id, bt.name as body_type_name, c.generation_id
-		FROM configurations c
-		LEFT JOIN body_types bt ON c.body_type_id = bt.id
-		ORDER BY c.id DESC
-	`
-
-	rows, err := r.db.Query(ctx, q)
-	if err != nil {
-		return configurations, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var configuration model.AdminConfigurationResponse
-		if err := rows.Scan(&configuration.ID, &configuration.BodyTypeID, &configuration.BodyTypeName, &configuration.GenerationID); err != nil {
-			return configurations, err
-		}
-		configurations = append(configurations, configuration)
-	}
-
-	return configurations, err
-}
-
-func (r *AdminRepository) CreateConfiguration(ctx *fasthttp.RequestCtx, req *model.CreateConfigurationRequest) (int, error) {
-	q := `INSERT INTO configurations (body_type_id, generation_id) VALUES ($1, $2) RETURNING id`
-	var id int
-	err := r.db.QueryRow(ctx, q, req.BodyTypeID, req.GenerationID).Scan(&id)
-	return id, err
-}
-
-func (r *AdminRepository) UpdateConfiguration(ctx *fasthttp.RequestCtx, id int, req *model.UpdateConfigurationRequest) error {
-	q := `UPDATE configurations SET body_type_id = $2, generation_id = $3 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.BodyTypeID, req.GenerationID)
-	return err
-}
-
-func (r *AdminRepository) DeleteConfiguration(ctx *fasthttp.RequestCtx, id int) error {
-	q := `DELETE FROM configurations WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id)
-	return err
-}
-
 // Colors CRUD operations
 func (r *AdminRepository) GetColors(ctx *fasthttp.RequestCtx) ([]model.AdminColorResponse, error) {
 	colors := make([]model.AdminColorResponse, 0)

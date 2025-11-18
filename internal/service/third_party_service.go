@@ -66,7 +66,7 @@ func (s *ThirdPartyService) GetRegistrationData(ctx *fasthttp.RequestCtx, nameCo
 }
 
 func (s *ThirdPartyService) CreateAvatarImages(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) model.Response {
-	// todo: delete the old image file
+	// todo: delete old images if exist
 	if form == nil {
 		return model.Response{
 			Status: 400,
@@ -105,7 +105,7 @@ func (s *ThirdPartyService) CreateAvatarImages(ctx *fasthttp.RequestCtx, form *m
 }
 
 func (s *ThirdPartyService) DeleteAvatarImages(ctx *fasthttp.RequestCtx, id int) model.Response {
-	// todo: delete the old image file
+	// todo: delete old images if exist
 	err := s.repo.DeleteAvatarImages(ctx, id)
 
 	if err != nil {
@@ -116,7 +116,7 @@ func (s *ThirdPartyService) DeleteAvatarImages(ctx *fasthttp.RequestCtx, id int)
 }
 
 func (s *ThirdPartyService) CreateBannerImage(ctx *fasthttp.RequestCtx, form *multipart.Form, id int) model.Response {
-
+	// todo: delete old image if exist
 	if form == nil {
 		return model.Response{
 			Status: 400,

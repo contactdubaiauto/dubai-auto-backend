@@ -232,15 +232,15 @@ func (r *AuthRepository) TempUserPhoneGetOrRegister(ctx *fasthttp.RequestCtx, us
 func (r *AuthRepository) UserEmailGetOrRegister(ctx *fasthttp.RequestCtx, username, email, password string) (int, error) {
 	var userID int
 	q := `
-		insert into users (email, password)
-		values ($1, $2)
+		insert into users (email, password, username)
+		values ($1, $2, $3)
 		on conflict (email)
 		do update
 		set 
 			password = EXCLUDED.password
 		returning id
 	`
-	err := r.db.QueryRow(ctx, q, email, password).Scan(&userID)
+	err := r.db.QueryRow(ctx, q, email, password, username).Scan(&userID)
 
 	if err != nil {
 		return userID, err
@@ -259,15 +259,15 @@ func (r *AuthRepository) UserPhoneGetOrRegister(ctx *fasthttp.RequestCtx, userna
 
 	var userID int
 	q := `
-		insert into users (phone, password)
-		values ($1, $2)
+		insert into users (phone, password, username)
+		values ($1, $2, $3)
 		on conflict (phone)
 		do update
 		set 
 			password = EXCLUDED.password
 		returning id
 	`
-	err := r.db.QueryRow(ctx, q, phone, password).Scan(&userID)
+	err := r.db.QueryRow(ctx, q, phone, password, username).Scan(&userID)
 
 	if err != nil {
 		return userID, err

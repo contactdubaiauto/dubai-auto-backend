@@ -80,9 +80,11 @@ func (s *AdminService) UpdateAdmin(ctx *fasthttp.RequestCtx, id int, req *model.
 
 func (s *AdminService) DeleteAdmin(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteAdmin(ctx, id)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+	// todo: delete admin files if exists
 	return model.Response{Data: model.Success{Message: "Admin deleted successfully"}}
 }
 
@@ -490,7 +492,7 @@ func (s *AdminService) DeleteBrand(ctx *fasthttp.RequestCtx, id int) model.Respo
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-
+	// todo: delete image files if exists
 	return model.Response{Data: model.Success{Message: "Brand deleted successfully"}}
 }
 
@@ -583,6 +585,7 @@ func (s *AdminService) DeleteBodyType(ctx *fasthttp.RequestCtx, id int) model.Re
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
+	// todo: delete image files if exists
 	return model.Response{Data: model.Success{Message: "Body type deleted successfully"}}
 }
 
@@ -592,7 +595,7 @@ func (s *AdminService) DeleteBodyTypeImage(ctx *fasthttp.RequestCtx, id int) mod
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-
+	// todo: delete image files if exists
 	return model.Response{Data: model.Success{Message: "Body type image deleted successfully"}}
 }
 
@@ -797,43 +800,6 @@ func (s *AdminService) DeleteFuelType(ctx *fasthttp.RequestCtx, id int) model.Re
 	return model.Response{Data: model.Success{Message: "Fuel type deleted successfully"}}
 }
 
-// // Service Types service methods
-// func (s *AdminService) GetServiceTypes(ctx *fasthttp.RequestCtx) model.Response {
-// 	serviceTypes, err := s.repo.GetServiceTypes(ctx)
-
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: serviceTypes}
-// }
-
-// func (s *AdminService) CreateServiceType(ctx *fasthttp.RequestCtx, req *model.CreateServiceTypeRequest) model.Response {
-// 	id, err := s.repo.CreateServiceType(ctx, req)
-
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Service type created successfully"}}
-// }
-
-// func (s *AdminService) UpdateServiceType(ctx *fasthttp.RequestCtx, id int, req *model.CreateServiceTypeRequest) model.Response {
-// 	err := s.repo.UpdateServiceType(ctx, id, req)
-
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: model.Success{Message: "Service type updated successfully"}}
-// }
-
-// func (s *AdminService) DeleteServiceType(ctx *fasthttp.RequestCtx, id int) model.Response {
-// 	err := s.repo.DeleteServiceType(ctx, id)
-
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: model.Success{Message: "Service type deleted successfully"}}
-// }
-
 // Generations service methods
 func (s *AdminService) GetGenerations(ctx *fasthttp.RequestCtx) model.Response {
 	generations, err := s.repo.GetGenerations(ctx)
@@ -891,7 +857,7 @@ func (s *AdminService) DeleteGeneration(ctx *fasthttp.RequestCtx, id int) model.
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	// todo: delete image if exists
+	// todo: delete image files if exists
 	return model.Response{Data: model.Success{Message: "Generation deleted successfully"}}
 }
 
@@ -964,39 +930,6 @@ func (s *AdminService) DeleteGenerationModification(ctx *fasthttp.RequestCtx, ge
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 	return model.Response{Data: model.Success{Message: "Generation modification deleted successfully"}}
-}
-
-// Configurations service methods
-func (s *AdminService) GetConfigurations(ctx *fasthttp.RequestCtx) model.Response {
-	configurations, err := s.repo.GetConfigurations(ctx)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: configurations}
-}
-
-func (s *AdminService) CreateConfiguration(ctx *fasthttp.RequestCtx, req *model.CreateConfigurationRequest) model.Response {
-	id, err := s.repo.CreateConfiguration(ctx, req)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Configuration created successfully"}}
-}
-
-func (s *AdminService) UpdateConfiguration(ctx *fasthttp.RequestCtx, id int, req *model.UpdateConfigurationRequest) model.Response {
-	err := s.repo.UpdateConfiguration(ctx, id, req)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Configuration updated successfully"}}
-}
-
-func (s *AdminService) DeleteConfiguration(ctx *fasthttp.RequestCtx, id int) model.Response {
-	err := s.repo.DeleteConfiguration(ctx, id)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Configuration deleted successfully"}}
 }
 
 // Colors service methods
@@ -1185,9 +1118,11 @@ func (s *AdminService) UpdateMotoBrand(ctx *fasthttp.RequestCtx, id int, req *mo
 
 func (s *AdminService) DeleteMotoBrand(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteMotoBrand(ctx, id)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+	// todo: delete image files if exists
 	return model.Response{Data: model.Success{Message: "Moto brand deleted successfully"}}
 }
 
@@ -1218,9 +1153,11 @@ func (s *AdminService) UpdateMotoModel(ctx *fasthttp.RequestCtx, id int, req *mo
 
 func (s *AdminService) DeleteMotoModel(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteMotoModel(ctx, id)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
 	return model.Response{Data: model.Success{Message: "Moto model deleted successfully"}}
 }
 
@@ -1438,9 +1375,11 @@ func (s *AdminService) UpdateComtransBrand(ctx *fasthttp.RequestCtx, id int, req
 
 func (s *AdminService) DeleteComtransBrand(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteComtransBrand(ctx, id)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+	// todo: delete image files if exists
 	return model.Response{Data: model.Success{Message: "Comtrans brand deleted successfully"}}
 }
 
@@ -1471,9 +1410,11 @@ func (s *AdminService) UpdateComtransModel(ctx *fasthttp.RequestCtx, id int, req
 
 func (s *AdminService) DeleteComtransModel(ctx *fasthttp.RequestCtx, id int) model.Response {
 	err := s.repo.DeleteComtransModel(ctx, id)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
 	return model.Response{Data: model.Success{Message: "Comtrans model deleted successfully"}}
 }
 

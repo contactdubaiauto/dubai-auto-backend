@@ -231,17 +231,6 @@ definitions:
       name_ru:
         type: string
     type: object
-  model.AdminConfigurationResponse:
-    properties:
-      body_type_id:
-        type: integer
-      body_type_name:
-        type: string
-      generation_id:
-        type: integer
-      id:
-        type: integer
-    type: object
   model.AdminCountryResponse:
     properties:
       country_code:
@@ -907,16 +896,6 @@ definitions:
     - price_type
     - vin_code
     - year
-    type: object
-  model.CreateConfigurationRequest:
-    properties:
-      body_type_id:
-        type: integer
-      generation_id:
-        type: integer
-    required:
-    - body_type_id
-    - generation_id
     type: object
   model.CreateDrivetrainRequest:
     properties:
@@ -1750,7 +1729,7 @@ definitions:
       birthday:
         type: string
       city:
-        type: string
+        $ref: '#/definitions/model.City'
       driving_experience:
         type: integer
       email:
@@ -2220,16 +2199,6 @@ definitions:
     required:
     - name
     type: object
-  model.UpdateConfigurationRequest:
-    properties:
-      body_type_id:
-        type: integer
-      generation_id:
-        type: integer
-    required:
-    - body_type_id
-    - generation_id
-    type: object
   model.UpdateGenerationModificationRequest:
     properties:
       body_type_id:
@@ -2397,7 +2366,6 @@ definitions:
       whatsapp:
         type: string
     required:
-    - city_id
     - username
     type: object
   model.UserApplication:
@@ -5429,159 +5397,6 @@ paths:
       summary: Update a comtrans parameter value
       tags:
       - admin-comtrans-parameter-values
-  /api/v1/admin/configurations:
-    get:
-      description: Returns a list of all configurations
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.AdminConfigurationResponse'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get all configurations
-      tags:
-      - admin-configurations
-    post:
-      consumes:
-      - application/json
-      description: Creates a new configuration
-      parameters:
-      - description: Configuration data
-        in: body
-        name: configuration
-        required: true
-        schema:
-          $ref: '#/definitions/model.CreateConfigurationRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.SuccessWithId'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Create a configuration
-      tags:
-      - admin-configurations
-  /api/v1/admin/configurations/{id}:
-    delete:
-      description: Deletes a configuration by ID
-      parameters:
-      - description: Configuration ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Delete a configuration
-      tags:
-      - admin-configurations
-    put:
-      consumes:
-      - application/json
-      description: Updates a configuration by ID
-      parameters:
-      - description: Configuration ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Configuration data
-        in: body
-        name: configuration
-        required: true
-        schema:
-          $ref: '#/definitions/model.UpdateConfigurationRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Update a configuration
-      tags:
-      - admin-configurations
   /api/v1/admin/countries:
     get:
       description: Returns a list of all countries

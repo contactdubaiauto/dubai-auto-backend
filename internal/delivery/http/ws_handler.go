@@ -165,7 +165,6 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 			c.Close()
 			return
 		}
-
 		user.Conn = c
 		h.wsMutex.Lock()
 
@@ -175,6 +174,15 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 
 		h.wsUserConns[user.ID] = c
 		h.wsMutex.Unlock()
+
+		user.Avatar, user.Username, err = h.service.GetUserAvatarAndUsername(user.ID)
+		fmt.Println("user.Avatar: ", user.Avatar)
+		fmt.Println("user.Username: ", user.Username)
+		if err != nil {
+			log.Printf("❌ Error getting user avatar and username: %v", err)
+			h.closeConnGracefully(c)
+			return
+		}
 
 		welcomeMsg := model.WSMessage{
 			Event: "connected",
@@ -194,10 +202,6 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 				},
 			},
 		}
-
-		avatar, username := h.service.GetUserAvatar(user.ID)
-		user.Avatar = avatar
-		user.Username = username
 
 		h.safeWriteJSON(c, welcomeMsg)
 		err = h.service.UpdateUserStatus(user.ID, true)

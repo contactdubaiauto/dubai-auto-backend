@@ -81,12 +81,27 @@ func (r *SocketRepository) GetNewMessages(userID int) ([]model.UserMessage, erro
 	return messages, err
 }
 
-func (r *SocketRepository) GetUserAvatar(userID int) (string, string, error) {
+func (r *SocketRepository) GetUserAvatarAndUsername(userID int) (string, string, error) {
 	q := `
-		SELECT avatar, username FROM profiles WHERE user_id = $1
+		SELECT $2 || avatar, username FROM profiles WHERE user_id = $1
 	`
 	var avatar, username string
-	err := r.db.QueryRow(context.Background(), q, userID).Scan(&avatar, &username)
+	var avatarP, usernameP *string
+	err := r.db.QueryRow(context.Background(), q, userID, r.config.IMAGE_BASE_URL).Scan(&avatarP, &usernameP)
+	fmt.Println("avatarP: ", avatarP)
+	fmt.Println("usernameP: ", usernameP)
+	if avatarP == nil {
+		avatar = ""
+	} else {
+		avatar = *avatarP
+	}
+
+	if usernameP == nil {
+		username = ""
+	} else {
+		username = *usernameP
+	}
+
 	return avatar, username, err
 }
 
@@ -167,15 +182,18 @@ func (r *SocketRepository) GetUserToken(userID int) (string, error) {
 // SendPushForMessage sends a push notification for a given message without writing it to DB.
 func (r *SocketRepository) SendPushForMessage(senderUserID int, msg model.MessageReceived) error {
 	token, err := r.GetUserToken(msg.TargetUserID)
+
 	if err != nil {
 		return err
 	}
+
 	username, avatar, _ := r.GetUserAvatarName(senderUserID)
 	_, err = r.firebaseService.SendToToken(token, messaging.Notification{
 		Title:    username,
 		Body:     msg.Message,
 		ImageURL: avatar,
 	})
+
 	return err
 }
 

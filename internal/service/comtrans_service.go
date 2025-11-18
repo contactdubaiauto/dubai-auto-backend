@@ -150,6 +150,7 @@ func (s *ComtransService) DeleteComtransImage(ctx *fasthttp.RequestCtx, comtrans
 		}
 	}
 
+	// todo: delete image if exists
 	return model.Response{
 		Data: model.Success{Message: "Commercial transport image deleted successfully"},
 	}
@@ -165,6 +166,7 @@ func (s *ComtransService) DeleteComtransVideo(ctx *fasthttp.RequestCtx, comtrans
 		}
 	}
 
+	// todo: delete video if exists
 	return model.Response{
 		Data: model.Success{Message: "Commercial transport video deleted successfully"},
 	}
@@ -252,7 +254,7 @@ func (s *ComtransService) DeleteComtrans(ctx *fasthttp.RequestCtx, comtransID in
 			Error:  err,
 		}
 	}
-	// Remove associated files
+	// todo: delete associated files
 	if dir != "" {
 		files.RemoveFolder(dir)
 	}

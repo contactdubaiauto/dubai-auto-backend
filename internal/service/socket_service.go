@@ -23,14 +23,8 @@ func (s *SocketService) GetNewMessages(userID int) ([]model.UserMessage, error) 
 	return messages, err
 }
 
-func (s *SocketService) GetUserAvatar(userID int) (string, string) {
-	avatar, username, err := s.repo.GetUserAvatar(userID)
-
-	if err != nil {
-		return "", ""
-	}
-
-	return avatar, username
+func (s *SocketService) GetUserAvatarAndUsername(userID int) (string, string, error) {
+	return s.repo.GetUserAvatarAndUsername(userID)
 }
 
 func (s *SocketService) MessageWriteToDatabase(senderUserID int, status bool, msg model.MessageReceived) error {

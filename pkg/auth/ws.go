@@ -32,8 +32,7 @@ func ValidateWSJWT(tokenString string) (*model.WSUser, error) {
 	roleID := int(claims["role_id"].(float64))
 
 	return &model.WSUser{
-		ID:       userID,
-		Username: fmt.Sprintf("User_%d", userID),
-		RoleID:   roleID,
+		ID:     userID,
+		RoleID: roleID,
 	}, nil
 }

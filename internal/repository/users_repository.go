@@ -258,7 +258,10 @@ func (r *UserRepository) GetProfile(ctx *fasthttp.RequestCtx, userID int, nameCo
 			ps.telegram,
 			ps.whatsapp,
 			ps.address,
-			cs.` + nameColumn + ` as city
+			json_build_object(
+				'id', cs.id,
+				'name', cs.` + nameColumn + `
+			) as city
 		from users us
 		left join profiles as ps on ps.user_id = us.id
 		left join cities as cs on cs.id = ps.city_id
@@ -267,7 +270,7 @@ func (r *UserRepository) GetProfile(ctx *fasthttp.RequestCtx, userID int, nameCo
 	`
 	var pf model.GetProfileResponse
 	err := r.db.QueryRow(ctx, q, userID).Scan(&pf.ID, &pf.Email, &pf.Phone,
-		&pf.DrivingExperience, &pf.Notification, &pf.Username, &pf.Google, &pf.Birthday, &pf.AboutMe, &pf.RegisteredBy, &pf.City, &pf.Telegram, &pf.Whatsapp, &pf.Address)
+		&pf.DrivingExperience, &pf.Notification, &pf.Username, &pf.Google, &pf.Birthday, &pf.AboutMe, &pf.RegisteredBy, &pf.Telegram, &pf.Whatsapp, &pf.Address, &pf.City)
 
 	return pf, err
 }

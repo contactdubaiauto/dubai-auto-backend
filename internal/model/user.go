@@ -102,7 +102,7 @@ type UpdateProfileRequest struct {
 	AboutMe           string `json:"about_me"`
 	DrivingExperience int    `json:"driving_experience"`
 	Notification      bool   `json:"notification"`
-	CityID            int    `json:"city_id" validate:"required"`
+	CityID            int    `json:"city_id"`
 	Telegram          string `json:"telegram"`
 	Whatsapp          string `json:"whatsapp"`
 	Address           string `json:"address"`

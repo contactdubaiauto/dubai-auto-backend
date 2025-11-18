@@ -143,13 +143,14 @@ func (s *MotorcycleService) CreateMotorcycleVideos(ctx *fasthttp.RequestCtx, mot
 func (s *MotorcycleService) DeleteMotorcycleImage(ctx *fasthttp.RequestCtx, motorcycleID int, imageID int) model.Response {
 
 	err := s.repository.DeleteMotorcycleImage(ctx, motorcycleID, imageID)
+
 	if err != nil {
 		return model.Response{
 			Status: 500,
 			Error:  err,
 		}
 	}
-
+	// todo: delete image if exists
 	return model.Response{
 		Data: model.Success{Message: "Motorcycle image deleted successfully"},
 	}
@@ -165,6 +166,7 @@ func (s *MotorcycleService) DeleteMotorcycleVideo(ctx *fasthttp.RequestCtx, moto
 		}
 	}
 
+	// todo: delete video if exists
 	return model.Response{
 		Data: model.Success{Message: "Motorcycle video deleted successfully"},
 	}
@@ -242,16 +244,18 @@ func (s *MotorcycleService) SellMotorcycle(ctx *fasthttp.RequestCtx, motorcycleI
 
 func (s *MotorcycleService) DeleteMotorcycle(ctx *fasthttp.RequestCtx, motorcycleID int, dir string) model.Response {
 	err := s.repository.DeleteMotorcycle(ctx, motorcycleID)
+
 	if err != nil {
 		return model.Response{
 			Status: 500,
 			Error:  err,
 		}
 	}
-	// Remove associated files
+
 	if dir != "" {
 		files.RemoveFolder(dir)
 	}
+
 	return model.Response{
 		Status: 200,
 		Data:   model.Success{Message: "Successfully deleted motorcycle"},

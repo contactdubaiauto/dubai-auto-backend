@@ -159,9 +159,12 @@ func (s *AuthService) UserLoginGoogle(ctx *fasthttp.RequestCtx, tokenID string) 
 
 func (s *AuthService) DeleteAccount(ctx *fasthttp.RequestCtx, userID int) model.Response {
 	err := s.repo.DeleteAccount(ctx, userID)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
+	// todo: delete associated files
 	return model.Response{Data: model.Success{Message: "Account deleted successfully"}}
 }
 

@@ -4538,245 +4538,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/admin/configurations": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Returns a list of all configurations",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-configurations"
-                ],
-                "summary": "Get all configurations",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.AdminConfigurationResponse"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Creates a new configuration",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-configurations"
-                ],
-                "summary": "Create a configuration",
-                "parameters": [
-                    {
-                        "description": "Configuration data",
-                        "name": "configuration",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.CreateConfigurationRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.SuccessWithId"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/admin/configurations/{id}": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Updates a configuration by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-configurations"
-                ],
-                "summary": "Update a configuration",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Configuration ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Configuration data",
-                        "name": "configuration",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.UpdateConfigurationRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Success"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Deletes a configuration by ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-configurations"
-                ],
-                "summary": "Delete a configuration",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Configuration ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Success"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/admin/countries": {
             "get": {
                 "security": [
@@ -16452,23 +16213,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AdminConfigurationResponse": {
-            "type": "object",
-            "properties": {
-                "body_type_id": {
-                    "type": "integer"
-                },
-                "body_type_name": {
-                    "type": "string"
-                },
-                "generation_id": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                }
-            }
-        },
         "model.AdminCountryResponse": {
             "type": "object",
             "properties": {
@@ -17454,21 +17198,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "year": {
-                    "type": "integer"
-                }
-            }
-        },
-        "model.CreateConfigurationRequest": {
-            "type": "object",
-            "required": [
-                "body_type_id",
-                "generation_id"
-            ],
-            "properties": {
-                "body_type_id": {
-                    "type": "integer"
-                },
-                "generation_id": {
                     "type": "integer"
                 }
             }
@@ -18717,7 +18446,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "city": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.City"
                 },
                 "driving_experience": {
                     "type": "integer"
@@ -19412,21 +19141,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.UpdateConfigurationRequest": {
-            "type": "object",
-            "required": [
-                "body_type_id",
-                "generation_id"
-            ],
-            "properties": {
-                "body_type_id": {
-                    "type": "integer"
-                },
-                "generation_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "model.UpdateGenerationModificationRequest": {
             "type": "object",
             "required": [
@@ -19635,7 +19349,6 @@ const docTemplate = `{
         "model.UpdateProfileRequest": {
             "type": "object",
             "required": [
-                "city_id",
                 "username"
             ],
             "properties": {

@@ -38,7 +38,7 @@ type GetProfileResponse struct {
 	Username          *string    `json:"username"`
 	Google            *string    `json:"google"`
 	RegisteredBy      *string    `json:"registered_by"`
-	City              *string    `json:"city"`
+	City              *City      `json:"city"`
 	Telegram          *string    `json:"telegram"`
 	Whatsapp          *string    `json:"whatsapp"`
 	Address           *string    `json:"address"`

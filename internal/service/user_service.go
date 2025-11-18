@@ -35,7 +35,7 @@ func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID int, limit, las
 
 func (s *UserService) OnSale(ctx *fasthttp.RequestCtx, userID int, limit, lastID, nameColumn string) model.Response {
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
-	cars, err := s.UserRepository.GetMyCars(ctx, userID, limitInt, lastIDInt, 2, nameColumn)
+	cars, err := s.UserRepository.GetMyCars(ctx, userID, limitInt, lastIDInt, 3, nameColumn)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -454,7 +454,7 @@ func (s *UserService) CreateCarImages(ctx *fasthttp.RequestCtx, carID int, image
 			Error:  err,
 		}
 	}
-
+	// todo: delete old images if exist
 	return model.Response{
 		Data: model.Success{Message: "Car images created successfully"},
 	}
@@ -469,7 +469,7 @@ func (s *UserService) CreateCarVideos(ctx *fasthttp.RequestCtx, carID int, video
 			Error:  err,
 		}
 	}
-
+	// todo: delete old video if exist
 	return model.Response{
 		Data: model.Success{Message: "Car videos created successfully"},
 	}
