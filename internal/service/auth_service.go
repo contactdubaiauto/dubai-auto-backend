@@ -109,7 +109,6 @@ func (s *AuthService) ApplicationDocuments(ctx *fasthttp.RequestCtx, id int, lic
 	}
 
 	documents.CopyOfID = path
-	fmt.Println(documents)
 	err = s.repo.ApplicationDocuments(ctx, id, documents)
 
 	if err != nil {
@@ -132,7 +131,6 @@ func (s *AuthService) UserLoginGoogle(ctx *fasthttp.RequestCtx, tokenID string) 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println("Failed to get user info")
 		return model.Response{Error: errors.New("failed to get user info"), Status: http.StatusBadRequest}
 	}
 

@@ -15857,6 +15857,58 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/ws/conversations": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns a list of conversations for the user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ws"
+                ],
+                "summary": "Get conversations",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Conversation"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -16766,6 +16818,23 @@ const docTemplate = `{
                 },
                 "parameter_value_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.Conversation": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "last_active_date": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
@@ -18854,9 +18923,6 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
-                "company_name": {
-                    "type": "string"
-                },
                 "coordinates": {
                     "type": "string"
                 },
@@ -19566,7 +19632,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "api.mashynbazar.com",
+	Host:             "localhost:8080",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Project name",

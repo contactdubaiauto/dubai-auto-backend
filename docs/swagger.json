@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "api.mashynbazar.com",
+    "host": "localhost:8080",
     "basePath": "/",
     "paths": {
         "/api/v1/admin/activity-fields": {
@@ -15851,6 +15851,58 @@
                     }
                 }
             }
+        },
+        "/ws/conversations": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns a list of conversations for the user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ws"
+                ],
+                "summary": "Get conversations",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Conversation"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -16760,6 +16812,23 @@
                 },
                 "parameter_value_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.Conversation": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "last_active_date": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
@@ -18846,9 +18915,6 @@
                     "maxLength": 300
                 },
                 "address": {
-                    "type": "string"
-                },
-                "company_name": {
                     "type": "string"
                 },
                 "coordinates": {

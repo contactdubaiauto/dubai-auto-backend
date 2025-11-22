@@ -216,6 +216,16 @@ insert into users (email, username, role_id, password, phone, permissions)
 values 
     ('admin@admin.com', 'admin', 0, '$2a$10$H6OHFABvTjMScHwB6qIvte4teoXtGP1h/ViqTnVHg1R.iw4yy9xTq', '989898989', '["cars", "motorcycles", "comtrans"]');
 
+insert into users (email, username, role_id, password, phone, permissions) 
+values 
+    ('admin2@admin.com', 'admin2', 0, '$2a$10$H6OHFABvTjMScHwB6qIvte4teoXtGP1h/ViqTnVHg1R.iw4yy9xTq', '9090909090', '["cars", "motorcycles", "comtrans", "chat"]');
+
+update users set permissions = '["cars", "motorcycles", "chat"]' where id = 165;
+
+insert into profiles (user_id, company_name, company_type_id, activity_field_id, vat_number, driving_experience, notification, username, registered_by, google, avatar, banner, whatsapp, telegram, address, coordinates, message, birthday, about_me) 
+    values 
+    (165, 'Admin', 1, 1, '1234567890', 10, true, 'admin', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '1234567890', '1234567890', '1234567890', '1234567890', '1234567890', '2025-12-10', '1234567890');
+
 create table message_files (
     "id" serial primary key,
     "sender_id" int,
@@ -226,4 +236,24 @@ create table message_files (
             references users(id)
                 on delete set null
                 on update set null
+);
+
+
+
+create table conversations (
+    "id" serial primary key,
+    "user_id_1" int not null,
+    "user_id_2" int not null,
+    "created_at" timestamp default now(),
+    constraint fk_conversations_user_id_1
+        foreign key (user_id_1)
+            references users(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_conversations_user_id_2
+        foreign key (user_id_2)
+            references users(id)
+                on delete cascade
+                on update cascade,
+    unique(user_id_1, user_id_2)
 );

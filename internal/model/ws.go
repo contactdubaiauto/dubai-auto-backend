@@ -68,3 +68,10 @@ type FirebaseMessage struct {
 	Data FirebaseMessageData `json:"data"`
 	Type int                 `json:"type"`
 }
+
+type Conversation struct {
+	LastActiveDate time.Time `json:"last_active_date"`
+	Username       string    `json:"username"`
+	Avatar         *string   `json:"avatar"`
+	ID             int       `json:"id"`
+}

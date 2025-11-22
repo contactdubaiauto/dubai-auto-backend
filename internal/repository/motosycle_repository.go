@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -161,7 +160,6 @@ func (r *MotorcycleRepository) CreateMotorcycle(ctx *fasthttp.RequestCtx, req mo
 			$` + strconv.Itoa(len(keys)+1) + `
 		) returning id
 	`
-	fmt.Println("user_id", userID)
 	var id int
 	args = append(args, userID)
 	err := r.db.QueryRow(ctx, q, args...).Scan(&id)

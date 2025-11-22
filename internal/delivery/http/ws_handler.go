@@ -3,6 +3,7 @@ package http
 import (
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/service"
+	"dubai-auto/internal/utils"
 	"dubai-auto/pkg/auth"
 	"encoding/json"
 	"fmt"
@@ -15,8 +16,7 @@ import (
 )
 
 type SocketHandler struct {
-	service *service.SocketService
-
+	service        *service.SocketService
 	wsUserConns    map[int]*websocket.Conn
 	wsMutex        sync.RWMutex
 	tmpMessages    map[string]int
@@ -33,15 +33,15 @@ func (h *SocketHandler) closeConnGracefully(c *websocket.Conn) {
 
 	h.connWriteMuMux.Lock()
 	writeMu, exists := h.connWriteMutex[c]
+
 	if exists && writeMu != nil {
 		writeMu.Lock()
 		defer writeMu.Unlock()
 	}
-	h.connWriteMuMux.Unlock()
 
+	h.connWriteMuMux.Unlock()
 	_ = c.WriteControl(websocket.CloseMessage, []byte{}, time.Now().Add(1*time.Second))
 	_ = c.Close()
-
 	h.connWriteMuMux.Lock()
 	delete(h.connWriteMutex, c)
 	h.connWriteMuMux.Unlock()
@@ -59,6 +59,7 @@ func (h *SocketHandler) safeWriteJSON(c *websocket.Conn, msg any) error {
 	if !exists {
 		h.connWriteMuMux.Lock()
 		writeMu, exists = h.connWriteMutex[c]
+
 		if !exists {
 			writeMu = &sync.Mutex{}
 			h.connWriteMutex[c] = writeMu
@@ -176,8 +177,7 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 		h.wsMutex.Unlock()
 
 		user.Avatar, user.Username, err = h.service.GetUserAvatarAndUsername(user.ID)
-		fmt.Println("user.Avatar: ", user.Avatar)
-		fmt.Println("user.Username: ", user.Username)
+
 		if err != nil {
 			log.Printf("❌ Error getting user avatar and username: %v", err)
 			h.closeConnGracefully(c)
@@ -347,9 +347,6 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 										if attempts >= 3 {
 											delete(h.tmpMessages, k)
 											h.tmpMutex.Unlock()
-											fmt.Println("attempts for new message:", attempts)
-
-											// Send push notification to this admin
 											msgCopy := messageReceived
 											msgCopy.TargetUserID = receiverID
 
@@ -433,7 +430,6 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 								if attempts >= 3 {
 									delete(h.tmpMessages, k)
 									h.tmpMutex.Unlock()
-									fmt.Println("attempts for new message:", attempts)
 
 									if err := h.service.SendPushForMessage(user.ID, messageReceived); err != nil {
 										log.Printf("❌ Error sending push: %v", err)
@@ -510,7 +506,6 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 				log.Printf("⚠️ Unknown event: %s", msg.Event)
 			}
 		}
-		fmt.Println("for is ended: ", user.ID)
 	})
 }
 
@@ -534,4 +529,46 @@ func (h *SocketHandler) sendToUser(userID int, event string, data any) {
 	}
 
 	go h.safeWriteJSON(userConn, msg)
+}
+
+// GetConversations godoc
+// @Summary      Get conversations
+// @Description  Returns a list of conversations for the user
+// @Tags         ws
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}  model.Conversation
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /ws/conversations [get]
+func (h *SocketHandler) GetConversations(c *fiber.Ctx) error {
+	userID := c.Locals("id").(int)
+	data := h.service.GetConversations(userID)
+	return utils.FiberResponse(c, data)
+}
+
+// GetMessages godoc
+// @Summary      Get messages
+// @Description  Returns a list of messages for the user
+// @Tags         ws
+// @Produce      json
+// @Security     BearerAuth
+// @Param        target_user_id  path      string  true  "Target user ID"
+// @Param        last_id  query      string  false  "Last message ID"
+// @Param        limit  query      string  false  "Limit"
+// @Success      200  {array}  model.Message
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /ws/messages/:target_user_id [get]
+func (h *SocketHandler) GetMessages(c *fiber.Ctx) error {
+	targetUserID := c.Params("target_user_id")
+	lastMessageID := c.Query("last_id")
+	limit := c.Query("limit")
+	userID := c.Locals("id").(int)
+	data := h.service.GetMessages(c.Context(), userID, targetUserID, lastMessageID, limit)
+	return utils.FiberResponse(c, data)
 }

@@ -120,3 +120,19 @@ alter table motorcycles add column "view_count" int not null default 0;
 alter table comtrans add column "view_count" int not null default 0;
 alter table motorcycles add column "credit" boolean not null default false;
 alter table comtrans add column "credit" boolean not null default false;
+
+
+
+select 
+    c.updated_at,
+    u.username,
+    p.avatar,
+    u.id
+from conversations c
+join users u on u.id = 
+    case 
+        when c.user_id_1 = 23 then c.user_id_2 
+        else c.user_id_1 
+    end
+join profiles p on p.user_id = u.id
+order by c.updated_at desc;

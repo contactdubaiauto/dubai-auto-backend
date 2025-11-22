@@ -32,11 +32,10 @@ func (r *ThirdPartyRepository) Profile(ctx *fasthttp.RequestCtx, id int, profile
 			address = $4,
 			coordinates = $5,
 			message = $6,
-			company_name = $7
-		where user_id = $8
+		where user_id = $7
 	`
 	_, err := r.db.Exec(ctx, q, profile.AboutUs, profile.Whatsapp,
-		profile.Telegram, profile.Address, profile.Coordinates, profile.Message, profile.CompanyName, id)
+		profile.Telegram, profile.Address, profile.Coordinates, profile.Message, id)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -508,14 +507,14 @@ func (r *ThirdPartyRepository) GetEditDealerCarByID(ctx *fasthttp.RequestCtx, ca
 			) as city,
 			json_build_object(
 				'id', ms.id,
-				'name', ms.` + nameColumn + `,
+				'name', ms.` + nameColumn + `
 			) as model,
 			json_build_object(
 				'id', mfs.id,
 				'engine', es.` + nameColumn + `,
 				'fuel_type', fts.` + nameColumn + `,
 				'drivetrain', ds.` + nameColumn + `,
-				'transmission', ts.` + nameColumn + `,
+				'transmission', ts.` + nameColumn + `
 			) as modification,
 			json_build_object(
 				'id', cls.id,

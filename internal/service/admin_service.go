@@ -230,7 +230,6 @@ func (s *AdminService) CreateApplicationDocuments(ctx *fasthttp.RequestCtx, user
 	}
 
 	documents.CopyOfID = path
-	fmt.Println(documents)
 	err = s.repo.CreateApplicationDocuments(ctx, userID, documents)
 
 	if err != nil {

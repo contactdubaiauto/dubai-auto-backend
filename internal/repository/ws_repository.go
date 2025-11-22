@@ -88,8 +88,7 @@ func (r *SocketRepository) GetUserAvatarAndUsername(userID int) (string, string,
 	var avatar, username string
 	var avatarP, usernameP *string
 	err := r.db.QueryRow(context.Background(), q, userID, r.config.IMAGE_BASE_URL).Scan(&avatarP, &usernameP)
-	fmt.Println("avatarP: ", avatarP)
-	fmt.Println("usernameP: ", usernameP)
+
 	if avatarP == nil {
 		avatar = ""
 	} else {
@@ -118,20 +117,21 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 		) VALUES ($1, $2, $3, $4, $5, $6)
 	`
 	_, err := r.db.Exec(context.Background(), q, senderUserID, msg.TargetUserID, s, msg.Message, msg.Type, msg.Time)
+
 	if err != nil {
-		fmt.Println("msg.TargetUserID")
-		fmt.Println(msg.TargetUserID)
 		return err
 	}
 
-	userFcmToken := ""
-	q = `
-		select device_token from user_tokens where user_id = $1
-	`
-	r.db.QueryRow(context.Background(), q, msg.TargetUserID).Scan(&userFcmToken)
-	username, avatar, _ := r.GetUserAvatarName(senderUserID)
+	r.UpsertConversation(senderUserID, msg.TargetUserID)
 
 	if !status {
+		userFcmToken := ""
+		q = `
+			select device_token from user_tokens where user_id = $1
+		`
+		r.db.QueryRow(context.Background(), q, msg.TargetUserID).Scan(&userFcmToken)
+		username, avatar, _ := r.GetUserAvatarName(senderUserID)
+
 		_, err = r.firebaseService.SendToToken(userFcmToken, messaging.Notification{
 			Title:    username,
 			Body:     msg.Message,
@@ -166,7 +166,6 @@ func (r *SocketRepository) CheckUserExists(userID int) error {
 	`
 	var id int
 	err := r.db.QueryRow(context.Background(), q, userID).Scan(&id)
-	fmt.Println(id)
 	return err
 }
 
@@ -187,7 +186,12 @@ func (r *SocketRepository) SendPushForMessage(senderUserID int, msg model.Messag
 		return err
 	}
 
-	username, avatar, _ := r.GetUserAvatarName(senderUserID)
+	username, avatar, err := r.GetUserAvatarName(senderUserID)
+
+	if err != nil {
+		return err
+	}
+
 	_, err = r.firebaseService.SendToToken(token, messaging.Notification{
 		Title:    username,
 		Body:     msg.Message,
@@ -222,4 +226,52 @@ func (r *SocketRepository) GetActiveAdminsWithChatPermission() ([]int, error) {
 	}
 
 	return adminIDs, nil
+}
+
+func (r *SocketRepository) GetConversations(userID int) ([]model.Conversation, error) {
+	q := `
+		select 
+			c.updated_at,
+			u.username,
+			p.avatar,
+			u.id
+		from conversations c
+		join users u on u.id = 
+			case 
+				when c.user_id_1 = $1 then c.user_id_2 
+				else c.user_id_1 
+			end
+		join profiles p on p.user_id = u.id
+		where c.user_id_1 = $1 or c.user_id_2 = $1
+		order by c.updated_at desc
+	`
+	rows, err := r.db.Query(context.Background(), q, userID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	conversations := make([]model.Conversation, 0)
+
+	for rows.Next() {
+		var conversation model.Conversation
+		err := rows.Scan(&conversation.LastActiveDate, &conversation.Username, &conversation.Avatar, &conversation.ID)
+
+		if err != nil {
+			return nil, err
+		}
+		conversations = append(conversations, conversation)
+	}
+
+	return conversations, nil
+}
+
+func (r *SocketRepository) UpsertConversation(userID1 int, userID2 int) error {
+	q := `
+		insert into conversations (user_id_1, user_id_2, updated_at) values ($1, $2, now())
+		on conflict (user_id_1, user_id_2) do update set updated_at = now()
+	`
+	_, err := r.db.Exec(context.Background(), q, userID1, userID2)
+	return err
 }

@@ -485,7 +485,6 @@ func (h *UserHandler) CreateMessageFile(c *fiber.Ctx) error {
 	ctx := c.Context()
 	senderID := c.Locals("id").(int)
 	form, _ := c.MultipartForm()
-	fmt.Println(senderID)
 
 	if form == nil {
 		return utils.FiberResponse(c, model.Response{
@@ -1417,7 +1416,6 @@ func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/{id} [get]
 func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
-	fmt.Println("slfjdlsakfjdlsjkl")
 	userID := c.Params("id")
 	ctx := c.Context()
 	nameColumn := c.Locals("lang").(string)

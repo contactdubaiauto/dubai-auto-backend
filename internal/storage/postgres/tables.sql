@@ -119,6 +119,29 @@ create table users (
     unique("phone")
 );
 
+create table conversations (
+    "id" serial primary key,
+    "user_id_1" int not null,
+    "user_id_2" int not null,
+    "updated_at" timestamp not null default now(),
+    "created_at" timestamp not null default now(),
+    constraint fk_conversations_user_id_1
+        foreign key (user_id_1)
+            references users(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_conversations_user_id_2
+        foreign key (user_id_2)
+            references users(id)
+                on delete cascade
+                on update cascade,
+    unique(user_id_1, user_id_2)
+);
+
+-- Indexes for efficient querying of conversations by user with ordering
+-- These support: WHERE (user_id_1 = $1 OR user_id_2 = $1) ORDER BY updated_at DESC
+CREATE INDEX idx_conversations_user1_updated ON conversations(user_id_1, updated_at DESC);
+CREATE INDEX idx_conversations_user2_updated ON conversations(user_id_2, updated_at DESC);
 
 create table user_destinations (
     "id" serial primary key,

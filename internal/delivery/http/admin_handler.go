@@ -2,7 +2,6 @@ package http
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -3074,8 +3073,8 @@ func (h *AdminHandler) GetComtransCategories(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/comtrans-categories/{category_id}/brands [get]
 func (h *AdminHandler) GetComtransBrandsByCategoryID(c *fiber.Ctx) error {
 	categoryIdStr := c.Params("id")
-	fmt.Println("categoryIdStr", categoryIdStr)
 	categoryId, err := strconv.Atoi(categoryIdStr)
+
 	if err != nil {
 		return utils.FiberResponse(c, model.Response{
 			Status: 400,

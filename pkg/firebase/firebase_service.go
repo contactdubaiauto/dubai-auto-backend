@@ -3,7 +3,6 @@ package firebase
 import (
 	"context"
 	"dubai-auto/internal/config"
-	"fmt"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
@@ -18,9 +17,7 @@ type FirebaseService struct {
 
 func InitFirebase(cfg *config.Config) (*FirebaseService, error) {
 	ctx := context.Background()
-	fmt.Println(cfg.FIREBASE_ACCOUNT_FILE)
 	opt := option.WithCredentialsFile(cfg.FIREBASE_ACCOUNT_FILE)
-	fmt.Println("opt", opt)
 	app, err := firebase.NewApp(ctx, nil, opt)
 
 	if err != nil {
@@ -61,12 +58,7 @@ func (fs *FirebaseService) SendToToken(token string, notification messaging.Noti
 	}
 
 	response, err := fs.client.Send(fs.ctx, message)
-
-	if err != nil {
-		return "", err
-	}
-
-	return response, nil
+	return response, err
 }
 
 // Send notification to multiple tokens
@@ -81,12 +73,7 @@ func (fs *FirebaseService) SendToMultipleTokens(tokens []string, title, body str
 	}
 
 	response, err := fs.client.SendEachForMulticast(fs.ctx, message)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response, nil
+	return response, err
 }
 
 // Send to topic (for broadcast notifications)
