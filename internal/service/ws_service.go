@@ -4,8 +4,6 @@ import (
 	"context"
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
-	"dubai-auto/internal/utils"
-	"strconv"
 )
 
 type SocketService struct {
@@ -69,26 +67,26 @@ func (s *SocketService) UpsertConversation(userID1 int, userID2 int) error {
 }
 
 func (s *SocketService) GetMessages(ctx context.Context, userID int, targetUserID, lastMessageID, limitStr string) model.Response {
-	targetUserIDInt, err := strconv.Atoi(targetUserID)
+	// targetUserIDInt, err := strconv.Atoi(targetUserID)
 
-	if err != nil {
-		return model.Response{
-			Error:  err,
-			Status: 400,
-		}
-	}
+	// if err != nil {
+	// 	return model.Response{
+	// 		Error:  err,
+	// 		Status: 400,
+	// 	}
+	// }
 
-	lastID, limit := utils.CheckLastIDLimit(lastMessageID, limitStr)
-	data, err := s.repo.GetMessages(ctx, userID, targetUserIDInt, lastID, limit)
+	// lastID, limit := utils.CheckLastIDLimit(lastMessageID, limitStr)
+	// data, err := s.repo.GetMessages(ctx, userID, targetUserIDInt, lastID, limit)
 
-	if err != nil {
-		return model.Response{
-			Error:  err,
-			Status: 500,
-		}
-	}
+	// if err != nil {
+	// 	return model.Response{
+	// 		Error:  err,
+	// 		Status: 500,
+	// 	}
+	// }
 
 	return model.Response{
-		Data: data,
+		Data: "data",
 	}
 }
