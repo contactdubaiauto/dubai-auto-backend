@@ -821,8 +821,6 @@ create table com_brands (
                 on update cascade
 );
 
-
-
 create table com_models (
     "id" serial primary key,
     "name" varchar(100) not null,
@@ -851,7 +849,6 @@ create table com_parameters (
                 on update cascade,
     unique("name", "comtran_category_id")
 );
-
 
 create table com_parameter_values (
     "id" serial primary key,
@@ -996,7 +993,6 @@ create table comtran_images (
                 on update cascade
 );
 
-
 create table comtran_videos (
     "id" serial primary key,
     "comtran_id" int not null,
@@ -1008,8 +1004,6 @@ create table comtran_videos (
                 on delete cascade
                 on update cascade
 );
-
-
 
 create table user_tokens (
     "id" serial primary key,

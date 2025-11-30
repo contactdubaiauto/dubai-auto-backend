@@ -4,6 +4,8 @@ import (
 	"context"
 	"dubai-auto/internal/model"
 	"dubai-auto/internal/repository"
+	"dubai-auto/internal/utils"
+	"strconv"
 )
 
 type SocketService struct {
@@ -28,8 +30,8 @@ func (s *SocketService) GetUserAvatarAndUsername(userID int) (string, string, er
 	return s.repo.GetUserAvatarAndUsername(userID)
 }
 
-func (s *SocketService) MessageWriteToDatabase(senderUserID int, status bool, msg model.MessageReceived) error {
-	err := s.repo.MessageWriteToDatabase(senderUserID, status, msg)
+func (s *SocketService) MessageWriteToDatabase(senderUserID int, status bool, data []model.UserMessage, targetUserID int) error {
+	err := s.repo.MessageWriteToDatabase(senderUserID, status, data, targetUserID)
 	return err
 }
 
@@ -62,31 +64,27 @@ func (s *SocketService) GetConversations(userID int) model.Response {
 	}
 }
 
-func (s *SocketService) UpsertConversation(userID1 int, userID2 int) error {
-	return s.repo.UpsertConversation(userID1, userID2)
-}
+func (s *SocketService) GetConversationMessages(ctx context.Context, userID int, conversationID, lastMessageID, limitStr string) model.Response {
+	conversationIDInt, err := strconv.Atoi(conversationID)
 
-func (s *SocketService) GetMessages(ctx context.Context, userID int, targetUserID, lastMessageID, limitStr string) model.Response {
-	// targetUserIDInt, err := strconv.Atoi(targetUserID)
+	if err != nil {
+		return model.Response{
+			Error:  err,
+			Status: 400,
+		}
+	}
 
-	// if err != nil {
-	// 	return model.Response{
-	// 		Error:  err,
-	// 		Status: 400,
-	// 	}
-	// }
+	lastID, limit := utils.CheckLastIDLimit(lastMessageID, limitStr)
+	data, err := s.repo.GetConversationMessages(ctx, userID, conversationIDInt, lastID, limit)
 
-	// lastID, limit := utils.CheckLastIDLimit(lastMessageID, limitStr)
-	// data, err := s.repo.GetMessages(ctx, userID, targetUserIDInt, lastID, limit)
-
-	// if err != nil {
-	// 	return model.Response{
-	// 		Error:  err,
-	// 		Status: 500,
-	// 	}
-	// }
+	if err != nil {
+		return model.Response{
+			Error:  err,
+			Status: 500,
+		}
+	}
 
 	return model.Response{
-		Data: "data",
+		Data: data,
 	}
 }

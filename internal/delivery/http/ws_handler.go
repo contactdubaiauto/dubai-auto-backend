@@ -25,6 +25,25 @@ type SocketHandler struct {
 	connWriteMuMux sync.RWMutex
 }
 
+type SocketHandlerOption func(*SocketHandler)
+
+func NewSocketHandler(service *service.SocketService, opts ...SocketHandlerOption) *SocketHandler {
+	handler := &SocketHandler{
+		service:        service,
+		wsUserConns:    make(map[int]*websocket.Conn),
+		tmpMessages:    make(map[string]int),
+		connWriteMutex: make(map[*websocket.Conn]*sync.Mutex),
+	}
+
+	for _, opt := range opts {
+		if opt != nil {
+			opt(handler)
+		}
+	}
+
+	return handler
+}
+
 func (h *SocketHandler) closeConnGracefully(c *websocket.Conn) {
 
 	if c == nil {
@@ -73,25 +92,6 @@ func (h *SocketHandler) safeWriteJSON(c *websocket.Conn, msg any) error {
 	return c.WriteJSON(msg)
 }
 
-type SocketHandlerOption func(*SocketHandler)
-
-func NewSocketHandler(service *service.SocketService, opts ...SocketHandlerOption) *SocketHandler {
-	handler := &SocketHandler{
-		service:        service,
-		wsUserConns:    make(map[int]*websocket.Conn),
-		tmpMessages:    make(map[string]int),
-		connWriteMutex: make(map[*websocket.Conn]*sync.Mutex),
-	}
-
-	for _, opt := range opts {
-		if opt != nil {
-			opt(handler)
-		}
-	}
-
-	return handler
-}
-
 func (h *SocketHandler) handleHeartbeat(conn *websocket.Conn, userID int, heartbeatTimeout chan struct{}, heartbeatCh chan struct{}, done chan struct{}) {
 	missCount := 0
 	for {
@@ -124,48 +124,17 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 		user, err := auth.ValidateWSJWT(token)
 
 		if err != nil {
-			log.Printf("❌ Authentication failed: %v", err)
-
-			errMsg := model.WSMessage{
-				Event: "error",
-				Data: []model.UserMessage{
-					{
-						Messages: []model.Message{
-							{
-								CreatedAt: time.Now(),
-								Message:   "authentication_failed",
-							},
-						},
-					},
-				},
-			}
-
-			h.safeWriteJSON(c, errMsg)
-			c.Close()
+			h.sendErrorAndCloseConn(c, "Authentication failed")
 			return
 		}
 
 		err = h.service.CheckUserExists(user.ID)
 
 		if err != nil {
-			log.Printf("❌ Error checking user exists: %v", err)
-			errMsg := model.WSMessage{
-				Event: "error",
-				Data: []model.UserMessage{
-					{
-						Messages: []model.Message{
-							{
-								CreatedAt: time.Now(),
-								Message:   "user_not_found",
-							},
-						},
-					},
-				},
-			}
-			h.safeWriteJSON(c, errMsg)
-			c.Close()
+			h.sendErrorAndCloseConn(c, "User not found")
 			return
 		}
+
 		user.Conn = c
 		h.wsMutex.Lock()
 
@@ -175,61 +144,20 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 
 		h.wsUserConns[user.ID] = c
 		h.wsMutex.Unlock()
-
 		user.Avatar, user.Username, err = h.service.GetUserAvatarAndUsername(user.ID)
 
 		if err != nil {
-			log.Printf("❌ Error getting user avatar and username: %v", err)
-			h.closeConnGracefully(c)
+			h.sendErrorAndCloseConn(c, "Error getting user avatar and username")
 			return
 		}
 
-		welcomeMsg := model.WSMessage{
-			Event: "connected",
-			Data: []model.UserMessage{
-				{
-					ID:             user.ID,
-					Username:       user.Username,
-					Avatar:         &user.Avatar,
-					LastActiveDate: time.Now(),
-					Messages: []model.Message{
-						{
-							CreatedAt: time.Now(),
-							Message:   "Successfully connected to messaging service",
-							Type:      1,
-						},
-					},
-				},
-			},
-		}
-
-		h.safeWriteJSON(c, welcomeMsg)
 		err = h.service.UpdateUserStatus(user.ID, true)
 
 		if err != nil {
 			log.Printf("❌ Error updating user status: %v", err)
 		}
 
-		defer func() {
-			h.wsMutex.Lock()
-
-			if conn, exists := h.wsUserConns[user.ID]; exists {
-
-				if conn == c {
-					delete(h.wsUserConns, user.ID)
-				}
-			}
-
-			h.wsMutex.Unlock()
-			err = h.service.UpdateUserStatus(user.ID, false)
-
-			if err != nil {
-				log.Printf("❌ Error updating user status: %v", err)
-			}
-
-			h.closeConnGracefully(c)
-		}()
-
+		defer h.closeConnAndUpdateUserStatus(user.ID, c)
 		data, err := h.service.GetNewMessages(user.ID)
 
 		if err != nil {
@@ -257,12 +185,7 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 			}
 
 			if err := c.ReadJSON(&msg); err != nil {
-				select {
-				case <-heartbeatTimeout:
-					log.Printf("ℹ️ Connection closed for user %d due to heartbeat timeout", user.ID)
-				default:
-					log.Printf("❌ Read error: %v", err)
-				}
+				log.Printf("❌ Read error: %v", err)
 				break
 			}
 
@@ -291,165 +214,52 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 				}
 
 				h.sendToUser(user.ID, "ack", messageReceived.Time)
+				var targetUserIDs []int
 
 				if msg.TargetUserID == 0 {
-					adminIDs, err := h.service.GetActiveAdminsWithChatPermission()
-
-					if err != nil {
-						log.Printf("❌ Error getting admins with chat permission: %v", err)
-					} else {
-						data := []model.UserMessage{
-							{
-								ID:             user.ID,
-								Username:       user.Username,
-								Avatar:         &user.Avatar,
-								LastActiveDate: time.Now(),
-								Messages: []model.Message{
-									{
-										CreatedAt:  messageReceived.Time,
-										Message:    messageReceived.Message,
-										Type:       messageReceived.Type,
-										SenderID:   user.ID,
-										ReceiverID: 0, // Admin broadcast
-									},
-								},
-							},
-						}
-
-						// Send to all admins and track delivery
-						for _, adminID := range adminIDs {
-							h.wsMutex.RLock()
-							targetC, exists := h.wsUserConns[adminID]
-							h.wsMutex.RUnlock()
-							s = false
-
-							if exists && targetC != nil {
-								s = true
-								h.sendToUser(adminID, "new_message", data)
-								key := fmt.Sprintf("%d|%s", adminID, messageReceived.Time.Format(time.RFC3339Nano))
-								h.tmpMutex.Lock()
-								h.tmpMessages[key] = 1
-								h.tmpMutex.Unlock()
-
-								// Retry mechanism for each admin
-								go func(receiverID int, payload []model.UserMessage) {
-									for {
-										time.Sleep(3 * time.Second)
-										k := fmt.Sprintf("%d|%s", receiverID, messageReceived.Time.Format(time.RFC3339Nano))
-										h.tmpMutex.Lock()
-										attempts, exists := h.tmpMessages[k]
-
-										if !exists {
-											h.tmpMutex.Unlock()
-											return
-										}
-
-										if attempts >= 3 {
-											delete(h.tmpMessages, k)
-											h.tmpMutex.Unlock()
-											msgCopy := messageReceived
-											msgCopy.TargetUserID = receiverID
-
-											if err := h.service.SendPushForMessage(user.ID, msgCopy); err != nil {
-												log.Printf("❌ Error sending push to admin %d: %v", receiverID, err)
-											}
-
-											h.closeConnGracefully(targetC)
-											return
-										}
-
-										h.tmpMessages[k] = attempts + 1
-										h.tmpMutex.Unlock()
-										h.sendToUser(receiverID, "new_message", payload)
-									}
-								}(adminID, data)
-
-								msgCopy := messageReceived
-								msgCopy.TargetUserID = adminID
-								err = h.service.MessageWriteToDatabase(user.ID, s, msgCopy)
-
-								if err != nil {
-									log.Printf("❌ Error writing to database for admin %d: %v", adminID, err)
-								}
-							} else {
-								msgCopy := messageReceived
-								msgCopy.TargetUserID = adminID
-								err = h.service.MessageWriteToDatabase(user.ID, false, msgCopy)
-
-								if err != nil {
-									log.Printf("❌ Error writing to database for admin %d: %v", adminID, err)
-								}
-							}
-						}
-
-					}
+					targetUserIDs, _ = h.service.GetActiveAdminsWithChatPermission()
 				} else {
-					// Regular private message to specific user
+					targetUserIDs = append(targetUserIDs, msg.TargetUserID)
+				}
+
+				data := []model.UserMessage{
+					{
+						ID:             user.ID,
+						Username:       user.Username,
+						Avatar:         &user.Avatar,
+						LastActiveDate: time.Now(),
+						Messages: []model.Message{
+							{
+								CreatedAt: messageReceived.Time,
+								Message:   messageReceived.Message,
+								Type:      messageReceived.Type,
+								SenderID:  user.ID,
+							},
+						},
+					},
+				}
+
+				// Send to all receivers
+				for _, targetUserID := range targetUserIDs {
 					h.wsMutex.RLock()
-					targetC, exists := h.wsUserConns[msg.TargetUserID]
+					targetC, exists := h.wsUserConns[targetUserID]
 					h.wsMutex.RUnlock()
 
 					if exists && targetC != nil {
 						s = true
-						data := []model.UserMessage{
-							{
-								ID:             user.ID,
-								Username:       user.Username,
-								Avatar:         &user.Avatar,
-								LastActiveDate: time.Now(),
-								Messages: []model.Message{
-									{
-										CreatedAt:  messageReceived.Time,
-										Message:    messageReceived.Message,
-										Type:       messageReceived.Type,
-										SenderID:   user.ID,
-										ReceiverID: msg.TargetUserID,
-									},
-								},
-							},
-						}
-
-						h.sendToUser(msg.TargetUserID, "new_message", data)
-						key := fmt.Sprintf("%d|%s", msg.TargetUserID, messageReceived.Time.Format(time.RFC3339Nano))
+						h.sendToUser(targetUserID, "new_message", data)
+						key := fmt.Sprintf("%d|%s", targetUserID, messageReceived.Time.Format(time.RFC3339Nano))
 						h.tmpMutex.Lock()
 						h.tmpMessages[key] = 1
 						h.tmpMutex.Unlock()
-
-						go func(receiverID int, payload []model.UserMessage, original model.WSMessageReceived) {
-							for {
-								time.Sleep(3 * time.Second)
-								k := fmt.Sprintf("%d|%s", receiverID, messageReceived.Time.Format(time.RFC3339Nano))
-								h.tmpMutex.Lock()
-								attempts, exists := h.tmpMessages[k]
-
-								if !exists {
-									h.tmpMutex.Unlock()
-									return
-								}
-
-								if attempts >= 3 {
-									delete(h.tmpMessages, k)
-									h.tmpMutex.Unlock()
-
-									if err := h.service.SendPushForMessage(user.ID, messageReceived); err != nil {
-										log.Printf("❌ Error sending push: %v", err)
-									}
-
-									h.closeConnGracefully(targetC)
-									return
-								}
-
-								h.tmpMessages[k] = attempts + 1
-								h.tmpMutex.Unlock()
-								h.sendToUser(receiverID, "new_message", payload)
-							}
-						}(msg.TargetUserID, data, msg)
+						// Retry mechanism for each receiver
+						go h.SendDataToUser(targetUserID, messageReceived, targetC)
 					}
 
-					err = h.service.MessageWriteToDatabase(user.ID, s, messageReceived)
+					err = h.service.MessageWriteToDatabase(user.ID, s, data, targetUserID)
 
 					if err != nil {
-						log.Printf("❌ Error writing to database: %v", err)
+						log.Printf("❌ Error message write to db  %d: %v", targetUserID, err)
 					}
 				}
 
@@ -458,6 +268,7 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 				var t time.Time
 				switch v := msg.Data.(type) {
 				case string:
+					fmt.Println("ack data type string")
 					parsed, err := time.Parse(time.RFC3339Nano, v)
 
 					if err != nil {
@@ -472,6 +283,7 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 
 					t = parsed
 				case map[string]any:
+					fmt.Println("ack data type map[string]any")
 
 					if s, ok := v["time"].(string); ok {
 						parsed, err := time.Parse(time.RFC3339Nano, s)
@@ -491,9 +303,11 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 						break
 					}
 				case float64:
+					fmt.Println("ack data type float64")
 
 					t = time.Unix(int64(v), 0)
 				default:
+					fmt.Println("ack data type default")
 					log.Printf("❌ Unsupported ack data type: %T", v)
 				}
 
@@ -507,6 +321,44 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 			}
 		}
 	})
+}
+
+func (h *SocketHandler) closeConnAndUpdateUserStatus(userID int, conn *websocket.Conn) {
+	h.wsMutex.Lock()
+	delete(h.wsUserConns, userID)
+	h.wsMutex.Unlock()
+	h.service.UpdateUserStatus(userID, false)
+	h.closeConnGracefully(conn)
+}
+
+func (h *SocketHandler) SendDataToUser(receiverID int, messageReceived model.MessageReceived, conn *websocket.Conn) {
+	for {
+		time.Sleep(3 * time.Second)
+		k := fmt.Sprintf("%d|%s", receiverID, messageReceived.Time.Format(time.RFC3339Nano))
+		h.tmpMutex.Lock()
+		attempts, exists := h.tmpMessages[k]
+
+		if !exists {
+			h.tmpMutex.Unlock()
+			return
+		}
+
+		if attempts >= 3 {
+			delete(h.tmpMessages, k)
+			h.tmpMutex.Unlock()
+			messageReceived.TargetUserID = receiverID
+
+			if err := h.service.SendPushForMessage(receiverID, messageReceived); err != nil {
+				log.Printf("❌ Error sending push to admin %d: %v", receiverID, err)
+			}
+
+			h.closeConnGracefully(conn)
+			return
+		}
+
+		h.tmpMessages[k] = attempts + 1
+		h.tmpMutex.Unlock()
+	}
 }
 
 func (h *SocketHandler) sendToUser(userID int, event string, data any) {
@@ -531,6 +383,18 @@ func (h *SocketHandler) sendToUser(userID int, event string, data any) {
 	go h.safeWriteJSON(userConn, msg)
 }
 
+func (h *SocketHandler) sendErrorAndCloseConn(conn *websocket.Conn, errMsg string) {
+	if conn != nil {
+		msg := model.WSMessage{
+			Event: "error",
+			Data:  errMsg,
+		}
+
+		h.safeWriteJSON(conn, msg)
+		h.closeConnGracefully(conn)
+	}
+}
+
 // GetConversations godoc
 // @Summary      Get conversations
 // @Description  Returns a list of conversations for the user
@@ -549,13 +413,13 @@ func (h *SocketHandler) GetConversations(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
-// GetMessages godoc
+// GetConversationMessages godoc
 // @Summary      Get messages
 // @Description  Returns a list of messages for the user
 // @Tags         ws
 // @Produce      json
 // @Security     BearerAuth
-// @Param        target_user_id  path      string  true  "Target user ID"
+// @Param        conversation_id  path      string  true  "Conversation ID"
 // @Param        last_id  query      string  false  "Last message ID"
 // @Param        limit  query      string  false  "Limit"
 // @Success      200  {array}  model.Message
@@ -563,12 +427,12 @@ func (h *SocketHandler) GetConversations(c *fiber.Ctx) error {
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /ws/messages/:target_user_id [get]
-func (h *SocketHandler) GetMessages(c *fiber.Ctx) error {
-	targetUserID := c.Params("target_user_id")
+// @Router       /ws/conversations/{conversation_id}/messages [get]
+func (h *SocketHandler) GetConversationMessages(c *fiber.Ctx) error {
+	conversationID := c.Params("conversation_id")
 	lastMessageID := c.Query("last_id")
 	limit := c.Query("limit")
 	userID := c.Locals("id").(int)
-	data := h.service.GetMessages(c.Context(), userID, targetUserID, lastMessageID, limit)
+	data := h.service.GetConversationMessages(c.Context(), userID, conversationID, lastMessageID, limit)
 	return utils.FiberResponse(c, data)
 }

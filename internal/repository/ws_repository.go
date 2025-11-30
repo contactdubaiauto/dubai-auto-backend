@@ -5,6 +5,7 @@ import (
 	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/pkg/firebase"
+	"encoding/json"
 	"fmt"
 
 	"firebase.google.com/go/v4/messaging"
@@ -36,8 +37,8 @@ func (r *SocketRepository) GetNewMessages(userID int) ([]model.UserMessage, erro
 		WITH updated_messages AS (
 			UPDATE messages
 			SET status = 2
-			WHERE status = 1 AND receiver_id = $1
-			RETURNING id, sender_id, receiver_id, message, type, created_at
+			WHERE status = 1 AND conversation_id in (select id from conversations where user_id_1 = $1 or user_id_2 = $1)
+			RETURNING id, sender_id, message, type, created_at
 		)
 		SELECT 
 			u.id,
@@ -50,8 +51,7 @@ func (r *SocketRepository) GetNewMessages(userID int) ([]model.UserMessage, erro
 					'message', m.message,
 					'type', m.type,
 					'created_at', to_char(m.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
-					'sender_id', m.sender_id,
-					'receiver_id', m.receiver_id
+					'sender_id', m.sender_id
 				)
 			) as messages
 		FROM updated_messages m
@@ -104,8 +104,13 @@ func (r *SocketRepository) GetUserAvatarAndUsername(userID int) (string, string,
 	return avatar, username, err
 }
 
-func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool, msg model.MessageReceived) error {
+func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool, data []model.UserMessage, targetUserID int) error {
 	s := 1
+	conversationID, err := r.UpsertConversation(senderUserID, targetUserID)
+
+	if err != nil {
+		return err
+	}
 
 	if status {
 		s = 2
@@ -113,29 +118,38 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 
 	q := `
 		INSERT INTO messages (
-			sender_id, receiver_id, status, message, type, created_at
+			conversation_id, sender_id, status, message, type, created_at
 		) VALUES ($1, $2, $3, $4, $5, $6)
 	`
-	_, err := r.db.Exec(context.Background(), q, senderUserID, msg.TargetUserID, s, msg.Message, msg.Type, msg.Time)
+	_, err = r.db.Exec(context.Background(), q, conversationID, senderUserID, s, data[0].Messages[0].Message, data[0].Messages[0].Type, data[0].Messages[0].CreatedAt)
 
 	if err != nil {
 		return err
 	}
-
-	r.UpsertConversation(senderUserID, msg.TargetUserID)
 
 	if !status {
 		userFcmToken := ""
 		q = `
 			select device_token from user_tokens where user_id = $1
 		`
-		r.db.QueryRow(context.Background(), q, msg.TargetUserID).Scan(&userFcmToken)
-		username, avatar, _ := r.GetUserAvatarName(senderUserID)
+		r.db.QueryRow(context.Background(), q, targetUserID).Scan(&userFcmToken)
+		bodyBytes, err := json.Marshal(model.PushNotificationBody{
+			Avatar:    data[0].Avatar,
+			Name:      data[0].Username,
+			Type:      data[0].Messages[0].Type,
+			Message:   data[0].Messages[0].Message,
+			CreatedAt: data[0].Messages[0].CreatedAt,
+			UserID:    targetUserID,
+		})
+
+		if err != nil {
+			return err
+		}
 
 		_, err = r.firebaseService.SendToToken(userFcmToken, messaging.Notification{
-			Title:    username,
-			Body:     msg.Message,
-			ImageURL: avatar,
+			Title:    data[0].Username,
+			Body:     string(bodyBytes),
+			ImageURL: *data[0].Avatar,
 		})
 
 		if err != nil {
@@ -178,8 +192,8 @@ func (r *SocketRepository) GetUserToken(userID int) (string, error) {
 	return token, err
 }
 
-// SendPushForMessage sends a push notification for a given message without writing it to DB.
 func (r *SocketRepository) SendPushForMessage(senderUserID int, msg model.MessageReceived) error {
+	// todo update this
 	token, err := r.GetUserToken(msg.TargetUserID)
 
 	if err != nil {
@@ -192,6 +206,7 @@ func (r *SocketRepository) SendPushForMessage(senderUserID int, msg model.Messag
 		return err
 	}
 
+	// todo: send body messages full data
 	_, err = r.firebaseService.SendToToken(token, messaging.Notification{
 		Title:    username,
 		Body:     msg.Message,
@@ -267,11 +282,55 @@ func (r *SocketRepository) GetConversations(userID int) ([]model.Conversation, e
 	return conversations, nil
 }
 
-func (r *SocketRepository) UpsertConversation(userID1 int, userID2 int) error {
+func (r *SocketRepository) UpsertConversation(userID1, userID2 int) (int, error) {
+
+	if userID1 > userID2 {
+		userID1, userID2 = userID2, userID1
+	}
+
+	var id int
 	q := `
 		insert into conversations (user_id_1, user_id_2, updated_at) values ($1, $2, now())
 		on conflict (user_id_1, user_id_2) do update set updated_at = now()
+		returning id
 	`
-	_, err := r.db.Exec(context.Background(), q, userID1, userID2)
-	return err
+	err := r.db.QueryRow(context.Background(), q, userID1, userID2).Scan(&id)
+	return id, err
+}
+
+func (r *SocketRepository) GetConversationMessages(ctx context.Context, userID, conversationID, lastID, limit int) ([]model.ConversationMessage, error) {
+	q := `
+		select 
+			id, 
+			sender_id, 
+			status, 
+			message, 
+			type, 
+			created_at 
+		from messages 
+		where conversation_id = $1 and id < $2 
+		order by id asc 
+		limit $3
+	`
+	rows, err := r.db.Query(ctx, q, conversationID, lastID, limit)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	mes := make([]model.ConversationMessage, 0)
+
+	for rows.Next() {
+		var message model.ConversationMessage
+		err := rows.Scan(&message.ID, &message.SenderID, &message.Status, &message.Message, &message.Type, &message.CreatedAt)
+
+		if err != nil {
+			return nil, err
+		}
+
+		mes = append(mes, message)
+	}
+
+	return mes, nil
 }

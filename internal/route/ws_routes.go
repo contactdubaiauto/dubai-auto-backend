@@ -20,7 +20,7 @@ func SetupWebSocketRoutes(app *fiber.App, db *pgxpool.Pool, firebaseService *fir
 	socketHandler := http.NewSocketHandler(socketService)
 
 	app.Get("/ws/conversations", auth.TokenGuard, socketHandler.GetConversations)
-	app.Get("/ws/messages/:user_id", auth.TokenGuard, socketHandler.GetMessages)
+	app.Get("/ws/conversations/:conversation_id/messages", auth.TokenGuard, socketHandler.GetConversationMessages)
 	app.Use("/ws", func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) {
 			c.Locals("allowed", true)
