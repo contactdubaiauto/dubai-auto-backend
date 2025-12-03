@@ -137,7 +137,7 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 			return err
 		}
 
-		_, err = r.firebaseService.SendToToken(userFcmToken, data)
+		_, err = r.firebaseService.SendToToken(userFcmToken, targetUserID, data)
 
 		if err != nil {
 			fmt.Println("error sending notification: ", err)
@@ -175,7 +175,7 @@ func (r *SocketRepository) MarkMessageAsUnreadAndSendPush(senderUserID int, data
 		return err
 	}
 
-	_, err = r.firebaseService.SendToToken(userFcmToken, data)
+	_, err = r.firebaseService.SendToToken(userFcmToken, targetUserID, data)
 
 	if err != nil {
 		fmt.Println("error sending notification: ", err)

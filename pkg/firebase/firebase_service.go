@@ -40,9 +40,10 @@ func InitFirebase(cfg *config.Config) (*FirebaseService, error) {
 }
 
 // Send notification to a specific device token
-func (fs *FirebaseService) SendToToken(token string, data model.UserMessage) (string, error) {
+func (fs *FirebaseService) SendToToken(token string, targetUserID int, data model.UserMessage) (string, error) {
 	fmt.Println("data.Messages[0].Type")
 	fmt.Println(data.Messages[0].Type)
+	fmt.Println(data.Messages[0])
 	message := &messaging.Message{
 		Token: token,
 		Notification: &messaging.Notification{
@@ -70,12 +71,13 @@ func (fs *FirebaseService) SendToToken(token string, data model.UserMessage) (st
 		},
 		Data: map[string]string{
 			"type":            "chat",
-			"current_user_id": strconv.Itoa(data.ID),
+			"current_user_id": strconv.Itoa(targetUserID),
 			"sender_id":       strconv.Itoa(data.ID),
 			"sender_name":     data.Username,
 			"sender_avatar":   *data.Avatar,
 			"message_id":      strconv.Itoa(data.Messages[0].ID),
 			"message":         data.Messages[0].Message,
+			"msg_type":        strconv.Itoa(data.Messages[0].Type),
 			"message_type":    strconv.Itoa(data.Messages[0].Type),
 		},
 	}

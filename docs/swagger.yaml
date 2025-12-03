@@ -578,6 +578,10 @@ definitions:
     properties:
       avatar:
         type: string
+      contacts:
+        additionalProperties:
+          type: string
+        type: object
       id:
         type: integer
       username:
@@ -1824,6 +1828,10 @@ definitions:
     properties:
       avatar:
         type: string
+      contacts:
+        additionalProperties:
+          type: string
+        type: object
       id:
         type: integer
       username:
