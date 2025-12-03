@@ -15910,7 +15910,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/ws/messages/:target_user_id": {
+        "/ws/conversations/{conversation_id}/messages": {
             "get": {
                 "security": [
                     {
@@ -15928,8 +15928,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Target user ID",
-                        "name": "target_user_id",
+                        "description": "Conversation ID",
+                        "name": "conversation_id",
                         "in": "path",
                         "required": true
                     },
@@ -18672,9 +18672,6 @@ const docTemplate = `{
                 },
                 "message": {
                     "type": "string"
-                },
-                "receiver_id": {
-                    "type": "integer"
                 },
                 "sender_id": {
                     "type": "integer"

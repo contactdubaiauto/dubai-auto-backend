@@ -96,16 +96,15 @@ type UpdateCarRequest struct {
 }
 
 type UpdateProfileRequest struct {
-	Username          string `json:"username" validate:"required,min=3,max=20"`
-	Google            string `json:"google"`
-	Birthday          string `json:"birthday"`
-	AboutMe           string `json:"about_me"`
-	DrivingExperience int    `json:"driving_experience"`
-	Notification      bool   `json:"notification"`
-	CityID            int    `json:"city_id"`
-	Telegram          string `json:"telegram"`
-	Whatsapp          string `json:"whatsapp"`
-	Address           string `json:"address"`
+	Username          string            `json:"username" validate:"required,min=3,max=20"`
+	Google            string            `json:"google"`
+	Birthday          string            `json:"birthday"`
+	AboutMe           string            `json:"about_me"`
+	DrivingExperience int               `json:"driving_experience"`
+	Notification      bool              `json:"notification"`
+	CityID            int               `json:"city_id"`
+	Contacts          map[string]string `json:"contacts"`
+	Address           string            `json:"address"`
 	// todo: add city
 }
 

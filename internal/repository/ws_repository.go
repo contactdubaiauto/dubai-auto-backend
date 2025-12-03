@@ -5,10 +5,9 @@ import (
 	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
 	"dubai-auto/pkg/firebase"
-	"encoding/json"
 	"fmt"
 
-	"firebase.google.com/go/v4/messaging"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -104,7 +103,7 @@ func (r *SocketRepository) GetUserAvatarAndUsername(userID int) (string, string,
 	return avatar, username, err
 }
 
-func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool, data []model.UserMessage, targetUserID int) error {
+func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool, data model.UserMessage, targetUserID int) error {
 	s := 1
 	conversationID, err := r.UpsertConversation(senderUserID, targetUserID)
 
@@ -121,7 +120,7 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 			conversation_id, sender_id, status, message, type, created_at
 		) VALUES ($1, $2, $3, $4, $5, $6)
 	`
-	_, err = r.db.Exec(context.Background(), q, conversationID, senderUserID, s, data[0].Messages[0].Message, data[0].Messages[0].Type, data[0].Messages[0].CreatedAt)
+	_, err = r.db.Exec(context.Background(), q, conversationID, senderUserID, s, data.Messages[0].Message, data.Messages[0].Type, data.Messages[0].CreatedAt)
 
 	if err != nil {
 		return err
@@ -132,25 +131,13 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 		q = `
 			select device_token from user_tokens where user_id = $1
 		`
-		r.db.QueryRow(context.Background(), q, targetUserID).Scan(&userFcmToken)
-		bodyBytes, err := json.Marshal(model.PushNotificationBody{
-			Avatar:    data[0].Avatar,
-			Name:      data[0].Username,
-			Type:      data[0].Messages[0].Type,
-			Message:   data[0].Messages[0].Message,
-			CreatedAt: data[0].Messages[0].CreatedAt,
-			UserID:    targetUserID,
-		})
+		err = r.db.QueryRow(context.Background(), q, targetUserID).Scan(&userFcmToken)
 
 		if err != nil {
 			return err
 		}
 
-		_, err = r.firebaseService.SendToToken(userFcmToken, messaging.Notification{
-			Title:    data[0].Username,
-			Body:     string(bodyBytes),
-			ImageURL: *data[0].Avatar,
-		})
+		_, err = r.firebaseService.SendToToken(userFcmToken, data)
 
 		if err != nil {
 			fmt.Println("error sending notification: ", err)
@@ -158,6 +145,42 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 	}
 
 	return nil
+}
+
+func (r *SocketRepository) MarkMessageAsUnreadAndSendPush(senderUserID int, data model.UserMessage, targetUserID int) error {
+	conversationID, err := r.UpsertConversation(senderUserID, targetUserID)
+
+	if err != nil {
+		return err
+	}
+
+	q := `
+		UPDATE messages
+		SET status = 1
+		WHERE sender_id = $1 and conversation_id = $2 and created_at = $3
+	`
+	_, err = r.db.Exec(context.Background(), q, senderUserID, conversationID, data.Messages[0].CreatedAt)
+
+	if err != nil {
+		return err
+	}
+
+	userFcmToken := ""
+	q = `
+		select device_token from user_tokens where user_id = $1
+	`
+	err = r.db.QueryRow(context.Background(), q, targetUserID).Scan(&userFcmToken)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = r.firebaseService.SendToToken(userFcmToken, data)
+
+	if err != nil {
+		fmt.Println("error sending notification: ", err)
+	}
+	return err
 }
 
 func (r *SocketRepository) GetUserAvatarName(userID int) (string, string, error) {
@@ -190,30 +213,6 @@ func (r *SocketRepository) GetUserToken(userID int) (string, error) {
 	var token string
 	err := r.db.QueryRow(context.Background(), q, userID).Scan(&token)
 	return token, err
-}
-
-func (r *SocketRepository) SendPushForMessage(senderUserID int, msg model.MessageReceived) error {
-	// todo update this
-	token, err := r.GetUserToken(msg.TargetUserID)
-
-	if err != nil {
-		return err
-	}
-
-	username, avatar, err := r.GetUserAvatarName(senderUserID)
-
-	if err != nil {
-		return err
-	}
-
-	// todo: send body messages full data
-	_, err = r.firebaseService.SendToToken(token, messaging.Notification{
-		Title:    username,
-		Body:     msg.Message,
-		ImageURL: avatar,
-	})
-
-	return err
 }
 
 // GetActiveAdminsWithChatPermission returns IDs of active admin users with "chat" permission
@@ -290,11 +289,23 @@ func (r *SocketRepository) UpsertConversation(userID1, userID2 int) (int, error)
 
 	var id int
 	q := `
-		insert into conversations (user_id_1, user_id_2, updated_at) values ($1, $2, now())
-		on conflict (user_id_1, user_id_2) do update set updated_at = now()
-		returning id
+		select id from conversations 
+		where user_id_1 = $1 and user_id_2 = $2
 	`
 	err := r.db.QueryRow(context.Background(), q, userID1, userID2).Scan(&id)
+
+	if err == pgx.ErrNoRows {
+		q = `
+			insert into conversations (user_id_1, user_id_2, updated_at) values ($1, $2, now())
+			returning id
+		`
+		err = r.db.QueryRow(context.Background(), q, userID1, userID2).Scan(&id)
+
+		if err != nil {
+			return 0, err
+		}
+	}
+
 	return id, err
 }
 

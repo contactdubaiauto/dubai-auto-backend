@@ -32,20 +32,19 @@ type GetBrandsResponse struct {
 }
 
 type GetProfileResponse struct {
-	Birthday          *time.Time `json:"birthday"`
-	Email             *string    `json:"email"`
-	Phone             *string    `json:"phone"`
-	Username          *string    `json:"username"`
-	Google            *string    `json:"google"`
-	RegisteredBy      *string    `json:"registered_by"`
-	City              *City      `json:"city"`
-	Telegram          *string    `json:"telegram"`
-	Whatsapp          *string    `json:"whatsapp"`
-	Address           *string    `json:"address"`
-	AboutMe           *string    `json:"about_me"`
-	DrivingExperience *int       `json:"driving_experience"`
-	ID                int        `json:"id"`
-	Notification      *bool      `json:"notification"`
+	Birthday          *time.Time        `json:"birthday"`
+	Email             *string           `json:"email"`
+	Phone             *string           `json:"phone"`
+	Username          *string           `json:"username"`
+	Google            *string           `json:"google"`
+	RegisteredBy      *string           `json:"registered_by"`
+	City              *City             `json:"city"`
+	Contacts          map[string]string `json:"contacts"`
+	Address           *string           `json:"address"`
+	AboutMe           *string           `json:"about_me"`
+	DrivingExperience *int              `json:"driving_experience"`
+	ID                int               `json:"id"`
+	Notification      *bool             `json:"notification"`
 }
 
 type GetFilterBrandsResponse struct {
@@ -590,8 +589,7 @@ type ThirdPartyGetProfileRes struct {
 	CompanyName   *string                            `json:"company_name"`
 	AboutUs       *string                            `json:"about_us"`
 	Email         *string                            `json:"email"`
-	Whatsapp      *string                            `json:"whatsapp"`
-	Telegram      *string                            `json:"telegram"`
+	Contacts      map[string]string                  `json:"contacts"`
 	Phone         *string                            `json:"phone"`
 	Address       *string                            `json:"address"`
 	Coordinates   *string                            `json:"coordinates"`

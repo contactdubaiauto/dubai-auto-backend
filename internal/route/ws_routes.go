@@ -7,6 +7,7 @@ import (
 	"dubai-auto/internal/service"
 	"dubai-auto/pkg/auth"
 	"dubai-auto/pkg/firebase"
+	"fmt"
 
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
@@ -22,8 +23,10 @@ func SetupWebSocketRoutes(app *fiber.App, db *pgxpool.Pool, firebaseService *fir
 	app.Get("/ws/conversations", auth.TokenGuard, socketHandler.GetConversations)
 	app.Get("/ws/conversations/:conversation_id/messages", auth.TokenGuard, socketHandler.GetConversationMessages)
 	app.Use("/ws", func(c *fiber.Ctx) error {
+		fmt.Println("WebSocket upgrade request")
 		if websocket.IsWebSocketUpgrade(c) {
 			c.Locals("allowed", true)
+			fmt.Println("WebSocket upgrade request allowed")
 			return c.Next()
 		}
 		return fiber.ErrUpgradeRequired

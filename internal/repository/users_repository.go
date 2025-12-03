@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -255,8 +256,7 @@ func (r *UserRepository) GetProfile(ctx *fasthttp.RequestCtx, userID int, nameCo
 			ps.birthday,
 			ps.about_me,
 			ps.registered_by,
-			ps.telegram,
-			ps.whatsapp,
+			ps.contacts,
 			ps.address,
 			json_build_object(
 				'id', cs.id,
@@ -269,14 +269,47 @@ func (r *UserRepository) GetProfile(ctx *fasthttp.RequestCtx, userID int, nameCo
 
 	`
 	var pf model.GetProfileResponse
+	var contactsJSON []byte
 	err := r.db.QueryRow(ctx, q, userID).Scan(&pf.ID, &pf.Email, &pf.Phone,
-		&pf.DrivingExperience, &pf.Notification, &pf.Username, &pf.Google, &pf.Birthday, &pf.AboutMe, &pf.RegisteredBy, &pf.Telegram, &pf.Whatsapp, &pf.Address, &pf.City)
+		&pf.DrivingExperience, &pf.Notification, &pf.Username, &pf.Google, &pf.Birthday, &pf.AboutMe, &pf.RegisteredBy, &contactsJSON, &pf.Address, &pf.City)
+
+	if err == nil && len(contactsJSON) > 0 {
+		if err := json.Unmarshal(contactsJSON, &pf.Contacts); err != nil {
+			return pf, err
+		}
+	}
 
 	return pf, err
 }
 
 func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, profile *model.UpdateProfileRequest) error {
 	keys, _, args := auth.BuildParams(profile)
+
+	// Handle contacts map separately - BuildParams will skip maps, so we add it manually
+	var contactsJSON []byte
+	var hasContacts bool
+	if profile.Contacts != nil {
+		var err error
+		contactsJSON, err = json.Marshal(profile.Contacts)
+		if err != nil {
+			return err
+		}
+		hasContacts = true
+	}
+
+	// Remove contacts from keys/args if BuildParams somehow included it (shouldn't happen, but be safe)
+	for i := len(keys) - 1; i >= 0; i-- {
+		if keys[i] == "contacts" {
+			keys = append(keys[:i], keys[i+1:]...)
+			args = append(args[:i], args[i+1:]...)
+		}
+	}
+
+	// Add contacts if provided
+	if hasContacts {
+		keys = append(keys, "contacts")
+		args = append(args, contactsJSON)
+	}
 
 	if len(keys) == 0 {
 		return nil // No fields to update
@@ -1715,8 +1748,7 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 	q := `
 		select
 			about_me,
-			whatsapp,
-			telegram,
+			contacts,
 			address,
 			coordinates,
 			$2 || avatar,
@@ -1755,9 +1787,10 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
         where users.id = $1;
 	`
 	var profile model.ThirdPartyGetProfileRes
+	var contactsJSON []byte
 	err := r.db.QueryRow(ctx, q, userID, r.config.IMAGE_BASE_URL).Scan(
-		&profile.AboutUs, &profile.Whatsapp,
-		&profile.Telegram, &profile.Address,
+		&profile.AboutUs, &contactsJSON,
+		&profile.Address,
 		&profile.Coordinates, &profile.Avatar,
 		&profile.Banner,
 		&profile.CompanyName, &profile.Message,
@@ -1769,6 +1802,12 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 
 	if err != nil {
 		return profile, err
+	}
+
+	if len(contactsJSON) > 0 {
+		if err := json.Unmarshal(contactsJSON, &profile.Contacts); err != nil {
+			return profile, err
+		}
 	}
 
 	q = `

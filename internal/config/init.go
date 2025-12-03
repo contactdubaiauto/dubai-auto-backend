@@ -39,6 +39,7 @@ type Config struct {
 	IMAGE_BASE_URL        string
 	FILE_BASE_URL         string
 	FIREBASE_ACCOUNT_FILE string
+	FCM_CHANNEL_ID        string
 }
 
 var ENV Config
@@ -75,5 +76,6 @@ func Init() *Config {
 	ENV.IMAGE_BASE_URL = loadEnvVariable("IMAGE_BASE_URL")
 	ENV.FILE_BASE_URL = loadEnvVariable("FILE_BASE_URL")
 	ENV.FIREBASE_ACCOUNT_FILE = loadEnvVariable("FIREBASE_ACCOUNT_FILE")
+	ENV.FCM_CHANNEL_ID = loadEnvVariable("FCM_CHANNEL_ID")
 	return &ENV
 }

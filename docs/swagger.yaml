@@ -1795,8 +1795,6 @@ definitions:
         type: integer
       message:
         type: string
-      receiver_id:
-        type: integer
       sender_id:
         type: integer
       type:
@@ -12758,13 +12756,13 @@ paths:
       summary: Get conversations
       tags:
       - ws
-  /ws/messages/:target_user_id:
+  /ws/conversations/{conversation_id}/messages:
     get:
       description: Returns a list of messages for the user
       parameters:
-      - description: Target user ID
+      - description: Conversation ID
         in: path
-        name: target_user_id
+        name: conversation_id
         required: true
         type: string
       - description: Last message ID

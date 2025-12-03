@@ -119,29 +119,6 @@ create table users (
     unique("phone")
 );
 
-create table conversations (
-    "id" serial primary key,
-    "user_id_1" int not null,
-    "user_id_2" int not null,
-    "updated_at" timestamp not null default now(),
-    "created_at" timestamp not null default now(),
-    constraint fk_conversations_user_id_1
-        foreign key (user_id_1)
-            references users(id)
-                on delete cascade
-                on update cascade,
-    constraint fk_conversations_user_id_2
-        foreign key (user_id_2)
-            references users(id)
-                on delete cascade
-                on update cascade,
-    unique(user_id_1, user_id_2)
-);
-
--- Indexes for efficient querying of conversations by user with ordering
--- These support: WHERE (user_id_1 = $1 OR user_id_2 = $1) ORDER BY updated_at DESC
-CREATE INDEX idx_conversations_user1_updated ON conversations(user_id_1, updated_at DESC);
-CREATE INDEX idx_conversations_user2_updated ON conversations(user_id_2, updated_at DESC);
 
 create table user_destinations (
     "id" serial primary key,
@@ -182,8 +159,7 @@ create table profiles (
     "avatar" varchar(200),
     "company_name" varchar(200),
     "banner" varchar(200),
-    "whatsapp" varchar(100),
-    "telegram" varchar(100),
+    "contacts" jsonb,
     "address" varchar(200),
     "coordinates" varchar(200),
     "message" varchar(300),
@@ -220,6 +196,7 @@ create table profiles (
     unique (user_id)
 );
 
+
 alter table profiles add column documents_id int;
 -- create constraint 
 alter table profiles add constraint fk_profiles_documents_id
@@ -228,10 +205,38 @@ alter table profiles add constraint fk_profiles_documents_id
                 on delete cascade
                 on update cascade;
 
+
+create table conversations (
+    "id" serial primary key,
+    "user_id_1" int not null,
+    "user_id_2" int not null,
+    "ney_message" int not null default 0,
+    "updated_at" timestamp not null default now(),
+    "created_at" timestamp not null default now(),
+    constraint fk_conversations_user_id_1
+        foreign key (user_id_1)
+            references users(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_conversations_user_id_2
+        foreign key (user_id_2)
+            references users(id)
+                on delete cascade
+                on update cascade,
+    constraint unique_conversation_pair 
+        unique(user_id_1, user_id_2)
+);
+
+-- Indexes for efficient querying of conversations by user with ordering
+-- These support: WHERE (user_id_1 = $1 OR user_id_2 = $1) ORDER BY updated_at DESC
+CREATE INDEX idx_conversations_user1_updated ON conversations(user_id_1, updated_at DESC);
+CREATE INDEX idx_conversations_user2_updated ON conversations(user_id_2, updated_at DESC);
+
+
 create table messages (
     "id" serial primary key,
+    "conversation_id" int not null,
     "sender_id" int not null,
-    "receiver_id" int not null,
     "status" int not null default 1, -- 1-unread, 2-read
     "message" varchar(500) not null, --  it is an id if type "item".
     "type" int not null default 1, -- 1-text, 2-item, 3-video, 4-image,
@@ -241,12 +246,13 @@ create table messages (
             references users(id)
                 on delete cascade
                 on update cascade,
-    constraint fk_messages_receiver_id
-        foreign key (receiver_id)
-            references users(id)
+    constraint fk_messages_conversation_id
+        foreign key (conversation_id)
+            references conversations(id)
                 on delete cascade
                 on update cascade
 );
+
 
 create table message_files (
     "id" serial primary key,

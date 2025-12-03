@@ -124,6 +124,7 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 		user, err := auth.ValidateWSJWT(token)
 
 		if err != nil {
+			fmt.Println("Authentication failed", err)
 			h.sendErrorAndCloseConn(c, "Authentication failed")
 			return
 		}
@@ -253,10 +254,10 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 						h.tmpMessages[key] = 1
 						h.tmpMutex.Unlock()
 						// Retry mechanism for each receiver
-						go h.SendDataToUser(targetUserID, messageReceived, targetC)
+						go h.SendDataToUser(targetUserID, data[0], targetC)
 					}
 
-					err = h.service.MessageWriteToDatabase(user.ID, s, data, targetUserID)
+					err = h.service.MessageWriteToDatabase(user.ID, s, data[0], targetUserID)
 
 					if err != nil {
 						log.Printf("❌ Error message write to db  %d: %v", targetUserID, err)
@@ -331,10 +332,10 @@ func (h *SocketHandler) closeConnAndUpdateUserStatus(userID int, conn *websocket
 	h.closeConnGracefully(conn)
 }
 
-func (h *SocketHandler) SendDataToUser(receiverID int, messageReceived model.MessageReceived, conn *websocket.Conn) {
+func (h *SocketHandler) SendDataToUser(receiverID int, data model.UserMessage, conn *websocket.Conn) {
 	for {
 		time.Sleep(3 * time.Second)
-		k := fmt.Sprintf("%d|%s", receiverID, messageReceived.Time.Format(time.RFC3339Nano))
+		k := fmt.Sprintf("%d|%s", receiverID, data.Messages[0].CreatedAt.Format(time.RFC3339Nano))
 		h.tmpMutex.Lock()
 		attempts, exists := h.tmpMessages[k]
 
@@ -346,10 +347,11 @@ func (h *SocketHandler) SendDataToUser(receiverID int, messageReceived model.Mes
 		if attempts >= 3 {
 			delete(h.tmpMessages, k)
 			h.tmpMutex.Unlock()
-			messageReceived.TargetUserID = receiverID
+			// update message status and send to token
+			err := h.service.MarkMessageAsUnreadAndSendPush(data.ID, data, receiverID)
 
-			if err := h.service.SendPushForMessage(receiverID, messageReceived); err != nil {
-				log.Printf("❌ Error sending push to admin %d: %v", receiverID, err)
+			if err != nil {
+				log.Printf("❌ Error marking message as unread and sending push to admin %d: %v", receiverID, err)
 			}
 
 			h.closeConnGracefully(conn)

@@ -3,6 +3,8 @@ package firebase
 import (
 	"context"
 	"dubai-auto/internal/config"
+	"dubai-auto/internal/model"
+	"strconv"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
@@ -37,23 +39,41 @@ func InitFirebase(cfg *config.Config) (*FirebaseService, error) {
 }
 
 // Send notification to a specific device token
-func (fs *FirebaseService) SendToToken(token string, notification messaging.Notification) (string, error) {
+func (fs *FirebaseService) SendToToken(token string, data model.UserMessage) (string, error) {
 	message := &messaging.Message{
-		Token:        token,
-		Notification: &notification,
+		Token: token,
+		Notification: &messaging.Notification{
+			Title: data.Username,
+			Body:  data.Messages[0].Message,
+		},
 		Android: &messaging.AndroidConfig{
 			Priority: "high",
 			Notification: &messaging.AndroidNotification{
-				Sound:    "default",
-				ImageURL: notification.ImageURL,
+				ChannelID: config.ENV.FCM_CHANNEL_ID,
+				Priority:  messaging.PriorityHigh,
 			},
 		},
 		APNS: &messaging.APNSConfig{
 			Payload: &messaging.APNSPayload{
 				Aps: &messaging.Aps{
 					Sound: "default",
+					Badge: &[]int{1}[0],
+					Alert: &messaging.ApsAlert{
+						Title: data.Username,
+						Body:  data.Messages[0].Message,
+					},
 				},
 			},
+		},
+		Data: map[string]string{
+			"type":            "chat",
+			"current_user_id": strconv.Itoa(data.ID),
+			"sender_id":       strconv.Itoa(data.ID),
+			"sender_name":     data.Username,
+			"sender_avatar":   *data.Avatar,
+			"message_id":      strconv.Itoa(data.Messages[0].ID),
+			"message":         data.Messages[0].Message,
+			"message_type":    strconv.Itoa(data.Messages[0].Type),
 		},
 	}
 

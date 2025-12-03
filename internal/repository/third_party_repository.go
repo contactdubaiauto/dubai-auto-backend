@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -24,18 +25,22 @@ func NewThirdPartyRepository(config *config.Config, db *pgxpool.Pool) *ThirdPart
 }
 
 func (r *ThirdPartyRepository) Profile(ctx *fasthttp.RequestCtx, id int, profile model.ThirdPartyProfileReq) model.Response {
+	contactsJSON, err := json.Marshal(profile.Contacts)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
 	q := `
 		update profiles set
 			about_me = $1,
-			whatsapp = $2,
-			telegram = $3,
-			address = $4,
-			coordinates = $5,
-			message = $6,
-		where user_id = $7
+			contacts = $2,
+			address = $3,
+			coordinates = $4,
+			message = $5
+		where user_id = $6
 	`
-	_, err := r.db.Exec(ctx, q, profile.AboutUs, profile.Whatsapp,
-		profile.Telegram, profile.Address, profile.Coordinates, profile.Message, id)
+	_, err = r.db.Exec(ctx, q, profile.AboutUs, contactsJSON,
+		profile.Address, profile.Coordinates, profile.Message, id)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -99,8 +104,7 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int, name
 		select
 			p.user_id,
 			p.about_me,
-			p.whatsapp,
-			p.telegram,
+			p.contacts,
 			p.address,
 			p.coordinates,
 			$2 || p.avatar,
@@ -119,10 +123,11 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int, name
 		where p.user_id = $1
 	`
 	var profile model.ThirdPartyGetProfileRes
+	var contactsJSON []byte
 	err := r.db.QueryRow(ctx, q, id, r.config.IMAGE_BASE_URL).Scan(
 		&profile.UserID,
-		&profile.AboutUs, &profile.Whatsapp,
-		&profile.Telegram, &profile.Address,
+		&profile.AboutUs, &contactsJSON,
+		&profile.Address,
 		&profile.Coordinates, &profile.Avatar,
 		&profile.Banner,
 		&profile.CompanyName, &profile.Message,
@@ -131,6 +136,12 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int, name
 		&profile.Registered,
 		&profile.Destinations,
 	)
+
+	if err == nil && len(contactsJSON) > 0 {
+		if err := json.Unmarshal(contactsJSON, &profile.Contacts); err != nil {
+			return profile, err
+		}
+	}
 
 	if err != nil {
 		return profile, err

@@ -30,18 +30,19 @@ func (s *SocketService) GetUserAvatarAndUsername(userID int) (string, string, er
 	return s.repo.GetUserAvatarAndUsername(userID)
 }
 
-func (s *SocketService) MessageWriteToDatabase(senderUserID int, status bool, data []model.UserMessage, targetUserID int) error {
+func (s *SocketService) MessageWriteToDatabase(senderUserID int, status bool, data model.UserMessage, targetUserID int) error {
 	err := s.repo.MessageWriteToDatabase(senderUserID, status, data, targetUserID)
+	return err
+}
+
+func (s *SocketService) MarkMessageAsUnreadAndSendPush(senderUserID int, data model.UserMessage, targetUserID int) error {
+	err := s.repo.MarkMessageAsUnreadAndSendPush(senderUserID, data, targetUserID)
 	return err
 }
 
 func (s *SocketService) CheckUserExists(userID int) error {
 	err := s.repo.CheckUserExists(userID)
 	return err
-}
-
-func (s *SocketService) SendPushForMessage(senderUserID int, msg model.MessageReceived) error {
-	return s.repo.SendPushForMessage(senderUserID, msg)
 }
 
 func (s *SocketService) GetActiveAdminsWithChatPermission() ([]int, error) {

@@ -345,14 +345,13 @@ type AcceptApplicationRequest struct {
 }
 
 type ThirdPartyProfileReq struct {
-	AboutUs     string `json:"about_us" validate:"max=300"`
-	Message     string `json:"message"`
-	Whatsapp    string `json:"whatsapp"`
-	Telegram    string `json:"telegram"`
-	Phone       string `json:"phone" validate:"required"`
-	Address     string `json:"address"`
-	Coordinates string `json:"coordinates"`
-	Username    string `json:"username"`
+	AboutUs     string            `json:"about_us" validate:"max=300"`
+	Message     string            `json:"message"`
+	Contacts    map[string]string `json:"contacts"`
+	Phone       string            `json:"phone" validate:"required"`
+	Address     string            `json:"address"`
+	Coordinates string            `json:"coordinates"`
+	Username    string            `json:"username"`
 }
 
 type ThirdPartyFirstLoginReq struct {

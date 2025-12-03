@@ -297,12 +297,13 @@
                     <h3>🔐 Authentication</h3>
                     <div class="form-group">
                         <label for="serverUrl">Server URL:</label>
-                        <input type="text" id="serverUrl" value="wss://api.mashynbazar.com" placeholder="wss://api.mashynbazar.com">
+                        <!-- <input type="text" id="serverUrl" value="wss://api.mashynbazar.com" placeholder="wss://api.mashynbazar.com"> -->
+                        <input type="text" id="serverUrl" value="ws://localhost:8080" placeholder="ws://localhost:8080">
                     </div>
                     <div class="form-group">
                         <label for="jwtToken">JWT Token:</label>
-                        <!-- <textarea id="jwtToken" rows="3" placeholder="Enter your JWT token here...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjQ0NjU1NzUsImlkIjo1Nywicm9sZV9pZCI6MX0.bwp5u_CYXzOXMGZueKq6cqYM5BvVR4Z_IbvshCR5oA0</textarea> -->
-                        <textarea id="jwtToken" rows="3" placeholder="Enter your JWT token here...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjcwODE2OTcsImlkIjoxNjUsInJvbGVfaWQiOjEwMH0.QMBIH_v4CBqWwPVGda_I9tuWYGxdAxNuR6x09aapnp4</textarea>
+                        <textarea id="jwtToken" rows="3" placeholder="Enter your JWT token here...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjU4Njk3MTUsImlkIjo0NCwicm9sZV9pZCI6MX0._v1dXRSTS_vmPqdsBIDAqRjXuhh4yRs_MbtXiN-w_XI</textarea>
+                        <!-- <textarea id="jwtToken" rows="3" placeholder="Enter your JWT token here...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjcwODE2OTcsImlkIjoxNjUsInJvbGVfaWQiOjEwMH0.QMBIH_v4CBqWwPVGda_I9tuWYGxdAxNuR6x09aapnp4</textarea> -->
                     </div>
                     <button class="btn" id="connectBtn" onclick="connect()">Connect</button>
                     <button class="btn danger" id="disconnectBtn" onclick="disconnect()" disabled>Disconnect</button>
