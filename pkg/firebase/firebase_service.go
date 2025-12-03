@@ -4,6 +4,7 @@ import (
 	"context"
 	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
+	"fmt"
 	"strconv"
 
 	firebase "firebase.google.com/go/v4"
@@ -40,6 +41,8 @@ func InitFirebase(cfg *config.Config) (*FirebaseService, error) {
 
 // Send notification to a specific device token
 func (fs *FirebaseService) SendToToken(token string, data model.UserMessage) (string, error) {
+	fmt.Println("data.Messages[0].Type")
+	fmt.Println(data.Messages[0].Type)
 	message := &messaging.Message{
 		Token: token,
 		Notification: &messaging.Notification{

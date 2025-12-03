@@ -171,8 +171,8 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 		done := make(chan struct{})
 		heartbeatTimeout := make(chan struct{})
 		defer close(done)
-
 		go h.handleHeartbeat(c, user.ID, heartbeatTimeout, heartbeatCh, done)
+		fmt.Println("user connected", user.ID)
 
 		for {
 			var msg model.WSMessageReceived
@@ -201,6 +201,7 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 			case "private_message":
 				s := false
 				var messageReceived model.MessageReceived
+				// todo: add senderID. if 0. this is admin. and emit it as sender id 0
 
 				if b, err := json.Marshal(msg.Data); err == nil {
 

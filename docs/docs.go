@@ -18590,6 +18590,12 @@ const docTemplate = `{
                 "city": {
                     "$ref": "#/definitions/model.City"
                 },
+                "contacts": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "driving_experience": {
                     "type": "integer"
                 },
@@ -18611,13 +18617,7 @@ const docTemplate = `{
                 "registered_by": {
                     "type": "string"
                 },
-                "telegram": {
-                    "type": "string"
-                },
                 "username": {
-                    "type": "string"
-                },
-                "whatsapp": {
                     "type": "string"
                 }
             }
@@ -18748,6 +18748,12 @@ const docTemplate = `{
             "properties": {
                 "avatar": {
                     "type": "string"
+                },
+                "contacts": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 },
                 "id": {
                     "type": "integer"
@@ -18919,6 +18925,12 @@ const docTemplate = `{
                 "company_type": {
                     "type": "string"
                 },
+                "contacts": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "coordinates": {
                     "type": "string"
                 },
@@ -18943,16 +18955,10 @@ const docTemplate = `{
                 "role_id": {
                     "type": "integer"
                 },
-                "telegram": {
-                    "type": "string"
-                },
                 "user_id": {
                     "type": "integer"
                 },
                 "vat_number": {
-                    "type": "string"
-                },
-                "whatsapp": {
                     "type": "string"
                 }
             }
@@ -19016,6 +19022,12 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
+                "contacts": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "coordinates": {
                     "type": "string"
                 },
@@ -19025,13 +19037,7 @@ const docTemplate = `{
                 "phone": {
                     "type": "string"
                 },
-                "telegram": {
-                    "type": "string"
-                },
                 "username": {
-                    "type": "string"
-                },
-                "whatsapp": {
                     "type": "string"
                 }
             }
@@ -19523,6 +19529,12 @@ const docTemplate = `{
                 "city_id": {
                     "type": "integer"
                 },
+                "contacts": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "driving_experience": {
                     "type": "integer"
                 },
@@ -19532,16 +19544,10 @@ const docTemplate = `{
                 "notification": {
                     "type": "boolean"
                 },
-                "telegram": {
-                    "type": "string"
-                },
                 "username": {
                     "type": "string",
                     "maxLength": 20,
                     "minLength": 3
-                },
-                "whatsapp": {
-                    "type": "string"
                 }
             }
         },

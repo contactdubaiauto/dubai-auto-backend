@@ -1741,6 +1741,10 @@ definitions:
         type: string
       city:
         $ref: '#/definitions/model.City'
+      contacts:
+        additionalProperties:
+          type: string
+        type: object
       driving_experience:
         type: integer
       email:
@@ -1755,11 +1759,7 @@ definitions:
         type: string
       registered_by:
         type: string
-      telegram:
-        type: string
       username:
-        type: string
-      whatsapp:
         type: string
     type: object
   model.Home:
@@ -1844,6 +1844,10 @@ definitions:
     properties:
       avatar:
         type: string
+      contacts:
+        additionalProperties:
+          type: string
+        type: object
       id:
         type: integer
       role_id:
@@ -1961,6 +1965,10 @@ definitions:
         type: string
       company_type:
         type: string
+      contacts:
+        additionalProperties:
+          type: string
+        type: object
       coordinates:
         type: string
       destinations:
@@ -1977,13 +1985,9 @@ definitions:
         type: string
       role_id:
         type: integer
-      telegram:
-        type: string
       user_id:
         type: integer
       vat_number:
-        type: string
-      whatsapp:
         type: string
     type: object
   model.ThirdPartyGetRegistrationDataRes:
@@ -2023,17 +2027,17 @@ definitions:
         type: string
       address:
         type: string
+      contacts:
+        additionalProperties:
+          type: string
+        type: object
       coordinates:
         type: string
       message:
         type: string
       phone:
         type: string
-      telegram:
-        type: string
       username:
-        type: string
-      whatsapp:
         type: string
     required:
     - phone
@@ -2373,19 +2377,19 @@ definitions:
         type: string
       city_id:
         type: integer
+      contacts:
+        additionalProperties:
+          type: string
+        type: object
       driving_experience:
         type: integer
       google:
         type: string
       notification:
         type: boolean
-      telegram:
-        type: string
       username:
         maxLength: 20
         minLength: 3
-        type: string
-      whatsapp:
         type: string
     required:
     - username

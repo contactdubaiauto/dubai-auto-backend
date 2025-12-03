@@ -1337,7 +1337,8 @@ func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int,
 			json_build_object(
 				'id', pf.user_id,
 				'username', pf.username,
-				'avatar', $3 || pf.avatar
+				'avatar', $3 || pf.avatar,
+				'contacts', pf.contacts
 			) as owner,
 			 vs.description,
 			CASE 

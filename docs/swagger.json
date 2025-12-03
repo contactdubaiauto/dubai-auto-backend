@@ -18584,6 +18584,12 @@
                 "city": {
                     "$ref": "#/definitions/model.City"
                 },
+                "contacts": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "driving_experience": {
                     "type": "integer"
                 },
@@ -18605,13 +18611,7 @@
                 "registered_by": {
                     "type": "string"
                 },
-                "telegram": {
-                    "type": "string"
-                },
                 "username": {
-                    "type": "string"
-                },
-                "whatsapp": {
                     "type": "string"
                 }
             }
@@ -18742,6 +18742,12 @@
             "properties": {
                 "avatar": {
                     "type": "string"
+                },
+                "contacts": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 },
                 "id": {
                     "type": "integer"
@@ -18913,6 +18919,12 @@
                 "company_type": {
                     "type": "string"
                 },
+                "contacts": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "coordinates": {
                     "type": "string"
                 },
@@ -18937,16 +18949,10 @@
                 "role_id": {
                     "type": "integer"
                 },
-                "telegram": {
-                    "type": "string"
-                },
                 "user_id": {
                     "type": "integer"
                 },
                 "vat_number": {
-                    "type": "string"
-                },
-                "whatsapp": {
                     "type": "string"
                 }
             }
@@ -19010,6 +19016,12 @@
                 "address": {
                     "type": "string"
                 },
+                "contacts": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "coordinates": {
                     "type": "string"
                 },
@@ -19019,13 +19031,7 @@
                 "phone": {
                     "type": "string"
                 },
-                "telegram": {
-                    "type": "string"
-                },
                 "username": {
-                    "type": "string"
-                },
-                "whatsapp": {
                     "type": "string"
                 }
             }
@@ -19517,6 +19523,12 @@
                 "city_id": {
                     "type": "integer"
                 },
+                "contacts": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "driving_experience": {
                     "type": "integer"
                 },
@@ -19526,16 +19538,10 @@
                 "notification": {
                     "type": "boolean"
                 },
-                "telegram": {
-                    "type": "string"
-                },
                 "username": {
                     "type": "string",
                     "maxLength": 20,
                     "minLength": 3
-                },
-                "whatsapp": {
-                    "type": "string"
                 }
             }
         },

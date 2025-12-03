@@ -136,10 +136,11 @@ type Home struct {
 }
 
 type Owner struct {
-	Avatar   *string `json:"avatar"`
-	Username *string `json:"username"`
-	Id       *int    `json:"id"`
-	RoleID   *int    `json:"role_id"`
+	Avatar   *string           `json:"avatar"`
+	Username *string           `json:"username"`
+	Id       *int              `json:"id"`
+	RoleID   *int              `json:"role_id"`
+	Contacts map[string]string `json:"contacts"`
 }
 
 type GetCarsResponse struct {
