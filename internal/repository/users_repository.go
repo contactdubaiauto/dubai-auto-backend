@@ -1189,7 +1189,8 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 				'id', pf.user_id,
 				'username', pf.username,
 				'avatar', '` + r.config.IMAGE_BASE_URL + `' || pf.avatar,
-				'role_id', u.role_id
+				'role_id', u.role_id,
+				'contacts', pf.contacts
 			) as owner,
 			vs.description,
 			CASE 

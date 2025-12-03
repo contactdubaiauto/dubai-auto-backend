@@ -195,7 +195,8 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, nameColu
 			json_build_object(
 				'id', pf.user_id,
 				'username', pf.username,
-				'avatar', $1 || pf.avatar
+				'avatar', $1 || pf.avatar,
+				'contacts', pf.contacts
 			) as owner,
 			mcs.engine,
 			mcs.power,
@@ -385,7 +386,8 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 			json_build_object(
 				'id', pf.user_id,
 				'username', pf.username,
-				'avatar', $3 || pf.avatar
+				'avatar', $3 || pf.avatar,
+				'contacts', pf.contacts
 			) as owner,
 			mcs.engine,
 			mcs.power,
@@ -493,7 +495,8 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 			json_build_object(
 				'id', pf.user_id,
 				'username', pf.username,
-				'avatar', $3 || pf.avatar
+				'avatar', $3 || pf.avatar,
+				'contacts', pf.contacts
 			) as owner,
 			mcs.engine,
 			mcs.power,

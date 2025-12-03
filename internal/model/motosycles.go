@@ -72,9 +72,10 @@ type CreateMotorcycleRequest struct {
 
 // Owner represents the motorcycle owner information
 type MotorcycleOwner struct {
-	Username string `json:"username"`
-	Avatar   string `json:"avatar"`
-	ID       int    `json:"id"`
+	Contacts map[string]string `json:"contacts"`
+	Username string            `json:"username"`
+	Avatar   string            `json:"avatar"`
+	ID       int               `json:"id"`
 }
 
 // MotorcycleParameter represents a motorcycle parameter with its value

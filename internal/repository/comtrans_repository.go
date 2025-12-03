@@ -195,7 +195,8 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, nameColumn st
 			json_build_object(
 				'id', pf.user_id,
 				'username', pf.username,
-				'avatar', $1 || pf.avatar
+				'avatar', $1 || pf.avatar,
+				'contacts', pf.contacts
 			) as owner,
 			cts.engine,
 			cts.power,
@@ -385,7 +386,8 @@ func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransI
 			json_build_object(
 				'id', pf.user_id,
 				'username', pf.username,
-				'avatar', $3 || pf.avatar
+				'avatar', $3 || pf.avatar,
+				'contacts', pf.contacts
 			) as owner,
 			cts.engine,
 			cts.power,
@@ -493,7 +495,8 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 			json_build_object(
 				'id', pf.user_id,
 				'username', pf.username,
-				'avatar', $3 || pf.avatar
+				'avatar', $3 || pf.avatar,
+				'contacts', pf.contacts
 			) as owner,
 			cts.engine,
 			cts.power,

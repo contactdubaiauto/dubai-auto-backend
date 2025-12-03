@@ -66,9 +66,10 @@ type CreateComtransRequest struct {
 
 // Owner represents the comtrans owner information
 type ComtransOwner struct {
-	Username string `json:"username"`
-	Avatar   string `json:"avatar"`
-	ID       int    `json:"id"`
+	Username string            `json:"username"`
+	Avatar   string            `json:"avatar"`
+	ID       int               `json:"id"`
+	Contacts map[string]string `json:"contacts"`
 }
 
 // ComtransParameter represents a comtrans parameter with its value

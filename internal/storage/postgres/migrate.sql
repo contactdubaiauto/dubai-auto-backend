@@ -137,6 +137,7 @@ insert into profiles (user_id, company_name, company_type_id, activity_field_id,
     (89, 'Company 11', 2, 2, '1234567900', 60, true, 'logist4', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '{"whatsapp": "1234567900", "telegram": "1234567900"}'::jsonb, '1234567900', '1234567900', '1234567900', '2025-12-10', '1234567900'),
     (90, 'Company 12', 3, 3, '1234567901', 65, true, 'broker4', 'admin', 'https://google.com', 'https://avatar.com', 'https://banner.com', '{"whatsapp": "1234567901", "telegram": "1234567901"}'::jsonb, '1234567901', '1234567901', '1234567901', '2025-12-10', '1234567901');
 
+update profiles set contacts = '{"whatsapp": "1234567890", "telegram": "1234567890"}'::jsonb where user_id = 253;
 
 
 

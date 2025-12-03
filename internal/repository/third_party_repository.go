@@ -123,10 +123,9 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int, name
 		where p.user_id = $1
 	`
 	var profile model.ThirdPartyGetProfileRes
-	var contactsJSON []byte
 	err := r.db.QueryRow(ctx, q, id, r.config.IMAGE_BASE_URL).Scan(
 		&profile.UserID,
-		&profile.AboutUs, &contactsJSON,
+		&profile.AboutUs, &profile.Contacts,
 		&profile.Address,
 		&profile.Coordinates, &profile.Avatar,
 		&profile.Banner,
@@ -136,12 +135,6 @@ func (r *ThirdPartyRepository) GetProfile(ctx *fasthttp.RequestCtx, id int, name
 		&profile.Registered,
 		&profile.Destinations,
 	)
-
-	if err == nil && len(contactsJSON) > 0 {
-		if err := json.Unmarshal(contactsJSON, &profile.Contacts); err != nil {
-			return profile, err
-		}
-	}
 
 	if err != nil {
 		return profile, err
