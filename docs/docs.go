@@ -19556,6 +19556,9 @@ const docTemplate = `{
                 "notification": {
                     "type": "boolean"
                 },
+                "phone_number": {
+                    "type": "string"
+                },
                 "username": {
                     "type": "string",
                     "maxLength": 20,

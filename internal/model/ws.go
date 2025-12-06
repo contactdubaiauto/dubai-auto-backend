@@ -14,6 +14,7 @@ type WSMessage struct {
 
 type MessageReceived struct {
 	Time         time.Time `json:"time"`
+	Admin        bool      `json:"admin"` // true if message is from admin
 	Message      string    `json:"message"`
 	TargetUserID int       `json:"target_user_id"` // todo: remove this field, it is have in WSMessageReceived
 	Type         int       `json:"type"`

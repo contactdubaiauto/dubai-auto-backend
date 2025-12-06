@@ -36,7 +36,7 @@ func (r *SocketRepository) GetNewMessages(userID int) ([]model.UserMessage, erro
 		WITH updated_messages AS (
 			UPDATE messages
 			SET status = 2
-			WHERE status = 1 AND conversation_id in (select id from conversations where user_id_1 = $1 or user_id_2 = $1)
+			WHERE sender_id != $1 AND status = 1 AND conversation_id in (select id from conversations where user_id_1 = $1 or user_id_2 = $1)
 			RETURNING id, sender_id, message, type, created_at
 		)
 		SELECT 
@@ -104,6 +104,7 @@ func (r *SocketRepository) GetUserAvatarAndUsername(userID int) (string, string,
 }
 
 func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool, data model.UserMessage, targetUserID int) error {
+	fmt.Println("message write to database. Target user ID: ", targetUserID, "Sender user ID: ", senderUserID, "Status: ", status)
 	s := 1
 	conversationID, err := r.UpsertConversation(senderUserID, targetUserID)
 

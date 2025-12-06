@@ -4,7 +4,7 @@ drop type if exists price_type_enum;
 
 drop table if exists user_likes;
 drop table if exists temp_users;
-drop table if exists configurations;
+-- drop table if exists configurations;
 drop table if exists images;
 drop table if exists videos;
 drop table if exists vehicles;
@@ -274,9 +274,6 @@ create table cities (
     "created_at" timestamp default now()
 );
 
-
-
-
 create table brands (
     "id" serial primary key,
     "name" varchar(255) not null,
@@ -315,7 +312,8 @@ create table body_types (
     "name_ru" varchar(255) default 'name_ru',
     "name_ae" varchar(255) default 'name_ae',
     "image" character varying(255) not null,
-    "created_at" timestamp default now()
+    "created_at" timestamp default now(),
+    unique("name")
 );
 
 create table transmissions (
@@ -385,31 +383,37 @@ create table generations (
                 on delete cascade
 );
 
-create table configurations (
-    "id" serial primary key,
-    "body_type_id" int not null,
-    "generation_id" int not null,
-    constraint fk_configurations_generation_id
-        foreign key (generation_id)
-            references generations(id)
-                on delete cascade
-                on update cascade,
-    constraint fk_configurations_body_type_id
-        foreign key (body_type_id)
-            references body_types(id)
-                on delete cascade
-                on update cascade
-);
+-- create table configurations (
+--     "id" serial primary key,
+--     "body_type_id" int not null,
+--     "generation_id" int not null,
+--     constraint fk_configurations_generation_id
+--         foreign key (generation_id)
+--             references generations(id)
+--                 on delete cascade
+--                 on update cascade,
+--     constraint fk_configurations_body_type_id
+--         foreign key (body_type_id)
+--             references body_types(id)
+--                 on delete cascade
+--                 on update cascade
+-- );
 
 create table generation_modifications (
     "id" serial primary key,
     "generation_id" int not null,
+    "horse_power_id" int,
     "body_type_id" int not null,
     "engine_id" int not null,
     "fuel_type_id" int not null, 
     "drivetrain_id" int not null,
     "transmission_id" int not null, 
-    unique(generation_id, body_type_id, engine_id, fuel_type_id, drivetrain_id, transmission_id),
+    unique(horse_power_id, generation_id, body_type_id, engine_id, fuel_type_id, drivetrain_id, transmission_id),
+    constraint fk_generation_modifications_horse_power_id
+        foreign key (horse_power_id)
+            references horse_powers(id)
+                on delete set null
+                on update cascade,
     constraint fk_generation_modifications_generation_id
         foreign key (generation_id)
             references generations(id)
@@ -440,6 +444,15 @@ create table generation_modifications (
             references body_types(id)
                 on delete cascade
                 on update cascade
+);
+
+create table horse_powers (
+    "id" serial primary key,
+    "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
+    "name_ae" varchar(255) default 'name_ae',
+    "created_at" timestamp default now(),
+    unique("name")
 );
 
 create table ownership_types (

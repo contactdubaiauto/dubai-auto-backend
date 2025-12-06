@@ -238,6 +238,11 @@ func (s *AuthService) UserPhoneConfirmation(ctx *fasthttp.RequestCtx, user *mode
 func (s *AuthService) UserLoginEmail(ctx *fasthttp.RequestCtx, user *model.UserLoginEmail) model.Response {
 	otp := utils.RandomOTP()
 	username := utils.RandomUsername()
+	// for google play test
+	if user.Email == "berdalyyew99@gmail.com" {
+		otp = 123456
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%d", otp)), bcrypt.DefaultCost)
 
 	if err != nil {
@@ -254,11 +259,6 @@ func (s *AuthService) UserLoginEmail(ctx *fasthttp.RequestCtx, user *model.UserL
 			Error:  err,
 			Status: http.StatusInternalServerError,
 		}
-	}
-
-	// for google play test
-	if user.Email == "berdalyyew99@gmail.com" {
-		otp = 123456
 	}
 
 	err = utils.SendEmail("OTP", fmt.Sprintf("Your OTP is: %d", otp), user.Email)

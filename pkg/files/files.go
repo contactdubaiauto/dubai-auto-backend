@@ -116,7 +116,7 @@ func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]str
 		go func() {
 			for _, width := range widths {
 
-				err = resizeImage("."+base+"/"+fileNames[index], width)
+				err = ResizeImage("."+base+"/"+fileNames[index], width)
 				if err != nil {
 					return
 				}
@@ -133,7 +133,7 @@ func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]str
 	return filePaths, 0, nil
 }
 
-// func resizeImage(imagePath string, width uint) error {
+// func ResizeImage(imagePath string, width uint) error {
 // 	file, err := os.Open(imagePath)
 // 	if err != nil {
 // 		return fmt.Errorf("failed to open image: %w", err)
@@ -164,7 +164,7 @@ func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]str
 // 	return err
 // }
 
-func resizeImage(imagePath string, width uint) error {
+func ResizeImage(imagePath string, width uint) error {
 	file, err := os.Open(imagePath)
 
 	if err != nil {
@@ -193,6 +193,7 @@ func resizeImage(imagePath string, width uint) error {
 	// Resize the image
 	resizedImg := resize.Resize(width, 0, img, resize.Lanczos3)
 	size := "l"
+
 	if width == 320 {
 		size = "m"
 	}

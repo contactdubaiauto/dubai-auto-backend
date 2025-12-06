@@ -13,7 +13,6 @@ import (
 	app "dubai-auto/internal"
 	"dubai-auto/internal/config"
 	"dubai-auto/internal/storage/postgres"
-	"dubai-auto/internal/utils"
 	"dubai-auto/pkg/auth"
 	"dubai-auto/pkg/logger"
 )
@@ -45,9 +44,9 @@ func main() {
 		URL: "/swagger/doc.json",
 	}))
 
-	if conf.MIGRATE == "true" {
-		utils.ExcelMigrate(db)
-	}
+	// if conf.MIGRATE == "true" {
+	// 	utils.ExcelMigrateOld(db)
+	// }
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)

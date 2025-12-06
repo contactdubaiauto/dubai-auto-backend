@@ -457,7 +457,7 @@ func (s *AdminService) CreateBrandImage(ctx *fasthttp.RequestCtx, form *multipar
 		}
 	}
 
-	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"cars/logos/"+strconv.Itoa(id))
+	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"logos/"+strconv.Itoa(id))
 
 	if err != nil {
 		return model.Response{
@@ -1089,7 +1089,7 @@ func (s *AdminService) CreateMotoBrandImage(ctx *fasthttp.RequestCtx, form *mult
 		}
 	}
 
-	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"moto/logos/"+strconv.Itoa(id))
+	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"logos/"+strconv.Itoa(id))
 
 	if err != nil {
 		return model.Response{
@@ -1346,7 +1346,7 @@ func (s *AdminService) CreateComtransBrandImage(ctx *fasthttp.RequestCtx, form *
 		}
 	}
 
-	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"comtrans/logos/"+strconv.Itoa(id))
+	path, err := files.SaveOriginal(image[0], config.ENV.STATIC_PATH+"logos/"+strconv.Itoa(id))
 
 	if err != nil {
 		return model.Response{

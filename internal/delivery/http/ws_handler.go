@@ -164,6 +164,7 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 		if err != nil {
 			log.Printf("❌ Error getting unread messages: %v", err)
 		} else if data != nil {
+			fmt.Printf("📤 Sending new messages to user %d: %s", user.ID, data[0].Messages[0].Message)
 			h.sendToUser(user.ID, "new_message", data)
 		}
 
@@ -200,6 +201,7 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 
 			case "private_message":
 				s := false
+				senderID := user.ID
 				var messageReceived model.MessageReceived
 				// todo: add senderID. if 0. this is admin. and emit it as sender id 0
 
@@ -224,9 +226,14 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 					targetUserIDs = append(targetUserIDs, msg.TargetUserID)
 				}
 
+				if messageReceived.Admin {
+					fmt.Println("Sender is admin")
+					senderID = 0
+				}
+
 				data := []model.UserMessage{
 					{
-						ID:             user.ID,
+						ID:             senderID,
 						Username:       user.Username,
 						Avatar:         &user.Avatar,
 						LastActiveDate: time.Now(),
@@ -235,7 +242,7 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 								CreatedAt: messageReceived.Time,
 								Message:   messageReceived.Message,
 								Type:      messageReceived.Type,
-								SenderID:  user.ID,
+								SenderID:  senderID,
 							},
 						},
 					},

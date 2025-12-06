@@ -136,3 +136,190 @@ join users u on u.id =
     end
 join profiles p on p.user_id = u.id
 order by c.updated_at desc;
+
+
+
+
+
+create table horse_powers (
+    "id" serial primary key,
+    "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
+    "name_ae" varchar(255) default 'name_ae',
+    "created_at" timestamp default now(),
+    unique("name")
+);
+
+
+
+drop table user_likes;
+drop table videos;
+drop table images;
+drop table vehicles;
+drop table generation_modifications ;
+
+
+create table generation_modifications (
+    "id" serial primary key,
+    "generation_id" int not null,
+    "horse_power_id" int,
+    "body_type_id" int not null,
+    "engine_id" int not null,
+    "fuel_type_id" int not null, 
+    "drivetrain_id" int not null,
+    "transmission_id" int not null, 
+    unique(horse_power_id, generation_id, body_type_id, engine_id, fuel_type_id, drivetrain_id, transmission_id),
+    constraint fk_generation_modifications_horse_power_id
+        foreign key (horse_power_id)
+            references horse_powers(id)
+                on delete set null
+                on update cascade,
+    constraint fk_generation_modifications_generation_id
+        foreign key (generation_id)
+            references generations(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_generation_modifications_engine_id
+        foreign key (engine_id)
+            references engines(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_generation_modifications_fuel_type_id
+        foreign key (fuel_type_id)
+            references fuel_types(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_generation_modifications_drivetrain_id
+        foreign key (drivetrain_id)
+            references drivetrains(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_generation_modifications_transmission_id
+        foreign key (transmission_id)
+            references transmissions(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_generation_modifications_body_type_id
+        foreign key (body_type_id)
+            references body_types(id)
+                on delete cascade
+                on update cascade
+);
+
+
+create table vehicles (
+    "id" serial primary key,
+    "user_id" int not null,
+    "modification_id" int not null,
+    "brand_id" int,
+    "region_id" int,
+    "city_id" int default 1,
+    "model_id" int,
+    "ownership_type_id" int not null default 1,
+    "owners" int not null default 0,
+    "view_count" int not null default 0,
+    "year" int not null,
+    "popular" int not null default 0,
+    "description" text,
+    "credit" boolean not null default false,
+    "wheel" boolean not null default true, -- true left, false right
+    "crash" boolean not null default false,
+    "odometer" int not null default 0,
+    "vin_code" varchar(255),
+    "phone_numbers" varchar(255)[] not null,
+    "price" int not null,
+    "new" boolean not null default false,
+    "color_id" int not null,
+    "trade_in" int not null default 1, -- 1. No exchange 2. Equal value 3. More expensive 4. Cheaper 5. Not a car
+    "status" int not null default 3, -- 1-pending, 2-not sale (my cars), 3-on sale,
+    "updated_at" timestamp default now(),
+    "created_at" timestamp default now(),
+    constraint fk_vehicles_color_id
+        foreign key (color_id)
+            references colors(id)
+                on delete set null
+                on update cascade,
+    constraint fk_vehicles_ownership_type_id
+        foreign key (ownership_type_id)
+            references ownership_types(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_vehicles_user_id
+        foreign key (user_id)
+            references users(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_vehicles_brand_id
+        foreign key (brand_id)
+            references brands(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_vehicles_model_id
+        foreign key (model_id)
+            references models(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_vehicles_modification_id
+        foreign key (modification_id)
+            references generation_modifications(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_vehicles_region_id
+        foreign key (region_id)
+            references regions(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_vehicles_city_id
+        foreign key (city_id)
+            references cities(id)
+                on delete cascade
+                on update cascade
+);
+
+
+
+CREATE TABLE user_likes (
+    user_id INT NOT NULL,
+    vehicle_id INT NOT NULL,
+    PRIMARY KEY (user_id, vehicle_id),
+    constraint fk_user_likes_vehicle_id
+        foreign key (vehicle_id)
+            references vehicles(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_user_likes_user_id
+        foreign key (user_id)
+            references users(id)
+                on delete cascade
+                on update cascade
+);
+
+
+
+
+create table images (
+    "vehicle_id" int not null,
+    "image" varchar(255) not null,
+    "created_at" timestamp not null default now(),
+    constraint fk_images_vehicle_id
+        foreign key (vehicle_id)
+            references vehicles(id)
+                on delete cascade
+                on update cascade
+);
+
+
+
+
+create table videos (
+    "vehicle_id" int not null,
+    "video" varchar(255) not null,
+    "created_at" timestamp not null default now(),
+    constraint fk_videos_vehicle_id
+        foreign key (vehicle_id)
+            references vehicles(id)
+                on delete cascade
+                on update cascade
+);
+
+

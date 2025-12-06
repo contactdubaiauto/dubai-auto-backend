@@ -1,44 +1,32 @@
 package utils
 
 import (
+	"bytes"
 	"context"
-	"encoding/json"
+	"dubai-auto/internal/config"
+	"dubai-auto/pkg/files"
 	"fmt"
+	"io"
+	"os"
 	"strconv"
+	"strings"
 
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/xuri/excelize/v2"
 )
 
-func ExcelMigrate(db *pgxpool.Pool) error {
-	err := Marks("docs/1.marks.xlsx", db)
-	fmt.Println(err)
-	err = Models("docs/2.models.xlsx", db)
-	fmt.Println(err)
-	err = Generations("docs/3.generations.xlsx", db)
-	fmt.Println(err)
-	err = Configurations("docs/4.configurations.xlsx", db)
-	fmt.Println(err)
-	err = Complectations("docs/5.complectations.xlsx", db)
-	fmt.Println(err)
-	db.Exec(context.Background(), `
-		delete from models where id not in (
-			3232,
-			3233,
-			3234
-		);
-	`)
-	return nil
-}
-
-func Marks(filePath string, db *pgxpool.Pool) error {
+func MigrateV2(filePath string, db *pgxpool.Pool) error {
+	fmt.Println("Migrating v2...")
 	f, err := excelize.OpenFile(filePath)
+	fmt.Println("Opening Excel file...")
 
 	if err != nil {
 		return fmt.Errorf("failed to open Excel file: %w", err)
 	}
 	defer f.Close()
-
+	fmt.Println("Excel file opened...")
 	sheetName := f.GetSheetName(0)
 
 	if sheetName == "" {
@@ -50,313 +38,397 @@ func Marks(filePath string, db *pgxpool.Pool) error {
 	if err != nil {
 		return fmt.Errorf("failed to get rows: %w", err)
 	}
+	fmt.Println("Rows fetched...")
 
-	q := `
-		insert into brands(
-			id, name, logo, popular
-		) values ($1, $2, $3, true)
-	`
-
-	for i := range rows {
-		if i == 0 || rows[i][0] != "310" {
-			continue
-		}
-
-		id, _ := strconv.Atoi(rows[i][0])
-		_, err = db.Exec(context.Background(), q, id, rows[i][2], "/images/logo/audi.png")
-
-		if err != nil {
-			continue
-		}
-	}
-	return err
-}
-
-func Models(filePath string, db *pgxpool.Pool) error {
-	f, err := excelize.OpenFile(filePath)
-	if err != nil {
-		return fmt.Errorf("failed to open Excel file: %w", err)
-	}
-	defer f.Close()
-
-	sheetName := f.GetSheetName(0)
-
-	if sheetName == "" {
-		return fmt.Errorf("no sheets found in Excel file")
-	}
-
-	rows, err := f.GetRows(sheetName)
-
-	if err != nil {
-		return fmt.Errorf("failed to get rows: %w", err)
-	}
-
-	q := `
-		insert into models(
-			id, brand_id, name
-		) values ($1, $2, $3)
-	`
-
-	for i := range rows {
-		if i == 0 || rows[i][6] != "310" {
-			continue
-		}
-
-		id, _ := strconv.Atoi(rows[i][0])
-		brand_id, _ := strconv.Atoi(rows[i][6])
-		_, err = db.Exec(context.Background(), q, id, brand_id, rows[i][2])
-
-		if err != nil {
-			continue
-			// return err
-		}
-	}
-	return err
-}
-
-func Generations(filePath string, db *pgxpool.Pool) error {
-	f, err := excelize.OpenFile(filePath)
-
-	if err != nil {
-		return fmt.Errorf("failed to open Excel file: %w", err)
-	}
-	defer f.Close()
-
-	sheetName := f.GetSheetName(0)
-
-	if sheetName == "" {
-		return fmt.Errorf("no sheets found in Excel file")
-	}
-
-	rows, err := f.GetRows(sheetName)
-
-	if err != nil {
-		return fmt.Errorf("failed to get rows: %w", err)
-	}
-
-	q := `
-		insert into generations (
-			id, name, start_year, end_year, image, model_id, wheel
-		) values 
-		(
-			$1, $2, $3, $4, $5, $6, $7
-		)
-	`
-
-	for i := range rows {
-
-		if i == 0 || rows[i][9] != "310" {
-			continue
-		}
-
-		if i == 479 {
-			break
-		}
-		// inner_id, _ := strconv.Atoi(rows[i][1])
-		// autoru_mark_id, _ := strconv.Atoi(rows[i][9])
-		id, _ := strconv.Atoi(rows[i][1]) // inner_id
-		autoru_model_id, _ := strconv.Atoi(rows[i][8])
-		year_from, _ := strconv.Atoi(rows[i][3])
-		year_to, _ := strconv.Atoi(rows[i][4])
-		wheel := true
-		if i%4 == 0 {
-			wheel = false
-		}
-		_, err = db.Exec(context.Background(), q,
-			id, rows[i][2], year_from, year_to, rows[i][7][2:], autoru_model_id, wheel)
-
-		if err != nil {
-			continue
-		}
-	}
-	return nil
-}
-
-func Configurations(filePath string, db *pgxpool.Pool) error {
-	f, err := excelize.OpenFile(filePath)
-
-	if err != nil {
-		return fmt.Errorf("failed to open Excel file: %w", err)
-	}
-	defer f.Close()
-
-	sheetName := f.GetSheetName(0)
-
-	if sheetName == "" {
-		return fmt.Errorf("no sheets found in Excel file")
-	}
-
-	rows, err := f.GetRows(sheetName)
-
-	if err != nil {
-		return fmt.Errorf("failed to get rows: %w", err)
-	}
-
-	q := `
-		insert into configurations (
-			id, generation_id, body_type_id
-		) values (
-		 	$1, $2, $3
-		)
-	`
-	qBodyType := `
-		select
-			id 
-		from body_types 
-		where 
-			name ilike $1;
-	`
-
-	qBodyTypeInsert := `
-		insert into body_types (name, image)
-		values ($1, 'empty')
-	`
-
-	for i := range rows {
-
-		if i == 0 || rows[i][9] != "310" {
-			continue
-		}
-		bodyTypeID := 0
-		db.QueryRow(context.Background(), qBodyType, rows[i][4]).Scan(&bodyTypeID)
-
-		if bodyTypeID == 0 {
-			db.QueryRow(context.Background(), qBodyTypeInsert, rows[i][4]).Scan(&bodyTypeID)
-		}
-
-		id, _ := strconv.Atoi(rows[i][1]) // inner_id
-		// autoru_generation_id, _ := strconv.Atoi(rows[i][8])
-		autoru_generation_inner_id, _ := strconv.Atoi(rows[i][11])
-		// autoru_mark_id, _ := strconv.Atoi(rows[i][9])
-
-		_, err = db.Exec(context.Background(), q,
-			id, autoru_generation_inner_id, bodyTypeID)
-
-		if err != nil {
-			continue
-		}
-	}
-	return nil
-}
-
-type TechInfoMain struct {
-	ID     string `json:"id"`
-	Entity []struct {
-		ID    string `json:"id"`
-		Name  string `json:"name"`
-		Units string `json:"units,omitempty"`
-		Value string `json:"value"`
-	} `json:"entity"`
-}
-
-func Complectations(filePath string, db *pgxpool.Pool) error {
-	f, err := excelize.OpenFile(filePath)
-
-	if err != nil {
-		return fmt.Errorf("failed to open Excel file: %w", err)
-	}
-	defer f.Close()
-
-	sheetName := f.GetSheetName(0)
-
-	if sheetName == "" {
-		return fmt.Errorf("no sheets found in Excel file")
-	}
-
-	rows, err := f.GetRows(sheetName)
-
-	if err != nil {
-		return fmt.Errorf("failed to get rows: %w", err)
-	}
-
-	qGenerationID := `
-		select generation_id, body_type_id from configurations where id = $1
-	`
-
-	q := `
-		insert into generation_modifications (
-			generation_id, body_type_id, engine_id, 
-			fuel_type_id, drivetrain_id, transmission_id
-		) values (
-		 	$1, $2, $3, 
-			$4, $5, $6
-		)
-	`
-	for i := range rows {
+	for i := 0; i < len(rows); i++ {
 
 		if i == 0 {
+			i = 96869
 			continue
 		}
 
-		var data struct {
-			TechInfoMain TechInfoMain `json:"tech_info_main"`
-		}
+		// if i == 1000 {
+		// 	break
+		// }
 
-		// break
-
-		generationID := 0
-		bodyTypeID := 0
-		engineID := 0
-		fuelTypeID := 0
-		drivetrainID := 0
-		transmissionID := 0
-
-		id, _ := strconv.Atoi(rows[i][10])
-		db.QueryRow(context.Background(), qGenerationID, id).Scan(&generationID, &bodyTypeID)
-
-		if err := json.Unmarshal([]byte(rows[i][4]), &data); err != nil {
-			return err
-		}
-		// var cnt = 0
-		for i := range data.TechInfoMain.Entity {
-
-			if data.TechInfoMain.Entity[i].ID == "displacement" {
-				_ = db.QueryRow(context.Background(), `
-					insert into engines (value) values ($1)
-					on conflict(value)
-					DO UPDATE SET value = EXCLUDED.value
-					returning id
-				`, data.TechInfoMain.Entity[i].Value).Scan(&engineID)
-			}
-
-			if data.TechInfoMain.Entity[i].ID == "engine_type" {
-				db.QueryRow(context.Background(), `
-					insert into fuel_types (name) values ($1)
-					on conflict(name)
-					DO UPDATE SET name = EXCLUDED.name
-					returning id
-				`, data.TechInfoMain.Entity[i].Value).Scan(&fuelTypeID)
-			}
-
-			if data.TechInfoMain.Entity[i].ID == "gear_type" {
-				db.QueryRow(context.Background(), `
-					insert into drivetrains (name) values ($1)
-					on conflict(name)
-					DO UPDATE SET name = EXCLUDED.name
-					returning id
-				`, data.TechInfoMain.Entity[i].Value).Scan(&drivetrainID)
-			}
-
-			if data.TechInfoMain.Entity[i].ID == "transmission" {
-				db.QueryRow(context.Background(), `
-					insert into transmissions (name) values ($1)
-					on conflict(name)
-					DO UPDATE SET name = EXCLUDED.name
-					returning id
-				`, data.TechInfoMain.Entity[i].Value).Scan(&transmissionID)
-			}
-		}
-
-		if generationID == 0 || transmissionID == 0 || engineID == 0 || drivetrainID == 0 || fuelTypeID == 0 || bodyTypeID == 0 {
-			continue
-		}
-
-		_, err = db.Exec(context.Background(), q, generationID, bodyTypeID,
-			engineID, fuelTypeID, drivetrainID, transmissionID)
+		fmt.Println("Processing row", i)
+		brandID, err := getBrandID(rows[i][1], rows[i][2], rows[i][0]+".png", db)
 
 		if err != nil {
-			continue
+			fmt.Println("Error getting brand ID:", err)
+			return err
 		}
+
+		modelID, err := getModelID(rows[i][8], rows[i][9], brandID, db)
+
+		if err != nil {
+			fmt.Println("Error getting model ID:", err)
+			return err
+		}
+
+		generationID, exists, err := getGenerationID(rows[i][14], rows[i][15], rows[i][16], rows[i][31], modelID, db)
+
+		if err != nil {
+			fmt.Println("Error getting generation ID:", err)
+			return err
+		}
+
+		if !exists {
+			err = helperResizeImage(generationID, "./generations/"+rows[i][17]+"_main.jpg", config.ENV.DEFAULT_IMAGE_WIDTHS, db)
+
+			if err != nil {
+				fmt.Println("Error resizing image:", err)
+				return err
+			}
+		}
+
+		bodyTypeID, err := getBodyTypeID(rows[i][18], rows[i][19], db)
+
+		if err != nil {
+			fmt.Println("Error getting body type ID:", err)
+			return err
+		}
+
+		engineID, err := getEngineID(rows[i][46], db)
+
+		if err != nil {
+			fmt.Println("Error getting engine ID:", err)
+			return err
+		}
+
+		horsePowerID, err := getHorsePowerID(helperGetHorsePower(rows[i][62]), db)
+
+		if err != nil {
+			fmt.Println("Error getting horse power ID:", err)
+			return err
+		}
+
+		transmissionID, err := getTransmissionID(rows[i][46], db)
+
+		if err != nil {
+			fmt.Println("Error getting transmission ID:", err)
+			return err
+		}
+
+		drivetrainID, err := getDrivetrainID(rows[i][48], db)
+
+		if err != nil {
+			fmt.Println("Error getting drivetrain ID:", err)
+			return err
+		}
+
+		fuelTypeID, err := getFuelTypeID(rows[i][60], db)
+
+		if err != nil {
+			fmt.Println("Error getting fuel type ID:", err)
+			return err
+		}
+
+		_, err = getGenerationModificationID(generationID, horsePowerID, bodyTypeID, engineID, fuelTypeID, drivetrainID, transmissionID, db)
+
+		if err != nil {
+			fmt.Println("Error getting generation modification ID:", err)
+			return err
+		}
+
 	}
-	return nil
+	return err
+}
+
+func getBrandID(name, name_ru, logoFileName string, db *pgxpool.Pool) (int, error) {
+	q := `
+		select id from brands where name = $1
+	`
+	var id int
+	err := db.QueryRow(context.Background(), q, name).Scan(&id)
+
+	if err == pgx.ErrNoRows {
+
+		q = `
+			insert into brands (name_ru, name_ae, name) values ($2, $1, $1) returning id
+		`
+		err = db.QueryRow(context.Background(), q, name, name_ru).Scan(&id)
+
+		if err != nil {
+			return 0, err
+		}
+
+		newName := uuid.NewString()
+		readerFile, err := os.Open("./logos/" + logoFileName)
+
+		if err != nil {
+			return 0, err
+		}
+
+		defer readerFile.Close()
+		buf := bytes.NewBuffer(nil)
+		io.Copy(buf, readerFile)
+
+		err = os.WriteFile(
+			"./images/logos/"+newName+".png",
+			buf.Bytes(),
+			os.ModePerm,
+		)
+
+		if err != nil {
+			return 0, err
+		}
+
+		q = "UPDATE brands SET logo = $1 WHERE id = $2"
+		_, err = db.Exec(context.Background(), q, "/images/logos/"+newName+".png", id)
+
+		return id, err
+
+	}
+
+	return id, err
+}
+
+func getModelID(name, name_ru string, brandID int, db *pgxpool.Pool) (int, error) {
+	q := `
+		select 
+			id 
+		from models 
+		where name = $1 and brand_id = $2
+	`
+	var id int
+	err := db.QueryRow(context.Background(), q, name, brandID).Scan(&id)
+
+	if err == pgx.ErrNoRows {
+
+		q = `
+			insert into models (name, name_ru, name_ae, brand_id) values ($1, $2, $1, $3) returning id
+		`
+		err = db.QueryRow(context.Background(), q, name, name_ru, brandID).Scan(&id)
+		return id, err
+	}
+
+	return id, err
+}
+
+func getBodyTypeID(name_ru, name string, db *pgxpool.Pool) (int, error) {
+	q := `
+		select id from body_types where name = $1
+	`
+	var id int
+	err := db.QueryRow(context.Background(), q, name).Scan(&id)
+
+	if err == pgx.ErrNoRows {
+		q = `
+			insert into body_types (name, name_ru, name_ae, image) values ($1, $2, $1, '') returning id
+		`
+		err = db.QueryRow(context.Background(), q, name, name_ru).Scan(&id)
+		return id, err
+	}
+	return id, err
+}
+
+func getTransmissionID(name string, db *pgxpool.Pool) (int, error) {
+	q := `
+		select id from transmissions where name = $1
+	`
+	var id int
+	err := db.QueryRow(context.Background(), q, name).Scan(&id)
+	if err == pgx.ErrNoRows {
+		q = `
+			insert into transmissions (name, name_ru, name_ae) values ($1, $1, $1) returning id
+		`
+		err = db.QueryRow(context.Background(), q, name).Scan(&id)
+		return id, err
+	}
+	return id, err
+}
+
+func getEngineID(name string, db *pgxpool.Pool) (int, error) {
+	name = helperSm3ToL(name)
+	q := `
+		select id from engines where name = $1
+	`
+	var id int
+	err := db.QueryRow(context.Background(), q, name).Scan(&id)
+
+	if err == pgx.ErrNoRows {
+		q = `
+			insert into engines (name, name_ru, name_ae) values ($1, $1, $1) returning id
+		`
+		err = db.QueryRow(context.Background(), q, name).Scan(&id)
+		return id, err
+	}
+	return id, err
+}
+
+func getDrivetrainID(name string, db *pgxpool.Pool) (int, error) {
+	q := `
+		select id from drivetrains where name = $1
+	`
+	var id int
+	err := db.QueryRow(context.Background(), q, name).Scan(&id)
+
+	if err == pgx.ErrNoRows {
+		q = `
+			insert into drivetrains (name, name_ru, name_ae) values ($1, $1, $1) returning id
+		`
+		err = db.QueryRow(context.Background(), q, name).Scan(&id)
+		return id, err
+	}
+	return id, err
+}
+
+func getFuelTypeID(name string, db *pgxpool.Pool) (int, error) {
+	q := `
+		select id from fuel_types where name = $1
+	`
+	var id int
+	err := db.QueryRow(context.Background(), q, name).Scan(&id)
+	if err == pgx.ErrNoRows {
+		q = `
+			insert into fuel_types (name, name_ru, name_ae) values ($1, $1, $1) returning id
+		`
+		err = db.QueryRow(context.Background(), q, name).Scan(&id)
+		return id, err
+	}
+	return id, err
+}
+
+func getGenerationID(name, from, to, wheelStr string, modelID int, db *pgxpool.Pool) (int, bool, error) {
+
+	wheel := wheelStr == "Левый"
+
+	q := `
+		select id from generations where name = $1 and model_id = $2
+	`
+	var id int
+	err := db.QueryRow(context.Background(), q, name, modelID).Scan(&id)
+
+	if err == pgx.ErrNoRows {
+		q = `
+			insert into generations (
+				name, name_ru, name_ae, 
+				model_id, start_year, end_year, 
+				wheel, image
+			) 
+			values ($1, $1, $1, $2, $3, $4, $5, '') returning id
+		`
+		err = db.QueryRow(context.Background(), q, name, modelID, from, to, wheel).Scan(&id)
+		return id, false, err
+	}
+
+	return id, true, err
+}
+
+func getGenerationModificationID(
+	generationID, horsePowerID, bodyTypeID, engineID, fuelTypeID, drivetrainID, transmissionID int,
+	db *pgxpool.Pool) (int, error) {
+	q := `
+		select id from generation_modifications 
+		where 
+			generation_id = $1 and body_type_id = $2 and 
+			engine_id = $3 and fuel_type_id = $4 and 
+			drivetrain_id = $5 and transmission_id = $6 and 
+			horse_power_id = $7
+	`
+	var id int
+	err := db.QueryRow(context.Background(), q, generationID, bodyTypeID,
+		engineID, fuelTypeID,
+		drivetrainID, transmissionID,
+		horsePowerID).Scan(&id)
+
+	if err == pgx.ErrNoRows {
+		q = `
+			insert into generation_modifications (
+				generation_id, body_type_id, engine_id, fuel_type_id, drivetrain_id, transmission_id, horse_power_id
+			) values ($1, $2, $3, $4, $5, $6, $7) returning id
+		`
+		err = db.QueryRow(context.Background(), q, generationID, bodyTypeID, engineID, fuelTypeID, drivetrainID, transmissionID, horsePowerID).Scan(&id)
+		return id, err
+	}
+	return id, err
+}
+
+func getHorsePowerID(name string, db *pgxpool.Pool) (int, error) {
+	q := `
+		select id from horse_powers where name = $1
+	`
+	var id int
+	err := db.QueryRow(context.Background(), q, name).Scan(&id)
+	if err == pgx.ErrNoRows {
+		q = `
+			insert into horse_powers (name, name_ru, name_ae) values ($1, $1, $1) returning id
+		`
+		err = db.QueryRow(context.Background(), q, name).Scan(&id)
+		return id, err
+	}
+	return id, err
+}
+
+func helperGetHorsePower(str string) string {
+	idx := strings.Index(str, "л.с.")
+
+	if idx != -1 {
+		return str[:idx+len("л.с.")]
+	}
+
+	return str
+}
+
+func helperSm3ToL(str string) string {
+	cm3, err := strconv.Atoi(str)
+
+	if err != nil {
+		return ""
+	}
+
+	litres := float64(cm3) / 1000.0
+	return fmt.Sprintf("%.1f L", litres)
+}
+
+func helperResizeImage(generationID int, imagePath string, widths []uint, db *pgxpool.Pool) error {
+	newName := uuid.NewString()
+	readerFile, err := os.Open(imagePath)
+
+	if err != nil {
+		return err
+	}
+	defer readerFile.Close()
+
+	buf := bytes.NewBuffer(nil)
+	io.Copy(buf, readerFile)
+
+	err = os.WriteFile(
+		"./images/generations/"+newName,
+		buf.Bytes(),
+		os.ModePerm,
+	)
+
+	if err != nil {
+		fmt.Println("Error writing image:", err)
+		return err
+	}
+
+	for _, width := range widths {
+
+		err := files.ResizeImage("./images/generations/"+newName, width)
+
+		if err != nil {
+			fmt.Println("Error resizing image:", err)
+			return err
+		}
+
+	}
+	err = os.Remove("./images/generations/" + newName)
+
+	if err != nil {
+		fmt.Println("failed to remove temp file: ", err)
+		return err
+	}
+
+	err = updateGenerationImagePath(generationID, "/images/generations/"+newName, db)
+
+	return err
+}
+
+func updateGenerationImagePath(generationID int, path string, db *pgxpool.Pool) error {
+	q := "UPDATE generations SET image = $1 WHERE id = $2"
+	_, err := db.Exec(context.Background(), q, path, generationID)
+	return err
 }

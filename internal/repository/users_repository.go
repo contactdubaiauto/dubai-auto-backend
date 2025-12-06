@@ -283,14 +283,29 @@ func (r *UserRepository) GetProfile(ctx *fasthttp.RequestCtx, userID int, nameCo
 }
 
 func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, profile *model.UpdateProfileRequest) error {
-	keys, _, args := auth.BuildParams(profile)
 
+	q := `
+	UPDATE users 
+	SET username = $2, 
+	phone = $3
+	WHERE id = $1
+	`
+	_, err := r.db.Exec(ctx, q, userID, profile.Username, profile.PhoneNumber)
+
+	if err != nil {
+		return err
+	}
+
+	profile.PhoneNumber = ""
+
+	keys, _, args := auth.BuildParams(profile)
 	// Handle contacts map separately - BuildParams will skip maps, so we add it manually
 	var contactsJSON []byte
 	var hasContacts bool
 	if profile.Contacts != nil {
 		var err error
 		contactsJSON, err = json.Marshal(profile.Contacts)
+
 		if err != nil {
 			return err
 		}
@@ -326,23 +341,14 @@ func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, pro
 	// Add userID as the last parameter
 	args = append(args, userID)
 
-	q := fmt.Sprintf(`
+	q = fmt.Sprintf(`
 		UPDATE profiles 
 		SET %s
 		WHERE user_id = $%d
 	`, strings.Join(setClause, ", "), len(args))
 
-	_, err := r.db.Exec(ctx, q, args...)
-	if err != nil {
-		return err
-	}
+	_, err = r.db.Exec(ctx, q, args...)
 
-	q = `
-		UPDATE users 
-		SET username = $2
-		WHERE id = $1
-	`
-	_, err = r.db.Exec(ctx, q, userID, profile.Username)
 	return err
 }
 

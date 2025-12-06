@@ -2395,6 +2395,8 @@ definitions:
         type: string
       notification:
         type: boolean
+      phone_number:
+        type: string
       username:
         maxLength: 20
         minLength: 3

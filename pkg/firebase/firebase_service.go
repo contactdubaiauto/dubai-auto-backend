@@ -4,7 +4,6 @@ import (
 	"context"
 	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
-	"fmt"
 	"strconv"
 
 	firebase "firebase.google.com/go/v4"
@@ -41,14 +40,22 @@ func InitFirebase(cfg *config.Config) (*FirebaseService, error) {
 
 // Send notification to a specific device token
 func (fs *FirebaseService) SendToToken(token string, targetUserID int, data model.UserMessage) (string, error) {
-	fmt.Println("data.Messages[0].Type")
-	fmt.Println(data.Messages[0].Type)
-	fmt.Println(data.Messages[0])
+	var body string
+	switch data.Messages[0].Type {
+	case 2:
+		body = "car listing shared."
+	case 3:
+		body = "video shared."
+	case 4:
+		body = "image shared."
+	default:
+		body = data.Messages[0].Message
+	}
 	message := &messaging.Message{
 		Token: token,
 		Notification: &messaging.Notification{
 			Title: data.Username,
-			Body:  data.Messages[0].Message,
+			Body:  body,
 		},
 		Android: &messaging.AndroidConfig{
 			Priority: "high",
@@ -72,13 +79,12 @@ func (fs *FirebaseService) SendToToken(token string, targetUserID int, data mode
 		Data: map[string]string{
 			"type":            "chat",
 			"current_user_id": strconv.Itoa(targetUserID),
-			"sender_id":       strconv.Itoa(data.ID),
+			"sender_id":       strconv.Itoa(data.ID), //todo: if admin 0
 			"sender_name":     data.Username,
 			"sender_avatar":   *data.Avatar,
 			"message_id":      strconv.Itoa(data.Messages[0].ID),
 			"message":         data.Messages[0].Message,
 			"msg_type":        strconv.Itoa(data.Messages[0].Type),
-			"message_type":    strconv.Itoa(data.Messages[0].Type),
 		},
 	}
 
