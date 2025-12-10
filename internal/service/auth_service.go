@@ -374,17 +374,8 @@ func (s *AuthService) ThirdPartyLogin(ctx *fasthttp.RequestCtx, user *model.Thir
 }
 
 func (s *AuthService) UserLoginPhone(ctx *fasthttp.RequestCtx, user *model.UserLoginPhone) model.Response {
-	otp := 123456
-	// otp := utils.RandomOTP()
-	// err := utils.SendEmail("OTP", fmt.Sprintf("Your OTP is: %d", otp), user.Phone)
-
-	// if err != nil {
-	// 	return model.Response{
-	// 		Error:  err,
-	// 		Status: http.StatusInternalServerError,
-	// 	}
-	// }
-
+	// otp := 123456
+	otp := utils.RandomOTP()
 	username := utils.RandomUsername()
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%d", otp)), bcrypt.DefaultCost)
 
@@ -403,6 +394,8 @@ func (s *AuthService) UserLoginPhone(ctx *fasthttp.RequestCtx, user *model.UserL
 			Status: http.StatusInternalServerError,
 		}
 	}
+
+	utils.SendOtp(user.Phone, otp)
 
 	return model.Response{
 		Data: model.Success{Message: "Successfully created the user."},

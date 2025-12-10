@@ -40,6 +40,9 @@ type Config struct {
 	FILE_BASE_URL         string
 	FIREBASE_ACCOUNT_FILE string
 	FCM_CHANNEL_ID        string
+	TWILIO_ACCOUNT_SID    string
+	TWILIO_AUTH_TOKEN     string
+	TWILIO_PHONE_NUMBER   string
 }
 
 var ENV Config
@@ -77,5 +80,8 @@ func Init() *Config {
 	ENV.FILE_BASE_URL = loadEnvVariable("FILE_BASE_URL")
 	ENV.FIREBASE_ACCOUNT_FILE = loadEnvVariable("FIREBASE_ACCOUNT_FILE")
 	ENV.FCM_CHANNEL_ID = loadEnvVariable("FCM_CHANNEL_ID")
+	ENV.TWILIO_ACCOUNT_SID = loadEnvVariable("TWILIO_ACCOUNT_SID")
+	ENV.TWILIO_AUTH_TOKEN = loadEnvVariable("TWILIO_AUTH_TOKEN")
+	ENV.TWILIO_PHONE_NUMBER = loadEnvVariable("TWILIO_PHONE_NUMBER")
 	return &ENV
 }

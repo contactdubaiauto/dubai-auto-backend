@@ -43,7 +43,7 @@ func MigrateV2(filePath string, db *pgxpool.Pool) error {
 	for i := 0; i < len(rows); i++ {
 
 		if i == 0 {
-			i = 96869
+			i = 1
 			continue
 		}
 

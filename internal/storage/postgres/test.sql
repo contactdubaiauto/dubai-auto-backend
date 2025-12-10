@@ -323,3 +323,19 @@ create table videos (
 );
 
 
+
+
+-- 06.12.2025
+-- Update all brands' model_count based on the actual number of models per brand
+UPDATE brands
+SET model_count = COALESCE(sub.model_count, 0)
+FROM (
+    SELECT brand_id, COUNT(*) AS model_count
+    FROM models
+    GROUP BY brand_id
+) AS sub
+WHERE brands.id = sub.brand_id;
+-- Optionally set brands with no models to 0
+UPDATE brands
+SET model_count = 0
+WHERE id NOT IN (SELECT DISTINCT brand_id FROM models);
