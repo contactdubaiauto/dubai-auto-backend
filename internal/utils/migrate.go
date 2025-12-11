@@ -20,11 +20,11 @@ import (
 func MigrateV2(filePath string, db *pgxpool.Pool) error {
 	fmt.Println("Migrating v2...")
 	f, err := excelize.OpenFile(filePath)
-	fmt.Println("Opening Excel file...")
 
 	if err != nil {
 		return fmt.Errorf("failed to open Excel file: %w", err)
 	}
+
 	defer f.Close()
 	fmt.Println("Excel file opened...")
 	sheetName := f.GetSheetName(0)
@@ -38,18 +38,10 @@ func MigrateV2(filePath string, db *pgxpool.Pool) error {
 	if err != nil {
 		return fmt.Errorf("failed to get rows: %w", err)
 	}
+
 	fmt.Println("Rows fetched...")
 
-	for i := 0; i < len(rows); i++ {
-
-		if i == 0 {
-			i = 1
-			continue
-		}
-
-		// if i == 1000 {
-		// 	break
-		// }
+	for i := 96940; i < len(rows); i++ {
 
 		fmt.Println("Processing row", i)
 		brandID, err := getBrandID(rows[i][1], rows[i][2], rows[i][0]+".png", db)
@@ -66,7 +58,13 @@ func MigrateV2(filePath string, db *pgxpool.Pool) error {
 			return err
 		}
 
-		generationID, exists, err := getGenerationID(rows[i][14], rows[i][15], rows[i][16], rows[i][31], modelID, db)
+		generationName := rows[i][14]
+
+		if generationName == "" {
+			generationName = rows[i][22]
+		}
+
+		generationID, exists, err := getGenerationID(generationName, rows[i][15], rows[i][16], rows[i][31], modelID, db)
 
 		if err != nil {
 			fmt.Println("Error getting generation ID:", err)
@@ -89,7 +87,7 @@ func MigrateV2(filePath string, db *pgxpool.Pool) error {
 			return err
 		}
 
-		engineID, err := getEngineID(rows[i][46], db)
+		engineID, err := getEngineID(rows[i][62], db)
 
 		if err != nil {
 			fmt.Println("Error getting engine ID:", err)
@@ -291,7 +289,6 @@ func getFuelTypeID(name string, db *pgxpool.Pool) (int, error) {
 }
 
 func getGenerationID(name, from, to, wheelStr string, modelID int, db *pgxpool.Pool) (int, bool, error) {
-
 	wheel := wheelStr == "Левый"
 
 	q := `

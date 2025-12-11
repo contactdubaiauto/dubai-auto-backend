@@ -106,6 +106,7 @@ type UpdateProfileRequest struct {
 	Contacts          map[string]string `json:"contacts"`
 	Address           string            `json:"address"`
 	PhoneNumber       string            `json:"phone_number"`
+	Email             string            `json:"email"`
 	// todo: add city
 }
 

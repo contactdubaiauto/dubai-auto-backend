@@ -19550,6 +19550,9 @@ const docTemplate = `{
                 "driving_experience": {
                     "type": "integer"
                 },
+                "email": {
+                    "type": "string"
+                },
                 "google": {
                     "type": "string"
                 },

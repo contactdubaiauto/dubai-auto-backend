@@ -339,3 +339,17 @@ WHERE brands.id = sub.brand_id;
 UPDATE brands
 SET model_count = 0
 WHERE id NOT IN (SELECT DISTINCT brand_id FROM models);
+
+
+delete from brands;
+delete from engines;
+delete from body_types;
+delete from fuel_types;
+delete from drivetrains;
+delete from transmissions;
+delete from horse_powers;
+delete from generations;
+delete from generation_modifications;
+delete from models;
+delete from vehicles;
+delete from images;

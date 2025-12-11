@@ -287,16 +287,17 @@ func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, pro
 	q := `
 	UPDATE users 
 	SET username = $2, 
-	phone = $3
+	phone = $3, email = $4
 	WHERE id = $1
 	`
-	_, err := r.db.Exec(ctx, q, userID, profile.Username, profile.PhoneNumber)
+	_, err := r.db.Exec(ctx, q, userID, profile.Username, profile.PhoneNumber, profile.Email)
 
 	if err != nil {
 		return err
 	}
 
 	profile.PhoneNumber = ""
+	profile.Email = ""
 
 	keys, _, args := auth.BuildParams(profile)
 	// Handle contacts map separately - BuildParams will skip maps, so we add it manually
@@ -336,9 +337,8 @@ func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, pro
 	for i, key := range keys {
 		setClause = append(setClause, fmt.Sprintf("%s = $%d", key, i+1))
 	}
-	setClause = append(setClause, "last_active_date = NOW()")
 
-	// Add userID as the last parameter
+	setClause = append(setClause, "last_active_date = NOW()")
 	args = append(args, userID)
 
 	q = fmt.Sprintf(`

@@ -1,5 +1,4 @@
 deploy:
-
 	@echo "Started building..."
 	@GOOS=linux GOARCH=amd64 go build -o ./bin/da2 ./cmd/http/main.go
 	@echo "Building done"
@@ -19,4 +18,3 @@ deploy:
 	
 swag:
 	@swag init -g cmd/http/main.go  
-

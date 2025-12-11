@@ -49,7 +49,7 @@ func (r *AuthRepository) UserLoginGoogle(ctx *fasthttp.RequestCtx, claims model.
 		VALUES ($1, $2, $3)
 		ON CONFLICT (user_id) DO NOTHING;
 	`
-	_, err = r.db.Exec(ctx, q, userByEmail.ID, claims.Name, "google")
+	_, err = r.db.Exec(ctx, q, userByEmail.ID, claims.Name, "email")
 
 	return userByEmail, err
 }

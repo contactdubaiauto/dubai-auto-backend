@@ -19,6 +19,7 @@ func loadEnvVariable(key string) string {
 type Config struct {
 	ClientID              string
 	MIGRATE               string
+	MIGRATE_PATH          string
 	DB_HOST               string
 	DB_PORT               string
 	DB_USER               string
@@ -83,5 +84,6 @@ func Init() *Config {
 	ENV.TWILIO_ACCOUNT_SID = loadEnvVariable("TWILIO_ACCOUNT_SID")
 	ENV.TWILIO_AUTH_TOKEN = loadEnvVariable("TWILIO_AUTH_TOKEN")
 	ENV.TWILIO_PHONE_NUMBER = loadEnvVariable("TWILIO_PHONE_NUMBER")
+	ENV.MIGRATE_PATH = loadEnvVariable("MIGRATE_PATH")
 	return &ENV
 }

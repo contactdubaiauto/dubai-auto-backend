@@ -383,6 +383,11 @@ create table generations (
                 on delete cascade
 );
 
+alter table generations drop column name_ru;
+alter table generations drop column name_ae;
+alter table generations add column name_ru varchar(255) default 'name_ru';
+alter table generations add column name_ae varchar(255) default 'name_ae';
+
 -- create table configurations (
 --     "id" serial primary key,
 --     "body_type_id" int not null,
