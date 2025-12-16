@@ -109,6 +109,7 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 	conversationID, err := r.UpsertConversation(senderUserID, targetUserID)
 
 	if err != nil {
+		fmt.Println("as98dfhijn")
 		return err
 	}
 
@@ -124,6 +125,7 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 	_, err = r.db.Exec(context.Background(), q, conversationID, senderUserID, s, data.Messages[0].Message, data.Messages[0].Type, data.Messages[0].CreatedAt)
 
 	if err != nil {
+		fmt.Println("o9hiunjk")
 		return err
 	}
 
@@ -135,6 +137,7 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 		err = r.db.QueryRow(context.Background(), q, targetUserID).Scan(&userFcmToken)
 
 		if err != nil {
+			fmt.Println("sd89huinjk")
 			return err
 		}
 
@@ -152,6 +155,7 @@ func (r *SocketRepository) MarkMessageAsUnreadAndSendPush(senderUserID int, data
 	conversationID, err := r.UpsertConversation(senderUserID, targetUserID)
 
 	if err != nil {
+		fmt.Println("a9ohiundjk ms89d")
 		return err
 	}
 
@@ -163,6 +167,7 @@ func (r *SocketRepository) MarkMessageAsUnreadAndSendPush(senderUserID int, data
 	_, err = r.db.Exec(context.Background(), q, senderUserID, conversationID, data.Messages[0].CreatedAt)
 
 	if err != nil {
+		fmt.Println("sd89huinjk ms89d")
 		return err
 	}
 
@@ -173,6 +178,7 @@ func (r *SocketRepository) MarkMessageAsUnreadAndSendPush(senderUserID int, data
 	err = r.db.QueryRow(context.Background(), q, targetUserID).Scan(&userFcmToken)
 
 	if err != nil {
+		fmt.Println("oioj8888 ms89d")
 		return err
 	}
 
@@ -181,6 +187,7 @@ func (r *SocketRepository) MarkMessageAsUnreadAndSendPush(senderUserID int, data
 	if err != nil {
 		fmt.Println("error sending notification: ", err)
 	}
+
 	return err
 }
 

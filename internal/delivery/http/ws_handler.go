@@ -122,7 +122,7 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 	return websocket.New(func(c *websocket.Conn) {
 		token := c.Query("token")
 		user, err := auth.ValidateWSJWT(token)
-
+		fmt.Println("a98shdufin")
 		if err != nil {
 			fmt.Println("Authentication failed", err)
 			h.sendErrorAndCloseConn(c, "Authentication failed")
@@ -135,22 +135,27 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 			h.sendErrorAndCloseConn(c, "User not found")
 			return
 		}
+		fmt.Println("sdfuhijn")
 
 		user.Conn = c
 		h.wsMutex.Lock()
 
 		if old, exists := h.wsUserConns[user.ID]; exists && old != nil && old != c {
+			fmt.Println("s8d9uijn")
 			h.closeConnGracefully(old)
 		}
 
 		h.wsUserConns[user.ID] = c
 		h.wsMutex.Unlock()
 		user.Avatar, user.Username, err = h.service.GetUserAvatarAndUsername(user.ID)
+		fmt.Println("user avatar and username:", user.ID)
+		fmt.Println("89ijo:", err)
 
 		if err != nil {
 			h.sendErrorAndCloseConn(c, "Error getting user avatar and username")
 			return
 		}
+		fmt.Println("9u8sdhifjnk")
 
 		err = h.service.UpdateUserStatus(user.ID, true)
 
@@ -167,6 +172,7 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 			fmt.Printf("📤 Sending new messages to user %d: %s", user.ID, data[0].Messages[0].Message)
 			h.sendToUser(user.ID, "new_message", data)
 		}
+		fmt.Println("ios9u8dijnk")
 
 		heartbeatCh := make(chan struct{}, 1)
 		done := make(chan struct{})
@@ -262,10 +268,10 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 						h.tmpMessages[key] = 1
 						h.tmpMutex.Unlock()
 						// Retry mechanism for each receiver
-						go h.SendDataToUser(targetUserID, data[0], targetC)
+						go h.CheckReceived(targetUserID, data[0], targetC, user.ID)
 					}
 
-					err = h.service.MessageWriteToDatabase(user.ID, s, data[0], targetUserID)
+					err = h.service.MessageWriteToDatabase(user.ID, s, data[0], targetUserID, user.ID)
 
 					if err != nil {
 						log.Printf("❌ Error message write to db  %d: %v", targetUserID, err)
@@ -340,7 +346,10 @@ func (h *SocketHandler) closeConnAndUpdateUserStatus(userID int, conn *websocket
 	h.closeConnGracefully(conn)
 }
 
-func (h *SocketHandler) SendDataToUser(receiverID int, data model.UserMessage, conn *websocket.Conn) {
+func (h *SocketHandler) CheckReceived(receiverID int, data model.UserMessage, conn *websocket.Conn, senderID int) {
+	data.ID = senderID
+	data.Messages[0].SenderID = senderID
+
 	for {
 		time.Sleep(3 * time.Second)
 		k := fmt.Sprintf("%d|%s", receiverID, data.Messages[0].CreatedAt.Format(time.RFC3339Nano))
@@ -359,7 +368,7 @@ func (h *SocketHandler) SendDataToUser(receiverID int, data model.UserMessage, c
 			err := h.service.MarkMessageAsUnreadAndSendPush(data.ID, data, receiverID)
 
 			if err != nil {
-				log.Printf("❌ Error marking message as unread and sending push to admin %d: %v", receiverID, err)
+				log.Printf("❌ Error marking message as unread and sending push to user %d: %v", receiverID, err)
 			}
 
 			h.closeConnGracefully(conn)

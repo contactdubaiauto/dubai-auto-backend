@@ -353,3 +353,8 @@ delete from generation_modifications;
 delete from models;
 delete from vehicles;
 delete from images;
+
+
+
+insert into profiles (user_id, username, registered_by) values (87, 'admin', 'admin');
+insert into profiles (user_id, username, registered_by) values (84, 'admin2', 'admin');

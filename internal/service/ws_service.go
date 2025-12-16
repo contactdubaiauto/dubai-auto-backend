@@ -30,7 +30,9 @@ func (s *SocketService) GetUserAvatarAndUsername(userID int) (string, string, er
 	return s.repo.GetUserAvatarAndUsername(userID)
 }
 
-func (s *SocketService) MessageWriteToDatabase(senderUserID int, status bool, data model.UserMessage, targetUserID int) error {
+func (s *SocketService) MessageWriteToDatabase(senderUserID int, status bool, data model.UserMessage, targetUserID, senderID int) error {
+	data.ID = senderID
+	data.Messages[0].SenderID = senderID
 	err := s.repo.MessageWriteToDatabase(senderUserID, status, data, targetUserID)
 	return err
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +24,7 @@
             margin: 0 auto;
             background: white;
             border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
@@ -91,7 +92,9 @@
             color: #495057;
         }
 
-        .form-group input, .form-group textarea, .form-group select {
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
             width: 100%;
             padding: 10px;
             border: 2px solid #e9ecef;
@@ -105,7 +108,9 @@
             cursor: pointer;
         }
 
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -169,8 +174,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .message.system {
@@ -277,13 +289,14 @@
             .main-content {
                 grid-template-columns: 1fr;
             }
-            
+
             .container {
                 margin: 10px;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -297,13 +310,15 @@
                     <h3>🔐 Authentication</h3>
                     <div class="form-group">
                         <label for="serverUrl">Server URL:</label>
-                        <input type="text" id="serverUrl" value="wss://api.mashynbazar.com" placeholder="wss://api.mashynbazar.com">
+                        <input type="text" id="serverUrl" value="wss://api.mashynbazar.com"
+                            placeholder="wss://api.mashynbazar.com">
                         <!-- <input type="text" id="serverUrl" value="ws://localhost:8080" placeholder="ws://localhost:8080"> -->
                     </div>
                     <div class="form-group">
                         <label for="jwtToken">JWT Token:</label>
                         <!-- <textarea id="jwtToken" rows="3" placeholder="Enter your JWT token here...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjU4Njk3MTUsImlkIjo0NCwicm9sZV9pZCI6MX0._v1dXRSTS_vmPqdsBIDAqRjXuhh4yRs_MbtXiN-w_XI</textarea> -->
-                        <textarea id="jwtToken" rows="3" placeholder="Enter your JWT token here...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjcwODE2OTcsImlkIjoxNjUsInJvbGVfaWQiOjEwMH0.QMBIH_v4CBqWwPVGda_I9tuWYGxdAxNuR6x09aapnp4</textarea>
+                        <textarea id="jwtToken" rows="3"
+                            placeholder="Enter your JWT token here...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjkwNjI1NjAsImlkIjozMTEsInJvbGVfaWQiOjEwMH0.tYtvqeDQ-6mQd4eDNp_OKynDnxJKRzXk068KcqhStyA</textarea>
                     </div>
                     <button class="btn" id="connectBtn" onclick="connect()">Connect</button>
                     <button class="btn danger" id="disconnectBtn" onclick="disconnect()" disabled>Disconnect</button>
@@ -318,12 +333,13 @@
                     <h4>📋 Send Events</h4>
                     <ul>
                         <li><span class="code">ping</span> - Send ping to server (get pong response)</li>
-                        <li><span class="code">private_message</span> - Send private message with time, message, type</li>
+                        <li><span class="code">private_message</span> - Send private message with time, message, type
+                        </li>
                         <li><span class="code">get_online_users</span> - Get online users list</li>
                         <li><span class="code">image upload</span> - Upload image file and send as type 4 message</li>
                     </ul>
                 </div>
-                
+
                 <div class="info-panel">
                     <h4>📥 Receive Events</h4>
                     <ul>
@@ -337,7 +353,7 @@
 
             <div class="chat-area">
                 <div class="messages" id="messages"></div>
-                
+
                 <div class="message-actions">
                     <button class="btn" onclick="getOnlineUsers()">Get Online Users</button>
                     <button class="btn" onclick="sendPing()">Send Ping</button>
@@ -346,14 +362,18 @@
 
                 <div class="form-group">
                     <label for="messageInput">💬 Send Message:</label>
-                    <input type="text" id="messageInput" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+                    <input type="text" id="messageInput" placeholder="Type your message..."
+                        onkeypress="handleKeyPress(event)">
                 </div>
                 <button class="btn" onclick="sendMessage()">Send Message</button>
 
                 <div class="form-group" style="margin-top: 15px;">
                     <label for="privateMessageInput">📩 Private Message:</label>
                     <input type="number" id="targetUserId" placeholder="Target User ID" style="margin-bottom: 10px;">
-                    <input type="text" id="privateMessageInput" placeholder="Private message..." onkeypress="handlePrivateKeyPress(event)">
+                    <input type="text" id="privateMessageInput" placeholder="Private message..."
+                        onkeypress="handlePrivateKeyPress(event)">
+                    <input type="text" id="isAdmin" placeholder="true..." onkeypress="handlePrivateKeyPress(event)"
+                        value="false">
                     <!-- message type -->
                     <select id="messageType">
                         <option value="1">Text</option>
@@ -367,14 +387,17 @@
 
                 <div class="form-group" style="margin-top: 15px;">
                     <label for="imageFileInput">🖼️ Send Image Message:</label>
-                    <input type="number" id="targetUserIdForImage" placeholder="Target User ID" style="margin-bottom: 10px;">
+                    <input type="number" id="targetUserIdForImage" placeholder="Target User ID"
+                        style="margin-bottom: 10px;">
+
                     <input type="file" id="imageFileInput" accept="image/*" style="margin-bottom: 10px;">
                     <button class="btn" onclick="sendImageMessage()">Upload & Send Image</button>
                 </div>
 
                 <div class="form-group" style="margin-top: 15px;">
                     <label for="roomInput">🏠 Join Room:</label>
-                    <input type="text" id="roomInput" placeholder="Room ID (e.g., general)" onkeypress="handleRoomKeyPress(event)">
+                    <input type="text" id="roomInput" placeholder="Room ID (e.g., general)"
+                        onkeypress="handleRoomKeyPress(event)">
                 </div>
                 <button class="btn" onclick="joinRoom()">Join Room</button>
             </div>
@@ -397,13 +420,13 @@
             const messages = document.getElementById('messages');
             const messageEl = document.createElement('div');
             messageEl.className = `message ${type}`;
-            
+
             const timestamp = new Date().toLocaleTimeString();
             messageEl.innerHTML = `
                 <div class="message-header">${timestamp}</div>
                 <div class="message-content">${content}</div>
             `;
-            
+
             messages.appendChild(messageEl);
             messages.scrollTop = messages.scrollHeight;
         }
@@ -412,7 +435,7 @@
         function connect() {
             const serverUrl = document.getElementById('serverUrl').value;
             const token = document.getElementById('jwtToken').value.trim();
-            
+
             if (!token) {
                 addMessage('❌ Please enter a JWT token', 'error');
                 return;
@@ -498,7 +521,7 @@
                     handleNewMessage(data.data);
                     break;
                 case 'error':
-                    addMessage(`❌ Error: ${data.data.message || data.data.error}`, 'error');
+                    addMessage(`❌ Error: ${data.data}`, 'error');
                     break;
                 case 'online_users':
                     updateOnlineUsers(data.data.users);
@@ -530,14 +553,14 @@
             // userMsg is a UserMessage object with: id, username, avatar, last_active_date, messages[]
             const fromUsername = userMsg.username || 'Unknown';
             const fromUserId = userMsg.id || 'N/A';
-            
+
             // Process each message in the messages array
             if (userMsg.messages && Array.isArray(userMsg.messages)) {
                 userMsg.messages.forEach(msg => {
                     const messageTime = msg.created_at ? new Date(msg.created_at).toLocaleTimeString() : 'N/A';
                     const messageType = msg.type || 'N/A';
                     const messageContent = msg.message || '';
-                    
+
                     addMessage(`📬 New from ${fromUsername} (ID: ${fromUserId}) [Type: ${messageType}] [${messageTime}]: ${messageContent}`, 'user');
                 });
             } else {
@@ -564,7 +587,7 @@
         function sendMessage() {
             const messageInput = document.getElementById('messageInput');
             const message = messageInput.value.trim();
-            
+
             if (!message || !isConnected) return;
 
             const messageData = {
@@ -580,18 +603,20 @@
         // Send a private message
         function sendPrivateMessage() {
             const targetUserId = document.getElementById('targetUserId').value;
+            const isAdmin = document.getElementById('isAdmin').value;
             const messageInput = document.getElementById('privateMessageInput');
             const message = messageInput.value.trim();
-            
+
             if (!message || !targetUserId || !isConnected) return;
             messageTypeInteger = document.getElementById('messageType').value;
-            
+
             const messageData = {
                 event: 'private_message',
                 target_user_id: parseInt(targetUserId),
                 data: {
                     message: message,
                     type: parseInt(messageTypeInteger),
+                    admin: isAdmin === 'true',
                     target_user_id: parseInt(targetUserId),
                     time: new Date().toISOString()
                 }
@@ -607,7 +632,7 @@
             const targetUserId = document.getElementById('targetUserIdForImage').value;
             const fileInput = document.getElementById('imageFileInput');
             const file = fileInput.files[0];
-            
+
             if (!file || !targetUserId || !isConnected) {
                 if (!file) {
                     addMessage('❌ Please select an image file', 'error');
@@ -634,22 +659,22 @@
             // Get server URL and convert to HTTP
             const serverUrl = document.getElementById('serverUrl').value.trim();
             let apiBaseUrl = serverUrl;
-            
+
             // Convert WebSocket URL to HTTP URL
             if (apiBaseUrl.startsWith('ws://')) {
                 apiBaseUrl = apiBaseUrl.replace('ws://', 'http://');
             } else if (apiBaseUrl.startsWith('wss://')) {
                 apiBaseUrl = apiBaseUrl.replace('wss://', 'https://');
             }
-            
+
             // Remove /ws path if present
             if (apiBaseUrl.endsWith('/ws')) {
                 apiBaseUrl = apiBaseUrl.slice(0, -3);
             }
-            
+
             // Ensure no trailing slash
             apiBaseUrl = apiBaseUrl.replace(/\/$/, '');
-            
+
             // Create FormData for file upload
             const formData = new FormData();
             formData.append('file', file);
@@ -677,7 +702,7 @@
                 // Response format: { "message": "<full_url_path>" } (when status is 0 or 200)
                 // Or: { "data": { "message": "<full_url_path>" } } (if wrapped)
                 const filePath = result.message || result.data?.message || result.data?.Message;
-                
+
                 if (!filePath) {
                     addMessage(`❌ Failed to get file path from server response. Response: ${JSON.stringify(result)}`, 'error');
                     return;
@@ -699,7 +724,7 @@
 
                 sendWS(messageData);
                 addMessage(`📩 Image message sent to User ${targetUserId}: ${filePath}`, 'user');
-                
+
                 // Clear file input
                 fileInput.value = '';
             } catch (error) {
@@ -711,7 +736,7 @@
         function joinRoom() {
             const roomInput = document.getElementById('roomInput');
             const roomId = roomInput.value.trim();
-            
+
             if (!roomId || !isConnected) return;
 
             const messageData = {
@@ -759,7 +784,7 @@
         function updateOnlineUsers(users) {
             const userList = document.getElementById('userList');
             userList.innerHTML = '';
-            
+
             if (users && users.length > 0) {
                 users.forEach(user => {
                     const userBadge = document.createElement('div');
@@ -800,4 +825,5 @@
         });
     </script>
 </body>
+
 </html>
