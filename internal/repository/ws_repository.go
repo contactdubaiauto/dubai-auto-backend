@@ -322,7 +322,7 @@ func (r *SocketRepository) GetConversationMessages(ctx context.Context, userID, 
 		select 
 			id, 
 			sender_id, 
-			status, 
+			status,
 			message, 
 			type, 
 			created_at 

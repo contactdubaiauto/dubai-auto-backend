@@ -18,3 +18,6 @@ deploy:
 	
 swag:
 	@swag init -g cmd/http/main.go  
+
+deploy-files:
+	@scp -r ./catalog_full.xlsx root@31.57.228.223:/var/www/da/catalog_full.xlsx

@@ -41,30 +41,34 @@ func MigrateV2(filePath string, db *pgxpool.Pool) error {
 
 	fmt.Println("Rows fetched...")
 
-	for i := 96940; i < len(rows); i++ {
+	for i := 1; i < len(rows); i++ {
 
 		fmt.Println("Processing row", i)
-		brandID, err := getBrandID(rows[i][1], rows[i][2], rows[i][0]+".png", db)
+		brandID, err := getBrandID(rows[i][1], rows[i][2], rows[i][3], rows[i][0]+".png", db)
 
 		if err != nil {
 			fmt.Println("Error getting brand ID:", err)
 			return err
 		}
 
-		modelID, err := getModelID(rows[i][8], rows[i][9], brandID, db)
+		modelID, err := getModelID(rows[i][9], rows[i][10], rows[i][11], brandID, db)
 
 		if err != nil {
 			fmt.Println("Error getting model ID:", err)
 			return err
 		}
 
-		generationName := rows[i][14]
+		generationNameRu := rows[i][16]
+		generationName := rows[i][17]
+		generationNameAe := rows[i][18]
 
-		if generationName == "" {
-			generationName = rows[i][22]
+		if generationNameRu == "" {
+			generationNameRu = rows[i][27]
+			generationName = rows[i][28]
+			generationNameAe = rows[i][29]
 		}
 
-		generationID, exists, err := getGenerationID(generationName, rows[i][15], rows[i][16], rows[i][31], modelID, db)
+		generationID, exists, err := getGenerationID(generationNameRu, generationName, generationNameAe, rows[i][19], rows[i][20], rows[i][36], modelID, db)
 
 		if err != nil {
 			fmt.Println("Error getting generation ID:", err)
@@ -72,7 +76,7 @@ func MigrateV2(filePath string, db *pgxpool.Pool) error {
 		}
 
 		if !exists {
-			err = helperResizeImage(generationID, "./generations/"+rows[i][17]+"_main.jpg", config.ENV.DEFAULT_IMAGE_WIDTHS, db)
+			err = helperResizeImage(generationID, "./generations/"+rows[i][21]+"_main.jpg", config.ENV.DEFAULT_IMAGE_WIDTHS, db)
 
 			if err != nil {
 				fmt.Println("Error resizing image:", err)
@@ -80,42 +84,42 @@ func MigrateV2(filePath string, db *pgxpool.Pool) error {
 			}
 		}
 
-		bodyTypeID, err := getBodyTypeID(rows[i][18], rows[i][19], db)
+		bodyTypeID, err := getBodyTypeID(rows[i][22], rows[i][23], rows[i][24], db)
 
 		if err != nil {
 			fmt.Println("Error getting body type ID:", err)
 			return err
 		}
 
-		engineID, err := getEngineID(rows[i][62], db)
+		engineID, err := getEngineID(rows[i][73], db)
 
 		if err != nil {
 			fmt.Println("Error getting engine ID:", err)
 			return err
 		}
 
-		horsePowerID, err := getHorsePowerID(helperGetHorsePower(rows[i][62]), db)
+		horsePowerID, err := getHorsePowerID(helperGetHorsePower(rows[i][75]), db)
 
 		if err != nil {
 			fmt.Println("Error getting horse power ID:", err)
 			return err
 		}
 
-		transmissionID, err := getTransmissionID(rows[i][46], db)
+		transmissionID, err := getTransmissionID(rows[i][51], rows[i][52], rows[i][53], db)
 
 		if err != nil {
 			fmt.Println("Error getting transmission ID:", err)
 			return err
 		}
 
-		drivetrainID, err := getDrivetrainID(rows[i][48], db)
+		drivetrainID, err := getDrivetrainID(rows[i][55], rows[i][56], rows[i][57], db)
 
 		if err != nil {
 			fmt.Println("Error getting drivetrain ID:", err)
 			return err
 		}
 
-		fuelTypeID, err := getFuelTypeID(rows[i][60], db)
+		fuelTypeID, err := getFuelTypeID(rows[i][69], rows[i][70], rows[i][71], db)
 
 		if err != nil {
 			fmt.Println("Error getting fuel type ID:", err)
@@ -133,7 +137,7 @@ func MigrateV2(filePath string, db *pgxpool.Pool) error {
 	return err
 }
 
-func getBrandID(name, name_ru, logoFileName string, db *pgxpool.Pool) (int, error) {
+func getBrandID(name, name_ru, name_ae, logoFileName string, db *pgxpool.Pool) (int, error) {
 	q := `
 		select id from brands where name = $1
 	`
@@ -143,9 +147,9 @@ func getBrandID(name, name_ru, logoFileName string, db *pgxpool.Pool) (int, erro
 	if err == pgx.ErrNoRows {
 
 		q = `
-			insert into brands (name_ru, name_ae, name) values ($2, $1, $1) returning id
+			insert into brands (name_ru, name_ae, name) values ($2, $3, $1) returning id
 		`
-		err = db.QueryRow(context.Background(), q, name, name_ru).Scan(&id)
+		err = db.QueryRow(context.Background(), q, name, name_ru, name_ae).Scan(&id)
 
 		if err != nil {
 			return 0, err
@@ -182,7 +186,7 @@ func getBrandID(name, name_ru, logoFileName string, db *pgxpool.Pool) (int, erro
 	return id, err
 }
 
-func getModelID(name, name_ru string, brandID int, db *pgxpool.Pool) (int, error) {
+func getModelID(name, name_ru, name_ae string, brandID int, db *pgxpool.Pool) (int, error) {
 	q := `
 		select 
 			id 
@@ -193,18 +197,17 @@ func getModelID(name, name_ru string, brandID int, db *pgxpool.Pool) (int, error
 	err := db.QueryRow(context.Background(), q, name, brandID).Scan(&id)
 
 	if err == pgx.ErrNoRows {
-
 		q = `
-			insert into models (name, name_ru, name_ae, brand_id) values ($1, $2, $1, $3) returning id
+			insert into models (name, name_ru, name_ae, brand_id) values ($1, $2, $3, $4) returning id
 		`
-		err = db.QueryRow(context.Background(), q, name, name_ru, brandID).Scan(&id)
+		err = db.QueryRow(context.Background(), q, name, name_ru, name_ae, brandID).Scan(&id)
 		return id, err
 	}
 
 	return id, err
 }
 
-func getBodyTypeID(name_ru, name string, db *pgxpool.Pool) (int, error) {
+func getBodyTypeID(name_ru, name, name_ae string, db *pgxpool.Pool) (int, error) {
 	q := `
 		select id from body_types where name = $1
 	`
@@ -213,15 +216,15 @@ func getBodyTypeID(name_ru, name string, db *pgxpool.Pool) (int, error) {
 
 	if err == pgx.ErrNoRows {
 		q = `
-			insert into body_types (name, name_ru, name_ae, image) values ($1, $2, $1, '') returning id
+			insert into body_types (name, name_ru, name_ae, image) values ($1, $2, $3, '') returning id
 		`
-		err = db.QueryRow(context.Background(), q, name, name_ru).Scan(&id)
+		err = db.QueryRow(context.Background(), q, name, name_ru, name_ae).Scan(&id)
 		return id, err
 	}
 	return id, err
 }
 
-func getTransmissionID(name string, db *pgxpool.Pool) (int, error) {
+func getTransmissionID(name_ru, name, name_ae string, db *pgxpool.Pool) (int, error) {
 	q := `
 		select id from transmissions where name = $1
 	`
@@ -229,9 +232,9 @@ func getTransmissionID(name string, db *pgxpool.Pool) (int, error) {
 	err := db.QueryRow(context.Background(), q, name).Scan(&id)
 	if err == pgx.ErrNoRows {
 		q = `
-			insert into transmissions (name, name_ru, name_ae) values ($1, $1, $1) returning id
+			insert into transmissions (name, name_ru, name_ae) values ($1, $2, $3) returning id
 		`
-		err = db.QueryRow(context.Background(), q, name).Scan(&id)
+		err = db.QueryRow(context.Background(), q, name, name_ru, name_ae).Scan(&id)
 		return id, err
 	}
 	return id, err
@@ -239,23 +242,28 @@ func getTransmissionID(name string, db *pgxpool.Pool) (int, error) {
 
 func getEngineID(name string, db *pgxpool.Pool) (int, error) {
 	name = helperSm3ToL(name)
+	name_en := fmt.Sprintf("%s %s", name, "L")
+	name_ru := fmt.Sprintf("%s %s", name, "Л")
+	name_ae := fmt.Sprintf("%s %s", name, "L")
+
 	q := `
 		select id from engines where name = $1
 	`
 	var id int
-	err := db.QueryRow(context.Background(), q, name).Scan(&id)
+	err := db.QueryRow(context.Background(), q, name_en).Scan(&id)
 
 	if err == pgx.ErrNoRows {
 		q = `
-			insert into engines (name, name_ru, name_ae) values ($1, $1, $1) returning id
+			insert into engines (name, name_ru, name_ae) values ($1, $2, $3) returning id
 		`
-		err = db.QueryRow(context.Background(), q, name).Scan(&id)
+		err = db.QueryRow(context.Background(), q, name_en, name_ru, name_ae).Scan(&id)
 		return id, err
 	}
+
 	return id, err
 }
 
-func getDrivetrainID(name string, db *pgxpool.Pool) (int, error) {
+func getDrivetrainID(name, name_ru, name_ae string, db *pgxpool.Pool) (int, error) {
 	q := `
 		select id from drivetrains where name = $1
 	`
@@ -264,15 +272,15 @@ func getDrivetrainID(name string, db *pgxpool.Pool) (int, error) {
 
 	if err == pgx.ErrNoRows {
 		q = `
-			insert into drivetrains (name, name_ru, name_ae) values ($1, $1, $1) returning id
+			insert into drivetrains (name, name_ru, name_ae) values ($1, $2, $3) returning id
 		`
-		err = db.QueryRow(context.Background(), q, name).Scan(&id)
+		err = db.QueryRow(context.Background(), q, name, name_ru, name_ae).Scan(&id)
 		return id, err
 	}
 	return id, err
 }
 
-func getFuelTypeID(name string, db *pgxpool.Pool) (int, error) {
+func getFuelTypeID(name_ru, name, name_ae string, db *pgxpool.Pool) (int, error) {
 	q := `
 		select id from fuel_types where name = $1
 	`
@@ -280,19 +288,19 @@ func getFuelTypeID(name string, db *pgxpool.Pool) (int, error) {
 	err := db.QueryRow(context.Background(), q, name).Scan(&id)
 	if err == pgx.ErrNoRows {
 		q = `
-			insert into fuel_types (name, name_ru, name_ae) values ($1, $1, $1) returning id
+			insert into fuel_types (name, name_ru, name_ae) values ($1, $2, $3) returning id
 		`
-		err = db.QueryRow(context.Background(), q, name).Scan(&id)
+		err = db.QueryRow(context.Background(), q, name, name_ru, name_ae).Scan(&id)
 		return id, err
 	}
 	return id, err
 }
 
-func getGenerationID(name, from, to, wheelStr string, modelID int, db *pgxpool.Pool) (int, bool, error) {
+func getGenerationID(name_ru, name, name_ae, from, to, wheelStr string, modelID int, db *pgxpool.Pool) (int, bool, error) {
 	wheel := wheelStr == "Левый"
 
 	q := `
-		select id from generations where name = $1 and model_id = $2
+		select id from generations where name_ru = $1 and model_id = $2
 	`
 	var id int
 	err := db.QueryRow(context.Background(), q, name, modelID).Scan(&id)
@@ -304,9 +312,9 @@ func getGenerationID(name, from, to, wheelStr string, modelID int, db *pgxpool.P
 				model_id, start_year, end_year, 
 				wheel, image
 			) 
-			values ($1, $1, $1, $2, $3, $4, $5, '') returning id
+			values ($1, $2, $3, $4, $5, $6, $7, '') returning id
 		`
-		err = db.QueryRow(context.Background(), q, name, modelID, from, to, wheel).Scan(&id)
+		err = db.QueryRow(context.Background(), q, name, name_ru, name_ae, modelID, from, to, wheel).Scan(&id)
 		return id, false, err
 	}
 
@@ -343,16 +351,20 @@ func getGenerationModificationID(
 }
 
 func getHorsePowerID(name string, db *pgxpool.Pool) (int, error) {
+	name_en := fmt.Sprintf("%s h.p", name)
+	name_ru := fmt.Sprintf("%s л.с.", name)
+	name_ae := fmt.Sprintf("%s حصان", name)
+
 	q := `
 		select id from horse_powers where name = $1
 	`
 	var id int
-	err := db.QueryRow(context.Background(), q, name).Scan(&id)
+	err := db.QueryRow(context.Background(), q, name_en).Scan(&id)
 	if err == pgx.ErrNoRows {
 		q = `
-			insert into horse_powers (name, name_ru, name_ae) values ($1, $1, $1) returning id
+			insert into horse_powers (name, name_ru, name_ae) values ($1, $2, $3) returning id
 		`
-		err = db.QueryRow(context.Background(), q, name).Scan(&id)
+		err = db.QueryRow(context.Background(), q, name_en, name_ru, name_ae).Scan(&id)
 		return id, err
 	}
 	return id, err
@@ -376,7 +388,7 @@ func helperSm3ToL(str string) string {
 	}
 
 	litres := float64(cm3) / 1000.0
-	return fmt.Sprintf("%.1f L", litres)
+	return fmt.Sprintf("%.1f", litres)
 }
 
 func helperResizeImage(generationID int, imagePath string, widths []uint, db *pgxpool.Pool) error {
