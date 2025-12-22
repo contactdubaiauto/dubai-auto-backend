@@ -123,6 +123,7 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 		token := c.Query("token")
 		user, err := auth.ValidateWSJWT(token)
 		fmt.Println("a98shdufin")
+
 		if err != nil {
 			fmt.Println("Authentication failed", err)
 			h.sendErrorAndCloseConn(c, "Authentication failed")

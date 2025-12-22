@@ -32,21 +32,14 @@ func GMTTime() time.Time {
 }
 
 func CheckLastIDLimit(lastID, limit string) (int, int) {
-	if lastID == "" || limit == "" || len(limit) > 4 || len(lastID) > 4 {
-		return 1, 10
+	lastIDInt, limitInt := 9999, 10
+
+	if lastID == "" || limit == "" || len(lastID) > 9 {
+		return lastIDInt, limitInt
 	}
 
-	limitInt, err := strconv.Atoi(limit)
-
-	if err != nil {
-		limitInt = 10
-	}
-
-	lastIDInt, err := strconv.Atoi(lastID)
-
-	if err != nil {
-		return 1, 10
-	}
+	limitInt, _ = strconv.Atoi(limit)
+	lastIDInt, _ = strconv.Atoi(lastID)
 
 	return lastIDInt, limitInt
 }

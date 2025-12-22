@@ -6,6 +6,7 @@ import (
 	"dubai-auto/internal/model"
 	"dubai-auto/pkg/firebase"
 	"fmt"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -104,12 +105,10 @@ func (r *SocketRepository) GetUserAvatarAndUsername(userID int) (string, string,
 }
 
 func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool, data model.UserMessage, targetUserID int) error {
-	fmt.Println("message write to database. Target user ID: ", targetUserID, "Sender user ID: ", senderUserID, "Status: ", status)
 	s := 1
-	conversationID, err := r.UpsertConversation(senderUserID, targetUserID)
+	conversationID, err := r.UpsertConversation(senderUserID, targetUserID, data.Messages[0].Message, data.Messages[0].Type, data.Messages[0].CreatedAt, status)
 
 	if err != nil {
-		fmt.Println("as98dfhijn")
 		return err
 	}
 
@@ -118,14 +117,38 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 	}
 
 	q := `
-		INSERT INTO messages (
-			conversation_id, sender_id, status, message, type, created_at
-		) VALUES ($1, $2, $3, $4, $5, $6)
+		WITH new_message AS (
+			INSERT INTO messages (
+				conversation_id,
+				sender_id,
+				status,
+				message,
+				type,
+				created_at
+			)
+			VALUES ($1, $2, $3, $4, $5, $6)
+			RETURNING id
+		)
+		UPDATE conversations c
+		SET
+			last_message_id = nm.id,
+			last_message = $4,
+			last_message_type = $5,
+			updated_at = NOW(),
+			user_1_unread_messages = CASE
+				WHEN c.user_id_1 <> $2 THEN c.user_1_unread_messages + 1
+				ELSE c.user_1_unread_messages
+			END,
+			user_2_unread_messages = CASE
+				WHEN c.user_id_2 <> $2 THEN c.user_2_unread_messages + 1
+				ELSE c.user_2_unread_messages
+			END
+		FROM new_message nm
+		WHERE c.id = $1;
 	`
 	_, err = r.db.Exec(context.Background(), q, conversationID, senderUserID, s, data.Messages[0].Message, data.Messages[0].Type, data.Messages[0].CreatedAt)
 
 	if err != nil {
-		fmt.Println("o9hiunjk")
 		return err
 	}
 
@@ -137,7 +160,6 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 		err = r.db.QueryRow(context.Background(), q, targetUserID).Scan(&userFcmToken)
 
 		if err != nil {
-			fmt.Println("sd89huinjk")
 			return err
 		}
 
@@ -152,10 +174,9 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 }
 
 func (r *SocketRepository) MarkMessageAsUnreadAndSendPush(senderUserID int, data model.UserMessage, targetUserID int) error {
-	conversationID, err := r.UpsertConversation(senderUserID, targetUserID)
+	conversationID, err := r.UpsertConversation(senderUserID, targetUserID, data.Messages[0].Message, data.Messages[0].Type, data.Messages[0].CreatedAt, false)
 
 	if err != nil {
-		fmt.Println("a9ohiundjk ms89d")
 		return err
 	}
 
@@ -167,7 +188,6 @@ func (r *SocketRepository) MarkMessageAsUnreadAndSendPush(senderUserID int, data
 	_, err = r.db.Exec(context.Background(), q, senderUserID, conversationID, data.Messages[0].CreatedAt)
 
 	if err != nil {
-		fmt.Println("sd89huinjk ms89d")
 		return err
 	}
 
@@ -178,7 +198,6 @@ func (r *SocketRepository) MarkMessageAsUnreadAndSendPush(senderUserID int, data
 	err = r.db.QueryRow(context.Background(), q, targetUserID).Scan(&userFcmToken)
 
 	if err != nil {
-		fmt.Println("oioj8888 ms89d")
 		return err
 	}
 
@@ -254,9 +273,16 @@ func (r *SocketRepository) GetConversations(userID int) ([]model.Conversation, e
 	q := `
 		select 
 			c.updated_at,
+			case 
+				when c.user_id_1 = $1 then c.user_1_unread_messages
+				else c.user_2_unread_messages
+			end as unread_messages,
+			c.last_message,
+			c.last_message_type,
 			u.username,
 			p.avatar,
-			u.id
+			u.id user_id,
+			c.id
 		from conversations c
 		join users u on u.id = 
 			case 
@@ -278,7 +304,10 @@ func (r *SocketRepository) GetConversations(userID int) ([]model.Conversation, e
 
 	for rows.Next() {
 		var conversation model.Conversation
-		err := rows.Scan(&conversation.LastActiveDate, &conversation.Username, &conversation.Avatar, &conversation.ID)
+		err := rows.Scan(&conversation.LastActiveDate, &conversation.UnreadMessages,
+			&conversation.LastMessage, &conversation.LastMessageType,
+			&conversation.Username, &conversation.Avatar,
+			&conversation.UserID, &conversation.ID)
 
 		if err != nil {
 			return nil, err
@@ -289,11 +318,18 @@ func (r *SocketRepository) GetConversations(userID int) ([]model.Conversation, e
 	return conversations, nil
 }
 
-func (r *SocketRepository) UpsertConversation(userID1, userID2 int) (int, error) {
+func (r *SocketRepository) UpsertConversation(userID1, userID2 int, message string, messageType int, createdAt time.Time, status bool) (int, error) {
+	// increamentColumn := "user_2_unread_messages"
+	// increment := 0
 
-	if userID1 > userID2 {
-		userID1, userID2 = userID2, userID1
-	}
+	// if userID1 > userID2 {
+	// 	increamentColumn = "user_1_unread_messages"
+	// 	userID1, userID2 = userID2, userID1
+	// }
+
+	// if !status {
+	// 	increment = 1
+	// }
 
 	var id int
 	q := `
@@ -304,20 +340,33 @@ func (r *SocketRepository) UpsertConversation(userID1, userID2 int) (int, error)
 
 	if err == pgx.ErrNoRows {
 		q = `
-			insert into conversations (user_id_1, user_id_2, updated_at) values ($1, $2, now())
+			insert into conversations (user_id_1, user_id_2, updated_at) 
+			values ($1, $2, $3)
 			returning id
 		`
-		err = r.db.QueryRow(context.Background(), q, userID1, userID2).Scan(&id)
+		err = r.db.QueryRow(context.Background(), q, userID1, userID2, createdAt).Scan(&id)
 
 		if err != nil {
 			return 0, err
 		}
 	}
 
+	// q = `
+	// 	update conversations
+	// 	set
+	// 		updated_at = $2,
+	// 		last_message = $3,
+	// 		last_message_type = $4,
+	// 		` + increamentColumn + ` = ` + increamentColumn + ` + $5
+	// 	where id = $1
+	// `
+	// _, err = r.db.Exec(context.Background(), q, id, createdAt, message, messageType, increment)
+
 	return id, err
 }
 
 func (r *SocketRepository) GetConversationMessages(ctx context.Context, userID, conversationID, lastID, limit int) ([]model.ConversationMessage, error) {
+	fmt.Println(conversationID, lastID, limit)
 	q := `
 		select 
 			id, 
@@ -351,5 +400,21 @@ func (r *SocketRepository) GetConversationMessages(ctx context.Context, userID, 
 		mes = append(mes, message)
 	}
 
-	return mes, nil
+	q = `
+		UPDATE conversations 
+		SET 
+			user_1_unread_messages = CASE 
+				WHEN user_id_1 = $2 THEN 0 
+				ELSE user_1_unread_messages 
+			END,
+			user_2_unread_messages = CASE 
+				WHEN user_id_1 != $2 THEN 0 
+				ELSE user_2_unread_messages 
+			END,
+			updated_at = NOW()
+		WHERE id = $1;
+	`
+	_, err = r.db.Exec(ctx, q, conversationID, userID)
+
+	return mes, err
 }

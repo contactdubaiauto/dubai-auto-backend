@@ -16912,6 +16912,18 @@ const docTemplate = `{
                 "last_active_date": {
                     "type": "string"
                 },
+                "last_message": {
+                    "type": "string"
+                },
+                "last_message_type": {
+                    "type": "integer"
+                },
+                "unread_messages": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
                 "username": {
                     "type": "string"
                 }

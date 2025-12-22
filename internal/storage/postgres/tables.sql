@@ -72,7 +72,7 @@ create table temp_users (
     "address" varchar(100),
     "licence_issue_date" timestamp,
     "licence_expiry_date" timestamp,
-    "documents_id" int,
+    "documents_id" int, 
     "email" varchar(100),
     "username" varchar(100),
     "role_id" int not null default 1, -- 1 user, 2 dealer, 3 logistic, 4 broker, 5 car service
@@ -205,12 +205,15 @@ alter table profiles add constraint fk_profiles_documents_id
                 on delete cascade
                 on update cascade;
 
-
 create table conversations (
     "id" serial primary key,
     "user_id_1" int not null,
     "user_id_2" int not null,
-    "ney_message" int not null default 0,
+    "user_1_unread_messages" int not null default 0,
+    "user_2_unread_messages" int not null default 0,
+    "last_message_id" int,
+    "last_message" varchar(500),
+    "last_message_type" int not null default 1, -- 1-text, 2-item, 3-video, 4-image,
     "updated_at" timestamp not null default now(),
     "created_at" timestamp not null default now(),
     constraint fk_conversations_user_id_1

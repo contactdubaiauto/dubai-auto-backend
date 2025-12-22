@@ -358,3 +358,17 @@ delete from images;
 
 insert into profiles (user_id, username, registered_by) values (87, 'admin', 'admin');
 insert into profiles (user_id, username, registered_by) values (84, 'admin2', 'admin');
+
+
+UPDATE conversations 
+		SET 
+			user_1_unread_messages = CASE 
+				WHEN user_id_1 = 2 THEN 0 
+				ELSE user_1_unread_messages 
+			END,
+			user_2_unread_messages = CASE 
+				WHEN user_id_1 != 2 THEN 0 
+				ELSE user_2_unread_messages 
+			END,
+			updated_at = NOW()
+		WHERE id = 1;
