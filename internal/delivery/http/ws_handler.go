@@ -122,10 +122,8 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 	return websocket.New(func(c *websocket.Conn) {
 		token := c.Query("token")
 		user, err := auth.ValidateWSJWT(token)
-		fmt.Println("a98shdufin")
 
 		if err != nil {
-			fmt.Println("Authentication failed", err)
 			h.sendErrorAndCloseConn(c, "Authentication failed")
 			return
 		}
@@ -136,27 +134,22 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 			h.sendErrorAndCloseConn(c, "User not found")
 			return
 		}
-		fmt.Println("sdfuhijn")
 
 		user.Conn = c
 		h.wsMutex.Lock()
 
 		if old, exists := h.wsUserConns[user.ID]; exists && old != nil && old != c {
-			fmt.Println("s8d9uijn")
 			h.closeConnGracefully(old)
 		}
-
+		fmt.Println("user connected", user.ID)
 		h.wsUserConns[user.ID] = c
 		h.wsMutex.Unlock()
 		user.Avatar, user.Username, err = h.service.GetUserAvatarAndUsername(user.ID)
-		fmt.Println("user avatar and username:", user.ID)
-		fmt.Println("89ijo:", err)
 
 		if err != nil {
 			h.sendErrorAndCloseConn(c, "Error getting user avatar and username")
 			return
 		}
-		fmt.Println("9u8sdhifjnk")
 
 		err = h.service.UpdateUserStatus(user.ID, true)
 
@@ -170,17 +163,15 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 		if err != nil {
 			log.Printf("❌ Error getting unread messages: %v", err)
 		} else if data != nil {
-			fmt.Printf("📤 Sending new messages to user %d: %s", user.ID, data[0].Messages[0].Message)
+			fmt.Printf("📤 Sending new messages to user %d")
 			h.sendToUser(user.ID, "new_message", data)
 		}
-		fmt.Println("ios9u8dijnk")
 
 		heartbeatCh := make(chan struct{}, 1)
 		done := make(chan struct{})
 		heartbeatTimeout := make(chan struct{})
 		defer close(done)
 		go h.handleHeartbeat(c, user.ID, heartbeatTimeout, heartbeatCh, done)
-		fmt.Println("user connected", user.ID)
 
 		for {
 			var msg model.WSMessageReceived
@@ -213,7 +204,6 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 				// todo: add senderID. if 0. this is admin. and emit it as sender id 0
 
 				if b, err := json.Marshal(msg.Data); err == nil {
-
 					if err := json.Unmarshal(b, &messageReceived); err != nil {
 						log.Printf("❌ Error decoding private_message data: %v", err)
 						break
@@ -225,16 +215,19 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 				}
 
 				h.sendToUser(user.ID, "ack", messageReceived.Time)
-				var targetUserIDs []int
 
 				if msg.TargetUserID == 0 {
-					targetUserIDs, _ = h.service.GetActiveAdminsWithChatPermission()
-				} else {
-					targetUserIDs = append(targetUserIDs, msg.TargetUserID)
+					msg.TargetUserID, _ = h.service.GetActiveAdminWithChatPermission()
+				}
+
+				conversationID, err := h.service.UpsertConversation(user.ID, msg.TargetUserID, messageReceived.Message, messageReceived.Type, messageReceived.Time)
+
+				if err != nil {
+					log.Printf("❌ Error upserting conversation: %v", err)
+					break
 				}
 
 				if messageReceived.Admin {
-					fmt.Println("Sender is admin")
 					senderID = 0
 				}
 
@@ -244,39 +237,39 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 						Username:       user.Username,
 						Avatar:         &user.Avatar,
 						LastActiveDate: time.Now(),
+						ConversationID: conversationID,
 						Messages: []model.Message{
 							{
-								CreatedAt: messageReceived.Time,
-								Message:   messageReceived.Message,
-								Type:      messageReceived.Type,
-								SenderID:  senderID,
+								CreatedAt:      messageReceived.Time,
+								Message:        messageReceived.Message,
+								Type:           messageReceived.Type,
+								ConversationID: conversationID,
+								SenderID:       senderID,
 							},
 						},
 					},
 				}
 
 				// Send to all receivers
-				for _, targetUserID := range targetUserIDs {
-					h.wsMutex.RLock()
-					targetC, exists := h.wsUserConns[targetUserID]
-					h.wsMutex.RUnlock()
+				h.wsMutex.RLock()
+				targetC, exists := h.wsUserConns[msg.TargetUserID]
+				h.wsMutex.RUnlock()
 
-					if exists && targetC != nil {
-						s = true
-						h.sendToUser(targetUserID, "new_message", data)
-						key := fmt.Sprintf("%d|%s", targetUserID, messageReceived.Time.Format(time.RFC3339Nano))
-						h.tmpMutex.Lock()
-						h.tmpMessages[key] = 1
-						h.tmpMutex.Unlock()
-						// Retry mechanism for each receiver
-						go h.CheckReceived(targetUserID, data[0], targetC, user.ID)
-					}
+				if exists && targetC != nil {
+					s = true
+					h.sendToUser(msg.TargetUserID, "new_message", data)
+					key := fmt.Sprintf("%d|%s", msg.TargetUserID, messageReceived.Time.Format(time.RFC3339Nano))
+					h.tmpMutex.Lock()
+					h.tmpMessages[key] = 1
+					h.tmpMutex.Unlock()
+					// Retry mechanism for each receiver
+					go h.CheckReceived(msg.TargetUserID, data[0], targetC, user.ID)
+				}
 
-					err = h.service.MessageWriteToDatabase(user.ID, s, data[0], targetUserID, user.ID)
+				err = h.service.MessageWriteToDatabase(user.ID, s, data[0], msg.TargetUserID, user.ID)
 
-					if err != nil {
-						log.Printf("❌ Error message write to db  %d: %v", targetUserID, err)
-					}
+				if err != nil {
+					log.Printf("❌ Error message write to db  %d: %v", msg.TargetUserID, err)
 				}
 
 			case "ack":
@@ -284,7 +277,6 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 				var t time.Time
 				switch v := msg.Data.(type) {
 				case string:
-					fmt.Println("ack data type string")
 					parsed, err := time.Parse(time.RFC3339Nano, v)
 
 					if err != nil {
@@ -298,8 +290,8 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 					}
 
 					t = parsed
+					// todo: move this switch case. need just 1st case's inside
 				case map[string]any:
-					fmt.Println("ack data type map[string]any")
 
 					if s, ok := v["time"].(string); ok {
 						parsed, err := time.Parse(time.RFC3339Nano, s)

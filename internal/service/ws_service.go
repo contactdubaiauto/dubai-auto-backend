@@ -6,6 +6,7 @@ import (
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/utils"
 	"strconv"
+	"time"
 )
 
 type SocketService struct {
@@ -19,6 +20,10 @@ func NewSocketService(repo *repository.SocketRepository) *SocketService {
 func (s *SocketService) UpdateUserStatus(userID int, status bool) error {
 	err := s.repo.UpdateUserStatus(userID, status)
 	return err
+}
+
+func (s *SocketService) UpsertConversation(senderUserID, targetUserID int, message string, msgType int, createdAt time.Time) (int, error) {
+	return s.repo.UpsertConversation(senderUserID, targetUserID, message, msgType, createdAt)
 }
 
 func (s *SocketService) GetNewMessages(userID int) ([]model.UserMessage, error) {
@@ -47,8 +52,8 @@ func (s *SocketService) CheckUserExists(userID int) error {
 	return err
 }
 
-func (s *SocketService) GetActiveAdminsWithChatPermission() ([]int, error) {
-	return s.repo.GetActiveAdminsWithChatPermission()
+func (s *SocketService) GetActiveAdminWithChatPermission() (int, error) {
+	return s.repo.GetActiveAdminWithChatPermission()
 }
 
 func (s *SocketService) GetConversations(userID int) model.Response {

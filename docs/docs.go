@@ -18682,6 +18682,9 @@ const docTemplate = `{
         "model.Message": {
             "type": "object",
             "properties": {
+                "conversation_id": {
+                    "type": "integer"
+                },
                 "created_at": {
                     "type": "string"
                 },

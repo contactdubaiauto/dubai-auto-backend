@@ -38,26 +38,29 @@ func (r *SocketRepository) GetNewMessages(userID int) ([]model.UserMessage, erro
 			UPDATE messages
 			SET status = 2
 			WHERE sender_id != $1 AND status = 1 AND conversation_id in (select id from conversations where user_id_1 = $1 or user_id_2 = $1)
-			RETURNING id, sender_id, message, type, created_at
+			RETURNING id, sender_id, message, type, created_at, conversation_id
 		)
 		SELECT 
 			u.id,
 			u.username,
 			u.last_active_date,
 			p.avatar,
+			c.id as conversation_id,
 			json_agg(
 				json_build_object(
 					'id', m.id,
 					'message', m.message,
 					'type', m.type,
+					'conversation_id', m.conversation_id,
 					'created_at', to_char(m.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
 					'sender_id', m.sender_id
 				)
 			) as messages
 		FROM updated_messages m
-		LEFT JOIN users u ON m.sender_id = u.id
+		LEFT JOIN users u ON m.sender_id = u.id 
+		left join conversations c on (c.user_id_1 = $1 and c.user_id_2 = u.id) or (c.user_id_2 = $1 and c.user_id_1 = u.id)
 		LEFT JOIN profiles p ON u.id = p.user_id
-		GROUP BY u.id, p.avatar;
+		GROUP BY u.id, p.avatar, c.id;
 	`
 	rows, err := r.db.Query(context.Background(), q, userID)
 
@@ -70,7 +73,7 @@ func (r *SocketRepository) GetNewMessages(userID int) ([]model.UserMessage, erro
 
 	for rows.Next() {
 		var message model.UserMessage
-		err := rows.Scan(&message.ID, &message.Username, &message.LastActiveDate, &message.Avatar, &message.Messages)
+		err := rows.Scan(&message.ID, &message.Username, &message.LastActiveDate, &message.Avatar, &message.ConversationID, &message.Messages)
 
 		if err != nil {
 			return messages, err
@@ -106,11 +109,6 @@ func (r *SocketRepository) GetUserAvatarAndUsername(userID int) (string, string,
 
 func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool, data model.UserMessage, targetUserID int) error {
 	s := 1
-	conversationID, err := r.UpsertConversation(senderUserID, targetUserID, data.Messages[0].Message, data.Messages[0].Type, data.Messages[0].CreatedAt, status)
-
-	if err != nil {
-		return err
-	}
 
 	if status {
 		s = 2
@@ -146,7 +144,7 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 		FROM new_message nm
 		WHERE c.id = $1;
 	`
-	_, err = r.db.Exec(context.Background(), q, conversationID, senderUserID, s, data.Messages[0].Message, data.Messages[0].Type, data.Messages[0].CreatedAt)
+	_, err := r.db.Exec(context.Background(), q, data.Messages[0].ConversationID, senderUserID, s, data.Messages[0].Message, data.Messages[0].Type, data.Messages[0].CreatedAt)
 
 	if err != nil {
 		return err
@@ -160,7 +158,8 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 		err = r.db.QueryRow(context.Background(), q, targetUserID).Scan(&userFcmToken)
 
 		if err != nil {
-			return err
+			fmt.Println("error getting fcm token: ", err)
+			return nil
 		}
 
 		_, err = r.firebaseService.SendToToken(userFcmToken, targetUserID, data)
@@ -174,18 +173,13 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 }
 
 func (r *SocketRepository) MarkMessageAsUnreadAndSendPush(senderUserID int, data model.UserMessage, targetUserID int) error {
-	conversationID, err := r.UpsertConversation(senderUserID, targetUserID, data.Messages[0].Message, data.Messages[0].Type, data.Messages[0].CreatedAt, false)
-
-	if err != nil {
-		return err
-	}
 
 	q := `
 		UPDATE messages
 		SET status = 1
 		WHERE sender_id = $1 and conversation_id = $2 and created_at = $3
 	`
-	_, err = r.db.Exec(context.Background(), q, senderUserID, conversationID, data.Messages[0].CreatedAt)
+	_, err := r.db.Exec(context.Background(), q, senderUserID, data.Messages[0].ConversationID, data.Messages[0].CreatedAt)
 
 	if err != nil {
 		return err
@@ -202,10 +196,6 @@ func (r *SocketRepository) MarkMessageAsUnreadAndSendPush(senderUserID int, data
 	}
 
 	_, err = r.firebaseService.SendToToken(userFcmToken, targetUserID, data)
-
-	if err != nil {
-		fmt.Println("error sending notification: ", err)
-	}
 
 	return err
 }
@@ -242,31 +232,20 @@ func (r *SocketRepository) GetUserToken(userID int) (string, error) {
 	return token, err
 }
 
-// GetActiveAdminsWithChatPermission returns IDs of active admin users with "chat" permission
-func (r *SocketRepository) GetActiveAdminsWithChatPermission() ([]int, error) {
+// GetActiveAdminWithChatPermission returns ID of active admin user with "chat" permission
+func (r *SocketRepository) GetActiveAdminWithChatPermission() (int, error) {
+	var id int
 	q := `
 		SELECT id 
 		FROM users 
 		WHERE role_id = 0 
 		AND status = 1 
 		AND permissions @> '["chat"]'::jsonb
+		limit 1
 	`
-	rows, err := r.db.Query(context.Background(), q)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var adminIDs []int
-	for rows.Next() {
-		var id int
-		if err := rows.Scan(&id); err != nil {
-			return nil, err
-		}
-		adminIDs = append(adminIDs, id)
-	}
-
-	return adminIDs, nil
+	err := r.db.QueryRow(context.Background(), q).Scan(&id)
+	fmt.Println(id, err)
+	return id, err
 }
 
 func (r *SocketRepository) GetConversations(userID int) ([]model.Conversation, error) {
@@ -318,18 +297,11 @@ func (r *SocketRepository) GetConversations(userID int) ([]model.Conversation, e
 	return conversations, nil
 }
 
-func (r *SocketRepository) UpsertConversation(userID1, userID2 int, message string, messageType int, createdAt time.Time, status bool) (int, error) {
-	// increamentColumn := "user_2_unread_messages"
-	// increment := 0
-
-	// if userID1 > userID2 {
-	// 	increamentColumn = "user_1_unread_messages"
-	// 	userID1, userID2 = userID2, userID1
-	// }
-
-	// if !status {
-	// 	increment = 1
-	// }
+func (r *SocketRepository) UpsertConversation(userID1, userID2 int, message string, messageType int, createdAt time.Time) (int, error) {
+	fmt.Println(userID1, userID2)
+	if userID1 > userID2 {
+		userID1, userID2 = userID2, userID1
+	}
 
 	var id int
 	q := `
@@ -350,17 +322,6 @@ func (r *SocketRepository) UpsertConversation(userID1, userID2 int, message stri
 			return 0, err
 		}
 	}
-
-	// q = `
-	// 	update conversations
-	// 	set
-	// 		updated_at = $2,
-	// 		last_message = $3,
-	// 		last_message_type = $4,
-	// 		` + increamentColumn + ` = ` + increamentColumn + ` + $5
-	// 	where id = $1
-	// `
-	// _, err = r.db.Exec(context.Background(), q, id, createdAt, message, messageType, increment)
 
 	return id, err
 }

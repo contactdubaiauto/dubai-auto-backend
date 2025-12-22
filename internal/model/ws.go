@@ -41,11 +41,12 @@ type WSUser struct {
 }
 
 type Message struct {
-	CreatedAt time.Time `json:"created_at"`
-	Message   string    `json:"message"`
-	ID        int       `json:"id"`
-	SenderID  int       `json:"sender_id"`
-	Type      int       `json:"type"`
+	CreatedAt      time.Time `json:"created_at"`
+	Message        string    `json:"message"`
+	ID             int       `json:"id"`
+	ConversationID int       `json:"conversation_id"`
+	SenderID       int       `json:"sender_id"`
+	Type           int       `json:"type"`
 }
 
 type ConversationMessage struct {
@@ -71,6 +72,7 @@ type UserMessage struct {
 	LastActiveDate time.Time `json:"last_active_date"`
 	Username       string    `json:"username"`
 	Avatar         *string   `json:"avatar"`
+	ConversationID int       `json:"conversation_id"`
 	ID             int       `json:"id"`
 }
 
