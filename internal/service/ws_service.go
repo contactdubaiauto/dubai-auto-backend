@@ -35,11 +35,11 @@ func (s *SocketService) GetUserAvatarAndUsername(userID int) (string, string, er
 	return s.repo.GetUserAvatarAndUsername(userID)
 }
 
-func (s *SocketService) MessageWriteToDatabase(senderUserID int, status bool, data model.UserMessage, targetUserID, senderID int) error {
+func (s *SocketService) MessageWriteToDatabase(senderUserID int, status bool, data model.UserMessage, targetUserID, senderID int) (int, error) {
 	data.ID = senderID
 	data.Messages[0].SenderID = senderID
-	err := s.repo.MessageWriteToDatabase(senderUserID, status, data, targetUserID)
-	return err
+	id, err := s.repo.MessageWriteToDatabase(senderUserID, status, data, targetUserID)
+	return id, err
 }
 
 func (s *SocketService) MarkMessageAsUnreadAndSendPush(senderUserID int, data model.UserMessage, targetUserID int) error {
@@ -82,7 +82,7 @@ func (s *SocketService) GetConversationMessages(ctx context.Context, userID int,
 		}
 	}
 
-	lastID, limit := utils.CheckLastIDLimit(lastMessageID, limitStr)
+	lastID, limit := utils.CheckLastIDLimit(lastMessageID, limitStr, "chat")
 	data, err := s.repo.GetConversationMessages(ctx, userID, conversationIDInt, lastID, limit)
 
 	if err != nil {

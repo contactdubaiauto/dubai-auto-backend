@@ -119,7 +119,7 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 
 	}
 
-	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
 	data := h.UserService.GetCars(ctx, userID, targetUserID, brands, models,
 		regions, cities, generations, transmissions, engines, drivetrains,
 		body_types, fuel_types, ownership_types, colors,

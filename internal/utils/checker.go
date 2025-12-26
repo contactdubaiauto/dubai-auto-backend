@@ -31,8 +31,13 @@ func GMTTime() time.Time {
 	return time.Now().In(time.FixedZone("GMT", 0))
 }
 
-func CheckLastIDLimit(lastID, limit string) (int, int) {
-	lastIDInt, limitInt := 9999, 10
+func CheckLastIDLimit(lastID, limit, typeOfQuery string) (int, int) {
+	lastIDInt, limitInt := 0, 0
+	if typeOfQuery == "chat" {
+		lastIDInt, limitInt = 9999, 50
+	} else {
+		lastIDInt, limitInt = 0, 50
+	}
 
 	if lastID == "" || limit == "" || len(lastID) > 9 {
 		return lastIDInt, limitInt

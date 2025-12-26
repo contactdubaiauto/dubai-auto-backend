@@ -372,3 +372,160 @@ UPDATE conversations
 			END,
 			updated_at = NOW()
 		WHERE id = 1;
+
+
+
+select 
+			vs.id,
+			bs.name,
+			rs.name,
+			cs.name,
+			cls.name,
+			ms.name,
+			ts.name,
+			es.name,
+			ds.name,
+			bts.name,
+			fts.name,
+			vs.year,
+			vs.price,
+			vs.odometer,
+			vs.vin_code,
+			vs.credit,
+			vs.new,
+			vs.status,
+			vs.created_at,
+			vs.trade_in,
+			vs.owners,
+			vs.crash,
+			vs.updated_at,
+			images.images,
+			videos.videos,
+			vs.phone_numbers,
+			vs.view_count,
+			json_build_object(
+				'id', pf.user_id,
+				'username', pf.username,
+				'avatar', '` + r.config.IMAGE_BASE_URL + `' || pf.avatar,
+				'role_id', u.role_id,
+				'contacts', pf.contacts
+			) as owner,
+			vs.description
+		from vehicles vs
+		left join generation_modifications gms on gms.id = vs.modification_id
+		left join colors cls on vs.color_id = cls.id
+		left join profiles pf on pf.user_id = vs.user_id
+		left join users u on u.id = vs.user_id
+		left join brands bs on vs.brand_id = bs.id
+		left join regions rs on vs.region_id = rs.id
+		left join cities cs on vs.city_id = cs.id
+		left join models ms on vs.model_id = ms.id
+		left join transmissions ts on gms.transmission_id = ts.id
+		left join engines es on gms.engine_id = es.id
+		left join drivetrains ds on gms.drivetrain_id = ds.id
+		left join body_types bts on gms.body_type_id = bts.id
+		left join fuel_types fts on gms.fuel_type_id = fts.id
+		LEFT JOIN LATERAL (
+			SELECT json_agg(img.image) AS images
+			FROM (
+				SELECT image as image
+				FROM images
+				WHERE vehicle_id = vs.id
+				ORDER BY created_at DESC
+			) img
+		) images ON true
+		LEFT JOIN LATERAL (
+			SELECT json_agg(v.video) AS videos
+			FROM (
+				SELECT video as video
+				FROM videos
+				WHERE vehicle_id = vs.id
+				ORDER BY created_at DESC
+			) v
+		) videos ON true
+		where vs.status = 3
+		order by vs.id desc;
+
+
+ select
+    vs.id,
+    bs.name as brand,
+    rs.name as region,
+    cs.name as city,
+    cls.name as color,
+    ms.name as model,
+    ts.name as transmission,
+    es.name as engine,
+    ds.name as drive,
+    bts.name as body_type,
+    fts.name as fuel_type,
+    vs.year,
+    vs.price,
+    vs.odometer,
+    vs.vin_code,
+    vs.credit,
+    vs.new,
+    vs.status,
+    vs.created_at,
+    vs.trade_in,
+    vs.owners,
+    vs.crash,
+    vs.updated_at,
+    images.images,
+    videos.videos,
+    vs.phone_numbers,
+    vs.view_count,
+    CASE
+            WHEN vs.user_id = 1 THEN TRUE
+            ELSE FALSE
+    END AS my_car,
+    json_build_object(
+            'id', pf.user_id,
+            'username', pf.username,
+            'avatar', 'https://api.mashynbazar.com/api/v1' || pf.avatar,
+            'role_id', u.role_id,
+            'contacts', pf.contacts
+    ) as owner,
+    vs.description,
+    CASE
+            WHEN ul.vehicle_id IS NOT NULL THEN true
+            ELSE false
+    END AS liked
+from vehicles vs
+left join generation_modifications gms on gms.id = vs.modification_id
+left join colors cls on vs.color_id = cls.id
+left join profiles pf on pf.user_id = vs.user_id
+left join users u on u.id = vs.user_id
+left join brands bs on vs.brand_id = bs.id
+left join regions rs on vs.region_id = rs.id
+left join cities cs on vs.city_id = cs.id
+left join models ms on vs.model_id = ms.id
+left join transmissions ts on gms.transmission_id = ts.id
+left join engines es on gms.engine_id = es.id
+left join drivetrains ds on gms.drivetrain_id = ds.id
+left join body_types bts on gms.body_type_id = bts.id
+left join fuel_types fts on gms.fuel_type_id = fts.id
+left join user_likes ul on ul.vehicle_id = vs.id AND ul.user_id = 1
+LEFT JOIN LATERAL (
+    SELECT json_agg(img.image) AS images
+    FROM (
+            SELECT 'https://api.mashynbazar.com/api/v1' || image as image
+            FROM images
+            WHERE vehicle_id = vs.id
+            ORDER BY created_at DESC
+    ) img
+) images ON true
+LEFT JOIN LATERAL (
+    SELECT json_agg(v.video) AS videos
+    FROM (
+            SELECT 'https://api.mashynbazar.com/api/v1' || video as video
+            FROM videos
+            WHERE vehicle_id = vs.id
+            ORDER BY created_at DESC
+    ) v
+) videos ON true
+where vs.status = 3 and vs.id > 9999
+
+order by vs.id desc
+limit 50;
+

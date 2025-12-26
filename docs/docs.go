@@ -16915,6 +16915,9 @@ const docTemplate = `{
                 "last_message": {
                     "type": "string"
                 },
+                "last_message_id": {
+                    "type": "integer"
+                },
                 "last_message_type": {
                     "type": "integer"
                 },

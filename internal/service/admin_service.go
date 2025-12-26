@@ -46,6 +46,7 @@ func (s *AdminService) CreateAdmin(ctx *fasthttp.RequestCtx, req *model.CreateAd
 
 func (s *AdminService) GetAdmins(ctx *fasthttp.RequestCtx) model.Response {
 	admins, err := s.repo.GetAdmins(ctx)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -54,6 +55,7 @@ func (s *AdminService) GetAdmins(ctx *fasthttp.RequestCtx) model.Response {
 
 func (s *AdminService) GetAdmin(ctx *fasthttp.RequestCtx, id int) model.Response {
 	admin, err := s.repo.GetAdmin(ctx, id)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusNotFound}
 	}
@@ -64,6 +66,7 @@ func (s *AdminService) UpdateAdmin(ctx *fasthttp.RequestCtx, id int, req *model.
 	// Hash password if provided
 	if req.Password != "" {
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+
 		if err != nil {
 			return model.Response{Error: err, Status: http.StatusInternalServerError}
 		}
@@ -71,6 +74,7 @@ func (s *AdminService) UpdateAdmin(ctx *fasthttp.RequestCtx, id int, req *model.
 	}
 
 	err := s.repo.UpdateAdmin(ctx, id, req)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -101,7 +105,7 @@ func (s *AdminService) GetProfile(ctx *fasthttp.RequestCtx, id int) model.Respon
 
 // Application service methods
 func (s *AdminService) GetApplications(ctx *fasthttp.RequestCtx, qRole, qStatus, limit, lastID, search string) model.Response {
-	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
 	qRoleInt, err := strconv.Atoi(qRole)
 
 	if err != nil {

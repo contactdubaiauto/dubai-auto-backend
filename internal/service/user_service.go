@@ -23,7 +23,7 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 }
 
 func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID int, limit, lastID, nameColumn string) model.Response {
-	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
 	cars, err := s.UserRepository.GetMyCars(ctx, userID, limitInt, lastIDInt, 2, nameColumn)
 
 	if err != nil {
@@ -34,7 +34,7 @@ func (s *UserService) GetMyCars(ctx *fasthttp.RequestCtx, userID int, limit, las
 }
 
 func (s *UserService) OnSale(ctx *fasthttp.RequestCtx, userID int, limit, lastID, nameColumn string) model.Response {
-	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
 	cars, err := s.UserRepository.GetMyCars(ctx, userID, limitInt, lastIDInt, 3, nameColumn)
 
 	if err != nil {

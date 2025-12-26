@@ -317,3 +317,6 @@ create table messages (
                 on delete cascade
                 on update cascade
 );
+
+
+-- 26.12.2025

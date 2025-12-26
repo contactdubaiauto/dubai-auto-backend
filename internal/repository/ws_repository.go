@@ -107,7 +107,7 @@ func (r *SocketRepository) GetUserAvatarAndUsername(userID int) (string, string,
 	return avatar, username, err
 }
 
-func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool, data model.UserMessage, targetUserID int) error {
+func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool, data model.UserMessage, targetUserID int) (int, error) {
 	s := 1
 
 	if status {
@@ -142,12 +142,17 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 				ELSE c.user_2_unread_messages
 			END
 		FROM new_message nm
-		WHERE c.id = $1;
+		WHERE c.id = $1
+		RETURNING nm.id
 	`
-	_, err := r.db.Exec(context.Background(), q, data.Messages[0].ConversationID, senderUserID, s, data.Messages[0].Message, data.Messages[0].Type, data.Messages[0].CreatedAt)
+	var id int
+	err := r.db.QueryRow(context.Background(), q,
+		data.Messages[0].ConversationID, senderUserID,
+		s, data.Messages[0].Message, data.Messages[0].Type,
+		data.Messages[0].CreatedAt).Scan(&id)
 
 	if err != nil {
-		return err
+		return id, err
 	}
 
 	if !status {
@@ -159,7 +164,7 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 
 		if err != nil {
 			fmt.Println("error getting fcm token: ", err)
-			return nil
+			return id, nil
 		}
 
 		_, err = r.firebaseService.SendToToken(userFcmToken, targetUserID, data)
@@ -169,7 +174,7 @@ func (r *SocketRepository) MessageWriteToDatabase(senderUserID int, status bool,
 		}
 	}
 
-	return nil
+	return id, nil
 }
 
 func (r *SocketRepository) MarkMessageAsUnreadAndSendPush(senderUserID int, data model.UserMessage, targetUserID int) error {
@@ -258,6 +263,7 @@ func (r *SocketRepository) GetConversations(userID int) ([]model.Conversation, e
 			end as unread_messages,
 			c.last_message,
 			c.last_message_type,
+			c.last_message_id,
 			u.username,
 			p.avatar,
 			u.id user_id,
@@ -284,7 +290,7 @@ func (r *SocketRepository) GetConversations(userID int) ([]model.Conversation, e
 	for rows.Next() {
 		var conversation model.Conversation
 		err := rows.Scan(&conversation.LastActiveDate, &conversation.UnreadMessages,
-			&conversation.LastMessage, &conversation.LastMessageType,
+			&conversation.LastMessage, &conversation.LastMessageType, &conversation.LastMessageID,
 			&conversation.Username, &conversation.Avatar,
 			&conversation.UserID, &conversation.ID)
 
@@ -327,7 +333,6 @@ func (r *SocketRepository) UpsertConversation(userID1, userID2 int, message stri
 }
 
 func (r *SocketRepository) GetConversationMessages(ctx context.Context, userID, conversationID, lastID, limit int) ([]model.ConversationMessage, error) {
-	fmt.Println(conversationID, lastID, limit)
 	q := `
 		select 
 			id, 
@@ -338,7 +343,7 @@ func (r *SocketRepository) GetConversationMessages(ctx context.Context, userID, 
 			created_at 
 		from messages 
 		where conversation_id = $1 and id < $2 
-		order by id asc 
+		order by id desc 
 		limit $3
 	`
 	rows, err := r.db.Query(ctx, q, conversationID, lastID, limit)

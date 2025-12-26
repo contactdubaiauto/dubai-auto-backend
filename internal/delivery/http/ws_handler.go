@@ -163,7 +163,7 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 		if err != nil {
 			log.Printf("❌ Error getting unread messages: %v", err)
 		} else if data != nil {
-			fmt.Printf("📤 Sending new messages to user %d")
+			fmt.Printf("📤 Sending new messages to user %d, message_id: %d \n", user.ID, data[0].Messages[0].ID)
 			h.sendToUser(user.ID, "new_message", data)
 		}
 
@@ -255,6 +255,12 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 				targetC, exists := h.wsUserConns[msg.TargetUserID]
 				h.wsMutex.RUnlock()
 
+				data[0].Messages[0].ID, err = h.service.MessageWriteToDatabase(user.ID, s, data[0], msg.TargetUserID, user.ID)
+
+				if err != nil {
+					log.Printf("❌ Error message write to db  %d: %v", msg.TargetUserID, err)
+				}
+
 				if exists && targetC != nil {
 					s = true
 					h.sendToUser(msg.TargetUserID, "new_message", data)
@@ -264,12 +270,6 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 					h.tmpMutex.Unlock()
 					// Retry mechanism for each receiver
 					go h.CheckReceived(msg.TargetUserID, data[0], targetC, user.ID)
-				}
-
-				err = h.service.MessageWriteToDatabase(user.ID, s, data[0], msg.TargetUserID, user.ID)
-
-				if err != nil {
-					log.Printf("❌ Error message write to db  %d: %v", msg.TargetUserID, err)
 				}
 
 			case "ack":

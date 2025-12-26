@@ -92,6 +92,7 @@ type FirebaseMessage struct {
 type Conversation struct {
 	LastActiveDate  time.Time `json:"last_active_date"`
 	UnreadMessages  int       `json:"unread_messages"`
+	LastMessageID   int       `json:"last_message_id"`
 	LastMessage     string    `json:"last_message"`
 	LastMessageType int       `json:"last_message_type"`
 	Username        string    `json:"username"`

@@ -41,7 +41,7 @@ func (s *ThirdPartyService) GetProfile(ctx *fasthttp.RequestCtx, id int, nameCol
 }
 
 func (s *ThirdPartyService) GetMyCars(ctx *fasthttp.RequestCtx, userID int, limit, lastID string, nameColumn string) model.Response {
-	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit)
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
 	cars, err := s.repo.GetMyCars(ctx, userID, limitInt, lastIDInt, nameColumn)
 
 	if err != nil {
