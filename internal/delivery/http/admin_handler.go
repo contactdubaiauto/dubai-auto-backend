@@ -32,17 +32,17 @@ func NewAdminHandler(service *service.AdminService, validator *auth.Validator) *
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        admin  body      model.CreateAdminRequest  true  "Admin"
+// @Param        user  body      model.CreateUserRequest  true  "User"
 // @Success      200   {object}  model.SuccessWithId
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  auth.ErrorResponse
 // @Failure      403   {object}  auth.ErrorResponse
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/admin/users [post]
-func (h *AdminHandler) CreateAdmin(c *fiber.Ctx) error {
-	admin := &model.CreateAdminRequest{}
+func (h *AdminHandler) CreateUser(c *fiber.Ctx) error {
+	user := &model.CreateUserRequest{}
 
-	if err := c.BodyParser(admin); err != nil {
+	if err := c.BodyParser(user); err != nil {
 		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
@@ -50,67 +50,67 @@ func (h *AdminHandler) CreateAdmin(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.service.CreateAdmin(ctx, admin)
+	data := h.service.CreateUser(ctx, user)
 	return utils.FiberResponse(c, data)
 }
 
 // GetAdmins godoc
-// @Summary      Get all admins
-// @Description  Returns a list of all admins
+// @Summary      Get all users
+// @Description  Returns a list of all users
 // @Tags         admin-users
 // @Produce      json
 // @Security     BearerAuth
-// @Success      200   {array}   model.AdminResponse
+// @Success      200   {array}   model.UserResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  auth.ErrorResponse
 // @Failure      403   {object}  auth.ErrorResponse
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/admin/users [get]
-func (h *AdminHandler) GetAdmins(c *fiber.Ctx) error {
+func (h *AdminHandler) GetUsers(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.service.GetAdmins(ctx)
+	data := h.service.GetUsers(ctx)
 	return utils.FiberResponse(c, data)
 }
 
 // GetAdmin godoc
-// @Summary      Get an admin by ID
-// @Description  Returns a single admin by ID
+// @Summary      Get a user by ID
+// @Description  Returns a single user by ID
 // @Tags         admin-users
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id   path      int  true  "Admin ID"
-// @Success      200   {object}  model.AdminResponse
+// @Param        id   path      int  true  "User ID"
+// @Success      200   {object}  model.UserResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  auth.ErrorResponse
 // @Failure      403   {object}  auth.ErrorResponse
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/admin/users/{id} [get]
-func (h *AdminHandler) GetAdmin(c *fiber.Ctx) error {
+func (h *AdminHandler) GetUser(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
 		return utils.FiberResponse(c, model.Response{
 			Status: 400,
-			Error:  errors.New("admin id must be integer"),
+			Error:  errors.New("user id must be integer"),
 		})
 	}
 
 	ctx := c.Context()
-	data := h.service.GetAdmin(ctx, id)
+	data := h.service.GetUser(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 
 // UpdateAdmin godoc
-// @Summary      Update an admin
+// @Summary      Update a user
 // @Description  Updates an admin by ID
 // @Tags         admin-users
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id   path      int  true  "Admin ID"
-// @Param        admin  body      model.UpdateAdminRequest  true  "Admin"
+// @Param        id   path      int  true  "User ID"
+// @Param        user  body      model.UpdateUserRequest  true  "User"
 // @Success      200   {object}  model.Success
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  auth.ErrorResponse
@@ -118,20 +118,20 @@ func (h *AdminHandler) GetAdmin(c *fiber.Ctx) error {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/admin/users/{id} [put]
-func (h *AdminHandler) UpdateAdmin(c *fiber.Ctx) error {
+func (h *AdminHandler) UpdateUser(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
 		return utils.FiberResponse(c, model.Response{
 			Status: 400,
-			Error:  errors.New("admin id must be integer"),
+			Error:  errors.New("user id must be integer"),
 		})
 	}
 
-	admin := &model.UpdateAdminRequest{}
+	user := &model.UpdateUserRequest{}
 
-	if err := c.BodyParser(admin); err != nil {
+	if err := c.BodyParser(user); err != nil {
 		return utils.FiberResponse(c, model.Response{
 			Status: 400,
 			Error:  err,
@@ -139,17 +139,17 @@ func (h *AdminHandler) UpdateAdmin(c *fiber.Ctx) error {
 	}
 
 	ctx := c.Context()
-	data := h.service.UpdateAdmin(ctx, id, admin)
+	data := h.service.UpdateUser(ctx, id, user)
 	return utils.FiberResponse(c, data)
 }
 
-// DeleteAdmin godoc
-// @Summary      Delete an admin
-// @Description  Deletes an admin by ID
+// DeleteUser godoc
+// @Summary      Delete a user
+// @Description  Deletes a user by ID
 // @Tags         admin-users
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id   path      int  true  "Admin ID"
+// @Param        id   path      int  true  "User ID"
 // @Success      200   {object}  model.Success
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  auth.ErrorResponse
@@ -157,19 +157,19 @@ func (h *AdminHandler) UpdateAdmin(c *fiber.Ctx) error {
 // @Failure      404   {object}  model.ResultMessage
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/admin/users/{id} [delete]
-func (h *AdminHandler) DeleteAdmin(c *fiber.Ctx) error {
+func (h *AdminHandler) DeleteUser(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
 		return utils.FiberResponse(c, model.Response{
 			Status: 400,
-			Error:  errors.New("admin id must be integer"),
+			Error:  errors.New("user id must be integer"),
 		})
 	}
 
 	ctx := c.Context()
-	data := h.service.DeleteAdmin(ctx, id)
+	data := h.service.DeleteUser(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 

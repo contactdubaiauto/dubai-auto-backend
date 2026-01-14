@@ -28,14 +28,14 @@ func NewAdminService(repo *repository.AdminRepository) *AdminService {
 }
 
 // Admin service methods
-func (s *AdminService) CreateAdmin(ctx *fasthttp.RequestCtx, req *model.CreateAdminRequest) model.Response {
+func (s *AdminService) CreateUser(ctx *fasthttp.RequestCtx, req *model.CreateUserRequest) model.Response {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 	req.Password = string(hashedPassword)
-	userID, err := s.repo.CreateAdmin(ctx, req)
+	userID, err := s.repo.CreateUser(ctx, req)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -44,25 +44,25 @@ func (s *AdminService) CreateAdmin(ctx *fasthttp.RequestCtx, req *model.CreateAd
 	return model.Response{Data: model.SuccessWithId{Id: userID, Message: "Admin created successfully"}}
 }
 
-func (s *AdminService) GetAdmins(ctx *fasthttp.RequestCtx) model.Response {
-	admins, err := s.repo.GetAdmins(ctx)
+func (s *AdminService) GetUsers(ctx *fasthttp.RequestCtx) model.Response {
+	users, err := s.repo.GetUsers(ctx)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
-	return model.Response{Data: admins}
+	return model.Response{Data: users}
 }
 
-func (s *AdminService) GetAdmin(ctx *fasthttp.RequestCtx, id int) model.Response {
-	admin, err := s.repo.GetAdmin(ctx, id)
+func (s *AdminService) GetUser(ctx *fasthttp.RequestCtx, id int) model.Response {
+	user, err := s.repo.GetUser(ctx, id)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusNotFound}
 	}
-	return model.Response{Data: admin}
+	return model.Response{Data: user}
 }
 
-func (s *AdminService) UpdateAdmin(ctx *fasthttp.RequestCtx, id int, req *model.UpdateAdminRequest) model.Response {
+func (s *AdminService) UpdateUser(ctx *fasthttp.RequestCtx, id int, req *model.UpdateUserRequest) model.Response {
 	// Hash password if provided
 	if req.Password != "" {
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -73,23 +73,23 @@ func (s *AdminService) UpdateAdmin(ctx *fasthttp.RequestCtx, id int, req *model.
 		req.Password = string(hashedPassword)
 	}
 
-	err := s.repo.UpdateAdmin(ctx, id, req)
+	err := s.repo.UpdateUser(ctx, id, req)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return model.Response{Data: model.Success{Message: "Admin updated successfully"}}
+	return model.Response{Data: model.Success{Message: "User updated successfully"}}
 }
 
-func (s *AdminService) DeleteAdmin(ctx *fasthttp.RequestCtx, id int) model.Response {
-	err := s.repo.DeleteAdmin(ctx, id)
+func (s *AdminService) DeleteUser(ctx *fasthttp.RequestCtx, id int) model.Response {
+	err := s.repo.DeleteUser(ctx, id)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 	// todo: delete admin files if exists
-	return model.Response{Data: model.Success{Message: "Admin deleted successfully"}}
+	return model.Response{Data: model.Success{Message: "User deleted successfully"}}
 }
 
 // Profile service methods

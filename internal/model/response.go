@@ -257,7 +257,7 @@ type AdminProfileResponse struct {
 	ID          int      `json:"id"`
 }
 
-type AdminResponse struct {
+type UserResponse struct {
 	ID          int      `json:"id"`
 	Username    string   `json:"username"`
 	Email       string   `json:"email"`

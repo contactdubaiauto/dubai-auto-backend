@@ -6,14 +6,15 @@ type CreateCompanyTypeRequest struct {
 	NameAe string `json:"name_ae"`
 }
 
-type CreateAdminRequest struct {
+type CreateUserRequest struct {
 	Username    string   `json:"username" validate:"required,min=2,max=255"`
 	Email       string   `json:"email" validate:"required,email"`
 	Password    string   `json:"password" validate:"required,min=8"`
+	RoleID      int      `json:"role_id" default:"0"`
 	Permissions []string `json:"permissions" validate:"required"`
 }
 
-type UpdateAdminRequest struct {
+type UpdateUserRequest struct {
 	Username    string   `json:"username" validate:"omitempty,min=2,max=255"`
 	Email       string   `json:"email" validate:"omitempty,email"`
 	Password    string   `json:"password" validate:"omitempty,min=8"`

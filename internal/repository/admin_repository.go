@@ -20,18 +20,18 @@ func NewAdminRepository(config *config.Config, db *pgxpool.Pool) *AdminRepositor
 }
 
 // Admin CRUD operations
-func (r *AdminRepository) CreateAdmin(ctx *fasthttp.RequestCtx, req *model.CreateAdminRequest) (int, error) {
+func (r *AdminRepository) CreateUser(ctx *fasthttp.RequestCtx, req *model.CreateUserRequest) (int, error) {
 	var id int
 	q := `
 		INSERT INTO users (username, email, password, permissions, role_id)
-		VALUES ($1, $2, $3, $4, 0)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id`
-	err := r.db.QueryRow(ctx, q, req.Username, req.Email, req.Password, req.Permissions).Scan(&id)
+	err := r.db.QueryRow(ctx, q, req.Username, req.Email, req.Password, req.Permissions, req.RoleID).Scan(&id)
 	return id, err
 }
 
-func (r *AdminRepository) GetAdmins(ctx *fasthttp.RequestCtx) ([]model.AdminResponse, error) {
-	admins := make([]model.AdminResponse, 0)
+func (r *AdminRepository) GetUsers(ctx *fasthttp.RequestCtx) ([]model.UserResponse, error) {
+	users := make([]model.UserResponse, 0)
 	q := `
 		SELECT 
 			id, 
@@ -47,22 +47,22 @@ func (r *AdminRepository) GetAdmins(ctx *fasthttp.RequestCtx) ([]model.AdminResp
 	`
 	rows, err := r.db.Query(ctx, q)
 	if err != nil {
-		return admins, err
+		return users, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var admin model.AdminResponse
-		if err := rows.Scan(&admin.ID, &admin.Username, &admin.Email, &admin.Permissions, &admin.Status, &admin.CreatedAt, &admin.UpdatedAt); err != nil {
-			return admins, err
+		var user model.UserResponse
+		if err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Permissions, &user.Status, &user.CreatedAt, &user.UpdatedAt); err != nil {
+			return users, err
 		}
-		admins = append(admins, admin)
+		users = append(users, user)
 	}
-	return admins, err
+	return users, err
 }
 
-func (r *AdminRepository) GetAdmin(ctx *fasthttp.RequestCtx, id int) (model.AdminResponse, error) {
-	admin := model.AdminResponse{}
+func (r *AdminRepository) GetUser(ctx *fasthttp.RequestCtx, id int) (model.UserResponse, error) {
+	user := model.UserResponse{}
 	q := `
 		SELECT 
 			id, 
@@ -75,11 +75,11 @@ func (r *AdminRepository) GetAdmin(ctx *fasthttp.RequestCtx, id int) (model.Admi
 		FROM users 
 		WHERE id = $1 AND role_id = 0
 	`
-	err := r.db.QueryRow(ctx, q, id).Scan(&admin.ID, &admin.Username, &admin.Email, &admin.Permissions, &admin.Status, &admin.CreatedAt, &admin.UpdatedAt)
-	return admin, err
+	err := r.db.QueryRow(ctx, q, id).Scan(&user.ID, &user.Username, &user.Email, &user.Permissions, &user.Status, &user.CreatedAt, &user.UpdatedAt)
+	return user, err
 }
 
-func (r *AdminRepository) UpdateAdmin(ctx *fasthttp.RequestCtx, id int, req *model.UpdateAdminRequest) error {
+func (r *AdminRepository) UpdateUser(ctx *fasthttp.RequestCtx, id int, req *model.UpdateUserRequest) error {
 	updates := []string{}
 	args := []any{}
 	argPos := 1
@@ -133,7 +133,7 @@ func (r *AdminRepository) UpdateAdmin(ctx *fasthttp.RequestCtx, id int, req *mod
 	return err
 }
 
-func (r *AdminRepository) DeleteAdmin(ctx *fasthttp.RequestCtx, id int) error {
+func (r *AdminRepository) DeleteUser(ctx *fasthttp.RequestCtx, id int) error {
 	q := `DELETE FROM users WHERE id = $1 AND role_id = 0`
 	_, err := r.db.Exec(ctx, q, id)
 	return err
