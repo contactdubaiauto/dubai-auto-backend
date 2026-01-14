@@ -11,24 +11,31 @@ import (
 )
 
 func Init(app *fiber.App, config *config.Config, db *pgxpool.Pool, firebaseService *firebase.FirebaseService, validator *auth.Validator) {
+	api := app.Group("/api")
+	{
+		v1 := api.Group("/v1")
+		{
 
-	userRoute := app.Group("/api/v1/users")
-	SetupUserRoutes(userRoute, config, db, validator)
+			userRoute := v1.Group("/users")
+			SetupUserRoutes(userRoute, config, db, validator)
 
-	authRoute := app.Group("/api/v1/auth")
-	SetupAuthRoutes(authRoute, config, db, validator)
+			authRoute := v1.Group("/auth")
+			SetupAuthRoutes(authRoute, config, db, validator)
 
-	motorcycleRoute := app.Group("/api/v1/motorcycles")
-	SetupMotorcycleRoutes(motorcycleRoute, config, db, validator)
+			motorcycleRoute := v1.Group("/motorcycles")
+			SetupMotorcycleRoutes(motorcycleRoute, config, db, validator)
 
-	comtransRoute := app.Group("/api/v1/comtrans")
-	SetupComtranRoutes(comtransRoute, config, db, validator)
+			comtransRoute := v1.Group("/comtrans")
+			SetupComtranRoutes(comtransRoute, config, db, validator)
 
-	adminRoute := app.Group("/api/v1/admin", auth.TokenGuard, auth.AdminGuard)
-	SetupAdminRoutes(adminRoute, config, db, validator)
+			adminRoute := v1.Group("/admin", auth.TokenGuard, auth.AdminGuard)
+			SetupAdminRoutes(adminRoute, config, db, validator)
 
-	thirdPartyRoute := app.Group("/api/v1/third-party")
-	SetupThirdPartyRoutes(thirdPartyRoute, config, db, validator)
+			thirdPartyRoute := v1.Group("/third-party")
+			SetupThirdPartyRoutes(thirdPartyRoute, config, db, validator)
+
+		}
+	}
 
 	SetupWebSocketRoutes(app, db, firebaseService, config)
 
