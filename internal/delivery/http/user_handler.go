@@ -1449,3 +1449,61 @@ func (h *UserHandler) GetThirdPartyUsers(c *fiber.Ctx) error {
 	data := h.UserService.GetThirdPartyUsers(ctx, roleID, fromID, toID, search)
 	return utils.FiberResponse(c, data)
 }
+
+// CreateReport godoc
+// @Summary      Create a report
+// @Description  Creates a new report for the authenticated user
+// @Tags         report
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        report  body      model.CreateReportRequest  true  "Report data"
+// @Success      200     {object}  model.SuccessWithId
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure      403     {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/users/reports [post]
+func (h *UserHandler) CreateReport(c *fiber.Ctx) error {
+	var report model.CreateReportRequest
+	userID := c.Locals("id").(int)
+	ctx := c.Context()
+
+	if err := c.BodyParser(&report); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	if err := h.validator.Validate(report); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	data := h.UserService.CreateReport(ctx, &report, userID)
+	return utils.FiberResponse(c, data)
+}
+
+// GetReports godoc
+// @Summary      Get user reports
+// @Description  Returns a list of reports created by the authenticated user
+// @Tags         report
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}   model.GetReportsResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/reports [get]
+func (h *UserHandler) GetReports(c *fiber.Ctx) error {
+	userID := c.Locals("id").(int)
+	ctx := c.Context()
+	data := h.UserService.GetReports(ctx, userID)
+	return utils.FiberResponse(c, data)
+}

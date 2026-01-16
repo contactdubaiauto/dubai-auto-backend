@@ -1870,3 +1870,44 @@ func (r *UserRepository) GetThirdPartyUsers(ctx *fasthttp.RequestCtx, roleID, fr
 
 	return users, err
 }
+
+func (r *UserRepository) CreateReport(ctx *fasthttp.RequestCtx, report *model.CreateReportRequest, userID int) (int, error) {
+	var id int
+	q := `
+		INSERT INTO reports (reported_user_id, user_id, report_type, report_description)
+		VALUES ($1, $2, $3, $4)
+		RETURNING id
+	`
+	err := r.db.QueryRow(ctx, q, report.ReportedUserID, userID, report.ReportType, report.ReportDescription).Scan(&id)
+	return id, err
+}
+
+func (r *UserRepository) GetReports(ctx *fasthttp.RequestCtx, userID int) ([]model.GetReportsResponse, error) {
+	reports := make([]model.GetReportsResponse, 0)
+	q := `
+		SELECT 
+			id,
+			reported_user_id,
+			report_type,
+			report_description,
+			report_status,
+			created_at
+		FROM reports
+		WHERE user_id = $1
+		ORDER BY created_at DESC
+	`
+	rows, err := r.db.Query(ctx, q, userID)
+	if err != nil {
+		return reports, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var report model.GetReportsResponse
+		if err := rows.Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt); err != nil {
+			return reports, err
+		}
+		reports = append(reports, report)
+	}
+	return reports, err
+}

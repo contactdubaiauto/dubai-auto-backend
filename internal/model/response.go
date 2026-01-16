@@ -623,3 +623,13 @@ type ThirdPartyUserResponse struct {
 	Avatar     *string    `json:"avatar"`
 	ID         int        `json:"id"`
 }
+
+// Report responses
+type GetReportsResponse struct {
+	ID                int       `json:"id"`
+	ReportedUserID    int       `json:"reported_user_id"`
+	ReportType        string    `json:"report_type"`
+	ReportDescription string    `json:"report_description"`
+	ReportStatus      int       `json:"report_status"`
+	CreatedAt         time.Time `json:"created_at"`
+}

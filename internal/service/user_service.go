@@ -538,3 +538,33 @@ func (s *UserService) GetThirdPartyUsers(ctx *fasthttp.RequestCtx, roleID, fromI
 
 	return model.Response{Data: user}
 }
+
+func (s *UserService) CreateReport(ctx *fasthttp.RequestCtx, report *model.CreateReportRequest, userID int) model.Response {
+	id, err := s.UserRepository.CreateReport(ctx, report, userID)
+
+	if err != nil {
+		return model.Response{
+			Status: http.StatusInternalServerError,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: model.SuccessWithId{Id: id, Message: "Report created successfully"},
+	}
+}
+
+func (s *UserService) GetReports(ctx *fasthttp.RequestCtx, userID int) model.Response {
+	reports, err := s.UserRepository.GetReports(ctx, userID)
+
+	if err != nil {
+		return model.Response{
+			Status: http.StatusInternalServerError,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: reports,
+	}
+}

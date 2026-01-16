@@ -2,6 +2,7 @@
 
 drop type if exists price_type_enum;
 
+drop table if exists reports;
 drop table if exists user_likes;
 drop table if exists temp_users;
 -- drop table if exists configurations;
@@ -1045,5 +1046,25 @@ create table user_tokens (
                 on delete cascade
                 on update cascade,
     unique("user_id")
+);
+
+create table reports (
+    "id" serial primary key,
+    "reported_user_id" int not null,
+    "user_id" int not null,
+    "report_type" varchar(255) not null,
+    "report_description" varchar(255) not null,
+    "report_status" int not null default 1, -- 1-pending, 2-resolved, 3-closed
+    "created_at" timestamp not null default now(),
+    constraint fk_reports_user_id
+        foreign key (user_id)
+            references users(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_reports_reported_user_id
+        foreign key (reported_user_id)
+            references users(id)
+                on delete cascade
+                on update cascade
 );
 

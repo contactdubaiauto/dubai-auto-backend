@@ -364,3 +364,10 @@ type CreateLogistDestinationRequest struct {
 	FromID int `json:"from_id" validate:"required"`
 	ToID   int `json:"to_id" validate:"required"`
 }
+
+// Report requests
+type CreateReportRequest struct {
+	ReportedUserID    int    `json:"reported_user_id" validate:"required"`
+	ReportType        string `json:"report_type" validate:"required,min=2,max=255"`
+	ReportDescription string `json:"report_description" validate:"required,min=2,max=255"`
+}

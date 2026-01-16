@@ -8117,21 +8117,21 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Returns a list of all admins",
+                "description": "Returns a list of all users",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "admin-users"
                 ],
-                "summary": "Get all admins",
+                "summary": "Get all users",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.AdminResponse"
+                                "$ref": "#/definitions/model.UserResponse"
                             }
                         }
                     },
@@ -8180,12 +8180,12 @@ const docTemplate = `{
                 "summary": "Create an admin",
                 "parameters": [
                     {
-                        "description": "Admin",
-                        "name": "admin",
+                        "description": "User",
+                        "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.CreateAdminRequest"
+                            "$ref": "#/definitions/model.CreateUserRequest"
                         }
                     }
                 ],
@@ -8230,18 +8230,18 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Returns a single admin by ID",
+                "description": "Returns a single user by ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "admin-users"
                 ],
-                "summary": "Get an admin by ID",
+                "summary": "Get a user by ID",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Admin ID",
+                        "description": "User ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -8251,7 +8251,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.AdminResponse"
+                            "$ref": "#/definitions/model.UserResponse"
                         }
                     },
                     "400": {
@@ -8302,22 +8302,22 @@ const docTemplate = `{
                 "tags": [
                     "admin-users"
                 ],
-                "summary": "Update an admin",
+                "summary": "Update a user",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Admin ID",
+                        "description": "User ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Admin",
-                        "name": "admin",
+                        "description": "User",
+                        "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.UpdateAdminRequest"
+                            "$ref": "#/definitions/model.UpdateUserRequest"
                         }
                     }
                 ],
@@ -8366,18 +8366,18 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Deletes an admin by ID",
+                "description": "Deletes a user by ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "admin-users"
                 ],
-                "summary": "Delete an admin",
+                "summary": "Delete a user",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Admin ID",
+                        "description": "User ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -16741,35 +16741,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AdminResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "permissions": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
         "model.AdminTransmissionResponse": {
             "type": "object",
             "properties": {
@@ -16946,35 +16917,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
-                }
-            }
-        },
-        "model.CreateAdminRequest": {
-            "type": "object",
-            "required": [
-                "email",
-                "password",
-                "permissions",
-                "username"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string",
-                    "minLength": 8
-                },
-                "permissions": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "username": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
                 }
             }
         },
@@ -17814,6 +17756,39 @@ const docTemplate = `{
                 },
                 "name_ru": {
                     "type": "string"
+                }
+            }
+        },
+        "model.CreateUserRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password",
+                "permissions",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "role_id": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
                 }
             }
         },
@@ -19100,29 +19075,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.UpdateAdminRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string",
-                    "minLength": 8
-                },
-                "permissions": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "username": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
-                }
-            }
-        },
         "model.UpdateCarRequest": {
             "type": "object",
             "required": [
@@ -19587,6 +19539,29 @@ const docTemplate = `{
                 }
             }
         },
+        "model.UpdateUserRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                }
+            }
+        },
         "model.UserApplication": {
             "type": "object",
             "required": [
@@ -19749,6 +19724,35 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

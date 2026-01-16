@@ -78,5 +78,9 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 
 		// users
 		r.Get("/:id", auth.LanguageChecker, userHandler.GetUserByID)
+
+		// Report
+		r.Post("/reports", auth.TokenGuard, userHandler.CreateReport)
+		r.Get("/reports", auth.TokenGuard, userHandler.GetReports)
 	}
 }
