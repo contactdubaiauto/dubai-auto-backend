@@ -1196,7 +1196,6 @@ definitions:
     required:
     - report_description
     - report_type
-    - reported_user_id
     type: object
   model.CreateTransmissionRequest:
     properties:

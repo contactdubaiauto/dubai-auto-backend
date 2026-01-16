@@ -18121,8 +18121,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "report_description",
-                "report_type",
-                "reported_user_id"
+                "report_type"
             ],
             "properties": {
                 "report_description": {

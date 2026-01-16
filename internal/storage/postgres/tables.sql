@@ -1053,7 +1053,7 @@ create table reports (
     "reported_user_id" int not null,
     "user_id" int not null,
     "report_type" varchar(255) not null,
-    "report_description" varchar(255) not null,
+    "report_description" varchar(255),
     "report_status" int not null default 1, -- 1-pending, 2-resolved, 3-closed
     "created_at" timestamp not null default now(),
     constraint fk_reports_user_id
@@ -1067,4 +1067,3 @@ create table reports (
                 on delete cascade
                 on update cascade
 );
-
