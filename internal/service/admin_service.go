@@ -1596,3 +1596,44 @@ func (s *AdminService) DeleteCountry(ctx *fasthttp.RequestCtx, id int) model.Res
 
 	return model.Response{Data: model.Success{Message: "Country deleted successfully"}}
 }
+
+// Report service methods
+func (s *AdminService) GetReports(ctx *fasthttp.RequestCtx) model.Response {
+	reports, err := s.repo.GetReports(ctx)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: reports}
+}
+
+func (s *AdminService) GetReportByID(ctx *fasthttp.RequestCtx, id int) model.Response {
+	report, err := s.repo.GetReportByID(ctx, id)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusNotFound}
+	}
+
+	return model.Response{Data: report}
+}
+
+func (s *AdminService) UpdateReport(ctx *fasthttp.RequestCtx, id int, req *model.UpdateReportRequest) model.Response {
+	err := s.repo.UpdateReport(ctx, id, req)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Report updated successfully"}}
+}
+
+func (s *AdminService) DeleteReport(ctx *fasthttp.RequestCtx, id int) model.Response {
+	err := s.repo.DeleteReport(ctx, id)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Report deleted successfully"}}
+}

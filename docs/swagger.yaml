@@ -1181,6 +1181,23 @@ definitions:
     required:
     - name
     type: object
+  model.CreateReportRequest:
+    properties:
+      report_description:
+        maxLength: 255
+        minLength: 2
+        type: string
+      report_type:
+        maxLength: 255
+        minLength: 2
+        type: string
+      reported_user_id:
+        type: integer
+    required:
+    - report_description
+    - report_type
+    - reported_user_id
+    type: object
   model.CreateTransmissionRequest:
     properties:
       name:
@@ -1759,6 +1776,21 @@ definitions:
         type: string
       username:
         type: string
+    type: object
+  model.GetReportsResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      report_description:
+        type: string
+      report_status:
+        type: integer
+      report_type:
+        type: string
+      reported_user_id:
+        type: integer
     type: object
   model.Home:
     properties:
@@ -2385,6 +2417,16 @@ definitions:
         type: string
     required:
     - username
+    type: object
+  model.UpdateReportRequest:
+    properties:
+      report_status:
+        description: 1-pending, 2-resolved, 3-closed
+        maximum: 3
+        minimum: 1
+        type: integer
+    required:
+    - report_status
     type: object
   model.UpdateUserRequest:
     properties:
@@ -7590,6 +7632,168 @@ paths:
       summary: Get profile
       tags:
       - admin-profile
+  /api/v1/admin/reports:
+    get:
+      description: Returns a list of all reports
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetReportsResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all reports
+      tags:
+      - admin-reports
+  /api/v1/admin/reports/{id}:
+    delete:
+      description: Deletes a report by ID
+      parameters:
+      - description: Report ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a report
+      tags:
+      - admin-reports
+    get:
+      description: Returns a single report by ID
+      parameters:
+      - description: Report ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetReportsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get report by ID
+      tags:
+      - admin-reports
+    put:
+      consumes:
+      - application/json
+      description: Updates a report by ID (typically to change status)
+      parameters:
+      - description: Report ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Report data
+        in: body
+        name: report
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateReportRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a report
+      tags:
+      - admin-reports
   /api/v1/admin/transmissions:
     get:
       description: Returns a list of all transmissions
@@ -11575,6 +11779,86 @@ paths:
       summary: Get user's profile cars
       tags:
       - profile
+  /api/v1/users/reports:
+    get:
+      description: Returns a list of reports created by the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetReportsResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get user reports
+      tags:
+      - report
+    post:
+      consumes:
+      - application/json
+      description: Creates a new report for the authenticated user
+      parameters:
+      - description: Report data
+        in: body
+        name: report
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateReportRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a report
+      tags:
+      - report
   /api/v1/users/third-party:
     get:
       description: Returns a single user by ID

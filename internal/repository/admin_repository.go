@@ -2064,3 +2064,66 @@ func (r *AdminRepository) DeleteCountry(ctx *fasthttp.RequestCtx, id int) error 
 	_, err := r.db.Exec(ctx, q, id)
 	return err
 }
+
+// Report CRUD operations
+func (r *AdminRepository) GetReports(ctx *fasthttp.RequestCtx) ([]model.GetReportsResponse, error) {
+	reports := make([]model.GetReportsResponse, 0)
+	q := `
+		SELECT 
+			id,
+			reported_user_id,
+			report_type,
+			report_description,
+			report_status,
+			created_at
+		FROM reports
+		ORDER BY created_at DESC
+	`
+	rows, err := r.db.Query(ctx, q)
+	if err != nil {
+		return reports, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var report model.GetReportsResponse
+		if err := rows.Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt); err != nil {
+			return reports, err
+		}
+		reports = append(reports, report)
+	}
+	return reports, err
+}
+
+func (r *AdminRepository) GetReportByID(ctx *fasthttp.RequestCtx, id int) (model.GetReportsResponse, error) {
+	report := model.GetReportsResponse{}
+	q := `
+		SELECT 
+			id,
+			reported_user_id,
+			report_type,
+			report_description,
+			report_status,
+			created_at
+		FROM reports
+		WHERE id = $1
+	`
+	err := r.db.QueryRow(ctx, q, id).Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt)
+	return report, err
+}
+
+func (r *AdminRepository) UpdateReport(ctx *fasthttp.RequestCtx, id int, req *model.UpdateReportRequest) error {
+	q := `
+		UPDATE reports
+		SET report_status = $1
+		WHERE id = $2
+	`
+	_, err := r.db.Exec(ctx, q, req.ReportStatus, id)
+	return err
+}
+
+func (r *AdminRepository) DeleteReport(ctx *fasthttp.RequestCtx, id int) error {
+	q := `DELETE FROM reports WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id)
+	return err
+}

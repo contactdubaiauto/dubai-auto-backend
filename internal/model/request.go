@@ -371,3 +371,7 @@ type CreateReportRequest struct {
 	ReportType        string `json:"report_type" validate:"required,min=2,max=255"`
 	ReportDescription string `json:"report_description" validate:"required,min=2,max=255"`
 }
+
+type UpdateReportRequest struct {
+	ReportStatus int `json:"report_status" validate:"required,min=1,max=3"` // 1-pending, 2-resolved, 3-closed
+}

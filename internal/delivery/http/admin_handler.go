@@ -4713,3 +4713,131 @@ func (h *AdminHandler) DeleteCountry(c *fiber.Ctx) error {
 	data := h.service.DeleteCountry(ctx, id)
 	return utils.FiberResponse(c, data)
 }
+
+// Report handlers
+
+// GetReports godoc
+// @Summary      Get all reports
+// @Description  Returns a list of all reports
+// @Tags         admin-reports
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}   model.GetReportsResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/reports [get]
+func (h *AdminHandler) GetReports(c *fiber.Ctx) error {
+	ctx := c.Context()
+	data := h.service.GetReports(ctx)
+	return utils.FiberResponse(c, data)
+}
+
+// GetReportByID godoc
+// @Summary      Get report by ID
+// @Description  Returns a single report by ID
+// @Tags         admin-reports
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Report ID"
+// @Success      200  {object}  model.GetReportsResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/reports/{id} [get]
+func (h *AdminHandler) GetReportByID(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("report id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.GetReportByID(ctx, id)
+	return utils.FiberResponse(c, data)
+}
+
+// UpdateReport godoc
+// @Summary      Update a report
+// @Description  Updates a report by ID (typically to change status)
+// @Tags         admin-reports
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id      path      int                   true  "Report ID"
+// @Param        report  body      model.UpdateReportRequest  true  "Report data"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure      403     {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/admin/reports/{id} [put]
+func (h *AdminHandler) UpdateReport(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("report id must be integer"),
+		})
+	}
+
+	var req model.UpdateReportRequest
+
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request body"),
+		})
+	}
+
+	if err := h.validator.Validate(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.UpdateReport(ctx, id, &req)
+	return utils.FiberResponse(c, data)
+}
+
+// DeleteReport godoc
+// @Summary      Delete a report
+// @Description  Deletes a report by ID
+// @Tags         admin-reports
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Report ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/reports/{id} [delete]
+func (h *AdminHandler) DeleteReport(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("report id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.DeleteReport(ctx, id)
+	return utils.FiberResponse(c, data)
+}
