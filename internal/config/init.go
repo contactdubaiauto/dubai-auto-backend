@@ -44,6 +44,10 @@ type Config struct {
 	TWILIO_ACCOUNT_SID    string
 	TWILIO_AUTH_TOKEN     string
 	TWILIO_PHONE_NUMBER   string
+	SMTP_HOST             string
+	SMTP_PORT             string
+	SMTP_MAIL             string
+	SMTP_PASSWORD         string
 }
 
 var ENV Config

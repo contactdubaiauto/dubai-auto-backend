@@ -18120,14 +18120,13 @@ const docTemplate = `{
         "model.CreateReportRequest": {
             "type": "object",
             "required": [
-                "report_description",
-                "report_type"
+                "report_type",
+                "reported_user_id"
             ],
             "properties": {
                 "report_description": {
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
+                    "maxLength": 255
                 },
                 "report_type": {
                     "type": "string",

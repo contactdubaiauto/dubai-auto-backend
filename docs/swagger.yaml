@@ -1185,7 +1185,6 @@ definitions:
     properties:
       report_description:
         maxLength: 255
-        minLength: 2
         type: string
       report_type:
         maxLength: 255
@@ -1194,8 +1193,8 @@ definitions:
       reported_user_id:
         type: integer
     required:
-    - report_description
     - report_type
+    - reported_user_id
     type: object
   model.CreateTransmissionRequest:
     properties:

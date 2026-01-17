@@ -1,19 +1,16 @@
 package utils
 
 import (
+	"dubai-auto/internal/config"
 	"net/smtp"
 )
 
 func SendEmail(title, subject, receiver string) error {
-	smtpHost := "smtp.gmail.com"
-	smtpPort := "587"
-	from := "contact.dubai.auto@gmail.com"
-	password := "sloh hauz bouf smlq"
 	message := []byte("Subject: " + title + "\r\n" +
 		"\r\n" +
 		subject + "\r\n")
 
-	auth := smtp.PlainAuth("", from, password, smtpHost)
-	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{receiver}, message)
+	auth := smtp.PlainAuth("", config.ENV.SMTP_MAIL, config.ENV.SMTP_PASSWORD, config.ENV.SMTP_HOST)
+	err := smtp.SendMail(config.ENV.SMTP_HOST+":"+config.ENV.SMTP_PORT, auth, config.ENV.SMTP_MAIL, []string{receiver}, message)
 	return err
 }
