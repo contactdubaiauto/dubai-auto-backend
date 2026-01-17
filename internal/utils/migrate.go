@@ -166,10 +166,11 @@ func getBrandID(name, name_ru, name_ae, logoFileName string, db *pgxpool.Pool) (
 		buf := bytes.NewBuffer(nil)
 		io.Copy(buf, readerFile)
 
+		// Use 0644 for files: owner read/write, group/others read only
 		err = os.WriteFile(
 			"./images/logos/"+newName+".png",
 			buf.Bytes(),
-			os.ModePerm,
+			0644,
 		)
 
 		if err != nil {
@@ -403,10 +404,11 @@ func helperResizeImage(generationID int, imagePath string, widths []uint, db *pg
 	buf := bytes.NewBuffer(nil)
 	io.Copy(buf, readerFile)
 
+	// Use 0644 for files: owner read/write, group/others read only
 	err = os.WriteFile(
 		"./images/generations/"+newName,
 		buf.Bytes(),
-		os.ModePerm,
+		0644,
 	)
 
 	if err != nil {

@@ -44,8 +44,19 @@ func TokenGuard(c *fiber.Ctx) error {
 		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: "token is invalid!"})
 	}
 
-	c.Locals("id", int(claims["id"].(float64)))
-	c.Locals("role_id", int(role_id.(float64)))
+	// Safe type assertion with error handling
+	idFloat, ok := id.(float64)
+	if !ok {
+		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: "token is invalid! Invalid ID type"})
+	}
+
+	roleFloat, ok := role_id.(float64)
+	if !ok {
+		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: "token is invalid! Invalid role_id type"})
+	}
+
+	c.Locals("id", int(idFloat))
+	c.Locals("role_id", int(roleFloat))
 	return c.Next()
 }
 
@@ -97,8 +108,32 @@ func UserGuardOrDefault(c *fiber.Ctx) error {
 		return c.Next()
 	}
 
-	c.Locals("id", int(claims["id"].(float64)))
-	c.Locals("role_id", claims["role_id"].(float64))
+	// Safe type assertion with error handling
+	id := claims["id"]
+	role_id := claims["role_id"]
+
+	if id == nil || role_id == nil {
+		c.Locals("id", 0)
+		c.Locals("role_id", 0)
+		return c.Next()
+	}
+
+	idFloat, ok := id.(float64)
+	if !ok {
+		c.Locals("id", 0)
+		c.Locals("role_id", 0)
+		return c.Next()
+	}
+
+	roleFloat, ok := role_id.(float64)
+	if !ok {
+		c.Locals("id", 0)
+		c.Locals("role_id", 0)
+		return c.Next()
+	}
+
+	c.Locals("id", int(idFloat))
+	c.Locals("role_id", int(roleFloat))
 	return c.Next()
 }
 

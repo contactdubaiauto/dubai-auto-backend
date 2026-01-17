@@ -26,6 +26,7 @@ type Config struct {
 	DB_PASSWORD           string
 	DB_NAME               string
 	DB_URL                string
+	DB_SSLMODE            string
 	ACCESS_KEY            string
 	ACCESS_TIME           time.Duration
 	REFRESH_KEY           string
@@ -64,6 +65,7 @@ func Init() *Config {
 	ENV.DB_USER = loadEnvVariable("DB_USER")
 	ENV.DB_PASSWORD = loadEnvVariable("DB_PASSWORD")
 	ENV.DB_NAME = loadEnvVariable("DB_NAME")
+	ENV.DB_SSLMODE = loadEnvVariable("DB_SSLMODE")
 
 	ENV.APP_MODE = loadEnvVariable("APP_MODE")
 
@@ -89,5 +91,9 @@ func Init() *Config {
 	ENV.TWILIO_AUTH_TOKEN = loadEnvVariable("TWILIO_AUTH_TOKEN")
 	ENV.TWILIO_PHONE_NUMBER = loadEnvVariable("TWILIO_PHONE_NUMBER")
 	ENV.MIGRATE_PATH = loadEnvVariable("MIGRATE_PATH")
+	ENV.SMTP_HOST = loadEnvVariable("SMTP_HOST")
+	ENV.SMTP_PORT = loadEnvVariable("SMTP_PORT")
+	ENV.SMTP_MAIL = loadEnvVariable("SMTP_MAIL")
+	ENV.SMTP_PASSWORD = loadEnvVariable("SMTP_PASSWORD")
 	return &ENV
 }

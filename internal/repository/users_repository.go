@@ -1831,29 +1831,51 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 }
 
 func (r *UserRepository) GetThirdPartyUsers(ctx *fasthttp.RequestCtx, roleID, fromID, toID int, search string) ([]model.ThirdPartyUserResponse, error) {
-	qWhere := " where u.role_id = $1 "
-
-	if search != "" {
-		qWhere = fmt.Sprintf(" %s AND u.username ILIKE '%%%s%%' ", qWhere, search)
-	}
+	// Build query with proper parameterized placeholders to prevent SQL injection
+	paramIndex := 1
+	var args []interface{}
+	var qWhere string
 
 	if fromID > 0 && toID > 0 {
-		qWhere = fmt.Sprintf(" right join user_destinations ds on ds.user_id = u.id %s AND ds.from_id = %d AND ds.to_id = %d ", qWhere, fromID, toID)
+		qWhere = " right join user_destinations ds on ds.user_id = u.id where u.role_id = $" + strconv.Itoa(paramIndex)
+		args = append(args, roleID)
+		paramIndex++
+		qWhere += " AND ds.from_id = $" + strconv.Itoa(paramIndex)
+		args = append(args, fromID)
+		paramIndex++
+		qWhere += " AND ds.to_id = $" + strconv.Itoa(paramIndex)
+		args = append(args, toID)
+		paramIndex++
+	} else {
+		qWhere = " where u.role_id = $" + strconv.Itoa(paramIndex)
+		args = append(args, roleID)
+		paramIndex++
 	}
+
+	if search != "" {
+		qWhere += " AND u.username ILIKE '%' || $" + strconv.Itoa(paramIndex) + " || '%'"
+		args = append(args, search)
+		paramIndex++
+	}
+
+	imageBaseURLIndex := paramIndex
+	paramIndex++
 
 	q := `
 		select
 			u.id,
 			p.company_name,
 			p.created_at,
-			$2 || p.avatar
+			$` + strconv.Itoa(imageBaseURLIndex) + ` || p.avatar
 		from users u
         left join profiles p on p.user_id = u.id
-         %s;
+         ` + qWhere + `;
 	`
+	args = append(args, r.config.IMAGE_BASE_URL)
+
 	var users []model.ThirdPartyUserResponse
 	var user model.ThirdPartyUserResponse
-	rows, err := r.db.Query(ctx, fmt.Sprintf(q, qWhere), roleID, r.config.IMAGE_BASE_URL)
+	rows, err := r.db.Query(ctx, q, args...)
 
 	if err != nil {
 		return users, err

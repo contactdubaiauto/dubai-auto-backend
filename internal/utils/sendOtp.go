@@ -9,7 +9,7 @@ import (
 	openapi "github.com/twilio/twilio-go/rest/api/v2010"
 )
 
-func SendOtp(toNumber string, otp int) {
+func SendOtp(toNumber string, otp int) error {
 
 	// Twilio credentials (use env variables in production)
 	accountSID := config.ENV.TWILIO_ACCOUNT_SID
@@ -30,15 +30,13 @@ func SendOtp(toNumber string, otp int) {
 	params.SetFrom(fromNumber)
 	params.SetBody(message)
 
-	resp, err := client.Api.CreateMessage(params)
+	_, err := client.Api.CreateMessage(params)
 
 	if err != nil {
-		log.Fatal("Error sending SMS:", err)
+		log.Printf("Error sending SMS to %s: %v", toNumber, err)
+		return err
 	}
 
-	fmt.Println("OTP Sent!")
-
-	if resp.Sid != nil {
-		fmt.Println("Message SID:", *resp.Sid)
-	}
+	log.Println("OTP sent successfully")
+	return nil
 }

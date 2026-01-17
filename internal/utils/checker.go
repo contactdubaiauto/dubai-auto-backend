@@ -1,7 +1,9 @@
 package utils
 
 import (
-	"math/rand"
+	"crypto/rand"
+	"encoding/binary"
+	"math/big"
 	"mime/multipart"
 	"strconv"
 	"time"
@@ -56,18 +58,30 @@ func CheckGMTTime(t time.Time) bool {
 }
 
 func RandomOTP() int {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	return r.Intn(900000) + 100000
+	// Use crypto/rand for secure random number generation
+	n, err := rand.Int(rand.Reader, big.NewInt(900000))
+	if err != nil {
+		// Fallback to time-based seed if crypto/rand fails (shouldn't happen)
+		seed := time.Now().UnixNano()
+		n = big.NewInt(seed % 900000)
+	}
+	return int(n.Int64()) + 100000
 }
 
 func RandomUsername() string {
 	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	const length = 8
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	b := make([]byte, length)
 
 	for i := range b {
-		b[i] = charset[r.Intn(len(charset))]
+		n, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		if err != nil {
+			// Fallback: use time-based seed converted to bytes
+			var seedBytes [8]byte
+			binary.BigEndian.PutUint64(seedBytes[:], uint64(time.Now().UnixNano()))
+			n = big.NewInt(int64(seedBytes[i%8] % uint8(len(charset))))
+		}
+		b[i] = charset[n.Int64()]
 	}
 	return string(b)
 }

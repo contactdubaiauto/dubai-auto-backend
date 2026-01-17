@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"path/filepath"
@@ -395,7 +396,12 @@ func (s *AuthService) UserLoginPhone(ctx *fasthttp.RequestCtx, user *model.UserL
 		}
 	}
 
-	utils.SendOtp(user.Phone, otp)
+	err = utils.SendOtp(user.Phone, otp)
+
+	if err != nil {
+		// Log error but don't fail the request - OTP sending failure shouldn't block user creation
+		log.Printf("Warning: Failed to send OTP to %s: %v", user.Phone, err)
+	}
 
 	return model.Response{
 		Data: model.Success{Message: "Successfully created the user."},

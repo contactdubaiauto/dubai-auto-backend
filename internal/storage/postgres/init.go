@@ -35,8 +35,8 @@ func Init(cfg *config.Config) *pgxpool.Pool {
 
 func buildConnectionString(cfg *config.Config) string {
 	return fmt.Sprintf(
-		"user=%s password=%s host=%s port=%s dbname=%s sslmode=disable",
+		"user=%s password=%s host=%s port=%s dbname=%s sslmode=%s",
 		cfg.DB_USER, cfg.DB_PASSWORD,
-		cfg.DB_HOST, cfg.DB_PORT, cfg.DB_NAME,
+		cfg.DB_HOST, cfg.DB_PORT, cfg.DB_NAME, config.ENV.DB_SSLMODE,
 	)
 }

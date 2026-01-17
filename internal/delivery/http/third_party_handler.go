@@ -40,7 +40,14 @@ func NewThirdPartyHandler(service *service.ThirdPartyService, validator *auth.Va
 // @Router       /api/v1/third-party/profile [post]
 func (h *ThirdPartyHandler) Profile(c *fiber.Ctx) error {
 	ctx := c.Context()
-	id := c.Locals("id").(int)
+	// Safe type assertion to prevent panic
+	id, ok := c.Locals("id").(int)
+	if !ok {
+		return utils.FiberResponse(c, model.Response{
+			Status: 401,
+			Error:  errors.New("unauthorized: invalid user ID"),
+		})
+	}
 	profile := &model.ThirdPartyProfileReq{}
 
 	if err := c.BodyParser(profile); err != nil {

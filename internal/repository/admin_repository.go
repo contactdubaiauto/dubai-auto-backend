@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
@@ -161,9 +162,15 @@ func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx, qRole, qStat
 	applications := make([]model.AdminApplicationResponse, 0)
 	q := ``
 	qWhere := ``
+	var searchArgs []interface{}
+	searchParamIndex := 4 // After qRole, lastID, limit
 
 	if search != "" {
-		qWhere = fmt.Sprintf(" AND (u.username ILIKE '%%%s%%' OR p.company_name ILIKE '%%%s%%' or u.email ILIKE '%%%s%%' or u.phone ILIKE '%%%s%%') ", search, search, search, search)
+		// Use parameterized query to prevent SQL injection
+		searchPattern := "'%' || $" + strconv.Itoa(searchParamIndex) + " || '%'"
+		qWhere = fmt.Sprintf(" AND (u.username ILIKE %s OR p.company_name ILIKE %s OR u.email ILIKE %s OR u.phone ILIKE %s)",
+			searchPattern, searchPattern, searchPattern, searchPattern)
+		searchArgs = []interface{}{search}
 	}
 
 	switch qStatus {
@@ -206,7 +213,10 @@ func (r *AdminRepository) GetApplications(ctx *fasthttp.RequestCtx, qRole, qStat
 		`
 	}
 
-	rows, err := r.db.Query(ctx, q, qRole, lastID, limit)
+	// Combine all query arguments: qRole, lastID, limit, and search (if present)
+	args := []interface{}{qRole, lastID, limit}
+	args = append(args, searchArgs...)
+	rows, err := r.db.Query(ctx, q, args...)
 
 	if err != nil {
 		return applications, err

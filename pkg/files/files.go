@@ -103,10 +103,11 @@ func SaveFiles(files []*multipart.FileHeader, base string, widths []uint) ([]str
 		buf := bytes.NewBuffer(nil)
 		io.Copy(buf, readerFile)
 
+		// Use 0644 for files: owner read/write, group/others read only
 		err := os.WriteFile(
 			"."+base+"/"+fileNames[index],
 			buf.Bytes(),
-			os.ModePerm,
+			0644,
 		)
 
 		if err != nil {
@@ -225,7 +226,8 @@ func applyOrientation(img image.Image, orientation int) image.Image {
 
 func CreateFolderIfNotExists(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		err := os.MkdirAll(path, os.ModePerm)
+		// Use 0755 for directories: owner read/write/execute, group/others read/execute
+		err := os.MkdirAll(path, 0755)
 		if err != nil {
 			return fmt.Errorf("failed to create directory: %w", err)
 		}
