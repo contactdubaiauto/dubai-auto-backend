@@ -2437,6 +2437,13 @@ definitions:
         items:
           type: string
         type: array
+      role_id:
+        default: 1
+        type: integer
+      status:
+        maximum: 3
+        minimum: 1
+        type: integer
       username:
         maxLength: 255
         minLength: 2

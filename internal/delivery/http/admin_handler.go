@@ -4782,14 +4782,6 @@ func (h *AdminHandler) GetReportByID(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/reports/{id} [put]
 func (h *AdminHandler) UpdateReport(c *fiber.Ctx) error {
 	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("report id must be integer"),
-		})
-	}
 
 	var req model.UpdateReportRequest
 
@@ -4807,8 +4799,7 @@ func (h *AdminHandler) UpdateReport(c *fiber.Ctx) error {
 		})
 	}
 
-	ctx := c.Context()
-	data := h.service.UpdateReport(ctx, id, &req)
+	data := h.service.UpdateReport(c.Context(), idStr, &req)
 	return utils.FiberResponse(c, data)
 }
 
@@ -4828,16 +4819,6 @@ func (h *AdminHandler) UpdateReport(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/reports/{id} [delete]
 func (h *AdminHandler) DeleteReport(c *fiber.Ctx) error {
 	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("report id must be integer"),
-		})
-	}
-
-	ctx := c.Context()
-	data := h.service.DeleteReport(ctx, id)
+	data := h.service.DeleteReport(c.Context(), idStr)
 	return utils.FiberResponse(c, data)
 }

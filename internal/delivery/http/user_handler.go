@@ -65,7 +65,7 @@ func NewUserHandler(service *service.UserService, validator *auth.Validator) *Us
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/cars [get]
 func (h *UserHandler) GetCars(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	nameColumn := c.Locals("lang").(string)
 	userID := c.Locals("id").(int)
 	brands := auth.QueryParamToArray(c.Query("brands"))
@@ -120,7 +120,7 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 	}
 
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
-	data := h.UserService.GetCars(ctx, userID, targetUserID, brands, models,
+	data := h.UserService.GetCars(c.Context(), userID, targetUserID, brands, models,
 		regions, cities, generations, transmissions, engines, drivetrains,
 		body_types, fuel_types, ownership_types, colors,
 		year_from, year_to, credit, price_from, price_to,
@@ -148,7 +148,7 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
 func (h *UserHandler) GetPriceRecommendation(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	brandID := c.Query("brand_id")
 	modelID := c.Query("model_id")
 	modificationID := c.Query("modification_id")
@@ -163,7 +163,7 @@ func (h *UserHandler) GetPriceRecommendation(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.UserService.GetPriceRecommendation(ctx, model.GetPriceRecommendationRequest{
+	data := h.UserService.GetPriceRecommendation(c.Context(), model.GetPriceRecommendationRequest{
 		BrandID:        brandID,
 		ModelID:        modelID,
 		Year:           year,
@@ -202,8 +202,7 @@ func (h *UserHandler) GetCarByID(c *fiber.Ctx) error {
 		})
 	}
 
-	ctx := c.Context()
-	data := h.UserService.GetCarByID(ctx, id, userID, nameColumn)
+	data := h.UserService.GetCarByID(c.Context(), id, userID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -235,8 +234,7 @@ func (h *UserHandler) GetEditCarByID(c *fiber.Ctx) error {
 		})
 	}
 
-	ctx := c.Context()
-	data := h.UserService.GetEditCarByID(ctx, id, userID, nameColumn)
+	data := h.UserService.GetEditCarByID(c.Context(), id, userID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -266,8 +264,7 @@ func (h *UserHandler) BuyCar(c *fiber.Ctx) error {
 		})
 	}
 
-	ctx := c.Context()
-	data := h.UserService.BuyCar(ctx, id, userID)
+	data := h.UserService.BuyCar(c.Context(), id, userID)
 	return utils.FiberResponse(c, data)
 }
 
@@ -289,7 +286,6 @@ func (h *UserHandler) BuyCar(c *fiber.Ctx) error {
 func (h *UserHandler) CreateCar(c *fiber.Ctx) error {
 	var car model.CreateCarRequest
 	userID := c.Locals("id").(int)
-	ctx := c.Context()
 
 	if err := c.BodyParser(&car); err != nil {
 		return utils.FiberResponse(c, model.Response{
@@ -305,7 +301,7 @@ func (h *UserHandler) CreateCar(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.UserService.CreateCar(ctx, &car, userID)
+	data := h.UserService.CreateCar(c.Context(), &car, userID)
 	return utils.FiberResponse(c, data)
 }
 
@@ -327,7 +323,6 @@ func (h *UserHandler) CreateCar(c *fiber.Ctx) error {
 func (h *UserHandler) UpdateCar(c *fiber.Ctx) error {
 	var car model.UpdateCarRequest
 	userID := c.Locals("id").(int)
-	ctx := c.Context()
 
 	if err := c.BodyParser(&car); err != nil {
 		return utils.FiberResponse(c, model.Response{
@@ -343,7 +338,7 @@ func (h *UserHandler) UpdateCar(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.UserService.UpdateCar(ctx, &car, userID)
+	data := h.UserService.UpdateCar(c.Context(), &car, userID)
 	return utils.FiberResponse(c, data)
 }
 
@@ -364,7 +359,7 @@ func (h *UserHandler) UpdateCar(c *fiber.Ctx) error {
 // @Failure      500     {object}  model.ResultMessage
 // @Router       /api/v1/users/cars/{car_id}/images [post]
 func (h *UserHandler) CreateCarImages(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
 
@@ -402,7 +397,7 @@ func (h *UserHandler) CreateCarImages(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.UserService.CreateCarImages(ctx, id, paths)
+	data := h.UserService.CreateCarImages(c.Context(), id, paths)
 	return utils.FiberResponse(c, data)
 }
 
@@ -423,7 +418,7 @@ func (h *UserHandler) CreateCarImages(c *fiber.Ctx) error {
 // @Failure      500     {object}  model.ResultMessage
 // @Router       /api/v1/users/cars/{car_id}/videos [post]
 func (h *UserHandler) CreateCarVideos(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
 
@@ -462,7 +457,7 @@ func (h *UserHandler) CreateCarVideos(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.UserService.CreateCarVideos(ctx, id, path)
+	data := h.UserService.CreateCarVideos(c.Context(), id, path)
 	return utils.FiberResponse(c, data)
 }
 
@@ -482,7 +477,7 @@ func (h *UserHandler) CreateCarVideos(c *fiber.Ctx) error {
 // @Failure      500     {object}  model.ResultMessage
 // @Router       /api/v1/users/messages/files [post]
 func (h *UserHandler) CreateMessageFile(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	senderID := c.Locals("id").(int)
 	form, _ := c.MultipartForm()
 
@@ -511,7 +506,7 @@ func (h *UserHandler) CreateMessageFile(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.UserService.CreateMessageFile(ctx, senderID, path)
+	data := h.UserService.CreateMessageFile(c.Context(), senderID, path)
 	return utils.FiberResponse(c, data)
 }
 
@@ -531,7 +526,7 @@ func (h *UserHandler) CreateMessageFile(c *fiber.Ctx) error {
 // @Router       /api/v1/users/cars/{car_id}/cancel [post]
 func (h *UserHandler) Cancel(c *fiber.Ctx) error {
 	// todo: delete images if exist
-	ctx := c.Context()
+
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
 
@@ -542,7 +537,7 @@ func (h *UserHandler) Cancel(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.UserService.Cancel(ctx, &id, "./images/cars/"+idStr)
+	data := h.UserService.Cancel(c.Context(), &id, "./images/cars/"+idStr)
 	return utils.FiberResponse(c, data)
 }
 
@@ -561,7 +556,7 @@ func (h *UserHandler) Cancel(c *fiber.Ctx) error {
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/cars/{car_id}/dont-sell [post]
 func (h *UserHandler) DontSell(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	idStr := c.Params("id")
 	userID := c.Locals("id").(int)
 	id, err := strconv.Atoi(idStr)
@@ -573,7 +568,7 @@ func (h *UserHandler) DontSell(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.UserService.DontSell(ctx, &id, &userID)
+	data := h.UserService.DontSell(c.Context(), &id, &userID)
 	return utils.FiberResponse(c, data)
 }
 
@@ -593,7 +588,7 @@ func (h *UserHandler) DontSell(c *fiber.Ctx) error {
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/cars/{car_id}/sell [post]
 func (h *UserHandler) Sell(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	idStr := c.Params("id")
 	userID := c.Locals("id").(int)
 	id, err := strconv.Atoi(idStr)
@@ -605,7 +600,7 @@ func (h *UserHandler) Sell(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.UserService.Sell(ctx, &id, &userID)
+	data := h.UserService.Sell(c.Context(), &id, &userID)
 	return utils.FiberResponse(c, data)
 }
 
@@ -652,9 +647,8 @@ func (h *UserHandler) DeleteCarImage(c *fiber.Ctx) error {
 		})
 	}
 
-	ctx := c.Context()
 	// Remove from DB
-	resp := h.UserService.DeleteCarImage(ctx, carID, req.Image)
+	resp := h.UserService.DeleteCarImage(c.Context(), carID, req.Image)
 
 	if resp.Error == nil {
 		// Remove from disk (ignore error, as file may not exist)
@@ -706,9 +700,8 @@ func (h *UserHandler) DeleteCarVideo(c *fiber.Ctx) error {
 		})
 	}
 
-	ctx := c.Context()
 	// Remove from DB
-	resp := h.UserService.DeleteCarVideo(ctx, carID, video.Video)
+	resp := h.UserService.DeleteCarVideo(c.Context(), carID, video.Video)
 
 	if resp.Error == nil {
 		// pkg.RemoveFile(req.Video[:5]) // use it if have car's multiple videos
@@ -733,7 +726,7 @@ func (h *UserHandler) DeleteCarVideo(c *fiber.Ctx) error {
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/cars/{car_id} [delete]
 func (h *UserHandler) DeleteCar(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
 
@@ -744,7 +737,7 @@ func (h *UserHandler) DeleteCar(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.UserService.DeleteCar(ctx, &id, "/images/cars/"+idStr)
+	data := h.UserService.DeleteCar(c.Context(), &id, "/images/cars/"+idStr)
 	return utils.FiberResponse(c, data)
 }
 
@@ -765,8 +758,8 @@ func (h *UserHandler) DeleteCar(c *fiber.Ctx) error {
 func (h *UserHandler) GetBrands(c *fiber.Ctx) error {
 	text := c.Query("text")
 	nameColumn := c.Locals("lang").(string)
-	ctx := c.Context()
-	data := h.UserService.GetBrands(ctx, text, nameColumn)
+
+	data := h.UserService.GetBrands(c.Context(), text, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -787,8 +780,8 @@ func (h *UserHandler) GetBrands(c *fiber.Ctx) error {
 func (h *UserHandler) GetFilterBrands(c *fiber.Ctx) error {
 	text := c.Query("text")
 	nameColumn := c.Locals("lang").(string)
-	ctx := c.Context()
-	data := h.UserService.GetFilterBrands(ctx, text, nameColumn)
+
+	data := h.UserService.GetFilterBrands(c.Context(), text, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -808,9 +801,9 @@ func (h *UserHandler) GetFilterBrands(c *fiber.Ctx) error {
 // @Router       /api/v1/users/cities [get]
 func (h *UserHandler) GetCities(c *fiber.Ctx) error {
 	text := c.Query("text")
-	ctx := c.Context()
+
 	nameColumn := c.Locals("lang").(string)
-	data := h.UserService.GetCities(ctx, text, nameColumn)
+	data := h.UserService.GetCities(c.Context(), text, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -842,8 +835,7 @@ func (h *UserHandler) GetModelsByBrandID(c *fiber.Ctx) error {
 		})
 	}
 
-	ctx := c.Context()
-	data := h.UserService.GetModelsByBrandID(ctx, brandIDInt, text, nameColumn)
+	data := h.UserService.GetModelsByBrandID(c.Context(), brandIDInt, text, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -875,8 +867,7 @@ func (h *UserHandler) GetFilterModelsByBrandID(c *fiber.Ctx) error {
 		})
 	}
 
-	ctx := c.Context()
-	data := h.UserService.GetFilterModelsByBrandID(ctx, brandIDInt, text, nameColumn)
+	data := h.UserService.GetFilterModelsByBrandID(c.Context(), brandIDInt, text, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -918,8 +909,7 @@ func (h *UserHandler) GetGenerationsByModelID(c *fiber.Ctx) error {
 		})
 	}
 
-	ctx := c.Context()
-	data := h.UserService.GetGenerationsByModelID(ctx, modelIDInt, wheel, year, bodyTypeID, nameColumn)
+	data := h.UserService.GetGenerationsByModelID(c.Context(), modelIDInt, wheel, year, bodyTypeID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -948,8 +938,7 @@ func (h *UserHandler) GetGenerationsByModels(c *fiber.Ctx) error {
 		})
 	}
 
-	ctx := c.Context()
-	data := h.UserService.GetGenerationsByModels(ctx, models, nameColumn)
+	data := h.UserService.GetGenerationsByModels(c.Context(), models, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -984,8 +973,7 @@ func (h *UserHandler) GetYearsByModelID(c *fiber.Ctx) error {
 		})
 	}
 
-	ctx := c.Context()
-	data := h.UserService.GetYearsByModelID(ctx, modelIDInt, wheel)
+	data := h.UserService.GetYearsByModelID(c.Context(), modelIDInt, wheel)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1025,8 +1013,7 @@ func (h *UserHandler) GetBodyTypesByModelID(c *fiber.Ctx) error {
 		})
 	}
 
-	ctx := c.Context()
-	data := h.UserService.GetBodysByModelID(ctx, modelIDInt, wheel, year, nameColumn)
+	data := h.UserService.GetBodysByModelID(c.Context(), modelIDInt, wheel, year, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1044,9 +1031,9 @@ func (h *UserHandler) GetBodyTypesByModelID(c *fiber.Ctx) error {
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/body-types [get]
 func (h *UserHandler) GetBodyTypes(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	nameColumn := c.Locals("lang").(string)
-	data := h.UserService.GetBodyTypes(ctx, nameColumn)
+	data := h.UserService.GetBodyTypes(c.Context(), nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1064,9 +1051,9 @@ func (h *UserHandler) GetBodyTypes(c *fiber.Ctx) error {
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/transmissions [get]
 func (h *UserHandler) GetTransmissions(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	nameColumn := c.Locals("lang").(string)
-	data := h.UserService.GetTransmissions(ctx, nameColumn)
+	data := h.UserService.GetTransmissions(c.Context(), nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1084,9 +1071,9 @@ func (h *UserHandler) GetTransmissions(c *fiber.Ctx) error {
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/engines [get]
 func (h *UserHandler) GetEngines(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	nameColumn := c.Locals("lang").(string)
-	data := h.UserService.GetEngines(ctx, nameColumn)
+	data := h.UserService.GetEngines(c.Context(), nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1104,9 +1091,9 @@ func (h *UserHandler) GetEngines(c *fiber.Ctx) error {
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/drivetrains [get]
 func (h *UserHandler) GetDrivetrains(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	nameColumn := c.Locals("lang").(string)
-	data := h.UserService.GetDrivetrains(ctx, nameColumn)
+	data := h.UserService.GetDrivetrains(c.Context(), nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1124,9 +1111,9 @@ func (h *UserHandler) GetDrivetrains(c *fiber.Ctx) error {
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/fuel-types [get]
 func (h *UserHandler) GetFuelTypes(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	nameColumn := c.Locals("lang").(string)
-	data := h.UserService.GetFuelTypes(ctx, nameColumn)
+	data := h.UserService.GetFuelTypes(c.Context(), nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1144,9 +1131,9 @@ func (h *UserHandler) GetFuelTypes(c *fiber.Ctx) error {
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/colors [get]
 func (h *UserHandler) GetColors(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	nameColumn := c.Locals("lang").(string)
-	data := h.UserService.GetColors(ctx, nameColumn)
+	data := h.UserService.GetColors(c.Context(), nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1164,9 +1151,9 @@ func (h *UserHandler) GetColors(c *fiber.Ctx) error {
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/countries [get]
 func (h *UserHandler) GetCountries(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	nameColumn := c.Locals("lang").(string)
-	data := h.UserService.GetCountries(ctx, nameColumn)
+	data := h.UserService.GetCountries(c.Context(), nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1185,10 +1172,10 @@ func (h *UserHandler) GetCountries(c *fiber.Ctx) error {
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/home [get]
 func (h *UserHandler) GetHome(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	userID := c.Locals("id").(int)
 	nameColumn := c.Locals("lang").(string)
-	data := h.UserService.GetHome(ctx, userID, nameColumn)
+	data := h.UserService.GetHome(c.Context(), userID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1208,10 +1195,10 @@ func (h *UserHandler) GetHome(c *fiber.Ctx) error {
 // @Router       /api/v1/users/likes [get]
 func (h *UserHandler) Likes(c *fiber.Ctx) error {
 	// todo: delete images if exist
-	ctx := c.Context()
+
 	userID := c.Locals("id").(int)
 	nameColumn := c.Locals("lang").(string)
-	data := h.UserService.Likes(ctx, &userID, nameColumn)
+	data := h.UserService.Likes(c.Context(), &userID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1231,7 +1218,7 @@ func (h *UserHandler) Likes(c *fiber.Ctx) error {
 // @Router       /api/v1/users/likes/{car_id} [post]
 func (h *UserHandler) CarLike(c *fiber.Ctx) error {
 	// todo: delete images if exist
-	ctx := c.Context()
+
 	idStr := c.Params("car_id")
 	carID, err := strconv.Atoi(idStr)
 
@@ -1251,7 +1238,7 @@ func (h *UserHandler) CarLike(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.UserService.CarLike(ctx, &carID, &userID)
+	data := h.UserService.CarLike(c.Context(), &carID, &userID)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1271,7 +1258,7 @@ func (h *UserHandler) CarLike(c *fiber.Ctx) error {
 // @Router       /api/v1/users/likes/{car_id} [delete]
 func (h *UserHandler) RemoveLike(c *fiber.Ctx) error {
 	// todo: delete images if exist
-	ctx := c.Context()
+
 	idStr := c.Params("car_id")
 	carID, err := strconv.Atoi(idStr)
 
@@ -1284,7 +1271,7 @@ func (h *UserHandler) RemoveLike(c *fiber.Ctx) error {
 
 	userID := c.Locals("id").(int)
 
-	data := h.UserService.RemoveLike(ctx, &carID, &userID)
+	data := h.UserService.RemoveLike(c.Context(), &carID, &userID)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1305,12 +1292,12 @@ func (h *UserHandler) RemoveLike(c *fiber.Ctx) error {
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/profile/my-cars [get]
 func (h *UserHandler) GetMyCars(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	limit := c.Query("limit")
 	lastID := c.Query("last_id")
 	userID := c.Locals("id").(int)
 	nameColumn := c.Locals("lang").(string)
-	data := h.UserService.GetMyCars(ctx, userID, limit, lastID, nameColumn)
+	data := h.UserService.GetMyCars(c.Context(), userID, limit, lastID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1331,12 +1318,12 @@ func (h *UserHandler) GetMyCars(c *fiber.Ctx) error {
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/profile/on-sale [get]
 func (h *UserHandler) OnSale(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	limit := c.Query("limit")
 	lastID := c.Query("last_id")
 	userID := c.Locals("id").(int)
 	nameColumn := c.Locals("lang").(string)
-	data := h.UserService.OnSale(ctx, userID, limit, lastID, nameColumn)
+	data := h.UserService.OnSale(c.Context(), userID, limit, lastID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1354,10 +1341,10 @@ func (h *UserHandler) OnSale(c *fiber.Ctx) error {
 // @Failure      500   {object}  model.ResultMessage
 // @Router       /api/v1/users/profile [get]
 func (h *UserHandler) GetProfile(c *fiber.Ctx) error {
-	ctx := c.Context()
+
 	userID := c.Locals("id").(int)
 	nameColumn := c.Locals("lang").(string)
-	data := h.UserService.GetProfile(ctx, userID, nameColumn)
+	data := h.UserService.GetProfile(c.Context(), userID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1380,7 +1367,6 @@ func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
 	// todo: add city
 	var profile model.UpdateProfileRequest
 	userID := c.Locals("id").(int)
-	ctx := c.Context()
 
 	if err := c.BodyParser(&profile); err != nil {
 		return utils.FiberResponse(c, model.Response{
@@ -1396,7 +1382,7 @@ func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.UserService.UpdateProfile(ctx, userID, &profile)
+	data := h.UserService.UpdateProfile(c.Context(), userID, &profile)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1417,9 +1403,9 @@ func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
 // @Router       /api/v1/users/{id} [get]
 func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
 	userID := c.Params("id")
-	ctx := c.Context()
+
 	nameColumn := c.Locals("lang").(string)
-	data := h.UserService.GetUserByID(ctx, userID, nameColumn)
+	data := h.UserService.GetUserByID(c.Context(), userID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1445,8 +1431,8 @@ func (h *UserHandler) GetThirdPartyUsers(c *fiber.Ctx) error {
 	toID := c.Query("to_id")
 	roleID := c.Query("role_id")
 	search := c.Query("search")
-	ctx := c.Context()
-	data := h.UserService.GetThirdPartyUsers(ctx, roleID, fromID, toID, search)
+
+	data := h.UserService.GetThirdPartyUsers(c.Context(), roleID, fromID, toID, search)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1468,7 +1454,6 @@ func (h *UserHandler) GetThirdPartyUsers(c *fiber.Ctx) error {
 func (h *UserHandler) CreateReport(c *fiber.Ctx) error {
 	var report model.CreateReportRequest
 	userID := c.Locals("id").(int)
-	ctx := c.Context()
 
 	if err := c.BodyParser(&report); err != nil {
 		return utils.FiberResponse(c, model.Response{
@@ -1484,7 +1469,7 @@ func (h *UserHandler) CreateReport(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.UserService.CreateReport(ctx, &report, userID)
+	data := h.UserService.CreateReport(c.Context(), &report, userID)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1503,7 +1488,7 @@ func (h *UserHandler) CreateReport(c *fiber.Ctx) error {
 // @Router       /api/v1/users/reports [get]
 func (h *UserHandler) GetReports(c *fiber.Ctx) error {
 	userID := c.Locals("id").(int)
-	ctx := c.Context()
-	data := h.UserService.GetReports(ctx, userID)
+
+	data := h.UserService.GetReports(c.Context(), userID)
 	return utils.FiberResponse(c, data)
 }

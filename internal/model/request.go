@@ -18,6 +18,8 @@ type UpdateUserRequest struct {
 	Username    string   `json:"username" validate:"omitempty,min=2,max=255"`
 	Email       string   `json:"email" validate:"omitempty,email"`
 	Password    string   `json:"password" validate:"omitempty,min=8"`
+	Status      int      `json:"status" validate:"omitempty,min=1,max=3"`
+	RoleID      int      `json:"role_id" default:"1"`
 	Permissions []string `json:"permissions" validate:"omitempty"`
 }
 

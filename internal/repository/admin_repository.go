@@ -42,8 +42,7 @@ func (r *AdminRepository) GetUsers(ctx *fasthttp.RequestCtx) ([]model.UserRespon
 			status, 
 			created_at::text, 
 			updated_at::text
-		FROM users 
-		WHERE role_id = 0
+		FROM users
 		ORDER BY id DESC
 	`
 	rows, err := r.db.Query(ctx, q)
@@ -100,6 +99,18 @@ func (r *AdminRepository) UpdateUser(ctx *fasthttp.RequestCtx, id int, req *mode
 	if req.Password != "" {
 		updates = append(updates, fmt.Sprintf("password = $%d", argPos))
 		args = append(args, req.Password)
+		argPos++
+	}
+
+	if req.Status != 0 {
+		updates = append(updates, fmt.Sprintf("status = $%d", argPos))
+		args = append(args, req.Status)
+		argPos++
+	}
+
+	if req.RoleID != 0 {
+		updates = append(updates, fmt.Sprintf("role_id = $%d", argPos))
+		args = append(args, req.RoleID)
 		argPos++
 	}
 
@@ -696,7 +707,7 @@ func (r *AdminRepository) GetBrands(ctx *fasthttp.RequestCtx) ([]model.AdminBran
 				name_ru,
 				name_ae,
 				$1 || logo, 
-				(SELECT COUNT(*) FROM models WHERE brand_id = brands.id) as model_count, 
+				model_count, 
 				popular, 
 				updated_at 
 			FROM brands 

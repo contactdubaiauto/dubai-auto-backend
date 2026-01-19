@@ -41,7 +41,7 @@ func (s *AdminService) CreateUser(ctx *fasthttp.RequestCtx, req *model.CreateUse
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
-	return model.Response{Data: model.SuccessWithId{Id: userID, Message: "Admin created successfully"}}
+	return model.Response{Data: model.SuccessWithId{Id: userID, Message: "User created successfully"}}
 }
 
 func (s *AdminService) GetUsers(ctx *fasthttp.RequestCtx) model.Response {
@@ -1618,8 +1618,14 @@ func (s *AdminService) GetReportByID(ctx *fasthttp.RequestCtx, id int) model.Res
 	return model.Response{Data: report}
 }
 
-func (s *AdminService) UpdateReport(ctx *fasthttp.RequestCtx, id int, req *model.UpdateReportRequest) model.Response {
-	err := s.repo.UpdateReport(ctx, id, req)
+func (s *AdminService) UpdateReport(ctx *fasthttp.RequestCtx, id string, req *model.UpdateReportRequest) model.Response {
+	idInt, err := strconv.Atoi(id)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusBadRequest}
+	}
+
+	err = s.repo.UpdateReport(ctx, idInt, req)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
@@ -1628,8 +1634,14 @@ func (s *AdminService) UpdateReport(ctx *fasthttp.RequestCtx, id int, req *model
 	return model.Response{Data: model.Success{Message: "Report updated successfully"}}
 }
 
-func (s *AdminService) DeleteReport(ctx *fasthttp.RequestCtx, id int) model.Response {
-	err := s.repo.DeleteReport(ctx, id)
+func (s *AdminService) DeleteReport(ctx *fasthttp.RequestCtx, id string) model.Response {
+	idInt, err := strconv.Atoi(id)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusBadRequest}
+	}
+
+	err = s.repo.DeleteReport(ctx, idInt)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}

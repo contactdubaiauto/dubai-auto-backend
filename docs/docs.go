@@ -19990,6 +19990,15 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "role_id": {
+                    "type": "integer",
+                    "default": 1
+                },
+                "status": {
+                    "type": "integer",
+                    "maximum": 3,
+                    "minimum": 1
+                },
                 "username": {
                     "type": "string",
                     "maxLength": 255,

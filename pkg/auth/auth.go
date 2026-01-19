@@ -9,6 +9,17 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+type UserRole int
+
+const (
+	UserRoleUser       UserRole = 1
+	UserRoleAdmin      UserRole = 100
+	UserRoleDealer     UserRole = 2
+	UserRoleLogist     UserRole = 3
+	UserRoleBroker     UserRole = 4
+	UserRoleCarService UserRole = 5
+)
+
 func TokenGuard(c *fiber.Ctx) error {
 	authorization := c.Get("Authorization")
 

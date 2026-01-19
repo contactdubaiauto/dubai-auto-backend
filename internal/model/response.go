@@ -260,7 +260,7 @@ type AdminProfileResponse struct {
 type UserResponse struct {
 	ID          int      `json:"id"`
 	Username    string   `json:"username"`
-	Email       string   `json:"email"`
+	Email       *string  `json:"email"`
 	Permissions []string `json:"permissions"`
 	Status      int      `json:"status"`
 	CreatedAt   string   `json:"created_at"`
