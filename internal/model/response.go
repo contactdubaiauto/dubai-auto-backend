@@ -257,6 +257,18 @@ type AdminProfileResponse struct {
 	ID          int      `json:"id"`
 }
 
+type AdminVehicleListItem struct {
+	Description *string `json:"description"`
+	Brand       *string `json:"brand"`
+	Model       *string `json:"model"`
+	UserPhone   *string `json:"user_phone"`
+	UserName    *string `json:"user_name"`
+	UserAvatar  *string `json:"user_avatar"`
+	Status      int     `json:"status"`
+	Price       int     `json:"price"`
+	ID          int     `json:"id"`
+}
+
 type UserResponse struct {
 	ID          int      `json:"id"`
 	Username    string   `json:"username"`

@@ -5,7 +5,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"dubai-auto/internal/config"
-	"dubai-auto/internal/delivery/http"
+	http "dubai-auto/internal/delivery/http/admin"
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/service"
 	"dubai-auto/pkg/auth"
@@ -32,6 +32,16 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, v
 		users.Post("/", adminHandler.CreateUser)
 		users.Put("/:id", adminHandler.UpdateUser)
 		users.Delete("/:id", adminHandler.DeleteUser)
+	}
+
+	// vehicles routes
+	vehicles := r.Group("/vehicles")
+	{
+		vehicles.Get("/", adminHandler.GetVehicles)
+		vehicles.Get("/:id", adminHandler.GetVehicle)
+		vehicles.Post("/", adminHandler.CreateVehicle)
+		vehicles.Put("/:id", adminHandler.UpdateVehicle)
+		vehicles.Delete("/:id", adminHandler.DeleteVehicle)
 	}
 
 	// countries routes

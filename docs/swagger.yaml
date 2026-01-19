@@ -248,6 +248,60 @@ definitions:
       name_ru:
         type: string
     type: object
+  model.AdminCreateVehicleRequest:
+    properties:
+      brand_id:
+        type: integer
+      city_id:
+        type: integer
+      color_id:
+        type: integer
+      crash:
+        type: boolean
+      description:
+        type: string
+      model_id:
+        type: integer
+      modification_id:
+        type: integer
+      new:
+        type: boolean
+      odometer:
+        type: integer
+      owners:
+        type: integer
+      phone_numbers:
+        items:
+          type: string
+        type: array
+      price:
+        type: integer
+      trade_in:
+        type: integer
+      user_id:
+        type: integer
+      vin_code:
+        type: string
+      wheel:
+        description: true left, false right
+        type: boolean
+      year:
+        type: integer
+    required:
+    - brand_id
+    - city_id
+    - color_id
+    - model_id
+    - modification_id
+    - odometer
+    - phone_numbers
+    - price
+    - trade_in
+    - user_id
+    - vin_code
+    - wheel
+    - year
+    type: object
   model.AdminDrivetrainResponse:
     properties:
       created_at:
@@ -506,6 +560,37 @@ definitions:
       name_ae:
         type: string
       name_ru:
+        type: string
+    type: object
+  model.AdminUpdateVehicleStatusRequest:
+    properties:
+      status:
+        description: 1-pending, 2-not sale, 3-on sale
+        maximum: 3
+        minimum: 1
+        type: integer
+    required:
+    - status
+    type: object
+  model.AdminVehicleListItem:
+    properties:
+      brand:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      model:
+        type: string
+      price:
+        type: integer
+      status:
+        type: integer
+      user_avatar:
+        type: string
+      user_name:
+        type: string
+      user_phone:
         type: string
     type: object
   model.BodyType:
@@ -2581,7 +2666,7 @@ definitions:
       username:
         type: string
     type: object
-host: api.mashynbazar.com
+host: localhost:8080
 info:
   contact: {}
   description: Project Description
@@ -8153,6 +8238,195 @@ paths:
       summary: Update a user
       tags:
       - admin-users
+  /api/v1/admin/vehicles:
+    get:
+      description: Returns a list of all vehicles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminVehicleListItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all vehicles
+      tags:
+      - admin-vehicles
+    post:
+      consumes:
+      - application/json
+      description: Creates a new vehicle
+      parameters:
+      - description: Vehicle
+        in: body
+        name: vehicle
+        required: true
+        schema:
+          $ref: '#/definitions/model.AdminCreateVehicleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a vehicle
+      tags:
+      - admin-vehicles
+  /api/v1/admin/vehicles/{id}:
+    delete:
+      description: Deletes a vehicle
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a vehicle
+      tags:
+      - admin-vehicles
+    get:
+      description: Returns a vehicle by ID
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetCarsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get a vehicle by ID
+      tags:
+      - admin-vehicles
+    put:
+      consumes:
+      - application/json
+      description: Updates a vehicle
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Vehicle
+        in: body
+        name: vehicle
+        required: true
+        schema:
+          $ref: '#/definitions/model.AdminUpdateVehicleStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a vehicle
+      tags:
+      - admin-vehicles
   /api/v1/auth/account/{id}:
     delete:
       description: Deletes the authenticated user's account and related data

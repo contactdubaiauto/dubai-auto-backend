@@ -23,6 +23,32 @@ type UpdateUserRequest struct {
 	Permissions []string `json:"permissions" validate:"omitempty"`
 }
 
+// Vehicles (admin) requests
+// NOTE: "vehicles" table is used for cars in this project.
+type AdminCreateVehicleRequest struct {
+	UserID         int      `json:"user_id" validate:"required"`
+	PhoneNumbers   []string `json:"phone_numbers" validate:"required"`
+	Wheel          *bool    `json:"wheel" validate:"required"` // true left, false right
+	Description    string   `json:"description"`
+	VinCode        string   `json:"vin_code" validate:"required"`
+	CityID         int      `json:"city_id" validate:"required"`
+	BrandID        int      `json:"brand_id" validate:"required"`
+	ModelID        int      `json:"model_id" validate:"required"`
+	ModificationID int      `json:"modification_id" validate:"required"`
+	Year           int      `json:"year" validate:"required"`
+	Odometer       int      `json:"odometer" validate:"required"`
+	Price          int      `json:"price" validate:"required"`
+	ColorID        int      `json:"color_id" validate:"required"`
+	Owners         int      `json:"owners"`
+	TradeIn        int      `json:"trade_in" validate:"required"`
+	New            bool     `json:"new"`
+	Crash          bool     `json:"crash"`
+}
+
+type AdminUpdateVehicleStatusRequest struct {
+	Status int `json:"status" validate:"required,min=1,max=3"` // 1-pending, 2-not sale, 3-on sale
+}
+
 type CreateNameRequest struct {
 	Name        string `json:"name" validate:"required,min=2,max=255"`
 	NameRu      string `json:"name_ru"`
