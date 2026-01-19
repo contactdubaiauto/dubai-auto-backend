@@ -12,12 +12,13 @@ import (
 type UserRole int
 
 const (
-	UserRoleUser       UserRole = 1
-	UserRoleAdmin      UserRole = 100
-	UserRoleDealer     UserRole = 2
-	UserRoleLogist     UserRole = 3
-	UserRoleBroker     UserRole = 4
-	UserRoleCarService UserRole = 5
+	ADMIN_ROLE       = 100
+	USER_ROLE        = 1
+	DEALER_ROLE      = 2
+	LOGIST_ROLE      = 3
+	BROKER_ROLE      = 4
+	CAR_SERVICE_ROLE = 5
+	ROLE_COUNT       = 5
 )
 
 func TokenGuard(c *fiber.Ctx) error {
@@ -151,7 +152,7 @@ func UserGuardOrDefault(c *fiber.Ctx) error {
 func AdminGuard(c *fiber.Ctx) error {
 	role, ok := c.Locals("role_id").(int)
 
-	if !ok || role != 100 {
+	if !ok || role != ADMIN_ROLE {
 		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: "token is invalid!xrt"})
 	}
 
@@ -161,7 +162,7 @@ func AdminGuard(c *fiber.Ctx) error {
 func DealerGuard(c *fiber.Ctx) error {
 	role, ok := c.Locals("role_id").(int)
 
-	if !ok || role != 2 {
+	if !ok || role != DEALER_ROLE {
 		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: "token is invalid!duio"})
 	}
 	return c.Next()
@@ -170,7 +171,7 @@ func DealerGuard(c *fiber.Ctx) error {
 func LogistGuard(c *fiber.Ctx) error {
 	role, ok := c.Locals("role_id").(int)
 
-	if !ok || role != 3 {
+	if !ok || role != LOGIST_ROLE {
 		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: "token is invalid!ppol"})
 	}
 	return c.Next()
@@ -179,7 +180,7 @@ func LogistGuard(c *fiber.Ctx) error {
 func BrokerGuard(c *fiber.Ctx) error {
 	role, ok := c.Locals("role_id").(int)
 
-	if !ok || role != 4 {
+	if !ok || role != BROKER_ROLE {
 		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: "token is invalid!mmdt"})
 	}
 	return c.Next()
@@ -188,7 +189,7 @@ func BrokerGuard(c *fiber.Ctx) error {
 func CarServiceGuard(c *fiber.Ctx) error {
 	role, ok := c.Locals("role_id").(int)
 
-	if !ok || role != 5 {
+	if !ok || role != CAR_SERVICE_ROLE {
 		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: "token is invalid!dxre"})
 	}
 	return c.Next()

@@ -239,7 +239,7 @@ func (s *AuthService) UserPhoneConfirmation(ctx *fasthttp.RequestCtx, user *mode
 func (s *AuthService) UserLoginEmail(ctx *fasthttp.RequestCtx, user *model.UserLoginEmail) model.Response {
 	otp := utils.RandomOTP()
 	username := utils.RandomUsername()
-	// for google play test
+	// for google play store testing
 	if user.Email == "berdalyyew99@gmail.com" {
 		otp = 123456
 	}
@@ -336,6 +336,7 @@ func (s *AuthService) UserResetPassword(ctx *fasthttp.RequestCtx, user *model.Us
 func (s *AuthService) ThirdPartyLogin(ctx *fasthttp.RequestCtx, user *model.ThirdPartyLoginReq) model.Response {
 	u, err := s.repo.ThirdPartyLogin(ctx, user.Email)
 
+	// this is for appStore and playStore testing
 	if user.Email == "danisultan2021@gmail.com" && user.Password == "123456" {
 		accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, u.RoleID)
 
@@ -375,7 +376,6 @@ func (s *AuthService) ThirdPartyLogin(ctx *fasthttp.RequestCtx, user *model.Thir
 }
 
 func (s *AuthService) UserLoginPhone(ctx *fasthttp.RequestCtx, user *model.UserLoginPhone) model.Response {
-	// otp := 123456
 	otp := utils.RandomOTP()
 	username := utils.RandomUsername()
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%d", otp)), bcrypt.DefaultCost)
@@ -427,7 +427,7 @@ func (s *AuthService) AdminLogin(ctx *fasthttp.RequestCtx, userReq *model.AdminL
 		}
 	}
 
-	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, 100)
+	accessToken, refreshToken := auth.CreateRefreshAccsessToken(u.ID, auth.ADMIN_ROLE)
 	return model.Response{
 		Data: model.LoginFiberResponse{
 			AccessToken:  accessToken,
