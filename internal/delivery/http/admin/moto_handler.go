@@ -65,34 +65,34 @@ func (h *AdminHandler) CreateMotoCategory(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
-// GetMotoBrandsByCategoryID godoc
-// @Summary      Get moto brands by category ID
-// @Description  Returns a list of all moto brands by category ID
-// @Tags         admin-moto-categories
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id   path      int  true  "Moto category ID"
-// @Success      200  {array}  model.AdminMotoBrandResponse
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/moto-categories/{id}/brands [get]
-func (h *AdminHandler) GetMotoBrandsByCategoryID(c *fiber.Ctx) error {
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
+// // GetMotoBrandsByCategoryID godoc
+// // @Summary      Get moto brands by category ID
+// // @Description  Returns a list of all moto brands by category ID
+// // @Tags         admin-moto-categories
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Moto category ID"
+// // @Success      200  {array}  model.AdminMotoBrandResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-categories/{id}/brands [get]
+// func (h *AdminHandler) GetMotoBrandsByCategoryID(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
 
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("moto category id must be integer"),
-		})
-	}
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto category id must be integer"),
+// 		})
+// 	}
 
-	ctx := c.Context()
-	data := h.service.GetMotoBrandsByCategoryID(ctx, id)
-	return utils.FiberResponse(c, data)
-}
+// 	ctx := c.Context()
+// 	data := h.service.GetMotoBrandsByCategoryID(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
 
 // UpdateMotoCategory godoc
 // @Summary      Update a moto category

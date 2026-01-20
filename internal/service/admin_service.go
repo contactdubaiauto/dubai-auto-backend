@@ -1024,13 +1024,13 @@ func (s *AdminService) CreateMotoCategory(ctx *fasthttp.RequestCtx, req *model.C
 	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto category created successfully"}}
 }
 
-func (s *AdminService) GetMotoBrandsByCategoryID(ctx *fasthttp.RequestCtx, id int) model.Response {
-	motoBrands, err := s.repo.GetMotoBrandsByCategoryID(ctx, id)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: motoBrands}
-}
+// func (s *AdminService) GetMotoBrandsByCategoryID(ctx *fasthttp.RequestCtx, id int) model.Response {
+// 	motoBrands, err := s.repo.GetMotoBrandsByCategoryID(ctx, id)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: motoBrands}
+// }
 
 func (s *AdminService) UpdateMotoCategory(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoCategoryRequest) model.Response {
 	err := s.repo.UpdateMotoCategory(ctx, id, req)
@@ -1164,105 +1164,105 @@ func (s *AdminService) DeleteMotoModel(ctx *fasthttp.RequestCtx, id int) model.R
 	return model.Response{Data: model.Success{Message: "Moto model deleted successfully"}}
 }
 
-// Moto Parameters service methods
-func (s *AdminService) GetMotoParameters(ctx *fasthttp.RequestCtx) model.Response {
-	motoParameters, err := s.repo.GetMotoParameters(ctx)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: motoParameters}
-}
+// // Moto Parameters service methods
+// func (s *AdminService) GetMotoParameters(ctx *fasthttp.RequestCtx) model.Response {
+// 	motoParameters, err := s.repo.GetMotoParameters(ctx)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: motoParameters}
+// }
 
-func (s *AdminService) CreateMotoParameter(ctx *fasthttp.RequestCtx, req *model.CreateMotoParameterRequest) model.Response {
-	id, err := s.repo.CreateMotoParameter(ctx, req)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto parameter created successfully"}}
-}
+// func (s *AdminService) CreateMotoParameter(ctx *fasthttp.RequestCtx, req *model.CreateMotoParameterRequest) model.Response {
+// 	id, err := s.repo.CreateMotoParameter(ctx, req)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto parameter created successfully"}}
+// }
 
-func (s *AdminService) UpdateMotoParameter(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoParameterRequest) model.Response {
-	err := s.repo.UpdateMotoParameter(ctx, id, req)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Moto parameter updated successfully"}}
-}
+// func (s *AdminService) UpdateMotoParameter(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoParameterRequest) model.Response {
+// 	err := s.repo.UpdateMotoParameter(ctx, id, req)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.Success{Message: "Moto parameter updated successfully"}}
+// }
 
-func (s *AdminService) DeleteMotoParameter(ctx *fasthttp.RequestCtx, id int) model.Response {
-	err := s.repo.DeleteMotoParameter(ctx, id)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Moto parameter deleted successfully"}}
-}
+// func (s *AdminService) DeleteMotoParameter(ctx *fasthttp.RequestCtx, id int) model.Response {
+// 	err := s.repo.DeleteMotoParameter(ctx, id)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.Success{Message: "Moto parameter deleted successfully"}}
+// }
 
-// Moto Parameter Values service methods
-func (s *AdminService) GetMotoParameterValues(ctx *fasthttp.RequestCtx, motoParamId int) model.Response {
-	motoParameterValues, err := s.repo.GetMotoParameterValues(ctx, motoParamId)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: motoParameterValues}
-}
+// // Moto Parameter Values service methods
+// func (s *AdminService) GetMotoParameterValues(ctx *fasthttp.RequestCtx, motoParamId int) model.Response {
+// 	motoParameterValues, err := s.repo.GetMotoParameterValues(ctx, motoParamId)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: motoParameterValues}
+// }
 
-func (s *AdminService) CreateMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, req *model.CreateMotoParameterValueRequest) model.Response {
-	id, err := s.repo.CreateMotoParameterValue(ctx, motoParamId, req)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto parameter value created successfully"}}
-}
+// func (s *AdminService) CreateMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, req *model.CreateMotoParameterValueRequest) model.Response {
+// 	id, err := s.repo.CreateMotoParameterValue(ctx, motoParamId, req)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto parameter value created successfully"}}
+// }
 
-func (s *AdminService) UpdateMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, id int, req *model.UpdateMotoParameterValueRequest) model.Response {
-	err := s.repo.UpdateMotoParameterValue(ctx, motoParamId, id, req)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Moto parameter value updated successfully"}}
-}
+// func (s *AdminService) UpdateMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, id int, req *model.UpdateMotoParameterValueRequest) model.Response {
+// 	err := s.repo.UpdateMotoParameterValue(ctx, motoParamId, id, req)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.Success{Message: "Moto parameter value updated successfully"}}
+// }
 
-func (s *AdminService) DeleteMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, id int) model.Response {
-	err := s.repo.DeleteMotoParameterValue(ctx, motoParamId, id)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Moto parameter value deleted successfully"}}
-}
+// func (s *AdminService) DeleteMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, id int) model.Response {
+// 	err := s.repo.DeleteMotoParameterValue(ctx, motoParamId, id)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.Success{Message: "Moto parameter value deleted successfully"}}
+// }
 
-// Moto Category Parameters service methods
-func (s *AdminService) GetMotoCategoryParameters(ctx *fasthttp.RequestCtx, categoryId int) model.Response {
-	motoCategoryParameters, err := s.repo.GetMotoCategoryParameters(ctx, categoryId)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: motoCategoryParameters}
-}
+// // Moto Category Parameters service methods
+// func (s *AdminService) GetMotoCategoryParameters(ctx *fasthttp.RequestCtx, categoryId int) model.Response {
+// 	motoCategoryParameters, err := s.repo.GetMotoCategoryParameters(ctx, categoryId)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: motoCategoryParameters}
+// }
 
-func (s *AdminService) CreateMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, req *model.CreateMotoCategoryParameterRequest) model.Response {
-	parameterId, err := s.repo.CreateMotoCategoryParameter(ctx, categoryId, req)
+// func (s *AdminService) CreateMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, req *model.CreateMotoCategoryParameterRequest) model.Response {
+// 	parameterId, err := s.repo.CreateMotoCategoryParameter(ctx, categoryId, req)
 
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.SuccessWithId{Id: parameterId, Message: "Moto category parameter created successfully"}}
-}
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.SuccessWithId{Id: parameterId, Message: "Moto category parameter created successfully"}}
+// }
 
-func (s *AdminService) UpdateMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, parameterId int, req *model.UpdateMotoCategoryParameterRequest) model.Response {
-	err := s.repo.UpdateMotoCategoryParameter(ctx, categoryId, parameterId, req)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Moto category parameter updated successfully"}}
-}
+// func (s *AdminService) UpdateMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, parameterId int, req *model.UpdateMotoCategoryParameterRequest) model.Response {
+// 	err := s.repo.UpdateMotoCategoryParameter(ctx, categoryId, parameterId, req)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.Success{Message: "Moto category parameter updated successfully"}}
+// }
 
-func (s *AdminService) DeleteMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, parameterId int) model.Response {
-	err := s.repo.DeleteMotoCategoryParameter(ctx, categoryId, parameterId)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Moto category parameter deleted successfully"}}
-}
+// func (s *AdminService) DeleteMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, parameterId int) model.Response {
+// 	err := s.repo.DeleteMotoCategoryParameter(ctx, categoryId, parameterId)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.Success{Message: "Moto category parameter deleted successfully"}}
+// }
 
 // Comtrans Categories service methods
 func (s *AdminService) GetComtransCategories(ctx *fasthttp.RequestCtx) model.Response {
@@ -1421,104 +1421,104 @@ func (s *AdminService) DeleteComtransModel(ctx *fasthttp.RequestCtx, id int) mod
 	return model.Response{Data: model.Success{Message: "Comtrans model deleted successfully"}}
 }
 
-// Comtrans Parameters service methods
-func (s *AdminService) GetComtransParameters(ctx *fasthttp.RequestCtx) model.Response {
-	comtransParameters, err := s.repo.GetComtransParameters(ctx)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: comtransParameters}
-}
+// // Comtrans Parameters service methods
+// func (s *AdminService) GetComtransParameters(ctx *fasthttp.RequestCtx) model.Response {
+// 	comtransParameters, err := s.repo.GetComtransParameters(ctx)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: comtransParameters}
+// }
 
-func (s *AdminService) CreateComtransParameter(ctx *fasthttp.RequestCtx, req *model.CreateComtransParameterRequest) model.Response {
-	id, err := s.repo.CreateComtransParameter(ctx, req)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans parameter created successfully"}}
-}
+// func (s *AdminService) CreateComtransParameter(ctx *fasthttp.RequestCtx, req *model.CreateComtransParameterRequest) model.Response {
+// 	id, err := s.repo.CreateComtransParameter(ctx, req)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans parameter created successfully"}}
+// }
 
-func (s *AdminService) UpdateComtransParameter(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransParameterRequest) model.Response {
-	err := s.repo.UpdateComtransParameter(ctx, id, req)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Comtrans parameter updated successfully"}}
-}
+// func (s *AdminService) UpdateComtransParameter(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransParameterRequest) model.Response {
+// 	err := s.repo.UpdateComtransParameter(ctx, id, req)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.Success{Message: "Comtrans parameter updated successfully"}}
+// }
 
-func (s *AdminService) DeleteComtransParameter(ctx *fasthttp.RequestCtx, id int) model.Response {
-	err := s.repo.DeleteComtransParameter(ctx, id)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Comtrans parameter deleted successfully"}}
-}
+// func (s *AdminService) DeleteComtransParameter(ctx *fasthttp.RequestCtx, id int) model.Response {
+// 	err := s.repo.DeleteComtransParameter(ctx, id)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.Success{Message: "Comtrans parameter deleted successfully"}}
+// }
 
-// Comtrans Parameter Values service methods
-func (s *AdminService) GetComtransParameterValues(ctx *fasthttp.RequestCtx, parameterId int) model.Response {
-	comtransParameterValues, err := s.repo.GetComtransParameterValues(ctx, parameterId)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: comtransParameterValues}
-}
+// // Comtrans Parameter Values service methods
+// func (s *AdminService) GetComtransParameterValues(ctx *fasthttp.RequestCtx, parameterId int) model.Response {
+// 	comtransParameterValues, err := s.repo.GetComtransParameterValues(ctx, parameterId)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: comtransParameterValues}
+// }
 
-func (s *AdminService) CreateComtransParameterValue(ctx *fasthttp.RequestCtx, parameterId int, req *model.CreateComtransParameterValueRequest) model.Response {
-	id, err := s.repo.CreateComtransParameterValue(ctx, parameterId, req)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans parameter value created successfully"}}
-}
+// func (s *AdminService) CreateComtransParameterValue(ctx *fasthttp.RequestCtx, parameterId int, req *model.CreateComtransParameterValueRequest) model.Response {
+// 	id, err := s.repo.CreateComtransParameterValue(ctx, parameterId, req)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans parameter value created successfully"}}
+// }
 
-func (s *AdminService) UpdateComtransParameterValue(ctx *fasthttp.RequestCtx, parameterId int, id int, req *model.UpdateComtransParameterValueRequest) model.Response {
-	err := s.repo.UpdateComtransParameterValue(ctx, parameterId, id, req)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Comtrans parameter value updated successfully"}}
-}
+// func (s *AdminService) UpdateComtransParameterValue(ctx *fasthttp.RequestCtx, parameterId int, id int, req *model.UpdateComtransParameterValueRequest) model.Response {
+// 	err := s.repo.UpdateComtransParameterValue(ctx, parameterId, id, req)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.Success{Message: "Comtrans parameter value updated successfully"}}
+// }
 
-func (s *AdminService) DeleteComtransParameterValue(ctx *fasthttp.RequestCtx, parameterId int, id int) model.Response {
-	err := s.repo.DeleteComtransParameterValue(ctx, parameterId, id)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Comtrans parameter value deleted successfully"}}
-}
+// func (s *AdminService) DeleteComtransParameterValue(ctx *fasthttp.RequestCtx, parameterId int, id int) model.Response {
+// 	err := s.repo.DeleteComtransParameterValue(ctx, parameterId, id)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.Success{Message: "Comtrans parameter value deleted successfully"}}
+// }
 
-// Comtrans Category Parameters service methods
-func (s *AdminService) GetComtransCategoryParameters(ctx *fasthttp.RequestCtx, categoryId int) model.Response {
-	comtransCategoryParameters, err := s.repo.GetComtransCategoryParameters(ctx, categoryId)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: comtransCategoryParameters}
-}
+// // Comtrans Category Parameters service methods
+// func (s *AdminService) GetComtransCategoryParameters(ctx *fasthttp.RequestCtx, categoryId int) model.Response {
+// 	comtransCategoryParameters, err := s.repo.GetComtransCategoryParameters(ctx, categoryId)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: comtransCategoryParameters}
+// }
 
-func (s *AdminService) CreateComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, req *model.CreateComtransCategoryParameterRequest) model.Response {
-	id, err := s.repo.CreateComtransCategoryParameter(ctx, categoryId, req)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans category parameter created successfully"}}
-}
+// func (s *AdminService) CreateComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, req *model.CreateComtransCategoryParameterRequest) model.Response {
+// 	id, err := s.repo.CreateComtransCategoryParameter(ctx, categoryId, req)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans category parameter created successfully"}}
+// }
 
-func (s *AdminService) UpdateComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, id int, req *model.UpdateComtransCategoryParameterRequest) model.Response {
-	err := s.repo.UpdateComtransCategoryParameter(ctx, categoryId, id, req)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Comtrans category parameter updated successfully"}}
-}
+// func (s *AdminService) UpdateComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, id int, req *model.UpdateComtransCategoryParameterRequest) model.Response {
+// 	err := s.repo.UpdateComtransCategoryParameter(ctx, categoryId, id, req)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.Success{Message: "Comtrans category parameter updated successfully"}}
+// }
 
-func (s *AdminService) DeleteComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, id int) model.Response {
-	err := s.repo.DeleteComtransCategoryParameter(ctx, categoryId, id)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: model.Success{Message: "Comtrans category parameter deleted successfully"}}
-}
+// func (s *AdminService) DeleteComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, id int) model.Response {
+// 	err := s.repo.DeleteComtransCategoryParameter(ctx, categoryId, id)
+// 	if err != nil {
+// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
+// 	}
+// 	return model.Response{Data: model.Success{Message: "Comtrans category parameter deleted successfully"}}
+// }
 
 // Countries service methods
 func (s *AdminService) GetCountries(ctx *fasthttp.RequestCtx) model.Response {

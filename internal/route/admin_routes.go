@@ -180,7 +180,6 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, v
 	motoCategories := r.Group("/moto-categories")
 	{
 		motoCategories.Get("/", adminHandler.GetMotoCategories)
-		motoCategories.Get("/:id/brands", adminHandler.GetMotoBrandsByCategoryID)
 		motoCategories.Post("/", adminHandler.CreateMotoCategory)
 		motoCategories.Put("/:id", adminHandler.UpdateMotoCategory)
 		motoCategories.Delete("/:id", adminHandler.DeleteMotoCategory)

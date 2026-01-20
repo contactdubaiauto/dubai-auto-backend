@@ -231,17 +231,15 @@ type UpdateMotoCategoryRequest struct {
 
 // Moto Brand requests
 type CreateMotoBrandRequest struct {
-	Name           string `json:"name" validate:"required,min=2,max=100"`
-	NameRu         string `json:"name_ru"`
-	NameAe         string `json:"name_ae"`
-	MotoCategoryID int    `json:"moto_category_id" validate:"required"`
+	Name   string `json:"name" validate:"required,min=2,max=100"`
+	NameRu string `json:"name_ru"`
+	NameAe string `json:"name_ae"`
 }
 
 type UpdateMotoBrandRequest struct {
-	Name           string `json:"name" validate:"required,min=2,max=100"`
-	NameRu         string `json:"name_ru"`
-	NameAe         string `json:"name_ae"`
-	MotoCategoryID int    `json:"moto_category_id" validate:"required"`
+	Name   string `json:"name" validate:"required,min=2,max=100"`
+	NameRu string `json:"name_ru"`
+	NameAe string `json:"name_ae"`
 }
 
 // Moto Model requests

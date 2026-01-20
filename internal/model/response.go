@@ -489,15 +489,12 @@ type AdminMotoCategoryResponse struct {
 }
 
 type AdminMotoBrandResponse struct {
-	CreatedAt          time.Time `json:"created_at"`
-	Name               string    `json:"name"`
-	NameRu             string    `json:"name_ru"`
-	NameAe             string    `json:"name_ae"`
-	Image              string    `json:"image"`
-	MotoCategoryName   string    `json:"moto_category_name"`
-	MotoCategoryNameRu string    `json:"moto_category_name_ru"`
-	ID                 int       `json:"id"`
-	MotoCategoryID     int       `json:"moto_category_id"`
+	CreatedAt time.Time `json:"created_at"`
+	Name      string    `json:"name"`
+	NameRu    string    `json:"name_ru"`
+	NameAe    string    `json:"name_ae"`
+	Image     string    `json:"image"`
+	ID        int       `json:"id"`
 }
 
 type AdminMotoModelResponse struct {
@@ -511,16 +508,16 @@ type AdminMotoModelResponse struct {
 	MotoBrandID     int       `json:"moto_brand_id"`
 }
 
-type AdminMotoParameterResponse struct {
-	CreatedAt          time.Time `json:"created_at"`
-	Name               string    `json:"name"`
-	NameRu             string    `json:"name_ru"`
-	NameAe             string    `json:"name_ae"`
-	MotoCategoryName   string    `json:"moto_category_name"`
-	MotoCategoryNameRu string    `json:"moto_category_name_ru"`
-	ID                 int       `json:"id"`
-	MotoCategoryID     int       `json:"moto_category_id"`
-}
+// type AdminMotoParameterResponse struct {
+// 	CreatedAt          time.Time `json:"created_at"`
+// 	Name               string    `json:"name"`
+// 	NameRu             string    `json:"name_ru"`
+// 	NameAe             string    `json:"name_ae"`
+// 	MotoCategoryName   string    `json:"moto_category_name"`
+// 	MotoCategoryNameRu string    `json:"moto_category_name_ru"`
+// 	ID                 int       `json:"id"`
+// 	MotoCategoryID     int       `json:"moto_category_id"`
+// }
 
 type AdminMotoParameterValueResponse struct {
 	CreatedAt       time.Time `json:"created_at"`

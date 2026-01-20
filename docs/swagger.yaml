@@ -150,21 +150,6 @@ definitions:
       name_ru:
         type: string
     type: object
-  model.AdminComtransCategoryParameterResponse:
-    properties:
-      comtrans_category_id:
-        type: integer
-      comtrans_parameter_id:
-        type: integer
-      comtrans_parameter_name:
-        type: string
-      comtrans_parameter_name_ru:
-        type: string
-      created_at:
-        type: string
-      id:
-        type: integer
-    type: object
   model.AdminComtransCategoryResponse:
     properties:
       created_at:
@@ -186,40 +171,6 @@ definitions:
         type: string
       comtrans_brand_name_ru:
         type: string
-      created_at:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      name_ae:
-        type: string
-      name_ru:
-        type: string
-    type: object
-  model.AdminComtransParameterResponse:
-    properties:
-      comtrans_category_id:
-        type: integer
-      comtrans_category_name:
-        type: string
-      comtrans_category_name_ru:
-        type: string
-      created_at:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      name_ae:
-        type: string
-      name_ru:
-        type: string
-    type: object
-  model.AdminComtransParameterValueResponse:
-    properties:
-      comtrans_parameter_id:
-        type: integer
       created_at:
         type: string
       id:
@@ -784,13 +735,6 @@ definitions:
     - comtrans_category_id
     - name
     type: object
-  model.CreateComtransCategoryParameterRequest:
-    properties:
-      comtrans_parameter_id:
-        type: integer
-    required:
-    - comtrans_parameter_id
-    type: object
   model.CreateComtransCategoryRequest:
     properties:
       name:
@@ -834,19 +778,6 @@ definitions:
         type: string
     required:
     - comtrans_category_id
-    - name
-    type: object
-  model.CreateComtransParameterValueRequest:
-    properties:
-      name:
-        maxLength: 100
-        minLength: 1
-        type: string
-      name_ae:
-        type: string
-      name_ru:
-        type: string
-    required:
     - name
     type: object
   model.CreateComtransRequest:
@@ -1044,8 +975,6 @@ definitions:
     type: object
   model.CreateMotoBrandRequest:
     properties:
-      moto_category_id:
-        type: integer
       name:
         maxLength: 100
         minLength: 2
@@ -1055,7 +984,6 @@ definitions:
       name_ru:
         type: string
     required:
-    - moto_category_id
     - name
     type: object
   model.CreateMotoCategoryRequest:
@@ -2126,13 +2054,6 @@ definitions:
     - comtrans_category_id
     - name
     type: object
-  model.UpdateComtransCategoryParameterRequest:
-    properties:
-      comtrans_parameter_id:
-        type: integer
-    required:
-    - comtrans_parameter_id
-    type: object
   model.UpdateComtransCategoryRequest:
     properties:
       name:
@@ -2160,35 +2081,6 @@ definitions:
         type: string
     required:
     - comtrans_brand_id
-    - name
-    type: object
-  model.UpdateComtransParameterRequest:
-    properties:
-      comtrans_category_id:
-        type: integer
-      name:
-        maxLength: 100
-        minLength: 2
-        type: string
-      name_ae:
-        type: string
-      name_ru:
-        type: string
-    required:
-    - comtrans_category_id
-    - name
-    type: object
-  model.UpdateComtransParameterValueRequest:
-    properties:
-      name:
-        maxLength: 100
-        minLength: 1
-        type: string
-      name_ae:
-        type: string
-      name_ru:
-        type: string
-    required:
     - name
     type: object
   model.UpdateGenerationModificationRequest:
@@ -2254,8 +2146,6 @@ definitions:
     type: object
   model.UpdateMotoBrandRequest:
     properties:
-      moto_category_id:
-        type: integer
       name:
         maxLength: 100
         minLength: 2
@@ -2265,7 +2155,6 @@ definitions:
       name_ru:
         type: string
     required:
-    - moto_category_id
     - name
     type: object
   model.UpdateMotoCategoryRequest:
@@ -4674,180 +4563,6 @@ paths:
       summary: Get comtrans brands by category ID
       tags:
       - admin-comtrans-brands
-  /api/v1/admin/comtrans-categories/{category_id}/parameters:
-    get:
-      description: Returns a list of comtrans category parameters for a specific category
-      parameters:
-      - description: Comtrans category ID
-        in: path
-        name: category_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.AdminComtransCategoryParameterResponse'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get comtrans category parameters
-      tags:
-      - admin-comtrans-category-parameters
-    post:
-      consumes:
-      - application/json
-      description: Creates a new comtrans category parameter
-      parameters:
-      - description: Comtrans category ID
-        in: path
-        name: category_id
-        required: true
-        type: integer
-      - description: Comtrans category parameter data
-        in: body
-        name: parameter
-        required: true
-        schema:
-          $ref: '#/definitions/model.CreateComtransCategoryParameterRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.SuccessWithId'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Create a comtrans category parameter
-      tags:
-      - admin-comtrans-category-parameters
-  /api/v1/admin/comtrans-categories/{category_id}/parameters/{id}:
-    delete:
-      description: Deletes a comtrans category parameter by ID
-      parameters:
-      - description: Comtrans category ID
-        in: path
-        name: category_id
-        required: true
-        type: integer
-      - description: Comtrans category parameter ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Delete a comtrans category parameter
-      tags:
-      - admin-comtrans-category-parameters
-    put:
-      consumes:
-      - application/json
-      description: Updates a comtrans category parameter by ID
-      parameters:
-      - description: Comtrans category ID
-        in: path
-        name: category_id
-        required: true
-        type: integer
-      - description: Comtrans category parameter ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Comtrans category parameter data
-        in: body
-        name: parameter
-        required: true
-        schema:
-          $ref: '#/definitions/model.UpdateComtransCategoryParameterRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Update a comtrans category parameter
-      tags:
-      - admin-comtrans-category-parameters
   /api/v1/admin/comtrans-categories/{id}:
     delete:
       description: Deletes a comtrans category by ID
@@ -5082,333 +4797,6 @@ paths:
       summary: Update a comtrans model
       tags:
       - admin-comtrans-models
-  /api/v1/admin/comtrans-parameters:
-    get:
-      description: Returns a list of all comtrans parameters
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.AdminComtransParameterResponse'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get all comtrans parameters
-      tags:
-      - admin-comtrans-parameters
-    post:
-      consumes:
-      - application/json
-      description: Creates a new comtrans parameter
-      parameters:
-      - description: Comtrans parameter data
-        in: body
-        name: comtransParameter
-        required: true
-        schema:
-          $ref: '#/definitions/model.CreateComtransParameterRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.SuccessWithId'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Create a comtrans parameter
-      tags:
-      - admin-comtrans-parameters
-  /api/v1/admin/comtrans-parameters/{id}:
-    delete:
-      description: Deletes a comtrans parameter by ID
-      parameters:
-      - description: Comtrans parameter ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Delete a comtrans parameter
-      tags:
-      - admin-comtrans-parameters
-    put:
-      consumes:
-      - application/json
-      description: Updates a comtrans parameter by ID
-      parameters:
-      - description: Comtrans parameter ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Comtrans parameter data
-        in: body
-        name: comtransParameter
-        required: true
-        schema:
-          $ref: '#/definitions/model.UpdateComtransParameterRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Update a comtrans parameter
-      tags:
-      - admin-comtrans-parameters
-  /api/v1/admin/comtrans-parameters/{parameter_id}/values:
-    get:
-      description: Returns a list of comtrans parameter values for a specific parameter
-      parameters:
-      - description: Comtrans parameter ID
-        in: path
-        name: parameter_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.AdminComtransParameterValueResponse'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get comtrans parameter values
-      tags:
-      - admin-comtrans-parameter-values
-    post:
-      consumes:
-      - application/json
-      description: Creates a new comtrans parameter value
-      parameters:
-      - description: Comtrans parameter ID
-        in: path
-        name: parameter_id
-        required: true
-        type: integer
-      - description: Comtrans parameter value data
-        in: body
-        name: parameterValue
-        required: true
-        schema:
-          $ref: '#/definitions/model.CreateComtransParameterValueRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.SuccessWithId'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Create a comtrans parameter value
-      tags:
-      - admin-comtrans-parameter-values
-  /api/v1/admin/comtrans-parameters/{parameter_id}/values/{id}:
-    delete:
-      description: Deletes a comtrans parameter value by ID
-      parameters:
-      - description: Comtrans parameter ID
-        in: path
-        name: parameter_id
-        required: true
-        type: integer
-      - description: Comtrans parameter value ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Delete a comtrans parameter value
-      tags:
-      - admin-comtrans-parameter-values
-    put:
-      consumes:
-      - application/json
-      description: Updates a comtrans parameter value by ID
-      parameters:
-      - description: Comtrans parameter ID
-        in: path
-        name: parameter_id
-        required: true
-        type: integer
-      - description: Comtrans parameter value ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Comtrans parameter value data
-        in: body
-        name: parameterValue
-        required: true
-        schema:
-          $ref: '#/definitions/model.UpdateComtransParameterValueRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Update a comtrans parameter value
-      tags:
-      - admin-comtrans-parameter-values
   /api/v1/admin/countries:
     get:
       description: Returns a list of all countries
