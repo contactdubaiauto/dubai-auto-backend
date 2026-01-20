@@ -457,19 +457,6 @@ definitions:
       name_ru:
         type: string
     type: object
-  model.AdminMotoCategoryParameterResponse:
-    properties:
-      created_at:
-        type: string
-      moto_category_id:
-        type: integer
-      moto_parameter_id:
-        type: integer
-      moto_parameter_name:
-        type: string
-      moto_parameter_name_ru:
-        type: string
-    type: object
   model.AdminMotoCategoryResponse:
     properties:
       created_at:
@@ -502,32 +489,11 @@ definitions:
       name_ru:
         type: string
     type: object
-  model.AdminMotoParameterResponse:
+  model.AdminNumberOfCycleResponse:
     properties:
       created_at:
         type: string
       id:
-        type: integer
-      moto_category_id:
-        type: integer
-      moto_category_name:
-        type: string
-      moto_category_name_ru:
-        type: string
-      name:
-        type: string
-      name_ae:
-        type: string
-      name_ru:
-        type: string
-    type: object
-  model.AdminMotoParameterValueResponse:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: integer
-      moto_parameter_id:
         type: integer
       name:
         type: string
@@ -1092,13 +1058,6 @@ definitions:
     - moto_category_id
     - name
     type: object
-  model.CreateMotoCategoryParameterRequest:
-    properties:
-      moto_parameter_id:
-        type: integer
-    required:
-    - moto_parameter_id
-    type: object
   model.CreateMotoCategoryRequest:
     properties:
       name:
@@ -1128,64 +1087,15 @@ definitions:
     - moto_brand_id
     - name
     type: object
-  model.CreateMotoParameterRequest:
-    properties:
-      moto_category_id:
-        type: integer
-      name:
-        maxLength: 100
-        minLength: 2
-        type: string
-      name_ae:
-        type: string
-      name_ru:
-        type: string
-    required:
-    - moto_category_id
-    - name
-    type: object
-  model.CreateMotoParameterValueRequest:
-    properties:
-      name:
-        maxLength: 100
-        minLength: 1
-        type: string
-      name_ae:
-        type: string
-      name_ru:
-        type: string
-    required:
-    - name
-    type: object
-  model.CreateMotorcycleParameterRequest:
-    properties:
-      parameter_id:
-        type: integer
-      value_id:
-        type: integer
-    required:
-    - parameter_id
-    - value_id
-    type: object
   model.CreateMotorcycleRequest:
     properties:
-      can_look_coordinate:
-        type: string
-      certificate:
-        type: string
       city_id:
         type: integer
       color_id:
         type: integer
-      contact_person:
-        type: string
       crash:
         type: boolean
-      date_of_purchase:
-        type: string
       description:
-        type: string
-      email:
         type: string
       engine:
         type: integer
@@ -1197,45 +1107,26 @@ definitions:
         type: string
       moto_model_id:
         type: string
-      not_cleared:
-        type: boolean
-      number_of_cycles:
+      number_of_cycles_id:
         type: integer
       odometer:
         type: integer
-      only_chat:
-        type: boolean
       owners:
         type: integer
-      parameters:
+      phone_numbers:
         items:
-          $ref: '#/definitions/model.CreateMotorcycleParameterRequest'
+          type: string
         type: array
-      phone_number:
-        type: string
       power:
         type: integer
       price:
         type: integer
-      price_type:
-        enum:
-        - USD
-        - AED
-        - RUB
-        - EUR
-        type: string
-      protect_spam:
-        type: boolean
-      ptc:
-        type: boolean
-      refuse_dealers_calls:
-        type: boolean
-      verified_buyers:
-        type: boolean
+      trade_in:
+        type: integer
       vin_code:
         type: string
-      warranty_date:
-        type: string
+      wheel:
+        type: boolean
       year:
         type: integer
     required:
@@ -1245,9 +1136,10 @@ definitions:
     - moto_brand_id
     - moto_category_id
     - moto_model_id
-    - phone_number
+    - number_of_cycles_id
+    - phone_numbers
     - price
-    - price_type
+    - trade_in
     - vin_code
     - year
     type: object
@@ -1257,6 +1149,19 @@ definitions:
         type: string
       name:
         maxLength: 255
+        minLength: 2
+        type: string
+      name_ae:
+        type: string
+      name_ru:
+        type: string
+    required:
+    - name
+    type: object
+  model.CreateNumberOfCycleRequest:
+    properties:
+      name:
+        maxLength: 100
         minLength: 2
         type: string
       name_ae:
@@ -1715,45 +1620,17 @@ definitions:
       name:
         type: string
     type: object
-  model.GetMotorcycleParameterValuesResponse:
-    properties:
-      id:
-        type: integer
-      name:
-        type: string
-    type: object
-  model.GetMotorcycleParametersResponse:
-    properties:
-      id:
-        type: integer
-      name:
-        type: string
-      values:
-        items:
-          $ref: '#/definitions/model.GetMotorcycleParameterValuesResponse'
-        type: array
-    type: object
   model.GetMotorcyclesResponse:
     properties:
-      can_look_coordinate:
-        type: string
-      certificate:
-        type: string
       city:
         type: string
       color:
-        type: string
-      contact_person:
         type: string
       crash:
         type: boolean
       created_at:
         type: string
-      date_of_purchase:
-        type: string
       description:
-        type: string
-      email:
         type: string
       engine:
         type: integer
@@ -1773,52 +1650,45 @@ definitions:
         type: string
       my_car:
         type: boolean
-      not_cleared:
-        type: boolean
       number_of_cycles:
-        type: integer
+        type: string
       odometer:
         type: integer
-      only_chat:
-        type: boolean
       owner:
         $ref: '#/definitions/model.MotorcycleOwner'
       owners:
         type: integer
-      parameters:
+      phone_numbers:
         items:
-          $ref: '#/definitions/model.MotorcycleParameter'
+          type: string
         type: array
-      phone_number:
-        type: string
       power:
         type: integer
       price:
         type: integer
-      price_type:
-        type: string
-      protect_spam:
-        type: boolean
-      ptc:
-        type: boolean
-      refuse_dealers_calls:
-        type: boolean
       status:
         type: string
+      trade_in:
+        type: integer
       updated_at:
         type: string
-      verified_buyers:
-        type: boolean
       videos:
         items:
           type: string
         type: array
       vin_code:
         type: string
-      warranty_date:
-        type: string
+      wheel:
+        type: boolean
       year:
         type: integer
+    type: object
+  model.GetNumberOfCyclesResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
     type: object
   model.GetPriceRecommendationResponse:
     properties:
@@ -1872,8 +1742,12 @@ definitions:
         type: integer
       report_type:
         type: string
+      reported_user:
+        $ref: '#/definitions/model.Owner'
       reported_user_id:
         type: integer
+      reporter:
+        $ref: '#/definitions/model.Owner'
     type: object
   model.Home:
     properties:
@@ -1947,17 +1821,6 @@ definitions:
         type: integer
       username:
         type: string
-    type: object
-  model.MotorcycleParameter:
-    properties:
-      parameter:
-        type: string
-      parameter_id:
-        type: integer
-      parameter_value:
-        type: string
-      parameter_value_id:
-        type: integer
     type: object
   model.Owner:
     properties:
@@ -2405,13 +2268,6 @@ definitions:
     - moto_category_id
     - name
     type: object
-  model.UpdateMotoCategoryParameterRequest:
-    properties:
-      moto_parameter_id:
-        type: integer
-    required:
-    - moto_parameter_id
-    type: object
   model.UpdateMotoCategoryRequest:
     properties:
       name:
@@ -2439,35 +2295,6 @@ definitions:
         type: string
     required:
     - moto_brand_id
-    - name
-    type: object
-  model.UpdateMotoParameterRequest:
-    properties:
-      moto_category_id:
-        type: integer
-      name:
-        maxLength: 100
-        minLength: 2
-        type: string
-      name_ae:
-        type: string
-      name_ru:
-        type: string
-    required:
-    - moto_category_id
-    - name
-    type: object
-  model.UpdateMotoParameterValueRequest:
-    properties:
-      name:
-        maxLength: 100
-        minLength: 1
-        type: string
-      name_ae:
-        type: string
-      name_ru:
-        type: string
-    required:
     - name
     type: object
   model.UpdateProfileRequest:
@@ -6917,180 +6744,6 @@ paths:
       summary: Create a moto category
       tags:
       - admin-moto-categories
-  /api/v1/admin/moto-categories/{category_id}/parameters:
-    get:
-      description: Returns a list of moto category parameters for a specific category
-      parameters:
-      - description: Moto category ID
-        in: path
-        name: category_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.AdminMotoCategoryParameterResponse'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get moto category parameters
-      tags:
-      - admin-moto-category-parameters
-    post:
-      consumes:
-      - application/json
-      description: Creates a new moto category parameter
-      parameters:
-      - description: Moto category ID
-        in: path
-        name: category_id
-        required: true
-        type: integer
-      - description: Moto category parameter data
-        in: body
-        name: parameter
-        required: true
-        schema:
-          $ref: '#/definitions/model.CreateMotoCategoryParameterRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.SuccessWithId'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Create a moto category parameter
-      tags:
-      - admin-moto-category-parameters
-  /api/v1/admin/moto-categories/{category_id}/parameters/{parameter_id}:
-    delete:
-      description: Deletes a moto category parameter by ID
-      parameters:
-      - description: Moto category ID
-        in: path
-        name: category_id
-        required: true
-        type: integer
-      - description: Moto parameter ID
-        in: path
-        name: parameter_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Delete a moto category parameter
-      tags:
-      - admin-moto-category-parameters
-    put:
-      consumes:
-      - application/json
-      description: Updates a moto category parameter by ID
-      parameters:
-      - description: Moto category ID
-        in: path
-        name: category_id
-        required: true
-        type: integer
-      - description: Moto parameter ID
-        in: path
-        name: parameter_id
-        required: true
-        type: integer
-      - description: Moto category parameter data
-        in: body
-        name: parameter
-        required: true
-        schema:
-          $ref: '#/definitions/model.UpdateMotoCategoryParameterRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Update a moto category parameter
-      tags:
-      - admin-moto-category-parameters
   /api/v1/admin/moto-categories/{id}:
     delete:
       description: Deletes a moto category by ID
@@ -7364,9 +7017,9 @@ paths:
       summary: Update a moto model
       tags:
       - admin-moto-models
-  /api/v1/admin/moto-parameters:
+  /api/v1/admin/number-of-cycles:
     get:
-      description: Returns a list of all moto parameters
+      description: Returns a list of all number of cycles
       produces:
       - application/json
       responses:
@@ -7374,7 +7027,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.AdminMotoParameterResponse'
+              $ref: '#/definitions/model.AdminNumberOfCycleResponse'
             type: array
         "400":
           description: Bad Request
@@ -7394,20 +7047,20 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       security:
       - BearerAuth: []
-      summary: Get all moto parameters
+      summary: Get all number of cycles
       tags:
-      - admin-moto-parameters
+      - admin-number-of-cycles
     post:
       consumes:
       - application/json
-      description: Creates a new moto parameter
+      description: Creates a new number of cycle
       parameters:
-      - description: Moto parameter data
+      - description: Number of cycle data
         in: body
-        name: motoParameter
+        name: number_of_cycle
         required: true
         schema:
-          $ref: '#/definitions/model.CreateMotoParameterRequest'
+          $ref: '#/definitions/model.CreateNumberOfCycleRequest'
       produces:
       - application/json
       responses:
@@ -7433,14 +7086,14 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       security:
       - BearerAuth: []
-      summary: Create a moto parameter
+      summary: Create a number of cycle
       tags:
-      - admin-moto-parameters
-  /api/v1/admin/moto-parameters/{id}:
+      - admin-number-of-cycles
+  /api/v1/admin/number-of-cycles/{id}:
     delete:
-      description: Deletes a moto parameter by ID
+      description: Deletes a number of cycle by ID
       parameters:
-      - description: Moto parameter ID
+      - description: Number of cycle ID
         in: path
         name: id
         required: true
@@ -7470,25 +7123,25 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       security:
       - BearerAuth: []
-      summary: Delete a moto parameter
+      summary: Delete a number of cycle
       tags:
-      - admin-moto-parameters
+      - admin-number-of-cycles
     put:
       consumes:
       - application/json
-      description: Updates a moto parameter by ID
+      description: Updates a number of cycle by ID
       parameters:
-      - description: Moto parameter ID
+      - description: Number of cycle ID
         in: path
         name: id
         required: true
         type: integer
-      - description: Moto parameter data
+      - description: Number of cycle data
         in: body
-        name: motoParameter
+        name: number_of_cycle
         required: true
         schema:
-          $ref: '#/definitions/model.UpdateMotoParameterRequest'
+          $ref: '#/definitions/model.CreateNumberOfCycleRequest'
       produces:
       - application/json
       responses:
@@ -7514,183 +7167,9 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       security:
       - BearerAuth: []
-      summary: Update a moto parameter
+      summary: Update a number of cycle
       tags:
-      - admin-moto-parameters
-  /api/v1/admin/moto-parameters/{moto_param_id}/values:
-    get:
-      description: Returns a list of moto parameter values for a specific parameter
-      parameters:
-      - description: Moto parameter ID
-        in: path
-        name: moto_param_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.AdminMotoParameterValueResponse'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get moto parameter values
-      tags:
-      - admin-moto-parameter-values
-    post:
-      consumes:
-      - application/json
-      description: Creates a new moto parameter value
-      parameters:
-      - description: Moto parameter ID
-        in: path
-        name: moto_param_id
-        required: true
-        type: integer
-      - description: Moto parameter value data
-        in: body
-        name: parameterValue
-        required: true
-        schema:
-          $ref: '#/definitions/model.CreateMotoParameterValueRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.SuccessWithId'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Create a moto parameter value
-      tags:
-      - admin-moto-parameter-values
-  /api/v1/admin/moto-parameters/{moto_param_id}/values/{id}:
-    delete:
-      description: Deletes a moto parameter value by ID
-      parameters:
-      - description: Moto parameter ID
-        in: path
-        name: moto_param_id
-        required: true
-        type: integer
-      - description: Moto parameter value ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Delete a moto parameter value
-      tags:
-      - admin-moto-parameter-values
-    put:
-      consumes:
-      - application/json
-      description: Updates a moto parameter value by ID
-      parameters:
-      - description: Moto parameter ID
-        in: path
-        name: moto_param_id
-        required: true
-        type: integer
-      - description: Moto parameter value ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Moto parameter value data
-        in: body
-        name: parameterValue
-        required: true
-        schema:
-          $ref: '#/definitions/model.UpdateMotoParameterValueRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Update a moto parameter value
-      tags:
-      - admin-moto-parameter-values
+      - admin-number-of-cycles
   /api/v1/admin/profile:
     get:
       description: Returns a profile
@@ -13284,20 +12763,15 @@ paths:
       summary: Get motorcycle models by brand ID
       tags:
       - motorcycles
-  /motorcycles/categories/{category_id}/parameters:
+  /motorcycles/number-of-cycles:
     get:
       consumes:
       - application/json
-      description: Get motorcycle parameters
+      description: Get number of cycles
       parameters:
       - description: Language
         in: header
         name: Accept-Language
-        type: string
-      - description: Category ID
-        in: path
-        name: category_id
-        required: true
         type: string
       produces:
       - application/json
@@ -13306,7 +12780,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.GetMotorcycleParametersResponse'
+              $ref: '#/definitions/model.GetNumberOfCyclesResponse'
             type: array
         "500":
           description: Internal Server Error
@@ -13314,7 +12788,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       security:
       - BearerAuth: []
-      summary: Get motorcycle parameters
+      summary: Get number of cycles
       tags:
       - motorcycles
   /ws/conversations:

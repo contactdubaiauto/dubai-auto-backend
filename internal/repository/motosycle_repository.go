@@ -49,45 +49,6 @@ func (r *MotorcycleRepository) GetMotorcycleCategories(ctx *fasthttp.RequestCtx,
 	return data, nil
 }
 
-func (r *MotorcycleRepository) GetMotorcycleParameters(ctx *fasthttp.RequestCtx, categoryID string, nameColumn string) ([]model.GetMotorcycleParametersResponse, error) {
-	data := make([]model.GetMotorcycleParametersResponse, 0)
-	q := `
-		SELECT 
-			moto_parameters.id,
-			moto_parameters.` + nameColumn + `,
-			json_agg(
-				json_build_object(
-					'id', moto_parameter_values.id,
-					'name', moto_parameter_values.` + nameColumn + `
-				)
-			) as values
-		FROM moto_parameters
-		LEFT JOIN moto_parameter_values ON moto_parameters.id = moto_parameter_values.moto_parameter_id
-		WHERE moto_parameters.moto_category_id = $1
-		GROUP BY moto_parameters.id, moto_parameters.` + nameColumn + `
-	`
-
-	rows, err := r.db.Query(ctx, q, categoryID)
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		var parameter model.GetMotorcycleParametersResponse
-		err = rows.Scan(&parameter.ID, &parameter.Name, &parameter.Values)
-
-		if err != nil {
-			return nil, err
-		}
-
-		data = append(data, parameter)
-	}
-
-	return data, nil
-}
-
 func (r *MotorcycleRepository) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, categoryID string, nameColumn string) ([]model.GetMotorcycleBrandsResponse, error) {
 	data := make([]model.GetMotorcycleBrandsResponse, 0)
 	q := `
@@ -111,6 +72,34 @@ func (r *MotorcycleRepository) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, cat
 		}
 
 		data = append(data, brand)
+	}
+
+	return data, nil
+}
+
+func (r *MotorcycleRepository) GetNumberOfCycles(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.GetNumberOfCyclesResponse, error) {
+	data := make([]model.GetNumberOfCyclesResponse, 0)
+	q := `
+		SELECT id, ` + nameColumn + ` FROM number_of_cycles
+		ORDER BY id ASC
+	`
+
+	rows, err := r.db.Query(ctx, q)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var numberOfCycle model.GetNumberOfCyclesResponse
+		err = rows.Scan(&numberOfCycle.ID, &numberOfCycle.Name)
+
+		if err != nil {
+			return nil, err
+		}
+
+		data = append(data, numberOfCycle)
 	}
 
 	return data, nil
@@ -146,8 +135,6 @@ func (r *MotorcycleRepository) GetMotorcycleModelsByBrandID(ctx *fasthttp.Reques
 
 func (r *MotorcycleRepository) CreateMotorcycle(ctx *fasthttp.RequestCtx, req model.CreateMotorcycleRequest, userID int) (model.SuccessWithId, error) {
 	data := model.SuccessWithId{}
-	parameters := req.Parameters
-	req.Parameters = nil
 
 	keys, values, args := auth.BuildParams(req)
 
@@ -168,19 +155,6 @@ func (r *MotorcycleRepository) CreateMotorcycle(ctx *fasthttp.RequestCtx, req mo
 		return data, err
 	}
 
-	for i := range parameters {
-
-		q := `
-			INSERT INTO motorcycle_parameters (motorcycle_id, moto_parameter_id, moto_parameter_value_id)
-			VALUES ($1, $2, $3)
-		`
-		_, err = r.db.Exec(ctx, q, id, parameters[i].ParameterID, parameters[i].ValueID)
-
-		if err != nil {
-			return data, err
-		}
-	}
-
 	data.Message = "Motorcycle created successfully"
 	data.Id = id
 
@@ -195,34 +169,26 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, nameColu
 			json_build_object(
 				'id', pf.user_id,
 				'username', pf.username,
-				'avatar', $1 || pf.avatar,
+				'avatar', CASE
+					WHEN pf.avatar IS NULL OR pf.avatar = '' THEN ''
+					ELSE $1 || pf.avatar
+				END,
 				'contacts', pf.contacts
 			) as owner,
 			mcs.engine,
 			mcs.power,
 			mcs.year,
-			mcs.number_of_cycles,
+			nocs.` + nameColumn + ` as number_of_cycles,
 			mcs.odometer,
 			mcs.crash,
-			mcs.not_cleared,
+			mcs.wheel,
 			mcs.owners,
-			mcs.date_of_purchase,
-			mcs.warranty_date,
-			mcs.ptc,
 			mcs.vin_code,
-			mcs.certificate,
 			mcs.description,
-			mcs.can_look_coordinate,
-			mcs.phone_number,
-			mcs.refuse_dealers_calls,
-			mcs.only_chat,
-			mcs.protect_spam,
-			mcs.verified_buyers,
-			mcs.contact_person,
-			mcs.email,
+			mcs.phone_numbers,
 			mcs.price,
-			mcs.price_type,
-			mcs.status,
+			mcs.trade_in,
+			mcs.status::text,
 			mcs.updated_at,
 			mcs.created_at,
 			mocs.` + nameColumn + ` as moto_category,
@@ -235,7 +201,6 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, nameColu
 				WHEN mcs.user_id = 1 THEN TRUE
 				ELSE FALSE
 			END AS my_car,
-			ps.parameters,
 			images.images,
 			videos.videos
 		from motorcycles mcs
@@ -246,20 +211,7 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, nameColu
 		left join fuel_types fts on fts.id = mcs.fuel_type_id
 		left join cities cs on cs.id = mcs.city_id
 		left join colors cls on cls.id = mcs.color_id
-		LEFT JOIN LATERAL (
-			SELECT json_agg(
-				json_build_object(
-					'parameter_id', mcp.moto_parameter_id,
-					'parameter_value_id', mpv.id,
-					'parameter', mp.` + nameColumn + `,
-					'parameter_value', mpv.` + nameColumn + `
-				)
-			) AS parameters
-			FROM motorcycle_parameters mcp
-			LEFT JOIN moto_parameters mp ON mp.id = mcp.moto_parameter_id
-			LEFT JOIN moto_parameter_values mpv ON mpv.id = mcp.moto_parameter_value_id
-			WHERE mcp.motorcycle_id = mcs.id
-		) ps ON true
+		left join number_of_cycles nocs on nocs.id = mcs.number_of_cycles_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -292,15 +244,12 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, nameColu
 		var motorcycle model.GetMotorcyclesResponse
 		err = rows.Scan(
 			&motorcycle.ID, &motorcycle.Owner, &motorcycle.Engine, &motorcycle.Power, &motorcycle.Year,
-			&motorcycle.NumberOfCycles, &motorcycle.Odometer, &motorcycle.Crash, &motorcycle.NotCleared,
-			&motorcycle.Owners, &motorcycle.DateOfPurchase, &motorcycle.WarrantyDate, &motorcycle.PTC,
-			&motorcycle.VinCode, &motorcycle.Certificate, &motorcycle.Description, &motorcycle.CanLookCoordinate,
-			&motorcycle.PhoneNumber, &motorcycle.RefuseDealersCalls, &motorcycle.OnlyChat,
-			&motorcycle.ProtectSpam, &motorcycle.VerifiedBuyers, &motorcycle.ContactPerson,
-			&motorcycle.Email, &motorcycle.Price, &motorcycle.PriceType, &motorcycle.Status,
+			&motorcycle.NumberOfCycles, &motorcycle.Odometer, &motorcycle.Crash, &motorcycle.Wheel,
+			&motorcycle.Owners, &motorcycle.VinCode, &motorcycle.Description, &motorcycle.PhoneNumbers,
+			&motorcycle.Price, &motorcycle.TradeIn, &motorcycle.Status,
 			&motorcycle.UpdatedAt, &motorcycle.CreatedAt, &motorcycle.MotoCategory, &motorcycle.MotoBrand,
 			&motorcycle.MotoModel, &motorcycle.FuelType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyCar,
-			&motorcycle.Parameters, &motorcycle.Images, &motorcycle.Videos)
+			&motorcycle.Images, &motorcycle.Videos)
 
 		if err != nil {
 			return nil, err
@@ -386,34 +335,26 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 			json_build_object(
 				'id', pf.user_id,
 				'username', pf.username,
-				'avatar', $3 || pf.avatar,
+				'avatar', CASE
+					WHEN pf.avatar IS NULL OR pf.avatar = '' THEN ''
+					ELSE $3 || pf.avatar
+				END,
 				'contacts', pf.contacts
 			) as owner,
 			mcs.engine,
 			mcs.power,
 			mcs.year,
-			mcs.number_of_cycles,
+			nocs.` + nameColumn + ` as number_of_cycles,
 			mcs.odometer,
 			mcs.crash,
-			mcs.not_cleared,
+			mcs.wheel,
 			mcs.owners,
-			mcs.date_of_purchase,
-			mcs.warranty_date,
-			mcs.ptc,
 			mcs.vin_code,
-			mcs.certificate,
 			mcs.description,
-			mcs.can_look_coordinate,
-			mcs.phone_number,
-			mcs.refuse_dealers_calls,
-			mcs.only_chat,
-			mcs.protect_spam,
-			mcs.verified_buyers,
-			mcs.contact_person,
-			mcs.email,
+			mcs.phone_numbers,
 			mcs.price,
-			mcs.price_type,
-			mcs.status,
+			mcs.trade_in,
+			mcs.status::text,
 			mcs.updated_at,
 			mcs.created_at,
 			mocs.` + nameColumn + ` as moto_category,
@@ -426,7 +367,6 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 				WHEN mcs.user_id = $2 THEN TRUE
 				ELSE FALSE
 			END AS my_car,
-			ps.parameters,
 			images.images,
 			videos.videos
 		from updated mcs
@@ -437,20 +377,7 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 		left join fuel_types fts on fts.id = mcs.fuel_type_id
 		left join cities cs on cs.id = mcs.city_id
 		left join colors cls on cls.id = mcs.color_id
-		LEFT JOIN LATERAL (
-			SELECT json_agg(
-				json_build_object(
-					'parameter_id', mcp.moto_parameter_id,
-					'parameter_value_id', mpv.id,
-					'parameter', mp.` + nameColumn + `,
-					'parameter_value', mpv.` + nameColumn + `
-				)
-			) AS parameters
-			FROM motorcycle_parameters mcp
-			LEFT JOIN moto_parameters mp ON mp.id = mcp.moto_parameter_id
-			LEFT JOIN moto_parameter_values mpv ON mpv.id = mcp.moto_parameter_value_id
-			WHERE mcp.motorcycle_id = mcs.id
-		) ps ON true
+		left join number_of_cycles nocs on nocs.id = mcs.number_of_cycles_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -474,15 +401,12 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 
 	err := r.db.QueryRow(ctx, q, motorcycleID, userID, r.config.IMAGE_BASE_URL).Scan(
 		&motorcycle.ID, &motorcycle.Owner, &motorcycle.Engine, &motorcycle.Power, &motorcycle.Year,
-		&motorcycle.NumberOfCycles, &motorcycle.Odometer, &motorcycle.Crash, &motorcycle.NotCleared,
-		&motorcycle.Owners, &motorcycle.DateOfPurchase, &motorcycle.WarrantyDate, &motorcycle.PTC,
-		&motorcycle.VinCode, &motorcycle.Certificate, &motorcycle.Description, &motorcycle.CanLookCoordinate,
-		&motorcycle.PhoneNumber, &motorcycle.RefuseDealersCalls, &motorcycle.OnlyChat,
-		&motorcycle.ProtectSpam, &motorcycle.VerifiedBuyers, &motorcycle.ContactPerson,
-		&motorcycle.Email, &motorcycle.Price, &motorcycle.PriceType, &motorcycle.Status,
+		&motorcycle.NumberOfCycles, &motorcycle.Odometer, &motorcycle.Crash, &motorcycle.Wheel,
+		&motorcycle.Owners, &motorcycle.VinCode, &motorcycle.Description, &motorcycle.PhoneNumbers,
+		&motorcycle.Price, &motorcycle.TradeIn, &motorcycle.Status,
 		&motorcycle.UpdatedAt, &motorcycle.CreatedAt, &motorcycle.MotoCategory, &motorcycle.MotoBrand,
 		&motorcycle.MotoModel, &motorcycle.FuelType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyCar,
-		&motorcycle.Parameters, &motorcycle.Images, &motorcycle.Videos)
+		&motorcycle.Images, &motorcycle.Videos)
 
 	return motorcycle, err
 }
@@ -495,34 +419,26 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 			json_build_object(
 				'id', pf.user_id,
 				'username', pf.username,
-				'avatar', $3 || pf.avatar,
+				'avatar', CASE
+					WHEN pf.avatar IS NULL OR pf.avatar = '' THEN ''
+					ELSE $3 || pf.avatar
+				END,
 				'contacts', pf.contacts
 			) as owner,
 			mcs.engine,
 			mcs.power,
 			mcs.year,
-			mcs.number_of_cycles,
+			nocs.` + nameColumn + ` as number_of_cycles,
 			mcs.odometer,
 			mcs.crash,
-			mcs.not_cleared,
+			mcs.wheel,
 			mcs.owners,
-			mcs.date_of_purchase,
-			mcs.warranty_date,
-			mcs.ptc,
 			mcs.vin_code,
-			mcs.certificate,
 			mcs.description,
-			mcs.can_look_coordinate,
-			mcs.phone_number,
-			mcs.refuse_dealers_calls,
-			mcs.only_chat,
-			mcs.protect_spam,
-			mcs.verified_buyers,
-			mcs.contact_person,
-			mcs.email,
+			mcs.phone_numbers,
 			mcs.price,
-			mcs.price_type,
-			mcs.status,
+			mcs.trade_in,
+			mcs.status::text,
 			mcs.updated_at,
 			mcs.created_at,
 			mocs.` + nameColumn + ` as moto_category,
@@ -535,7 +451,6 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 				WHEN mcs.user_id = $2 THEN TRUE
 				ELSE FALSE
 			END AS my_car,
-			ps.parameters,
 			images.images,
 			videos.videos
 		from motorcycles mcs
@@ -546,20 +461,7 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 		left join fuel_types fts on fts.id = mcs.fuel_type_id
 		left join cities cs on cs.id = mcs.city_id
 		left join colors cls on cls.id = mcs.color_id
-		LEFT JOIN LATERAL (
-			SELECT json_agg(
-				json_build_object(
-					'parameter_id', mcp.moto_parameter_id,
-					'parameter_value_id', mpv.id,
-					'parameter', mp.` + nameColumn + `,
-					'parameter_value', mpv.` + nameColumn + `
-				)
-			) AS parameters
-			FROM motorcycle_parameters mcp
-			LEFT JOIN moto_parameters mp ON mp.id = mcp.moto_parameter_id
-			LEFT JOIN moto_parameter_values mpv ON mpv.id = mcp.moto_parameter_value_id
-			WHERE mcp.motorcycle_id = mcs.id
-		) ps ON true
+		left join number_of_cycles nocs on nocs.id = mcs.number_of_cycles_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -583,15 +485,12 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 
 	err := r.db.QueryRow(ctx, q, motorcycleID, userID, r.config.IMAGE_BASE_URL).Scan(
 		&motorcycle.ID, &motorcycle.Owner, &motorcycle.Engine, &motorcycle.Power, &motorcycle.Year,
-		&motorcycle.NumberOfCycles, &motorcycle.Odometer, &motorcycle.Crash, &motorcycle.NotCleared,
-		&motorcycle.Owners, &motorcycle.DateOfPurchase, &motorcycle.WarrantyDate, &motorcycle.PTC,
-		&motorcycle.VinCode, &motorcycle.Certificate, &motorcycle.Description, &motorcycle.CanLookCoordinate,
-		&motorcycle.PhoneNumber, &motorcycle.RefuseDealersCalls, &motorcycle.OnlyChat,
-		&motorcycle.ProtectSpam, &motorcycle.VerifiedBuyers, &motorcycle.ContactPerson,
-		&motorcycle.Email, &motorcycle.Price, &motorcycle.PriceType, &motorcycle.Status,
+		&motorcycle.NumberOfCycles, &motorcycle.Odometer, &motorcycle.Crash, &motorcycle.Wheel,
+		&motorcycle.Owners, &motorcycle.VinCode, &motorcycle.Description, &motorcycle.PhoneNumbers,
+		&motorcycle.Price, &motorcycle.TradeIn, &motorcycle.Status,
 		&motorcycle.UpdatedAt, &motorcycle.CreatedAt, &motorcycle.MotoCategory, &motorcycle.MotoBrand,
 		&motorcycle.MotoModel, &motorcycle.FuelType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyCar,
-		&motorcycle.Parameters, &motorcycle.Images, &motorcycle.Videos)
+		&motorcycle.Images, &motorcycle.Videos)
 
 	return motorcycle, err
 }

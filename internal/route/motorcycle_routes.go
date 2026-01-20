@@ -17,11 +17,11 @@ func SetupMotorcycleRoutes(r fiber.Router, config *config.Config, db *pgxpool.Po
 	motorcycleHandler := http.NewMotorcycleHandler(motorcycleService, validator)
 
 	{
-		// get motorcycles categories
+		// get motorcycle datas
 		r.Get("/categories", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycleCategories)
-		r.Get("/categories/:category_id/parameters", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycleParameters)
-		r.Get("/categories/:category_id/brands", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycleBrands)
-		r.Get("/categories/:category_id/brands/:brand_id/models", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycleModelsByBrandID)
+		r.Get("/number-of-cycles", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetNumberOfCycles)
+		r.Get("/brands", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycleBrands)
+		r.Get("/brands/:brand_id/models", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycleModelsByBrandID)
 
 		// motorcycles
 		r.Get("/", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycles)

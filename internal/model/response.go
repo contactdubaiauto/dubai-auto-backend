@@ -652,4 +652,6 @@ type GetReportsResponse struct {
 	ReportDescription string    `json:"report_description"`
 	ReportStatus      int       `json:"report_status"`
 	CreatedAt         time.Time `json:"created_at"`
+	Reporter          *Owner    `json:"reporter"`
+	ReportedUser      *Owner    `json:"reported_user"`
 }

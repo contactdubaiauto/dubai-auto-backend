@@ -118,8 +118,7 @@ create table users (
     "status" int not null default 1, -- 1 active, 2 pending, 3 inactive
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
-    unique("email"),
-    unique("phone")
+    unique("email","phone")
 );
 
 

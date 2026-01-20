@@ -321,3 +321,8 @@ create table messages (
 
 -- 19.01.2026
 alter table vehicles alter column status set default 1;
+
+-- 20.01.2026
+ALTER TABLE users DROP CONSTRAINT IF EXISTS users_phone_key;
+ALTER TABLE users DROP CONSTRAINT IF EXISTS users_email_key;
+alter table users add unique("email", "phone");

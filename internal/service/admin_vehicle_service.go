@@ -14,6 +14,7 @@ import (
 
 func (s *AdminService) GetVehicles(ctx *fasthttp.RequestCtx, limit, lastID int) model.Response {
 	vehicles, err := s.repo.GetVehicles(ctx, limit, lastID)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -22,6 +23,7 @@ func (s *AdminService) GetVehicles(ctx *fasthttp.RequestCtx, limit, lastID int) 
 
 func (s *AdminService) GetVehicleByID(ctx *fasthttp.RequestCtx, vehicleID int) model.Response {
 	vehicle, err := s.repo.GetVehicleByID(ctx, vehicleID)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusNotFound}
 	}
@@ -30,6 +32,7 @@ func (s *AdminService) GetVehicleByID(ctx *fasthttp.RequestCtx, vehicleID int) m
 
 func (s *AdminService) CreateVehicle(ctx *fasthttp.RequestCtx, req *model.AdminCreateVehicleRequest) model.Response {
 	id, err := s.repo.CreateVehicle(ctx, req)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusBadRequest}
 	}
@@ -37,11 +40,13 @@ func (s *AdminService) CreateVehicle(ctx *fasthttp.RequestCtx, req *model.AdminC
 }
 
 func (s *AdminService) UpdateVehicleStatus(ctx *fasthttp.RequestCtx, vehicleID int, req *model.AdminUpdateVehicleStatusRequest) model.Response {
+
 	if req == nil {
 		return model.Response{Error: errors.New("invalid request data"), Status: http.StatusBadRequest}
 	}
 
 	err := s.repo.UpdateVehicleStatus(ctx, vehicleID, req.Status)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
@@ -50,6 +55,7 @@ func (s *AdminService) UpdateVehicleStatus(ctx *fasthttp.RequestCtx, vehicleID i
 
 func (s *AdminService) DeleteVehicle(ctx *fasthttp.RequestCtx, vehicleID int, dir string) model.Response {
 	err := s.repo.DeleteVehicle(ctx, vehicleID)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}

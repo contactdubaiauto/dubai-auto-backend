@@ -229,6 +229,8 @@ func (h *SocketHandler) SetupWebSocketHandler() fiber.Handler {
 
 				if messageReceived.Admin {
 					senderID = 0
+					user.Username = "Admin"
+					user.Avatar = ""
 				}
 
 				data := []model.UserMessage{

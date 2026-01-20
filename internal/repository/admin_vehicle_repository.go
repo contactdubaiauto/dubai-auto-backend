@@ -152,6 +152,7 @@ func (r *AdminRepository) GetVehicleByID(ctx *fasthttp.RequestCtx, vehicleID int
 
 func (r *AdminRepository) CreateVehicle(ctx *fasthttp.RequestCtx, req *model.AdminCreateVehicleRequest) (int, error) {
 	keys, values, args := auth.BuildParams(req)
+
 	if len(keys) == 0 {
 		return 0, fmt.Errorf("invalid request data")
 	}

@@ -6619,275 +6619,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/admin/moto-categories/{category_id}/parameters": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Returns a list of moto category parameters for a specific category",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-moto-category-parameters"
-                ],
-                "summary": "Get moto category parameters",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Moto category ID",
-                        "name": "category_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.AdminMotoCategoryParameterResponse"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Creates a new moto category parameter",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-moto-category-parameters"
-                ],
-                "summary": "Create a moto category parameter",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Moto category ID",
-                        "name": "category_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Moto category parameter data",
-                        "name": "parameter",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.CreateMotoCategoryParameterRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.SuccessWithId"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/admin/moto-categories/{category_id}/parameters/{parameter_id}": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Updates a moto category parameter by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-moto-category-parameters"
-                ],
-                "summary": "Update a moto category parameter",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Moto category ID",
-                        "name": "category_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Moto parameter ID",
-                        "name": "parameter_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Moto category parameter data",
-                        "name": "parameter",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.UpdateMotoCategoryParameterRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Success"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Deletes a moto category parameter by ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-moto-category-parameters"
-                ],
-                "summary": "Delete a moto category parameter",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Moto category ID",
-                        "name": "category_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Moto parameter ID",
-                        "name": "parameter_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Success"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/admin/moto-categories/{id}": {
             "put": {
                 "security": [
@@ -7314,28 +7045,28 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/admin/moto-parameters": {
+        "/api/v1/admin/number-of-cycles": {
             "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Returns a list of all moto parameters",
+                "description": "Returns a list of all number of cycles",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "admin-moto-parameters"
+                    "admin-number-of-cycles"
                 ],
-                "summary": "Get all moto parameters",
+                "summary": "Get all number of cycles",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.AdminMotoParameterResponse"
+                                "$ref": "#/definitions/model.AdminNumberOfCycleResponse"
                             }
                         }
                     },
@@ -7371,7 +7102,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Creates a new moto parameter",
+                "description": "Creates a new number of cycle",
                 "consumes": [
                     "application/json"
                 ],
@@ -7379,17 +7110,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin-moto-parameters"
+                    "admin-number-of-cycles"
                 ],
-                "summary": "Create a moto parameter",
+                "summary": "Create a number of cycle",
                 "parameters": [
                     {
-                        "description": "Moto parameter data",
-                        "name": "motoParameter",
+                        "description": "Number of cycle data",
+                        "name": "number_of_cycle",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.CreateMotoParameterRequest"
+                            "$ref": "#/definitions/model.CreateNumberOfCycleRequest"
                         }
                     }
                 ],
@@ -7427,14 +7158,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/admin/moto-parameters/{id}": {
+        "/api/v1/admin/number-of-cycles/{id}": {
             "put": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Updates a moto parameter by ID",
+                "description": "Updates a number of cycle by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -7442,24 +7173,24 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin-moto-parameters"
+                    "admin-number-of-cycles"
                 ],
-                "summary": "Update a moto parameter",
+                "summary": "Update a number of cycle",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Moto parameter ID",
+                        "description": "Number of cycle ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Moto parameter data",
-                        "name": "motoParameter",
+                        "description": "Number of cycle data",
+                        "name": "number_of_cycle",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.UpdateMotoParameterRequest"
+                            "$ref": "#/definitions/model.CreateNumberOfCycleRequest"
                         }
                     }
                 ],
@@ -7502,287 +7233,18 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Deletes a moto parameter by ID",
+                "description": "Deletes a number of cycle by ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "admin-moto-parameters"
+                    "admin-number-of-cycles"
                 ],
-                "summary": "Delete a moto parameter",
+                "summary": "Delete a number of cycle",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Moto parameter ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Success"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/admin/moto-parameters/{moto_param_id}/values": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Returns a list of moto parameter values for a specific parameter",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-moto-parameter-values"
-                ],
-                "summary": "Get moto parameter values",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Moto parameter ID",
-                        "name": "moto_param_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.AdminMotoParameterValueResponse"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Creates a new moto parameter value",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-moto-parameter-values"
-                ],
-                "summary": "Create a moto parameter value",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Moto parameter ID",
-                        "name": "moto_param_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Moto parameter value data",
-                        "name": "parameterValue",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.CreateMotoParameterValueRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.SuccessWithId"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/admin/moto-parameters/{moto_param_id}/values/{id}": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Updates a moto parameter value by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-moto-parameter-values"
-                ],
-                "summary": "Update a moto parameter value",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Moto parameter ID",
-                        "name": "moto_param_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Moto parameter value ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Moto parameter value data",
-                        "name": "parameterValue",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.UpdateMotoParameterValueRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Success"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Deletes a moto parameter value by ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-moto-parameter-values"
-                ],
-                "summary": "Delete a moto parameter value",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Moto parameter ID",
-                        "name": "moto_param_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Moto parameter value ID",
+                        "description": "Number of cycle ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -15782,14 +15244,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/motorcycles/categories/{category_id}/parameters": {
+        "/motorcycles/number-of-cycles": {
             "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get motorcycle parameters",
+                "description": "Get number of cycles",
                 "consumes": [
                     "application/json"
                 ],
@@ -15799,20 +15261,13 @@ const docTemplate = `{
                 "tags": [
                     "motorcycles"
                 ],
-                "summary": "Get motorcycle parameters",
+                "summary": "Get number of cycles",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "Language",
                         "name": "Accept-Language",
                         "in": "header"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Category ID",
-                        "name": "category_id",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -15821,7 +15276,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.GetMotorcycleParametersResponse"
+                                "$ref": "#/definitions/model.GetNumberOfCyclesResponse"
                             }
                         }
                     },
@@ -17347,26 +16802,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AdminMotoCategoryParameterResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "moto_category_id": {
-                    "type": "integer"
-                },
-                "moto_parameter_id": {
-                    "type": "integer"
-                },
-                "moto_parameter_name": {
-                    "type": "string"
-                },
-                "moto_parameter_name_ru": {
-                    "type": "string"
-                }
-            }
-        },
         "model.AdminMotoCategoryResponse": {
             "type": "object",
             "properties": {
@@ -17416,45 +16851,13 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AdminMotoParameterResponse": {
+        "model.AdminNumberOfCycleResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
-                },
-                "moto_category_id": {
-                    "type": "integer"
-                },
-                "moto_category_name": {
-                    "type": "string"
-                },
-                "moto_category_name_ru": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "name_ae": {
-                    "type": "string"
-                },
-                "name_ru": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.AdminMotoParameterValueResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "moto_parameter_id": {
                     "type": "integer"
                 },
                 "name": {
@@ -18281,17 +17684,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.CreateMotoCategoryParameterRequest": {
-            "type": "object",
-            "required": [
-                "moto_parameter_id"
-            ],
-            "properties": {
-                "moto_parameter_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "model.CreateMotoCategoryRequest": {
             "type": "object",
             "required": [
@@ -18334,63 +17726,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.CreateMotoParameterRequest": {
-            "type": "object",
-            "required": [
-                "moto_category_id",
-                "name"
-            ],
-            "properties": {
-                "moto_category_id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
-                },
-                "name_ae": {
-                    "type": "string"
-                },
-                "name_ru": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.CreateMotoParameterValueRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                },
-                "name_ae": {
-                    "type": "string"
-                },
-                "name_ru": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.CreateMotorcycleParameterRequest": {
-            "type": "object",
-            "required": [
-                "parameter_id",
-                "value_id"
-            ],
-            "properties": {
-                "parameter_id": {
-                    "type": "integer"
-                },
-                "value_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "model.CreateMotorcycleRequest": {
             "type": "object",
             "required": [
@@ -18400,38 +17735,24 @@ const docTemplate = `{
                 "moto_brand_id",
                 "moto_category_id",
                 "moto_model_id",
-                "phone_number",
+                "number_of_cycles_id",
+                "phone_numbers",
                 "price",
-                "price_type",
+                "trade_in",
                 "vin_code",
                 "year"
             ],
             "properties": {
-                "can_look_coordinate": {
-                    "type": "string"
-                },
-                "certificate": {
-                    "type": "string"
-                },
                 "city_id": {
                     "type": "integer"
                 },
                 "color_id": {
                     "type": "integer"
                 },
-                "contact_person": {
-                    "type": "string"
-                },
                 "crash": {
                     "type": "boolean"
                 },
-                "date_of_purchase": {
-                    "type": "string"
-                },
                 "description": {
-                    "type": "string"
-                },
-                "email": {
                     "type": "string"
                 },
                 "engine": {
@@ -18449,29 +17770,20 @@ const docTemplate = `{
                 "moto_model_id": {
                     "type": "string"
                 },
-                "not_cleared": {
-                    "type": "boolean"
-                },
-                "number_of_cycles": {
+                "number_of_cycles_id": {
                     "type": "integer"
                 },
                 "odometer": {
                     "type": "integer"
                 },
-                "only_chat": {
-                    "type": "boolean"
-                },
                 "owners": {
                     "type": "integer"
                 },
-                "parameters": {
+                "phone_numbers": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.CreateMotorcycleParameterRequest"
+                        "type": "string"
                     }
-                },
-                "phone_number": {
-                    "type": "string"
                 },
                 "power": {
                     "type": "integer"
@@ -18479,32 +17791,14 @@ const docTemplate = `{
                 "price": {
                     "type": "integer"
                 },
-                "price_type": {
-                    "type": "string",
-                    "enum": [
-                        "USD",
-                        "AED",
-                        "RUB",
-                        "EUR"
-                    ]
-                },
-                "protect_spam": {
-                    "type": "boolean"
-                },
-                "ptc": {
-                    "type": "boolean"
-                },
-                "refuse_dealers_calls": {
-                    "type": "boolean"
-                },
-                "verified_buyers": {
-                    "type": "boolean"
+                "trade_in": {
+                    "type": "integer"
                 },
                 "vin_code": {
                     "type": "string"
                 },
-                "warranty_date": {
-                    "type": "string"
+                "wheel": {
+                    "type": "boolean"
                 },
                 "year": {
                     "type": "integer"
@@ -18523,6 +17817,25 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "maxLength": 255,
+                    "minLength": 2
+                },
+                "name_ae": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.CreateNumberOfCycleRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
                     "minLength": 2
                 },
                 "name_ae": {
@@ -19212,50 +18525,13 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GetMotorcycleParameterValuesResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.GetMotorcycleParametersResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "values": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.GetMotorcycleParameterValuesResponse"
-                    }
-                }
-            }
-        },
         "model.GetMotorcyclesResponse": {
             "type": "object",
             "properties": {
-                "can_look_coordinate": {
-                    "type": "string"
-                },
-                "certificate": {
-                    "type": "string"
-                },
                 "city": {
                     "type": "string"
                 },
                 "color": {
-                    "type": "string"
-                },
-                "contact_person": {
                     "type": "string"
                 },
                 "crash": {
@@ -19264,13 +18540,7 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "date_of_purchase": {
-                    "type": "string"
-                },
                 "description": {
-                    "type": "string"
-                },
-                "email": {
                     "type": "string"
                 },
                 "engine": {
@@ -19300,17 +18570,11 @@ const docTemplate = `{
                 "my_car": {
                     "type": "boolean"
                 },
-                "not_cleared": {
-                    "type": "boolean"
-                },
                 "number_of_cycles": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "odometer": {
                     "type": "integer"
-                },
-                "only_chat": {
-                    "type": "boolean"
                 },
                 "owner": {
                     "$ref": "#/definitions/model.MotorcycleOwner"
@@ -19318,14 +18582,11 @@ const docTemplate = `{
                 "owners": {
                     "type": "integer"
                 },
-                "parameters": {
+                "phone_numbers": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.MotorcycleParameter"
+                        "type": "string"
                     }
-                },
-                "phone_number": {
-                    "type": "string"
                 },
                 "power": {
                     "type": "integer"
@@ -19333,26 +18594,14 @@ const docTemplate = `{
                 "price": {
                     "type": "integer"
                 },
-                "price_type": {
-                    "type": "string"
-                },
-                "protect_spam": {
-                    "type": "boolean"
-                },
-                "ptc": {
-                    "type": "boolean"
-                },
-                "refuse_dealers_calls": {
-                    "type": "boolean"
-                },
                 "status": {
                     "type": "string"
                 },
+                "trade_in": {
+                    "type": "integer"
+                },
                 "updated_at": {
                     "type": "string"
-                },
-                "verified_buyers": {
-                    "type": "boolean"
                 },
                 "videos": {
                     "type": "array",
@@ -19363,11 +18612,22 @@ const docTemplate = `{
                 "vin_code": {
                     "type": "string"
                 },
-                "warranty_date": {
-                    "type": "string"
+                "wheel": {
+                    "type": "boolean"
                 },
                 "year": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.GetNumberOfCyclesResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
@@ -19450,8 +18710,14 @@ const docTemplate = `{
                 "report_type": {
                     "type": "string"
                 },
+                "reported_user": {
+                    "$ref": "#/definitions/model.Owner"
+                },
                 "reported_user_id": {
                     "type": "integer"
+                },
+                "reporter": {
+                    "$ref": "#/definitions/model.Owner"
                 }
             }
         },
@@ -19565,23 +18831,6 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
-                }
-            }
-        },
-        "model.MotorcycleParameter": {
-            "type": "object",
-            "properties": {
-                "parameter": {
-                    "type": "string"
-                },
-                "parameter_id": {
-                    "type": "integer"
-                },
-                "parameter_value": {
-                    "type": "string"
-                },
-                "parameter_value_id": {
-                    "type": "integer"
                 }
             }
         },
@@ -20235,17 +19484,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.UpdateMotoCategoryParameterRequest": {
-            "type": "object",
-            "required": [
-                "moto_parameter_id"
-            ],
-            "properties": {
-                "moto_parameter_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "model.UpdateMotoCategoryRequest": {
             "type": "object",
             "required": [
@@ -20279,48 +19517,6 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
-                },
-                "name_ae": {
-                    "type": "string"
-                },
-                "name_ru": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.UpdateMotoParameterRequest": {
-            "type": "object",
-            "required": [
-                "moto_category_id",
-                "name"
-            ],
-            "properties": {
-                "moto_category_id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
-                },
-                "name_ae": {
-                    "type": "string"
-                },
-                "name_ru": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.UpdateMotoParameterValueRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
                 },
                 "name_ae": {
                     "type": "string"

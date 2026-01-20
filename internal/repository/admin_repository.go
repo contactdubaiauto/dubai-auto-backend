@@ -2095,16 +2095,40 @@ func (r *AdminRepository) GetReports(ctx *fasthttp.RequestCtx) ([]model.GetRepor
 	reports := make([]model.GetReportsResponse, 0)
 	q := `
 		SELECT 
-			id,
-			reported_user_id,
-			report_type,
-			report_description,
-			report_status,
-			created_at
-		FROM reports
-		ORDER BY created_at DESC
+			r.id,
+			r.reported_user_id,
+			r.report_type,
+			r.report_description,
+			r.report_status,
+			r.created_at,
+			json_build_object(
+				'id', reporter_user.id,
+				'username', reporter_profile.username,
+				'avatar', CASE
+					WHEN reporter_profile.avatar IS NULL OR reporter_profile.avatar = '' THEN NULL
+					ELSE $1 || reporter_profile.avatar
+				END,
+				'role_id', reporter_user.role_id,
+				'contacts', reporter_profile.contacts
+			) as reporter,
+			json_build_object(
+				'id', reported_user.id,
+				'username', reported_profile.username,
+				'avatar', CASE
+					WHEN reported_profile.avatar IS NULL OR reported_profile.avatar = '' THEN NULL
+					ELSE $1 || reported_profile.avatar
+				END,
+				'role_id', reported_user.role_id,
+				'contacts', reported_profile.contacts
+			) as reported_user
+		FROM reports r
+		LEFT JOIN users reporter_user ON reporter_user.id = r.user_id
+		LEFT JOIN profiles reporter_profile ON reporter_profile.user_id = r.user_id
+		LEFT JOIN users reported_user ON reported_user.id = r.reported_user_id
+		LEFT JOIN profiles reported_profile ON reported_profile.user_id = r.reported_user_id
+		ORDER BY r.created_at DESC
 	`
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
 	if err != nil {
 		return reports, err
 	}
@@ -2112,7 +2136,7 @@ func (r *AdminRepository) GetReports(ctx *fasthttp.RequestCtx) ([]model.GetRepor
 
 	for rows.Next() {
 		var report model.GetReportsResponse
-		if err := rows.Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt); err != nil {
+		if err := rows.Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt, &report.Reporter, &report.ReportedUser); err != nil {
 			return reports, err
 		}
 		reports = append(reports, report)
@@ -2124,16 +2148,40 @@ func (r *AdminRepository) GetReportByID(ctx *fasthttp.RequestCtx, id int) (model
 	report := model.GetReportsResponse{}
 	q := `
 		SELECT 
-			id,
-			reported_user_id,
-			report_type,
-			report_description,
-			report_status,
-			created_at
-		FROM reports
-		WHERE id = $1
+			r.id,
+			r.reported_user_id,
+			r.report_type,
+			r.report_description,
+			r.report_status,
+			r.created_at,
+			json_build_object(
+				'id', reporter_user.id,
+				'username', reporter_profile.username,
+				'avatar', CASE
+					WHEN reporter_profile.avatar IS NULL OR reporter_profile.avatar = '' THEN NULL
+					ELSE $2 || reporter_profile.avatar
+				END,
+				'role_id', reporter_user.role_id,
+				'contacts', reporter_profile.contacts
+			) as reporter,
+			json_build_object(
+				'id', reported_user.id,
+				'username', reported_profile.username,
+				'avatar', CASE
+					WHEN reported_profile.avatar IS NULL OR reported_profile.avatar = '' THEN NULL
+					ELSE $2 || reported_profile.avatar
+				END,
+				'role_id', reported_user.role_id,
+				'contacts', reported_profile.contacts
+			) as reported_user
+		FROM reports r
+		LEFT JOIN users reporter_user ON reporter_user.id = r.user_id
+		LEFT JOIN profiles reporter_profile ON reporter_profile.user_id = r.user_id
+		LEFT JOIN users reported_user ON reported_user.id = r.reported_user_id
+		LEFT JOIN profiles reported_profile ON reported_profile.user_id = r.reported_user_id
+		WHERE r.id = $1
 	`
-	err := r.db.QueryRow(ctx, q, id).Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt)
+	err := r.db.QueryRow(ctx, q, id, r.config.IMAGE_BASE_URL).Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt, &report.Reporter, &report.ReportedUser)
 	return report, err
 }
 
