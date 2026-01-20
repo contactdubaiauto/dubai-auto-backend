@@ -2666,7 +2666,7 @@ definitions:
       username:
         type: string
     type: object
-host: localhost:8080
+host: api.mashynbazar.com
 info:
   contact: {}
   description: Project Description

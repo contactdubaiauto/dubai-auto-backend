@@ -1460,3 +1460,135 @@ func (h *AdminHandler) DeleteReport(c *fiber.Ctx) error {
 	data := h.service.DeleteReport(c.Context(), idStr)
 	return utils.FiberResponse(c, data)
 }
+
+// Number of cycles handlers
+
+// GetNumberOfCycles godoc
+// @Summary      Get all number of cycles
+// @Description  Returns a list of all number of cycles
+// @Tags         admin-number-of-cycles
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}  model.AdminNumberOfCycleResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/number-of-cycles [get]
+func (h *AdminHandler) GetNumberOfCycles(c *fiber.Ctx) error {
+	ctx := c.Context()
+	data := h.service.GetNumberOfCycles(ctx)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateNumberOfCycle godoc
+// @Summary      Create a number of cycle
+// @Description  Creates a new number of cycle
+// @Tags         admin-number-of-cycles
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        number_of_cycle  body      model.CreateNumberOfCycleRequest  true  "Number of cycle data"
+// @Success      200  {object}  model.SuccessWithId
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/number-of-cycles [post]
+func (h *AdminHandler) CreateNumberOfCycle(c *fiber.Ctx) error {
+	var req model.CreateNumberOfCycleRequest
+
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request body"),
+		})
+	}
+
+	if err := h.validator.Validate(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.CreateNumberOfCycle(ctx, &req)
+	return utils.FiberResponse(c, data)
+}
+
+// UpdateNumberOfCycle godoc
+// @Summary      Update a number of cycle
+// @Description  Updates a number of cycle by ID
+// @Tags         admin-number-of-cycles
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id                path      int                             true  "Number of cycle ID"
+// @Param        number_of_cycle   body      model.CreateNumberOfCycleRequest  true  "Number of cycle data"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/number-of-cycles/{id} [put]
+func (h *AdminHandler) UpdateNumberOfCycle(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("number of cycle id must be integer"),
+		})
+	}
+
+	var req model.CreateNumberOfCycleRequest
+
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request body"),
+		})
+	}
+
+	if err := h.validator.Validate(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.UpdateNumberOfCycle(ctx, id, &req)
+	return utils.FiberResponse(c, data)
+}
+
+// DeleteNumberOfCycle godoc
+// @Summary      Delete a number of cycle
+// @Description  Deletes a number of cycle by ID
+// @Tags         admin-number-of-cycles
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Number of cycle ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/number-of-cycles/{id} [delete]
+func (h *AdminHandler) DeleteNumberOfCycle(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("number of cycle id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	data := h.service.DeleteNumberOfCycle(ctx, id)
+	return utils.FiberResponse(c, data)
+}

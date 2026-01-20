@@ -93,6 +93,13 @@ type CreateTransmissionRequest struct {
 	NameAe string `json:"name_ae"`
 }
 
+// Number of cycles requests
+type CreateNumberOfCycleRequest struct {
+	Name   string `json:"name" validate:"required,min=2,max=100"`
+	NameRu string `json:"name_ru"`
+	NameAe string `json:"name_ae"`
+}
+
 // Engine requests
 type CreateEngineRequest struct {
 	Name   string `json:"name" validate:"required,min=1,max=255"`

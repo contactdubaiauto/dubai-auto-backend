@@ -27,6 +27,8 @@ drop table if exists brands;
 drop table if exists users;
 drop table if exists ownership_types;
 
+CREATE TYPE price_type_enum AS ENUM ('USD', 'AED', 'RUB', 'EUR');
+
 create table countries (
     "id" serial primary key,
     "name" varchar(50) not null,
@@ -507,7 +509,7 @@ create table vehicles (
     "new" boolean not null default false,
     "color_id" int not null,
     "trade_in" int not null default 1, -- 1. No exchange 2. Equal value 3. More expensive 4. Cheaper 5. Not a car
-    "status" int not null default 3, -- 1-pending, 2-not sale (my cars), 3-on sale,
+    "status" int not null default 1, -- 1-pending, 2-not sale (my cars), 3-on sale,
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
     constraint fk_vehicles_color_id
@@ -596,14 +598,19 @@ create table videos (
 
 drop table if exists moto_images;
 drop table if exists moto_videos;
-drop table if exists motorcycle_parameters;
 drop table if exists motorcycles;
-drop table if exists moto_category_parameters;
-drop table if exists moto_parameter_values;
-drop table if exists moto_parameters;
+drop table if exists number_of_cycles;
 drop table if exists moto_models;
 drop table if exists moto_brands;
 drop table if exists moto_categories;
+
+create table number_of_cycles (
+    "id" serial primary key,
+    "name" varchar(100) not null,
+    "name_ru" varchar(100) default 'name_ru',
+    "name_ae" varchar(100) default 'name_ae',
+    "created_at" timestamp not null default now()
+);
 
 create table moto_categories (
     "id" serial primary key,
@@ -618,14 +625,10 @@ create table moto_brands (
     "name" varchar(100) not null,
     "name_ru" varchar(100) default 'name_ru',
     "name_ae" varchar(100) default 'name_ae',
-    "image" varchar(255),
-    "moto_category_id" integer not null,
-    "created_at" timestamp not null default now(),
-    constraint fk_moto_brands_moto_category_id
-        foreign key (moto_category_id)
-            references moto_categories(id)
-                on delete cascade
-                on update cascade
+    "model_count" int not null default 0,
+    "popular" boolean default false,
+    "logo" varchar(255),
+    "created_at" timestamp not null default now()
 );
 
 
@@ -643,52 +646,6 @@ create table moto_models (
                 on update cascade
 );
 
-create table moto_parameters (
-    "id" serial primary key,
-    "moto_category_id" int not null,
-    "name" varchar(100) not null,
-    "name_ru" varchar(100) default 'name_ru',
-    "name_ae" varchar(100) default 'name_ae',
-    "created_at" timestamp default now(),
-    constraint fk_moto_parameters_moto_category_id
-        foreign key (moto_category_id)
-            references moto_categories(id)
-                on delete cascade
-                on update cascade,
-    unique("name", "moto_category_id")
-);
-
-create table moto_parameter_values (
-    "id" serial primary key,
-    "moto_parameter_id" int not null,
-    "name" varchar(100) not null,
-    "name_ru" varchar(100) default 'name_ru',
-    "name_ae" varchar(100) default 'name_ae',
-    "created_at" timestamp default now(),
-    constraint fk_moto_parameter_values_moto_parameter_id
-        foreign key (moto_parameter_id)
-            references moto_parameters(id)
-                on delete cascade
-                on update cascade
-);
-
-create table moto_category_parameters (
-    "moto_category_id" int not null,
-    "moto_parameter_id" int not null,
-    "created_at" timestamp not null default now(),
-    constraint fk_moto_category_parameters_moto_category_id
-        foreign key (moto_category_id)
-            references moto_categories(id)
-                on delete cascade
-                on update cascade,
-    constraint fk_moto_category_parameters_moto_parameter_id
-        foreign key (moto_parameter_id)
-            references moto_parameters(id)
-                on delete cascade
-                on update cascade
-);
-
-CREATE TYPE price_type_enum AS ENUM ('USD', 'AED', 'RUB', 'EUR');
 
 create table motorcycles (
     "id" serial primary key,
@@ -704,28 +661,17 @@ create table motorcycles (
     "engine" int, -- cm3
     "power" int, -- hp
     "year" int not null,
-    "number_of_cycles" int,
+    "number_of_cycles_id" int not null,
+    "wheel" boolean not null default true, -- true left, false right
     "odometer" int not null default 0,
-    "crash" boolean,
-    "not_cleared" boolean,
-    "owners" int,
-    "date_of_purchase" varchar (50),
-    "warranty_date" varchar(50),
-    "ptc" boolean,
-    "vin_code" varchar(50) not null,
-    "certificate" varchar(50),
+    "crash" boolean not null default false,
+    "owners" int not null default 0,
+    "vin_code" varchar(50),
     "description" text,
-    "can_look_coordinate" varchar(50),
-    "phone_number" varchar(50) not null,
-    "refuse_dealers_calls" boolean,
-    "only_chat" boolean,
-    "protect_spam" boolean,
-    "verified_buyers" boolean,
-    "contact_person" varchar(50), -- email or user_id
-    "email" varchar(50),
+    "phone_numbers" varchar(255)[] not null,
     "price" int not null,
-    "price_type" price_type_enum not null default 'USD',
-    "status" int not null default 3, -- 1-pending, 2-not sale (my cars), 3-on sale,
+    "trade_in" int not null default 1, -- 1. No exchange 2. Equal value 3. More expensive 4. Cheaper 5. Not a car
+    "status" int not null default 1, -- 1-pending, 2-not sale (my cars), 3-on sale,
     "updated_at" timestamp not null default now(),
     "created_at" timestamp not null default now(),
     constraint fk_motorcycles_user_id
@@ -762,32 +708,12 @@ create table motorcycles (
         foreign key (city_id)
             references cities(id)
                 on delete cascade
+                on update cascade,
+    constraint fk_motorcycles_number_of_cycles_id
+        foreign key (number_of_cycles_id)
+            references number_of_cycles(id)
+                on delete cascade
                 on update cascade
-);
-
-
-create table motorcycle_parameters (
-    "id" serial primary key,
-    "motorcycle_id" int not null,
-    "moto_parameter_id" int not null,
-    "moto_parameter_value_id" int not null,
-    "created_at" timestamp default now(),
-    constraint fk_motorcycle_parameters_motorcycle_id
-        foreign key (motorcycle_id)
-            references motorcycles(id)
-                on delete cascade
-                on update cascade,
-    constraint fk_motorcycle_parameters_moto_parameter_id
-        foreign key (moto_parameter_id)
-            references moto_parameters(id)
-                on delete cascade
-                on update cascade,
-    constraint fk_motorcycle_parameters_moto_parameter_value_id
-        foreign key (moto_parameter_value_id)
-            references moto_parameter_values(id)
-                on delete cascade
-                on update cascade,
-    unique("motorcycle_id", "moto_parameter_id")
 );
 
 create table moto_images (
@@ -801,7 +727,6 @@ create table moto_images (
                 on delete cascade
                 on update cascade
 );
-
 
 create table moto_videos (
     "id" serial primary key,
@@ -839,14 +764,10 @@ create table com_brands (
     "name" varchar(100) not null,
     "name_ru" varchar(100) default 'name_ru',
     "name_ae" varchar(100) default 'name_ae',
-    "image" varchar(255),
-    "comtran_category_id" integer not null,
+    "model_count" int not null default 0,
+    "popular" boolean default false,
+    "logo" varchar(255),
     "created_at" timestamp not null default now(),
-    constraint fk_com_brands_comtran_category_id
-        foreign key (comtran_category_id)
-            references com_categories(id)
-                on delete cascade
-                on update cascade
 );
 
 create table com_models (

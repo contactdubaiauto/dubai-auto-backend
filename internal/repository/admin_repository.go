@@ -468,14 +468,18 @@ func (r *AdminRepository) AcceptApplication(ctx *fasthttp.RequestCtx, id int, pa
 		values ($1, $2, $3, $4, $5) 
 		ON CONFLICT (email) DO UPDATE
 		SET password = EXCLUDED.password, created_at = now(), updated_at = now(), role_id = EXCLUDED.role_id, phone = EXCLUDED.phone
-		RETURNING id
+		RETURNING id, phone
 	`
 	var userID int
-	err = tx.QueryRow(ctx, q, tempUser.Email, password, tempUser.FullName, tempUser.RoleID, tempUser.Phone).Scan(&userID)
+	var phone string
+	fmt.Println("tempUser.Phone", tempUser.Phone)
+	err = tx.QueryRow(ctx, q, tempUser.Email, password, tempUser.FullName, tempUser.RoleID, tempUser.Phone).Scan(&userID, &phone)
 
 	if err != nil {
 		return "", err
 	}
+
+	fmt.Println("scanned phone", phone)
 
 	q = `
 		insert into profiles (
@@ -2145,6 +2149,47 @@ func (r *AdminRepository) UpdateReport(ctx *fasthttp.RequestCtx, id int, req *mo
 
 func (r *AdminRepository) DeleteReport(ctx *fasthttp.RequestCtx, id int) error {
 	q := `DELETE FROM reports WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id)
+	return err
+}
+
+// Number of cycles CRUD operations
+func (r *AdminRepository) GetNumberOfCycles(ctx *fasthttp.RequestCtx) ([]model.AdminNumberOfCycleResponse, error) {
+	numberOfCycles := make([]model.AdminNumberOfCycleResponse, 0)
+	q := `SELECT id, name, name_ru, name_ae, created_at FROM number_of_cycles ORDER BY id DESC`
+
+	rows, err := r.db.Query(ctx, q)
+	if err != nil {
+		return numberOfCycles, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var numberOfCycle model.AdminNumberOfCycleResponse
+		if err := rows.Scan(&numberOfCycle.ID, &numberOfCycle.Name, &numberOfCycle.NameRu, &numberOfCycle.NameAe, &numberOfCycle.CreatedAt); err != nil {
+			return numberOfCycles, err
+		}
+		numberOfCycles = append(numberOfCycles, numberOfCycle)
+	}
+
+	return numberOfCycles, err
+}
+
+func (r *AdminRepository) CreateNumberOfCycle(ctx *fasthttp.RequestCtx, req *model.CreateNumberOfCycleRequest) (int, error) {
+	q := `INSERT INTO number_of_cycles (name, name_ru, name_ae) VALUES ($1, $2, $3) RETURNING id`
+	var id int
+	err := r.db.QueryRow(ctx, q, req.Name, req.NameRu, req.NameAe).Scan(&id)
+	return id, err
+}
+
+func (r *AdminRepository) UpdateNumberOfCycle(ctx *fasthttp.RequestCtx, id int, req *model.CreateNumberOfCycleRequest) error {
+	q := `UPDATE number_of_cycles SET name = $2, name_ru = $3, name_ae = $4 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.NameAe)
+	return err
+}
+
+func (r *AdminRepository) DeleteNumberOfCycle(ctx *fasthttp.RequestCtx, id int) error {
+	q := `DELETE FROM number_of_cycles WHERE id = $1`
 	_, err := r.db.Exec(ctx, q, id)
 	return err
 }

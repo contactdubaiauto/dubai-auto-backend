@@ -1,3 +1,12 @@
+
+insert into users (email, password, username, role_id, phone)
+		values ('berdalyyew99@gmail.com', '$2a$10$kSbU49.c9JX0wal1lTZhmunPVLLjPioqzLzZ3r5TS/YyJd89OtppS', 'berdalyyew99', 1, '222222') 
+		ON CONFLICT (email) DO UPDATE
+		SET password = EXCLUDED.password, created_at = now(), updated_at = now(), role_id = EXCLUDED.role_id, phone = EXCLUDED.phone
+		RETURNING *;
+
+
+
 -- Union query for vehicles, comtrans, and motorcycles
 with vs as (        
     select 

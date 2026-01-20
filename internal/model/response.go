@@ -407,6 +407,14 @@ type AdminFuelTypeResponse struct {
 	ID        int       `json:"id"`
 }
 
+type AdminNumberOfCycleResponse struct {
+	CreatedAt time.Time `json:"created_at"`
+	Name      string    `json:"name"`
+	NameRu    string    `json:"name_ru"`
+	NameAe    string    `json:"name_ae"`
+	ID        int       `json:"id"`
+}
+
 type AdminServiceTypeResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 	Name      string    `json:"name"`

@@ -495,486 +495,486 @@ func (h *AdminHandler) DeleteMotoModel(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
-// Moto Parameters handlers
+// // Moto Parameters handlers
 
-// GetMotoParameters godoc
-// @Summary      Get all moto parameters
-// @Description  Returns a list of all moto parameters
-// @Tags         admin-moto-parameters
-// @Produce      json
-// @Security     BearerAuth
-// @Success      200  {array}  model.AdminMotoParameterResponse
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/moto-parameters [get]
-func (h *AdminHandler) GetMotoParameters(c *fiber.Ctx) error {
-	ctx := c.Context()
-	data := h.service.GetMotoParameters(ctx)
-	return utils.FiberResponse(c, data)
-}
+// // GetMotoParameters godoc
+// // @Summary      Get all moto parameters
+// // @Description  Returns a list of all moto parameters
+// // @Tags         admin-moto-parameters
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminMotoParameterResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters [get]
+// func (h *AdminHandler) GetMotoParameters(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	data := h.service.GetMotoParameters(ctx)
+// 	return utils.FiberResponse(c, data)
+// }
 
-// CreateMotoParameter godoc
-// @Summary      Create a moto parameter
-// @Description  Creates a new moto parameter
-// @Tags         admin-moto-parameters
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        motoParameter  body      model.CreateMotoParameterRequest  true  "Moto parameter data"
-// @Success      200  {object}  model.SuccessWithId
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/moto-parameters [post]
-func (h *AdminHandler) CreateMotoParameter(c *fiber.Ctx) error {
-	var req model.CreateMotoParameterRequest
+// // CreateMotoParameter godoc
+// // @Summary      Create a moto parameter
+// // @Description  Creates a new moto parameter
+// // @Tags         admin-moto-parameters
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        motoParameter  body      model.CreateMotoParameterRequest  true  "Moto parameter data"
+// // @Success      200  {object}  model.SuccessWithId
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters [post]
+// func (h *AdminHandler) CreateMotoParameter(c *fiber.Ctx) error {
+// 	var req model.CreateMotoParameterRequest
 
-	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("invalid request body"),
-		})
-	}
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request body"),
+// 		})
+// 	}
 
-	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  err,
-		})
-	}
+// 	if err := h.validator.Validate(&req); err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  err,
+// 		})
+// 	}
 
-	ctx := c.Context()
-	data := h.service.CreateMotoParameter(ctx, &req)
-	return utils.FiberResponse(c, data)
-}
+// 	ctx := c.Context()
+// 	data := h.service.CreateMotoParameter(ctx, &req)
+// 	return utils.FiberResponse(c, data)
+// }
 
-// UpdateMotoParameter godoc
-// @Summary      Update a moto parameter
-// @Description  Updates a moto parameter by ID
-// @Tags         admin-moto-parameters
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id             path      int                            true  "Moto parameter ID"
-// @Param        motoParameter  body      model.UpdateMotoParameterRequest  true  "Moto parameter data"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/moto-parameters/{id} [put]
-func (h *AdminHandler) UpdateMotoParameter(c *fiber.Ctx) error {
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
+// // UpdateMotoParameter godoc
+// // @Summary      Update a moto parameter
+// // @Description  Updates a moto parameter by ID
+// // @Tags         admin-moto-parameters
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id             path      int                            true  "Moto parameter ID"
+// // @Param        motoParameter  body      model.UpdateMotoParameterRequest  true  "Moto parameter data"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters/{id} [put]
+// func (h *AdminHandler) UpdateMotoParameter(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
 
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("moto parameter id must be integer"),
-		})
-	}
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter id must be integer"),
+// 		})
+// 	}
 
-	var req model.UpdateMotoParameterRequest
+// 	var req model.UpdateMotoParameterRequest
 
-	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("invalid request body"),
-		})
-	}
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request body"),
+// 		})
+// 	}
 
-	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  err,
-		})
-	}
+// 	if err := h.validator.Validate(&req); err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  err,
+// 		})
+// 	}
 
-	ctx := c.Context()
-	data := h.service.UpdateMotoParameter(ctx, id, &req)
-	return utils.FiberResponse(c, data)
-}
+// 	ctx := c.Context()
+// 	data := h.service.UpdateMotoParameter(ctx, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
 
-// DeleteMotoParameter godoc
-// @Summary      Delete a moto parameter
-// @Description  Deletes a moto parameter by ID
-// @Tags         admin-moto-parameters
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id   path      int  true  "Moto parameter ID"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/moto-parameters/{id} [delete]
-func (h *AdminHandler) DeleteMotoParameter(c *fiber.Ctx) error {
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
+// // DeleteMotoParameter godoc
+// // @Summary      Delete a moto parameter
+// // @Description  Deletes a moto parameter by ID
+// // @Tags         admin-moto-parameters
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id   path      int  true  "Moto parameter ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters/{id} [delete]
+// func (h *AdminHandler) DeleteMotoParameter(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
 
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("moto parameter id must be integer"),
-		})
-	}
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter id must be integer"),
+// 		})
+// 	}
 
-	ctx := c.Context()
-	data := h.service.DeleteMotoParameter(ctx, id)
-	return utils.FiberResponse(c, data)
-}
+// 	ctx := c.Context()
+// 	data := h.service.DeleteMotoParameter(ctx, id)
+// 	return utils.FiberResponse(c, data)
+// }
 
-// Moto Parameter Values handlers
+// // Moto Parameter Values handlers
 
-// GetMotoParameterValues godoc
-// @Summary      Get moto parameter values
-// @Description  Returns a list of moto parameter values for a specific parameter
-// @Tags         admin-moto-parameter-values
-// @Produce      json
-// @Security     BearerAuth
-// @Param        moto_param_id   path      int  true  "Moto parameter ID"
-// @Success      200  {array}  model.AdminMotoParameterValueResponse
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/moto-parameters/{moto_param_id}/values [get]
-func (h *AdminHandler) GetMotoParameterValues(c *fiber.Ctx) error {
-	motoParamIdStr := c.Params("moto_param_id")
-	motoParamId, err := strconv.Atoi(motoParamIdStr)
+// // GetMotoParameterValues godoc
+// // @Summary      Get moto parameter values
+// // @Description  Returns a list of moto parameter values for a specific parameter
+// // @Tags         admin-moto-parameter-values
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        moto_param_id   path      int  true  "Moto parameter ID"
+// // @Success      200  {array}  model.AdminMotoParameterValueResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters/{moto_param_id}/values [get]
+// func (h *AdminHandler) GetMotoParameterValues(c *fiber.Ctx) error {
+// 	motoParamIdStr := c.Params("moto_param_id")
+// 	motoParamId, err := strconv.Atoi(motoParamIdStr)
 
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("moto parameter id must be integer"),
-		})
-	}
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter id must be integer"),
+// 		})
+// 	}
 
-	ctx := c.Context()
-	data := h.service.GetMotoParameterValues(ctx, motoParamId)
-	return utils.FiberResponse(c, data)
-}
+// 	ctx := c.Context()
+// 	data := h.service.GetMotoParameterValues(ctx, motoParamId)
+// 	return utils.FiberResponse(c, data)
+// }
 
-// CreateMotoParameterValue godoc
-// @Summary      Create a moto parameter value
-// @Description  Creates a new moto parameter value
-// @Tags         admin-moto-parameter-values
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        moto_param_id   path      int                                   true  "Moto parameter ID"
-// @Param        parameterValue  body      model.CreateMotoParameterValueRequest  true  "Moto parameter value data"
-// @Success      200  {object}  model.SuccessWithId
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/moto-parameters/{moto_param_id}/values [post]
-func (h *AdminHandler) CreateMotoParameterValue(c *fiber.Ctx) error {
-	motoParamIdStr := c.Params("moto_param_id")
-	motoParamId, err := strconv.Atoi(motoParamIdStr)
+// // CreateMotoParameterValue godoc
+// // @Summary      Create a moto parameter value
+// // @Description  Creates a new moto parameter value
+// // @Tags         admin-moto-parameter-values
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        moto_param_id   path      int                                   true  "Moto parameter ID"
+// // @Param        parameterValue  body      model.CreateMotoParameterValueRequest  true  "Moto parameter value data"
+// // @Success      200  {object}  model.SuccessWithId
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters/{moto_param_id}/values [post]
+// func (h *AdminHandler) CreateMotoParameterValue(c *fiber.Ctx) error {
+// 	motoParamIdStr := c.Params("moto_param_id")
+// 	motoParamId, err := strconv.Atoi(motoParamIdStr)
 
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("moto parameter id must be integer"),
-		})
-	}
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter id must be integer"),
+// 		})
+// 	}
 
-	var req model.CreateMotoParameterValueRequest
+// 	var req model.CreateMotoParameterValueRequest
 
-	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("invalid request body"),
-		})
-	}
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request body"),
+// 		})
+// 	}
 
-	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  err,
-		})
-	}
+// 	if err := h.validator.Validate(&req); err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  err,
+// 		})
+// 	}
 
-	ctx := c.Context()
-	data := h.service.CreateMotoParameterValue(ctx, motoParamId, &req)
-	return utils.FiberResponse(c, data)
-}
+// 	ctx := c.Context()
+// 	data := h.service.CreateMotoParameterValue(ctx, motoParamId, &req)
+// 	return utils.FiberResponse(c, data)
+// }
 
-// UpdateMotoParameterValue godoc
-// @Summary      Update a moto parameter value
-// @Description  Updates a moto parameter value by ID
-// @Tags         admin-moto-parameter-values
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        moto_param_id   path      int                                   true  "Moto parameter ID"
-// @Param        id              path      int                                   true  "Moto parameter value ID"
-// @Param        parameterValue  body      model.UpdateMotoParameterValueRequest  true  "Moto parameter value data"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/moto-parameters/{moto_param_id}/values/{id} [put]
-func (h *AdminHandler) UpdateMotoParameterValue(c *fiber.Ctx) error {
-	motoParamIdStr := c.Params("moto_param_id")
-	motoParamId, err := strconv.Atoi(motoParamIdStr)
+// // UpdateMotoParameterValue godoc
+// // @Summary      Update a moto parameter value
+// // @Description  Updates a moto parameter value by ID
+// // @Tags         admin-moto-parameter-values
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        moto_param_id   path      int                                   true  "Moto parameter ID"
+// // @Param        id              path      int                                   true  "Moto parameter value ID"
+// // @Param        parameterValue  body      model.UpdateMotoParameterValueRequest  true  "Moto parameter value data"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters/{moto_param_id}/values/{id} [put]
+// func (h *AdminHandler) UpdateMotoParameterValue(c *fiber.Ctx) error {
+// 	motoParamIdStr := c.Params("moto_param_id")
+// 	motoParamId, err := strconv.Atoi(motoParamIdStr)
 
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("moto parameter id must be integer"),
-		})
-	}
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter id must be integer"),
+// 		})
+// 	}
 
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
 
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("moto parameter value id must be integer"),
-		})
-	}
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter value id must be integer"),
+// 		})
+// 	}
 
-	var req model.UpdateMotoParameterValueRequest
+// 	var req model.UpdateMotoParameterValueRequest
 
-	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("invalid request body"),
-		})
-	}
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request body"),
+// 		})
+// 	}
 
-	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  err,
-		})
-	}
+// 	if err := h.validator.Validate(&req); err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  err,
+// 		})
+// 	}
 
-	ctx := c.Context()
-	data := h.service.UpdateMotoParameterValue(ctx, motoParamId, id, &req)
-	return utils.FiberResponse(c, data)
-}
+// 	ctx := c.Context()
+// 	data := h.service.UpdateMotoParameterValue(ctx, motoParamId, id, &req)
+// 	return utils.FiberResponse(c, data)
+// }
 
-// DeleteMotoParameterValue godoc
-// @Summary      Delete a moto parameter value
-// @Description  Deletes a moto parameter value by ID
-// @Tags         admin-moto-parameter-values
-// @Produce      json
-// @Security     BearerAuth
-// @Param        moto_param_id   path      int  true  "Moto parameter ID"
-// @Param        id              path      int  true  "Moto parameter value ID"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/moto-parameters/{moto_param_id}/values/{id} [delete]
-func (h *AdminHandler) DeleteMotoParameterValue(c *fiber.Ctx) error {
-	motoParamIdStr := c.Params("moto_param_id")
-	motoParamId, err := strconv.Atoi(motoParamIdStr)
+// // DeleteMotoParameterValue godoc
+// // @Summary      Delete a moto parameter value
+// // @Description  Deletes a moto parameter value by ID
+// // @Tags         admin-moto-parameter-values
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        moto_param_id   path      int  true  "Moto parameter ID"
+// // @Param        id              path      int  true  "Moto parameter value ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-parameters/{moto_param_id}/values/{id} [delete]
+// func (h *AdminHandler) DeleteMotoParameterValue(c *fiber.Ctx) error {
+// 	motoParamIdStr := c.Params("moto_param_id")
+// 	motoParamId, err := strconv.Atoi(motoParamIdStr)
 
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("moto parameter id must be integer"),
-		})
-	}
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter id must be integer"),
+// 		})
+// 	}
 
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
 
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("moto parameter value id must be integer"),
-		})
-	}
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter value id must be integer"),
+// 		})
+// 	}
 
-	ctx := c.Context()
-	data := h.service.DeleteMotoParameterValue(ctx, motoParamId, id)
-	return utils.FiberResponse(c, data)
-}
+// 	ctx := c.Context()
+// 	data := h.service.DeleteMotoParameterValue(ctx, motoParamId, id)
+// 	return utils.FiberResponse(c, data)
+// }
 
-// Moto Category Parameters handlers
+// // Moto Category Parameters handlers
 
-// GetMotoCategoryParameters godoc
-// @Summary      Get moto category parameters
-// @Description  Returns a list of moto category parameters for a specific category
-// @Tags         admin-moto-category-parameters
-// @Produce      json
-// @Security     BearerAuth
-// @Param        category_id   path      int  true  "Moto category ID"
-// @Success      200  {array}  model.AdminMotoCategoryParameterResponse
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/moto-categories/{category_id}/parameters [get]
-func (h *AdminHandler) GetMotoCategoryParameters(c *fiber.Ctx) error {
-	categoryIdStr := c.Params("category_id")
-	categoryId, err := strconv.Atoi(categoryIdStr)
+// // GetMotoCategoryParameters godoc
+// // @Summary      Get moto category parameters
+// // @Description  Returns a list of moto category parameters for a specific category
+// // @Tags         admin-moto-category-parameters
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        category_id   path      int  true  "Moto category ID"
+// // @Success      200  {array}  model.AdminMotoCategoryParameterResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-categories/{category_id}/parameters [get]
+// func (h *AdminHandler) GetMotoCategoryParameters(c *fiber.Ctx) error {
+// 	categoryIdStr := c.Params("category_id")
+// 	categoryId, err := strconv.Atoi(categoryIdStr)
 
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("category id must be integer"),
-		})
-	}
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("category id must be integer"),
+// 		})
+// 	}
 
-	ctx := c.Context()
-	data := h.service.GetMotoCategoryParameters(ctx, categoryId)
-	return utils.FiberResponse(c, data)
-}
+// 	ctx := c.Context()
+// 	data := h.service.GetMotoCategoryParameters(ctx, categoryId)
+// 	return utils.FiberResponse(c, data)
+// }
 
-// CreateMotoCategoryParameter godoc
-// @Summary      Create a moto category parameter
-// @Description  Creates a new moto category parameter
-// @Tags         admin-moto-category-parameters
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        category_id   path      int                                     true  "Moto category ID"
-// @Param        parameter     body      model.CreateMotoCategoryParameterRequest  true  "Moto category parameter data"
-// @Success      200  {object}  model.SuccessWithId
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/moto-categories/{category_id}/parameters [post]
-func (h *AdminHandler) CreateMotoCategoryParameter(c *fiber.Ctx) error {
-	categoryIdStr := c.Params("category_id")
-	categoryId, err := strconv.Atoi(categoryIdStr)
+// // CreateMotoCategoryParameter godoc
+// // @Summary      Create a moto category parameter
+// // @Description  Creates a new moto category parameter
+// // @Tags         admin-moto-category-parameters
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        category_id   path      int                                     true  "Moto category ID"
+// // @Param        parameter     body      model.CreateMotoCategoryParameterRequest  true  "Moto category parameter data"
+// // @Success      200  {object}  model.SuccessWithId
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-categories/{category_id}/parameters [post]
+// func (h *AdminHandler) CreateMotoCategoryParameter(c *fiber.Ctx) error {
+// 	categoryIdStr := c.Params("category_id")
+// 	categoryId, err := strconv.Atoi(categoryIdStr)
 
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("category id must be integer"),
-		})
-	}
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("category id must be integer"),
+// 		})
+// 	}
 
-	var req model.CreateMotoCategoryParameterRequest
+// 	var req model.CreateMotoCategoryParameterRequest
 
-	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("invalid request body"),
-		})
-	}
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request body"),
+// 		})
+// 	}
 
-	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  err,
-		})
-	}
+// 	if err := h.validator.Validate(&req); err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  err,
+// 		})
+// 	}
 
-	ctx := c.Context()
-	data := h.service.CreateMotoCategoryParameter(ctx, categoryId, &req)
-	return utils.FiberResponse(c, data)
-}
+// 	ctx := c.Context()
+// 	data := h.service.CreateMotoCategoryParameter(ctx, categoryId, &req)
+// 	return utils.FiberResponse(c, data)
+// }
 
-// UpdateMotoCategoryParameter godoc
-// @Summary      Update a moto category parameter
-// @Description  Updates a moto category parameter by ID
-// @Tags         admin-moto-category-parameters
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        category_id   path      int                                     true  "Moto category ID"
-// @Param        parameter_id  path      int                                     true  "Moto parameter ID"
-// @Param        parameter     body      model.UpdateMotoCategoryParameterRequest  true  "Moto category parameter data"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/moto-categories/{category_id}/parameters/{parameter_id} [put]
-func (h *AdminHandler) UpdateMotoCategoryParameter(c *fiber.Ctx) error {
-	categoryIdStr := c.Params("category_id")
-	categoryId, err := strconv.Atoi(categoryIdStr)
+// // UpdateMotoCategoryParameter godoc
+// // @Summary      Update a moto category parameter
+// // @Description  Updates a moto category parameter by ID
+// // @Tags         admin-moto-category-parameters
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        category_id   path      int                                     true  "Moto category ID"
+// // @Param        parameter_id  path      int                                     true  "Moto parameter ID"
+// // @Param        parameter     body      model.UpdateMotoCategoryParameterRequest  true  "Moto category parameter data"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-categories/{category_id}/parameters/{parameter_id} [put]
+// func (h *AdminHandler) UpdateMotoCategoryParameter(c *fiber.Ctx) error {
+// 	categoryIdStr := c.Params("category_id")
+// 	categoryId, err := strconv.Atoi(categoryIdStr)
 
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("category id must be integer"),
-		})
-	}
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("category id must be integer"),
+// 		})
+// 	}
 
-	parameterIdStr := c.Params("parameter_id")
-	parameterId, err := strconv.Atoi(parameterIdStr)
+// 	parameterIdStr := c.Params("parameter_id")
+// 	parameterId, err := strconv.Atoi(parameterIdStr)
 
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("moto parameter id must be integer"),
-		})
-	}
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter id must be integer"),
+// 		})
+// 	}
 
-	var req model.UpdateMotoCategoryParameterRequest
+// 	var req model.UpdateMotoCategoryParameterRequest
 
-	if err := c.BodyParser(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("invalid request body"),
-		})
-	}
+// 	if err := c.BodyParser(&req); err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("invalid request body"),
+// 		})
+// 	}
 
-	if err := h.validator.Validate(&req); err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  err,
-		})
-	}
+// 	if err := h.validator.Validate(&req); err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  err,
+// 		})
+// 	}
 
-	ctx := c.Context()
-	data := h.service.UpdateMotoCategoryParameter(ctx, categoryId, parameterId, &req)
-	return utils.FiberResponse(c, data)
-}
+// 	ctx := c.Context()
+// 	data := h.service.UpdateMotoCategoryParameter(ctx, categoryId, parameterId, &req)
+// 	return utils.FiberResponse(c, data)
+// }
 
-// DeleteMotoCategoryParameter godoc
-// @Summary      Delete a moto category parameter
-// @Description  Deletes a moto category parameter by ID
-// @Tags         admin-moto-category-parameters
-// @Produce      json
-// @Security     BearerAuth
-// @Param        category_id   path      int  true  "Moto category ID"
-// @Param        parameter_id  path      int  true  "Moto parameter ID"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/moto-categories/{category_id}/parameters/{parameter_id} [delete]
-func (h *AdminHandler) DeleteMotoCategoryParameter(c *fiber.Ctx) error {
-	categoryIdStr := c.Params("category_id")
-	categoryId, err := strconv.Atoi(categoryIdStr)
+// // DeleteMotoCategoryParameter godoc
+// // @Summary      Delete a moto category parameter
+// // @Description  Deletes a moto category parameter by ID
+// // @Tags         admin-moto-category-parameters
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        category_id   path      int  true  "Moto category ID"
+// // @Param        parameter_id  path      int  true  "Moto parameter ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/moto-categories/{category_id}/parameters/{parameter_id} [delete]
+// func (h *AdminHandler) DeleteMotoCategoryParameter(c *fiber.Ctx) error {
+// 	categoryIdStr := c.Params("category_id")
+// 	categoryId, err := strconv.Atoi(categoryIdStr)
 
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("category id must be integer"),
-		})
-	}
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("category id must be integer"),
+// 		})
+// 	}
 
-	parameterIdStr := c.Params("parameter_id")
-	parameterId, err := strconv.Atoi(parameterIdStr)
+// 	parameterIdStr := c.Params("parameter_id")
+// 	parameterId, err := strconv.Atoi(parameterIdStr)
 
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("moto parameter id must be integer"),
-		})
-	}
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("moto parameter id must be integer"),
+// 		})
+// 	}
 
-	ctx := c.Context()
-	data := h.service.DeleteMotoCategoryParameter(ctx, categoryId, parameterId)
-	return utils.FiberResponse(c, data)
-}
+// 	ctx := c.Context()
+// 	data := h.service.DeleteMotoCategoryParameter(ctx, categoryId, parameterId)
+// 	return utils.FiberResponse(c, data)
+// }

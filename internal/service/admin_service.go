@@ -1649,3 +1649,44 @@ func (s *AdminService) DeleteReport(ctx *fasthttp.RequestCtx, id string) model.R
 
 	return model.Response{Data: model.Success{Message: "Report deleted successfully"}}
 }
+
+// Number of cycles service methods
+func (s *AdminService) GetNumberOfCycles(ctx *fasthttp.RequestCtx) model.Response {
+	numberOfCycles, err := s.repo.GetNumberOfCycles(ctx)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: numberOfCycles}
+}
+
+func (s *AdminService) CreateNumberOfCycle(ctx *fasthttp.RequestCtx, req *model.CreateNumberOfCycleRequest) model.Response {
+	id, err := s.repo.CreateNumberOfCycle(ctx, req)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Number of cycle created successfully"}}
+}
+
+func (s *AdminService) UpdateNumberOfCycle(ctx *fasthttp.RequestCtx, id int, req *model.CreateNumberOfCycleRequest) model.Response {
+	err := s.repo.UpdateNumberOfCycle(ctx, id, req)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Number of cycle updated successfully"}}
+}
+
+func (s *AdminService) DeleteNumberOfCycle(ctx *fasthttp.RequestCtx, id int) model.Response {
+	err := s.repo.DeleteNumberOfCycle(ctx, id)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Number of cycle deleted successfully"}}
+}

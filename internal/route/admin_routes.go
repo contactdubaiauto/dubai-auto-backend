@@ -186,14 +186,6 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, v
 		motoCategories.Delete("/:id", adminHandler.DeleteMotoCategory)
 	}
 
-	// Moto Category Parameters routes
-	{
-		motoCategories.Get("/:category_id/parameters", adminHandler.GetMotoCategoryParameters)
-		motoCategories.Post("/:category_id/parameters", adminHandler.CreateMotoCategoryParameter)
-		motoCategories.Put("/:category_id/parameters/:parameter_id", adminHandler.UpdateMotoCategoryParameter)
-		motoCategories.Delete("/:category_id/parameters/:parameter_id", adminHandler.DeleteMotoCategoryParameter)
-	}
-
 	// Moto Brands routes
 	motoBrands := r.Group("/moto-brands")
 	{
@@ -214,23 +206,6 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, v
 		motoModels.Delete("/:id", adminHandler.DeleteMotoModel)
 	}
 
-	// Moto Parameters routes
-	motoParameters := r.Group("/moto-parameters")
-	{
-		motoParameters.Get("/", adminHandler.GetMotoParameters)
-		motoParameters.Post("/", adminHandler.CreateMotoParameter)
-		motoParameters.Put("/:id", adminHandler.UpdateMotoParameter)
-		motoParameters.Delete("/:id", adminHandler.DeleteMotoParameter)
-	}
-
-	// Moto Parameter Values routes
-	{
-		motoParameters.Get("/:moto_param_id/values", adminHandler.GetMotoParameterValues)
-		motoParameters.Post("/:moto_param_id/values", adminHandler.CreateMotoParameterValue)
-		motoParameters.Put("/:moto_param_id/values/:id", adminHandler.UpdateMotoParameterValue)
-		motoParameters.Delete("/:moto_param_id/values/:id", adminHandler.DeleteMotoParameterValue)
-	}
-
 	// Comtrans Categories routes
 	comtransCategories := r.Group("/comtrans-categories")
 	{
@@ -239,14 +214,6 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, v
 		comtransCategories.Post("/", adminHandler.CreateComtransCategory)
 		comtransCategories.Put("/:id", adminHandler.UpdateComtransCategory)
 		comtransCategories.Delete("/:id", adminHandler.DeleteComtransCategory)
-	}
-
-	// Comtrans Category Parameters routes
-	{
-		comtransCategories.Get("/:category_id/parameters", adminHandler.GetComtransCategoryParameters)
-		comtransCategories.Post("/:category_id/parameters", adminHandler.CreateComtransCategoryParameter)
-		comtransCategories.Put("/:category_id/parameters/:id", adminHandler.UpdateComtransCategoryParameter)
-		comtransCategories.Delete("/:category_id/parameters/:id", adminHandler.DeleteComtransCategoryParameter)
 	}
 
 	// Comtrans Brands routes
@@ -267,23 +234,6 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, v
 		comtransModels.Post("/", adminHandler.CreateComtransModel)
 		comtransModels.Put("/:id", adminHandler.UpdateComtransModel)
 		comtransModels.Delete("/:id", adminHandler.DeleteComtransModel)
-	}
-
-	// Comtrans Parameters routes
-	comtransParameters := r.Group("/comtrans-parameters")
-	{
-		comtransParameters.Get("/", adminHandler.GetComtransParameters)
-		comtransParameters.Post("/", adminHandler.CreateComtransParameter)
-		comtransParameters.Put("/:id", adminHandler.UpdateComtransParameter)
-		comtransParameters.Delete("/:id", adminHandler.DeleteComtransParameter)
-	}
-
-	// Comtrans Parameter Values routes
-	{
-		comtransParameters.Get("/:parameter_id/values", adminHandler.GetComtransParameterValues)
-		comtransParameters.Post("/:parameter_id/values", adminHandler.CreateComtransParameterValue)
-		comtransParameters.Put("/:parameter_id/values/:id", adminHandler.UpdateComtransParameterValue)
-		comtransParameters.Delete("/:parameter_id/values/:id", adminHandler.DeleteComtransParameterValue)
 	}
 
 	// company types
@@ -313,6 +263,15 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, v
 		reports.Get("/:id", adminHandler.GetReportByID)
 		reports.Put("/:id", adminHandler.UpdateReport)
 		reports.Delete("/:id", adminHandler.DeleteReport)
+	}
+
+	// number of cycles
+	numberOfCycles := r.Group("/number-of-cycles")
+	{
+		numberOfCycles.Get("/", adminHandler.GetNumberOfCycles)
+		numberOfCycles.Post("/", adminHandler.CreateNumberOfCycle)
+		numberOfCycles.Put("/:id", adminHandler.UpdateNumberOfCycle)
+		numberOfCycles.Delete("/:id", adminHandler.DeleteNumberOfCycle)
 	}
 
 }

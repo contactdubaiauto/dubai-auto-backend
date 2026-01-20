@@ -319,4 +319,5 @@ create table messages (
 );
 
 
--- 26.12.2025
+-- 19.01.2026
+alter table vehicles alter column status set default 1;
