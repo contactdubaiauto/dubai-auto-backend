@@ -5968,67 +5968,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/admin/moto-categories/{id}/brands": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Returns a list of all moto brands by category ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-moto-categories"
-                ],
-                "summary": "Get moto brands by category ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Moto category ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.AdminMotoBrandResponse"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/admin/moto-models": {
             "get": {
                 "security": [
@@ -15928,15 +15867,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "image": {
-                    "type": "string"
-                },
-                "moto_category_id": {
-                    "type": "integer"
-                },
-                "moto_category_name": {
-                    "type": "string"
-                },
-                "moto_category_name_ru": {
                     "type": "string"
                 },
                 "name": {

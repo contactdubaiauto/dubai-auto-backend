@@ -58,6 +58,7 @@ func (h *AdminHandler) CreateUser(c *fiber.Ctx) error {
 // @Tags         admin-users
 // @Produce      json
 // @Security     BearerAuth
+// @Param        role_id   query      int  false  "Role ID"
 // @Success      200   {array}   model.UserResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  auth.ErrorResponse
@@ -66,7 +67,8 @@ func (h *AdminHandler) CreateUser(c *fiber.Ctx) error {
 // @Router       /api/v1/admin/users [get]
 func (h *AdminHandler) GetUsers(c *fiber.Ctx) error {
 	ctx := c.Context()
-	data := h.service.GetUsers(ctx)
+	qRoleID := c.Query("role_id")
+	data := h.service.GetUsers(ctx, qRoleID)
 	return utils.FiberResponse(c, data)
 }
 

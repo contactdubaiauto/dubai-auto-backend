@@ -44,8 +44,12 @@ func (s *AdminService) CreateUser(ctx *fasthttp.RequestCtx, req *model.CreateUse
 	return model.Response{Data: model.SuccessWithId{Id: userID, Message: "User created successfully"}}
 }
 
-func (s *AdminService) GetUsers(ctx *fasthttp.RequestCtx) model.Response {
-	users, err := s.repo.GetUsers(ctx)
+func (s *AdminService) GetUsers(ctx *fasthttp.RequestCtx, qRoleID string) model.Response {
+	qRoleIDInt, err := strconv.Atoi(qRoleID)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusBadRequest}
+	}
+	users, err := s.repo.GetUsers(ctx, qRoleIDInt)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}

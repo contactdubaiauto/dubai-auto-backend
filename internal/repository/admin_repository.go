@@ -31,7 +31,7 @@ func (r *AdminRepository) CreateUser(ctx *fasthttp.RequestCtx, req *model.Create
 	return id, err
 }
 
-func (r *AdminRepository) GetUsers(ctx *fasthttp.RequestCtx) ([]model.UserResponse, error) {
+func (r *AdminRepository) GetUsers(ctx *fasthttp.RequestCtx, qRoleID int) ([]model.UserResponse, error) {
 	users := make([]model.UserResponse, 0)
 	q := `
 		SELECT 
@@ -43,9 +43,10 @@ func (r *AdminRepository) GetUsers(ctx *fasthttp.RequestCtx) ([]model.UserRespon
 			created_at::text, 
 			updated_at::text
 		FROM users
+		WHERE role_id = $1
 		ORDER BY id DESC
 	`
-	rows, err := r.db.Query(ctx, q)
+	rows, err := r.db.Query(ctx, q, qRoleID)
 	if err != nil {
 		return users, err
 	}
