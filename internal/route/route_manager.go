@@ -22,11 +22,11 @@ func Init(app *fiber.App, config *config.Config, db *pgxpool.Pool, firebaseServi
 			authRoute := v1.Group("/auth")
 			SetupAuthRoutes(authRoute, config, db, validator)
 
-			motorcycleRoute := v1.Group("/motorcycles")
-			SetupMotorcycleRoutes(motorcycleRoute, config, db, validator)
+			// motorcycleRoute := v1.Group("/motorcycles")
+			// SetupMotorcycleRoutes(motorcycleRoute, config, db, validator)
 
-			comtransRoute := v1.Group("/comtrans")
-			SetupComtranRoutes(comtransRoute, config, db, validator)
+			// comtransRoute := v1.Group("/comtrans")
+			// SetupComtranRoutes(comtransRoute, config, db, validator)
 
 			adminRoute := v1.Group("/admin", auth.TokenGuard, auth.AdminGuard)
 			SetupAdminRoutes(adminRoute, config, db, validator)

@@ -229,7 +229,7 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, nameColumn st
 			cocs.` + nameColumn + ` as comtran_category,
 			cbs.` + nameColumn + ` as comtran_brand,
 			cms.` + nameColumn + ` as comtran_model,
-			fts.` + nameColumn + ` as fuel_type,
+			ces.` + nameColumn + ` as fuel_type,
 			cs.name as city,
 			cls.` + nameColumn + ` as color,
 			CASE
@@ -244,7 +244,7 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, nameColumn st
 		left join com_categories cocs on cocs.id = cts.comtran_category_id
 		left join com_brands cbs on cbs.id = cts.comtran_brand_id
 		left join com_models cms on cms.id = cts.comtran_model_id
-		left join fuel_types fts on fts.id = cts.fuel_type_id
+		left join com_engines ces on ces.id = cts.engine_id
 		left join cities cs on cs.id = cts.city_id
 		left join colors cls on cls.id = cts.color_id
 		LEFT JOIN LATERAL (
@@ -418,9 +418,9 @@ func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransI
 			cts.updated_at,
 			cts.created_at,
 			cocs.` + nameColumn + ` as comtran_category,
-			cbs.name as comtran_brand,
+			cbs.` + nameColumn + ` as comtran_brand,
 			cms.` + nameColumn + ` as comtran_model,
-			fts.` + nameColumn + ` as fuel_type,
+			ces.` + nameColumn + ` as fuel_type,
 			cs.name as city,
 			cls.` + nameColumn + ` as color,
 			CASE
@@ -435,7 +435,7 @@ func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransI
 		left join com_categories cocs on cocs.id = cts.comtran_category_id
 		left join com_brands cbs on cbs.id = cts.comtran_brand_id
 		left join com_models cms on cms.id = cts.comtran_model_id
-		left join fuel_types fts on fts.id = cts.fuel_type_id
+		left join com_engines ces on ces.id = cts.engine_id
 		left join cities cs on cs.id = cts.city_id
 		left join colors cls on cls.id = cts.color_id
 		LEFT JOIN LATERAL (
@@ -527,9 +527,9 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 			cts.updated_at,
 			cts.created_at,
 			cocs.` + nameColumn + ` as comtran_category,
-			cbs.name as comtran_brand,
+			cbs.` + nameColumn + ` as comtran_brand,
 			cms.` + nameColumn + ` as comtran_model,
-			fts.` + nameColumn + ` as fuel_type,
+			ces.` + nameColumn + ` as fuel_type,
 			cs.name as city,
 			cls.` + nameColumn + ` as color,
 			CASE
@@ -544,7 +544,7 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 		left join com_categories cocs on cocs.id = cts.comtran_category_id
 		left join com_brands cbs on cbs.id = cts.comtran_brand_id
 		left join com_models cms on cms.id = cts.comtran_model_id
-		left join fuel_types fts on fts.id = cts.fuel_type_id
+		left join com_engines ces on ces.id = cts.engine_id
 		left join cities cs on cs.id = cts.city_id
 		left join colors cls on cls.id = cts.color_id
 		LEFT JOIN LATERAL (

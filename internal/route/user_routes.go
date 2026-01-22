@@ -30,9 +30,6 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		// filter
 		r.Get("/filter-brands", auth.LanguageChecker, userHandler.GetFilterBrands)
 		r.Get("/cities", auth.LanguageChecker, userHandler.GetCities)
-		// r.Get("/brands/filter-models", userHandler.GetFilterModelsByBrands)
-		// r.Get("/brands/models/years", userHandler.GetYearsByModels)
-		// r.Get("/brands/models/body-types", userHandler.GetBodyTypesByModels)
 		r.Get("/models/generations", auth.LanguageChecker, userHandler.GetGenerationsByModels)
 		r.Get("/body-types", auth.LanguageChecker, userHandler.GetBodyTypes)
 		r.Get("/transmissions", auth.LanguageChecker, userHandler.GetTransmissions)
@@ -44,7 +41,6 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Get("/third-party", userHandler.GetThirdPartyUsers)
 
 		// profile
-		// r.Get("/profile/my-cars/:id", auth.TokenGuard, auth.LanguageChecker, userHandler.GetMyCars) //todo: write GetMyCarsByID
 		r.Get("/profile/my-cars", auth.TokenGuard, auth.LanguageChecker, userHandler.GetMyCars)
 		r.Get("/profile/on-sale", auth.TokenGuard, auth.LanguageChecker, userHandler.OnSale)
 		r.Get("/profile", auth.TokenGuard, auth.LanguageChecker, userHandler.GetProfile)
@@ -88,16 +84,16 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Delete("/motorcycles/:id", auth.TokenGuard, userHandler.DeleteMotorcycle)
 
 		// comtrans
-		r.Post("/comtrans", auth.TokenGuard, userHandler.CreateComtrans)
-		r.Get("/comtrans", auth.TokenGuard, userHandler.GetComtrans)
-		r.Post("/comtrans/:id/buy", auth.TokenGuard, userHandler.BuyComtrans)
-		r.Post("/comtrans/:id/cancel", auth.TokenGuard, userHandler.CancelComtrans)
-		r.Post("/comtrans/:id/dont-sell", auth.TokenGuard, userHandler.DontSellComtrans)
-		r.Post("/comtrans/:id/sell", auth.TokenGuard, userHandler.SellComtrans)
-		r.Put("/comtrans", auth.TokenGuard, userHandler.UpdateComtrans)
-		r.Delete("/comtrans/:id/images", auth.TokenGuard, userHandler.DeleteComtransImage)
-		r.Delete("/comtrans/:id/videos", auth.TokenGuard, userHandler.DeleteComtransVideo)
-		r.Delete("/comtrans/:id", auth.TokenGuard, userHandler.DeleteComtrans)
+		r.Post("/comtrans", auth.TokenGuard, auth.LanguageChecker, userHandler.CreateComtrans)
+		r.Get("/comtrans", auth.TokenGuard, auth.LanguageChecker, userHandler.GetComtrans)
+		r.Post("/comtrans/:id/buy", auth.TokenGuard, auth.LanguageChecker, userHandler.BuyComtrans)
+		r.Post("/comtrans/:id/cancel", auth.TokenGuard, auth.LanguageChecker, userHandler.CancelComtrans)
+		r.Post("/comtrans/:id/dont-sell", auth.TokenGuard, auth.LanguageChecker, userHandler.DontSellComtrans)
+		r.Post("/comtrans/:id/sell", auth.TokenGuard, auth.LanguageChecker, userHandler.SellComtrans)
+		r.Put("/comtrans", auth.TokenGuard, auth.LanguageChecker, userHandler.UpdateComtrans)
+		r.Delete("/comtrans/:id/images", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteComtransImage)
+		r.Delete("/comtrans/:id/videos", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteComtransVideo)
+		r.Delete("/comtrans/:id", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteComtrans)
 
 		// likes
 		r.Get("/likes", auth.TokenGuard, auth.LanguageChecker, userHandler.Likes)

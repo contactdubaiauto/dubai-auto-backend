@@ -31,9 +31,9 @@ func (r *AuthRepository) UserRegisterDevice(ctx *fasthttp.RequestCtx, userID int
 func (r *AuthRepository) UserLoginGoogle(ctx *fasthttp.RequestCtx, claims model.GoogleUserInfo) (model.UserByEmail, error) {
 	var userByEmail model.UserByEmail
 	q := `
-		INSERT INTO users (email, password, username)
-		VALUES ($1, 'google', $2)
-		ON CONFLICT (email) DO UPDATE
+		INSERT INTO users (email, password, username, phone)
+		VALUES ($1, 'google', $2, NULL)
+		ON CONFLICT (email, phone) DO UPDATE
 		SET email = EXCLUDED.email, username = EXCLUDED.username
 		RETURNING id, role_id;
 	`
@@ -232,9 +232,9 @@ func (r *AuthRepository) TempUserPhoneGetOrRegister(ctx *fasthttp.RequestCtx, us
 func (r *AuthRepository) UserEmailGetOrRegister(ctx *fasthttp.RequestCtx, username, email, password string) (int, error) {
 	var userID int
 	q := `
-		insert into users (email, password, username)
-		values ($1, $2, $3)
-		on conflict (email)
+		insert into users (email, password, username, phone)
+		values ($1, $2, $3, NULL)
+		on conflict (email, phone)
 		do update
 		set 
 			password = EXCLUDED.password
@@ -259,9 +259,9 @@ func (r *AuthRepository) UserPhoneGetOrRegister(ctx *fasthttp.RequestCtx, userna
 
 	var userID int
 	q := `
-		insert into users (phone, password, username)
-		values ($1, $2, $3)
-		on conflict (phone)
+		insert into users (phone, password, username, email)
+		values ($1, $2, $3, NULL)
+		on conflict (email, phone)
 		do update
 		set 
 			password = EXCLUDED.password
