@@ -1536,26 +1536,6 @@ func (h *UserHandler) CreateItemReports(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
-// GetItemReports godoc
-// @Summary      Get user item reports
-// @Description  Returns a list of item reports (car, moto, comtran) created by the authenticated user
-// @Tags         report
-// @Produce      json
-// @Security     BearerAuth
-// @Success      200  {array}   model.GetReportsResponse
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      404  {object}  model.ResultMessage
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/users/item-reports [get]
-func (h *UserHandler) GetItemReports(c *fiber.Ctx) error {
-	userID := c.Locals("id").(int)
-
-	data := h.UserService.GetItemReports(c.Context(), userID)
-	return utils.FiberResponse(c, data)
-}
-
 // Motorcycle handlers
 
 // CreateMotorcycle godoc

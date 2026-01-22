@@ -583,18 +583,3 @@ func (s *UserService) GetReports(ctx *fasthttp.RequestCtx, userID int) model.Res
 		Data: reports,
 	}
 }
-
-func (s *UserService) GetItemReports(ctx *fasthttp.RequestCtx, userID int) model.Response {
-	reports, err := s.UserRepository.GetItemReports(ctx, userID)
-
-	if err != nil {
-		return model.Response{
-			Status: http.StatusInternalServerError,
-			Error:  err,
-		}
-	}
-
-	return model.Response{
-		Data: reports,
-	}
-}

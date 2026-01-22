@@ -103,13 +103,13 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		// messages
 		r.Post("/messages/files", auth.TokenGuard, userHandler.CreateMessageFile)
 
-		// users
-		r.Get("/:id", auth.LanguageChecker, userHandler.GetUserByID)
-
 		// Report
 		r.Post("/reports", auth.TokenGuard, userHandler.CreateReport)
 		r.Get("/reports", auth.TokenGuard, userHandler.GetReports)
 		r.Post("/item-reports", auth.TokenGuard, userHandler.CreateItemReports)
-		r.Get("/item-reports", auth.TokenGuard, userHandler.GetItemReports)
+
+		// users
+		r.Get("/:id", auth.LanguageChecker, userHandler.GetUserByID)
+
 	}
 }

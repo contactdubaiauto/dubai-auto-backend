@@ -1919,19 +1919,43 @@ func (r *UserRepository) GetReports(ctx *fasthttp.RequestCtx, userID int) ([]mod
 	reports := make([]model.GetReportsResponse, 0)
 	q := `
 		SELECT 
-			id,
-			reported_user_id,
-			report_type,
-			report_description,
-			report_status,
-			created_at,
-			item_type,
-			item_id
-		FROM reports
-		WHERE user_id = $1
-		ORDER BY created_at DESC
+			r.id,
+			r.reported_user_id,
+			r.report_type,
+			r.report_description,
+			r.report_status,
+			r.created_at,
+			r.item_type,
+			r.item_id,
+			json_build_object(
+				'id', reporter_user.id,
+				'username', reporter_profile.username,
+				'avatar', CASE
+					WHEN reporter_profile.avatar IS NULL OR reporter_profile.avatar = '' THEN NULL
+					ELSE $1 || reporter_profile.avatar
+				END,
+				'role_id', reporter_user.role_id,
+				'contacts', reporter_profile.contacts
+			) as reporter,
+			json_build_object(
+				'id', reported_user.id,
+				'username', reported_profile.username,
+				'avatar', CASE
+					WHEN reported_profile.avatar IS NULL OR reported_profile.avatar = '' THEN NULL
+					ELSE $1 || reported_profile.avatar
+				END,
+				'role_id', reported_user.role_id,
+				'contacts', reported_profile.contacts
+			) as reported_user
+		FROM reports r
+		LEFT JOIN users reporter_user ON reporter_user.id = r.user_id
+		LEFT JOIN profiles reporter_profile ON reporter_profile.user_id = r.user_id
+		LEFT JOIN users reported_user ON reported_user.id = r.reported_user_id
+		LEFT JOIN profiles reported_profile ON reported_profile.user_id = r.reported_user_id
+		WHERE r.user_id = $2
+		ORDER BY r.created_at DESC
 	`
-	rows, err := r.db.Query(ctx, q, userID)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL, userID)
 	if err != nil {
 		return reports, err
 	}
@@ -1939,39 +1963,9 @@ func (r *UserRepository) GetReports(ctx *fasthttp.RequestCtx, userID int) ([]mod
 
 	for rows.Next() {
 		var report model.GetReportsResponse
-		if err := rows.Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt, &report.ItemType, &report.ItemID); err != nil {
-			return reports, err
-		}
-		reports = append(reports, report)
-	}
-	return reports, err
-}
-
-func (r *UserRepository) GetItemReports(ctx *fasthttp.RequestCtx, userID int) ([]model.GetReportsResponse, error) {
-	reports := make([]model.GetReportsResponse, 0)
-	q := `
-		SELECT 
-			id,
-			reported_user_id,
-			report_type,
-			report_description,
-			report_status,
-			created_at,
-			item_type,
-			item_id
-		FROM reports
-		WHERE user_id = $1 AND item_type IS NOT NULL AND item_id IS NOT NULL
-		ORDER BY created_at DESC
-	`
-	rows, err := r.db.Query(ctx, q, userID)
-	if err != nil {
-		return reports, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var report model.GetReportsResponse
-		if err := rows.Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt, &report.ItemType, &report.ItemID); err != nil {
+		if err := rows.Scan(&report.ID, &report.ReportedUserID, &report.ReportType,
+			&report.ReportDescription, &report.ReportStatus, &report.CreatedAt,
+			&report.ItemType, &report.ItemID, &report.Reporter, &report.ReportedUser); err != nil {
 			return reports, err
 		}
 		reports = append(reports, report)
