@@ -1,7 +1,4 @@
 -- create user da with password '1234';
-
-drop type if exists price_type_enum;
-
 drop table if exists reports;
 drop table if exists user_likes;
 drop table if exists temp_users;
@@ -26,8 +23,11 @@ drop table if exists models;
 drop table if exists brands;
 drop table if exists users;
 drop table if exists ownership_types;
+drop type if exists item_type_enum;
+drop type if exists price_type_enum;
 
 CREATE TYPE price_type_enum AS ENUM ('USD', 'AED', 'RUB', 'EUR');
+CREATE TYPE item_type_enum AS ENUM ('car', 'moto', 'comtran');
 
 create table countries (
     "id" serial primary key,
@@ -336,7 +336,7 @@ create table engines (
     "name_ru" varchar(255) default 'name_ru',
     "name_ae" varchar(255) default 'name_ae',
     "created_at" timestamp default now(),   
-    unique("value")
+    unique("name")
 );
 
 create table drivetrains (
@@ -598,6 +598,7 @@ create table videos (
 drop table if exists moto_images;
 drop table if exists moto_videos;
 drop table if exists motorcycles;
+drop table if exists moto_engines;
 drop table if exists number_of_cycles;
 drop table if exists moto_models;
 drop table if exists moto_brands;
@@ -645,6 +646,14 @@ create table moto_models (
                 on update cascade
 );
 
+create table moto_engines (
+    "id" serial primary key,
+    "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
+    "name_ae" varchar(255) default 'name_ae',
+    "created_at" timestamp default now(),   
+    unique("name")
+);
 
 create table motorcycles (
     "id" serial primary key,
@@ -654,9 +663,9 @@ create table motorcycles (
     "moto_category_id" int not null,
     "moto_brand_id" int not null,
     "moto_model_id" int not null,
-    "fuel_type_id" int not null,
     "city_id" int not null,
     "color_id" int not null,
+    "engine_id" int, -- fuel_type
     "engine" int, -- cm3
     "power" int, -- hp
     "year" int not null,
@@ -673,6 +682,11 @@ create table motorcycles (
     "status" int not null default 1, -- 1-pending, 2-not sale (my cars), 3-on sale,
     "updated_at" timestamp not null default now(),
     "created_at" timestamp not null default now(),
+    constraint fk_motorcycles_engine_id
+        foreign key (engine_id)
+            references moto_engines(id)
+                on delete set null
+                on update cascade,
     constraint fk_motorcycles_user_id
         foreign key (user_id)
             references users(id)
@@ -691,11 +705,6 @@ create table motorcycles (
     constraint fk_motorcycles_model_id
         foreign key (moto_model_id)
             references moto_models(id)
-                on delete cascade
-                on update cascade,
-    constraint fk_motorcycles_fuel_type_id
-        foreign key (fuel_type_id)
-            references fuel_types(id)
                 on delete cascade
                 on update cascade,
     constraint fk_motorcycles_color_id
@@ -741,13 +750,10 @@ create table moto_videos (
 
 drop table if exists comtran_videos;
 drop table if exists comtran_images;
-drop table if exists comtran_parameters;
-drop table if exists com_category_parameters;
-drop table if exists com_parameter_values;
 drop table if exists comtrans;
+drop table if exists com_engines;
 drop table if exists com_models;
 drop table if exists com_brands;
-drop table if exists com_parameters;
 drop table if exists com_categories;
 
 create table com_categories (
@@ -766,7 +772,7 @@ create table com_brands (
     "model_count" int not null default 0,
     "popular" boolean default false,
     "logo" varchar(255),
-    "created_at" timestamp not null default now(),
+    "created_at" timestamp not null default now()
 );
 
 create table com_models (
@@ -783,87 +789,41 @@ create table com_models (
                 on update cascade
 );
 
-create table com_parameters (
-    "id" serial primary key,
-    "comtran_category_id" int not null,
-    "name" varchar(100) not null,
-    "name_ru" varchar(100) default 'name_ru',
-    "name_ae" varchar(100) default 'name_ae',
-    "created_at" timestamp default now(),
-    constraint fk_com_parameters_comtran_category_id
-        foreign key (comtran_category_id)
-            references com_categories(id)
-                on delete cascade
-                on update cascade,
-    unique("name", "comtran_category_id")
-);
 
-create table com_parameter_values (
+create table com_engines (
     "id" serial primary key,
-    "comtran_parameter_id" int not null,
-    "name" varchar(100) not null,
-    "name_ru" varchar(100) default 'name_ru',
-    "name_ae" varchar(100) default 'name_ae',
-    "created_at" timestamp default now(),
-    constraint fk_com_parameter_values_comtran_parameter_id
-        foreign key (comtran_parameter_id)
-            references com_parameters(id)
-                on delete cascade
-                on update cascade
-);
-
-create table com_category_parameters (
-    "comtran_category_id" int not null,
-    "comtran_parameter_id" int not null,
-    "created_at" timestamp not null default now(),
-    constraint fk_com_category_parameters_comtran_category_id
-        foreign key (comtran_category_id)
-            references com_categories(id)
-                on delete cascade
-                on update cascade,
-    constraint fk_com_category_parameters_comtran_parameter_id
-        foreign key (comtran_parameter_id)
-            references com_parameters(id)
-                on delete cascade
-                on update cascade
+    "name" varchar(255) not null,
+    "name_ru" varchar(255) default 'name_ru',
+    "name_ae" varchar(255) default 'name_ae',
+    "created_at" timestamp default now(),   
+    unique("name")
 );
 
 create table comtrans (
     "id" serial primary key,
     "user_id" int not null,
+    "credit" boolean not null default false,
+    "view_count" int not null default 0,
     "comtran_category_id" int not null,
     "comtran_brand_id" int not null,
     "comtran_model_id" int not null,
-    "fuel_type_id" int not null,
+    "engine_id" int not null, -- fuel_type
     "city_id" int not null,
     "color_id" int not null,
     "engine" int, -- cm3
     "power" int, -- hp
     "year" int not null,
-    "number_of_cycles" int,
+    "number_of_cycles_id" int not null,
+    "wheel" boolean not null default true, -- true left, false right
     "odometer" int not null default 0,
-    "crash" boolean,
-    "not_cleared" boolean,
-    "owners" int,
-    "date_of_purchase" varchar (50),
-    "warranty_date" varchar(50),
-    "ptc" boolean,
-    "vin_code" varchar(50) not null,
-    "certificate" varchar(50),
-    "view_count" int not null default 0,
-    "credit" boolean not null default false,
+    "crash" boolean not null default false,
+    "owners" int not null default 0,
+    "vin_code" varchar(50),
     "description" text,
-    "can_look_coordinate" varchar(50),
-    "phone_number" varchar(50) not null,
-    "refuse_dealers_calls" boolean,
-    "only_chat" boolean,
-    "protect_spam" boolean,
-    "verified_buyers" boolean,
-    "contact_person" varchar(50), -- email or user_id
-    "email" varchar(50),
+    "phone_numbers" varchar(255)[] not null,
     "price" int not null,
-    "price_type" price_type_enum not null default 'USD',
-    "status" int not null default 3, -- 1-pending, 2-not sale (my cars), 3-on sale,
+    "trade_in" int not null default 1, -- 1. No exchange 2. Equal value 3. More expensive 4. Cheaper 5. Not a car
+    "status" int not null default 1, -- 1-pending, 2-not sale (my cars), 3-on sale,
     "updated_at" timestamp not null default now(),
     "created_at" timestamp not null default now(),
     constraint fk_comtrans_user_id
@@ -886,9 +846,9 @@ create table comtrans (
             references com_models(id)
                 on delete cascade
                 on update cascade,
-    constraint fk_comtrans_fuel_type_id
-        foreign key (fuel_type_id)
-            references fuel_types(id)
+    constraint fk_comtrans_engine_id
+        foreign key (engine_id)
+            references com_engines(id)
                 on delete cascade
                 on update cascade,
     constraint fk_comtrans_color_id
@@ -901,31 +861,6 @@ create table comtrans (
             references cities(id)
                 on delete cascade
                 on update cascade
-);
-
-
-create table comtran_parameters (
-    "id" serial primary key,
-    "comtran_id" int not null,
-    "comtran_parameter_id" int not null,
-    "comtran_parameter_value_id" int not null,
-    "created_at" timestamp default now(),
-    constraint fk_comtran_parameters_comtran_id
-        foreign key (comtran_id)
-            references comtrans(id)
-                on delete cascade
-                on update cascade,
-    constraint fk_comtran_parameters_comtran_parameter_id
-        foreign key (comtran_parameter_id)
-            references com_parameters(id)
-                on delete cascade
-                on update cascade,
-    constraint fk_comtran_parameters_comtran_parameter_value_id
-        foreign key (comtran_parameter_value_id)
-            references com_parameter_values(id)
-                on delete cascade
-                on update cascade,
-    unique("comtran_id", "comtran_parameter_id")
 );
 
 
@@ -973,6 +908,8 @@ create table reports (
     "reported_user_id" int not null,
     "user_id" int not null,
     "report_type" varchar(255) not null,
+    "item_type" item_type_enum,
+    "item_id" int,
     "report_description" varchar(255),
     "report_status" int not null default 1, -- 1-pending, 2-resolved, 3-closed
     "created_at" timestamp not null default now(),

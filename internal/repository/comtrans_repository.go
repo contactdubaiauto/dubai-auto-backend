@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -629,6 +630,58 @@ func (r *ComtransRepository) SellComtrans(ctx *fasthttp.RequestCtx, comtransID, 
 	`
 
 	_, err := r.db.Exec(ctx, q, comtransID, userID)
+	return err
+}
+
+func (r *ComtransRepository) CancelComtrans(ctx *fasthttp.RequestCtx, comtransID *int) error {
+	q := `
+		DELETE FROM comtrans WHERE id = $1
+	`
+	_, err := r.db.Exec(ctx, q, *comtransID)
+	return err
+}
+
+func (r *ComtransRepository) UpdateComtrans(ctx *fasthttp.RequestCtx, comtrans *model.UpdateComtransRequest, userID int) error {
+	// First check if the comtrans belongs to the user
+	var exists bool
+	checkQuery := `SELECT EXISTS(SELECT 1 FROM comtrans WHERE id = $1 AND user_id = $2)`
+	err := r.db.QueryRow(ctx, checkQuery, comtrans.ID, userID).Scan(&exists)
+
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		return fmt.Errorf("comtrans not found or access denied")
+	}
+
+	keys, _, args := auth.BuildParams(comtrans)
+
+	var updateFields []string
+	var updateArgs []any
+	updateArgs = append(updateArgs, comtrans.ID)
+
+	paramIndex := 2
+	for i, key := range keys {
+		if key != "id" && key != "user_id" && key != "parameters" {
+			updateFields = append(updateFields, fmt.Sprintf("%s = $%d", key, paramIndex))
+			updateArgs = append(updateArgs, args[i])
+			paramIndex++
+		}
+	}
+
+	if len(updateFields) == 0 {
+		return fmt.Errorf("no valid fields to update")
+	}
+
+	q := `
+		UPDATE comtrans 
+		SET ` + strings.Join(updateFields, ", ") + `, updated_at = NOW()
+		WHERE id = $1 AND user_id = $` + fmt.Sprintf("%d", paramIndex)
+
+	updateArgs = append(updateArgs, userID)
+
+	_, err = r.db.Exec(ctx, q, updateArgs...)
 	return err
 }
 

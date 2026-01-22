@@ -256,6 +256,42 @@ func (s *MotorcycleService) SellMotorcycle(ctx *fasthttp.RequestCtx, motorcycleI
 	}
 }
 
+func (s *MotorcycleService) CancelMotorcycle(ctx *fasthttp.RequestCtx, motorcycleID *int, dir string) model.Response {
+	err := s.repository.CancelMotorcycle(ctx, motorcycleID)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	if dir != "" {
+		files.RemoveFolder(dir)
+	}
+
+	return model.Response{
+		Status: 200,
+		Data:   model.Success{Message: "Successfully cancelled motorcycle"},
+	}
+}
+
+func (s *MotorcycleService) UpdateMotorcycle(ctx *fasthttp.RequestCtx, motorcycle *model.UpdateMotorcycleRequest, userID int) model.Response {
+	err := s.repository.UpdateMotorcycle(ctx, motorcycle, userID)
+
+	if err != nil {
+		return model.Response{
+			Status: 400,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Status: 200,
+		Data:   model.Success{Message: "Motorcycle updated successfully"},
+	}
+}
+
 func (s *MotorcycleService) DeleteMotorcycle(ctx *fasthttp.RequestCtx, motorcycleID int, dir string) model.Response {
 	err := s.repository.DeleteMotorcycle(ctx, motorcycleID)
 

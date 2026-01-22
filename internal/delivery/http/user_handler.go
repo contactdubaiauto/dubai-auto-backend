@@ -16,12 +16,19 @@ import (
 )
 
 type UserHandler struct {
-	UserService *service.UserService
-	validator   *auth.Validator
+	UserService       *service.UserService
+	MotorcycleService *service.MotorcycleService
+	ComtransService   *service.ComtransService
+	validator         *auth.Validator
 }
 
-func NewUserHandler(service *service.UserService, validator *auth.Validator) *UserHandler {
-	return &UserHandler{service, validator}
+func NewUserHandler(userService *service.UserService, motorcycleService *service.MotorcycleService, comtransService *service.ComtransService, validator *auth.Validator) *UserHandler {
+	return &UserHandler{
+		UserService:       userService,
+		MotorcycleService: motorcycleService,
+		ComtransService:   comtransService,
+		validator:         validator,
+	}
 }
 
 // GetCars godoc
@@ -1491,4 +1498,704 @@ func (h *UserHandler) GetReports(c *fiber.Ctx) error {
 
 	data := h.UserService.GetReports(c.Context(), userID)
 	return utils.FiberResponse(c, data)
+}
+
+// CreateItemReports godoc
+// @Summary      Create item report
+// @Description  Creates a new report for a specific item (car, moto, or comtran)
+// @Tags         report
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        report  body      model.CreateItemReportRequest  true  "Item Report data"
+// @Success      200  {object}  model.SuccessWithId
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/item-reports [post]
+func (h *UserHandler) CreateItemReports(c *fiber.Ctx) error {
+	var report model.CreateItemReportRequest
+	userID := c.Locals("id").(int)
+
+	if err := c.BodyParser(&report); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	if err := h.validator.Validate(report); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	data := h.UserService.CreateItemReport(c.Context(), &report, userID)
+	return utils.FiberResponse(c, data)
+}
+
+// GetItemReports godoc
+// @Summary      Get user item reports
+// @Description  Returns a list of item reports (car, moto, comtran) created by the authenticated user
+// @Tags         report
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}   model.GetReportsResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/item-reports [get]
+func (h *UserHandler) GetItemReports(c *fiber.Ctx) error {
+	userID := c.Locals("id").(int)
+
+	data := h.UserService.GetItemReports(c.Context(), userID)
+	return utils.FiberResponse(c, data)
+}
+
+// Motorcycle handlers
+
+// CreateMotorcycle godoc
+// @Summary Create motorcycle
+// @Description Create motorcycle
+// @Tags motorcycles
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param motorcycle body model.CreateMotorcycleRequest true "Motorcycle"
+// @Success 200 {object} model.SuccessWithId
+// @Failure 500 {object} model.ResultMessage
+// @Failure 400 {object} model.ResultMessage
+// @Router /api/v1/users/motorcycles [post]
+func (h *UserHandler) CreateMotorcycle(c *fiber.Ctx) error {
+	ctx := c.Context()
+	var motorcycle model.CreateMotorcycleRequest
+	userID := c.Locals("id").(int)
+
+	if err := c.BodyParser(&motorcycle); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	if err := h.validator.Validate(motorcycle); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	return utils.FiberResponse(c, h.MotorcycleService.CreateMotorcycle(ctx, motorcycle, userID))
+}
+
+// GetMotorcycles godoc
+// @Summary Get motorcycles
+// @Description Get motorcycles
+// @Tags motorcycles
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
+// @Success 200 {array} model.GetMotorcyclesResponse
+// @Failure 500 {object} model.ResultMessage
+// @Router /api/v1/users/motorcycles [get]
+func (h *UserHandler) GetMotorcycles(c *fiber.Ctx) error {
+	ctx := c.Context()
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.MotorcycleService.GetMotorcycles(ctx, lang))
+}
+
+// BuyMotorcycle godoc
+// @Summary      Buy motorcycle
+// @Description  Buys a motorcycle (transfers ownership)
+// @Tags         motorcycles
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path      int  true  "Motorcycle ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/motorcycles/{id}/buy [post]
+func (h *UserHandler) BuyMotorcycle(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	userID := c.Locals("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("motorcycle id must be integer"),
+		})
+	}
+
+	return utils.FiberResponse(c, h.MotorcycleService.BuyMotorcycle(ctx, id, userID))
+}
+
+// CancelMotorcycle godoc
+// @Summary      Cancel motorcycle
+// @Description  Cancels/deletes a motorcycle listing
+// @Tags         motorcycles
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path      int  true  "Motorcycle ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/motorcycles/{id}/cancel [post]
+func (h *UserHandler) CancelMotorcycle(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("motorcycle id must be integer"),
+		})
+	}
+
+	dir := config.ENV.STATIC_PATH + "motorcycles/" + idStr
+	return utils.FiberResponse(c, h.MotorcycleService.CancelMotorcycle(ctx, &id, dir))
+}
+
+// DontSellMotorcycle godoc
+// @Summary      Set motorcycle as not for sale
+// @Description  Updates motorcycle status to not for sale
+// @Tags         motorcycles
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path      int  true  "Motorcycle ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/motorcycles/{id}/dont-sell [post]
+func (h *UserHandler) DontSellMotorcycle(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	userID := c.Locals("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("motorcycle id must be integer"),
+		})
+	}
+
+	return utils.FiberResponse(c, h.MotorcycleService.DontSellMotorcycle(ctx, id, userID))
+}
+
+// SellMotorcycle godoc
+// @Summary      Set motorcycle for sale
+// @Description  Updates motorcycle status to for sale
+// @Tags         motorcycles
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path      int  true  "Motorcycle ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/motorcycles/{id}/sell [post]
+func (h *UserHandler) SellMotorcycle(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	userID := c.Locals("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("motorcycle id must be integer"),
+		})
+	}
+
+	return utils.FiberResponse(c, h.MotorcycleService.SellMotorcycle(ctx, id, userID))
+}
+
+// UpdateMotorcycle godoc
+// @Summary      Update a motorcycle
+// @Description  Updates an existing motorcycle for the authenticated user
+// @Tags         motorcycles
+// @Accept       json
+// @Produce      json
+// @Security 	 BearerAuth
+// @Param        motorcycle  body      model.UpdateMotorcycleRequest  true  "Motorcycle data"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure		 403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/motorcycles [put]
+func (h *UserHandler) UpdateMotorcycle(c *fiber.Ctx) error {
+	var motorcycle model.UpdateMotorcycleRequest
+	userID := c.Locals("id").(int)
+
+	if err := c.BodyParser(&motorcycle); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data" + err.Error()),
+		})
+	}
+
+	if err := h.validator.Validate(motorcycle); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	data := h.MotorcycleService.UpdateMotorcycle(c.Context(), &motorcycle, userID)
+	return utils.FiberResponse(c, data)
+}
+
+// DeleteMotorcycleImage godoc
+// @Summary      Delete motorcycle image
+// @Description  Deletes an image from a motorcycle
+// @Tags         motorcycles
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Motorcycle ID"
+// @Param        image_id   path      int  true  "Image ID"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure	 	 403  	 {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/users/motorcycles/{id}/images [delete]
+func (h *UserHandler) DeleteMotorcycleImage(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	motorcycleID, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("motorcycle id must be integer"),
+		})
+	}
+
+	imageIDStr := c.Query("image_id")
+	imageID, err := strconv.Atoi(imageIDStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("image id must be integer"),
+		})
+	}
+
+	return utils.FiberResponse(c, h.MotorcycleService.DeleteMotorcycleImage(ctx, motorcycleID, imageID))
+}
+
+// DeleteMotorcycleVideo godoc
+// @Summary      Delete motorcycle video
+// @Description  Deletes a video from a motorcycle
+// @Tags         motorcycles
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Motorcycle ID"
+// @Param        video_id   path      int  true  "Video ID"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure	 	 403  	 {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/users/motorcycles/{id}/videos [delete]
+func (h *UserHandler) DeleteMotorcycleVideo(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	motorcycleID, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("motorcycle id must be integer"),
+		})
+	}
+
+	videoIDStr := c.Query("video_id")
+	videoID, err := strconv.Atoi(videoIDStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("video id must be integer"),
+		})
+	}
+
+	return utils.FiberResponse(c, h.MotorcycleService.DeleteMotorcycleVideo(ctx, motorcycleID, videoID))
+}
+
+// DeleteMotorcycle godoc
+// @Summary      Delete motorcycle
+// @Description  Deletes a motorcycle and its associated files
+// @Tags         motorcycles
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path      int  true  "Motorcycle ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/motorcycles/{id} [delete]
+func (h *UserHandler) DeleteMotorcycle(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("motorcycle id must be integer"),
+		})
+	}
+
+	dir := config.ENV.STATIC_PATH + "motorcycles/" + idStr
+	return utils.FiberResponse(c, h.MotorcycleService.DeleteMotorcycle(ctx, id, dir))
+}
+
+// Comtrans handlers
+
+// CreateComtrans godoc
+// @Summary Create commercial transport
+// @Description Create commercial transport
+// @Tags comtrans
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param comtrans body model.CreateComtransRequest true "Commercial Transport"
+// @Success 200 {object} model.SuccessWithId
+// @Failure 500 {object} model.ResultMessage
+// @Failure 400 {object} model.ResultMessage
+// @Router /api/v1/users/comtrans [post]
+func (h *UserHandler) CreateComtrans(c *fiber.Ctx) error {
+	ctx := c.Context()
+	var comtrans model.CreateComtransRequest
+	userID := c.Locals("id").(int)
+
+	if err := c.BodyParser(&comtrans); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	if err := h.validator.Validate(comtrans); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	return utils.FiberResponse(c, h.ComtransService.CreateComtrans(ctx, comtrans, userID))
+}
+
+// GetComtrans godoc
+// @Summary Get commercial transports
+// @Description Get commercial transports
+// @Tags comtrans
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
+// @Success 200 {array} model.GetComtransResponse
+// @Failure 500 {object} model.ResultMessage
+// @Router /api/v1/users/comtrans [get]
+func (h *UserHandler) GetComtrans(c *fiber.Ctx) error {
+	ctx := c.Context()
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.ComtransService.GetComtrans(ctx, lang))
+}
+
+// BuyComtrans godoc
+// @Summary      Buy commercial transport
+// @Description  Buys a commercial transport (transfers ownership)
+// @Tags         comtrans
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path      int  true  "Commercial Transport ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/comtrans/{id}/buy [post]
+func (h *UserHandler) BuyComtrans(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	userID := c.Locals("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("commercial transport id must be integer"),
+		})
+	}
+
+	return utils.FiberResponse(c, h.ComtransService.BuyComtrans(ctx, id, userID))
+}
+
+// CancelComtrans godoc
+// @Summary      Cancel commercial transport
+// @Description  Cancels/deletes a commercial transport listing
+// @Tags         comtrans
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path      int  true  "Commercial Transport ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/comtrans/{id}/cancel [post]
+func (h *UserHandler) CancelComtrans(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("commercial transport id must be integer"),
+		})
+	}
+
+	dir := config.ENV.STATIC_PATH + "comtrans/" + idStr
+	return utils.FiberResponse(c, h.ComtransService.CancelComtrans(ctx, &id, dir))
+}
+
+// DontSellComtrans godoc
+// @Summary      Set commercial transport as not for sale
+// @Description  Updates commercial transport status to not for sale
+// @Tags         comtrans
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path      int  true  "Commercial Transport ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/comtrans/{id}/dont-sell [post]
+func (h *UserHandler) DontSellComtrans(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	userID := c.Locals("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("commercial transport id must be integer"),
+		})
+	}
+
+	return utils.FiberResponse(c, h.ComtransService.DontSellComtrans(ctx, id, userID))
+}
+
+// SellComtrans godoc
+// @Summary      Set commercial transport for sale
+// @Description  Updates commercial transport status to for sale
+// @Tags         comtrans
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path      int  true  "Commercial Transport ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/comtrans/{id}/sell [post]
+func (h *UserHandler) SellComtrans(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	userID := c.Locals("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("commercial transport id must be integer"),
+		})
+	}
+
+	return utils.FiberResponse(c, h.ComtransService.SellComtrans(ctx, id, userID))
+}
+
+// UpdateComtrans godoc
+// @Summary      Update a commercial transport
+// @Description  Updates an existing commercial transport for the authenticated user
+// @Tags         comtrans
+// @Accept       json
+// @Produce      json
+// @Security 	 BearerAuth
+// @Param        comtrans  body      model.UpdateComtransRequest  true  "Commercial Transport data"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure		 403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/comtrans [put]
+func (h *UserHandler) UpdateComtrans(c *fiber.Ctx) error {
+	var comtrans model.UpdateComtransRequest
+	userID := c.Locals("id").(int)
+
+	if err := c.BodyParser(&comtrans); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data" + err.Error()),
+		})
+	}
+
+	if err := h.validator.Validate(comtrans); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	data := h.ComtransService.UpdateComtrans(c.Context(), &comtrans, userID)
+	return utils.FiberResponse(c, data)
+}
+
+// DeleteComtransImage godoc
+// @Summary      Delete commercial transport image
+// @Description  Deletes an image from a commercial transport
+// @Tags         comtrans
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Commercial Transport ID"
+// @Param        image_id   path      int  true  "Image ID"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure	 	 403  	 {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/users/comtrans/{id}/images [delete]
+func (h *UserHandler) DeleteComtransImage(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	comtransID, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("commercial transport id must be integer"),
+		})
+	}
+
+	imageIDStr := c.Query("image_id")
+	imageID, err := strconv.Atoi(imageIDStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("image id must be integer"),
+		})
+	}
+
+	return utils.FiberResponse(c, h.ComtransService.DeleteComtransImage(ctx, comtransID, imageID))
+}
+
+// DeleteComtransVideo godoc
+// @Summary      Delete commercial transport video
+// @Description  Deletes a video from a commercial transport
+// @Tags         comtrans
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Commercial Transport ID"
+// @Param        video_id   path      int  true  "Video ID"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure	 	 403  	 {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/users/comtrans/{id}/videos [delete]
+func (h *UserHandler) DeleteComtransVideo(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	comtransID, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("commercial transport id must be integer"),
+		})
+	}
+
+	videoIDStr := c.Query("video_id")
+	videoID, err := strconv.Atoi(videoIDStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("video id must be integer"),
+		})
+	}
+
+	return utils.FiberResponse(c, h.ComtransService.DeleteComtransVideo(ctx, comtransID, videoID))
+}
+
+// DeleteComtrans godoc
+// @Summary      Delete commercial transport
+// @Description  Deletes a commercial transport and its associated files
+// @Tags         comtrans
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path      int  true  "Commercial Transport ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/comtrans/{id} [delete]
+func (h *UserHandler) DeleteComtrans(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("commercial transport id must be integer"),
+		})
+	}
+
+	dir := config.ENV.STATIC_PATH + "comtrans/" + idStr
+	return utils.FiberResponse(c, h.ComtransService.DeleteComtrans(ctx, id, dir))
 }

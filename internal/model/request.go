@@ -107,6 +107,20 @@ type CreateEngineRequest struct {
 	NameAe string `json:"name_ae"`
 }
 
+// Comtrans Engine requests
+type CreateComtransEngineRequest struct {
+	Name   string `json:"name" validate:"required,min=1,max=255"`
+	NameRu string `json:"name_ru"`
+	NameAe string `json:"name_ae"`
+}
+
+// Moto Engine requests
+type CreateMotoEngineRequest struct {
+	Name   string `json:"name" validate:"required,min=1,max=255"`
+	NameRu string `json:"name_ru"`
+	NameAe string `json:"name_ae"`
+}
+
 // Drivetrain requests
 type CreateDrivetrainRequest struct {
 	Name   string `json:"name" validate:"required,min=2,max=255"`
@@ -309,17 +323,15 @@ type UpdateComtransCategoryRequest struct {
 
 // Comtrans Brand requests
 type CreateComtransBrandRequest struct {
-	Name               string `json:"name" validate:"required,min=2,max=100"`
-	NameRu             string `json:"name_ru"`
-	NameAe             string `json:"name_ae"`
-	ComtransCategoryID int    `json:"comtrans_category_id" validate:"required"`
+	Name   string `json:"name" validate:"required,min=2,max=100"`
+	NameRu string `json:"name_ru"`
+	NameAe string `json:"name_ae"`
 }
 
 type UpdateComtransBrandRequest struct {
-	Name               string `json:"name" validate:"required,min=2,max=100"`
-	NameRu             string `json:"name_ru"`
-	NameAe             string `json:"name_ae"`
-	ComtransCategoryID int    `json:"comtrans_category_id" validate:"required"`
+	Name   string `json:"name" validate:"required,min=2,max=100"`
+	NameRu string `json:"name_ru"`
+	NameAe string `json:"name_ae"`
 }
 
 // Comtrans Model requests
@@ -403,6 +415,14 @@ type CreateReportRequest struct {
 	ReportedUserID    int    `json:"reported_user_id" validate:"required"`
 	ReportType        string `json:"report_type" validate:"required,min=2,max=255"`
 	ReportDescription string `json:"report_description" validate:"max=255"`
+}
+
+type CreateItemReportRequest struct {
+	ReportedUserID    int    `json:"reported_user_id" validate:"required"`
+	ReportType        string `json:"report_type" validate:"required,min=2,max=255"`
+	ReportDescription string `json:"report_description" validate:"max=255"`
+	ItemType          string `json:"item_type" validate:"required,oneof=car moto comtran"`
+	ItemID            int    `json:"item_id" validate:"required"`
 }
 
 type UpdateReportRequest struct {

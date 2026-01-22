@@ -58,7 +58,7 @@ func (h *AdminHandler) CreateUser(c *fiber.Ctx) error {
 // @Tags         admin-users
 // @Produce      json
 // @Security     BearerAuth
-// @Param        role_id   query      int  false  "Role ID"
+// @Param        role_id   query      int  true  "Role ID"
 // @Success      200   {array}   model.UserResponse
 // @Failure      400   {object}  model.ResultMessage
 // @Failure      401   {object}  auth.ErrorResponse

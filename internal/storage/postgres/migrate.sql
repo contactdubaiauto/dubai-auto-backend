@@ -326,3 +326,14 @@ alter table vehicles alter column status set default 1;
 ALTER TABLE users DROP CONSTRAINT IF EXISTS users_phone_key;
 ALTER TABLE users DROP CONSTRAINT IF EXISTS users_email_key;
 alter table users add unique("email", "phone");
+
+-- 21.01.2026
+drop table if exists comtran_parameter_values;
+drop table if exists comtran_parameters;
+drop table if exists com_category_parameters;
+drop table if exists com_parameters;
+
+-- 22.01.2026
+CREATE TYPE item_type_enum AS ENUM ('car', 'moto', 'comtran');
+alter table reports add column "item_type" item_type_enum;
+alter table reports add column "item_id" int;

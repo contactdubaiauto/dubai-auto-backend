@@ -391,6 +391,22 @@ type AdminEngineResponse struct {
 	ID        int       `json:"id"`
 }
 
+type AdminComtransEngineResponse struct {
+	CreatedAt time.Time `json:"created_at"`
+	Name      string    `json:"name"`
+	NameRu    string    `json:"name_ru"`
+	NameAe    string    `json:"name_ae"`
+	ID        int       `json:"id"`
+}
+
+type AdminMotoEngineResponse struct {
+	CreatedAt time.Time `json:"created_at"`
+	Name      string    `json:"name"`
+	NameRu    string    `json:"name_ru"`
+	NameAe    string    `json:"name_ae"`
+	ID        int       `json:"id"`
+}
+
 type AdminDrivetrainResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 	Name      string    `json:"name"`
@@ -651,4 +667,6 @@ type GetReportsResponse struct {
 	CreatedAt         time.Time `json:"created_at"`
 	Reporter          *Owner    `json:"reporter"`
 	ReportedUser      *Owner    `json:"reported_user"`
+	ItemType          *string   `json:"item_type"`
+	ItemID            *int      `json:"item_id"`
 }

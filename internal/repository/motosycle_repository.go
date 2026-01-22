@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -528,6 +529,58 @@ func (r *MotorcycleRepository) SellMotorcycle(ctx *fasthttp.RequestCtx, motorcyc
 	`
 
 	_, err := r.db.Exec(ctx, q, motorcycleID, userID)
+	return err
+}
+
+func (r *MotorcycleRepository) CancelMotorcycle(ctx *fasthttp.RequestCtx, motorcycleID *int) error {
+	q := `
+		DELETE FROM motorcycles WHERE id = $1
+	`
+	_, err := r.db.Exec(ctx, q, *motorcycleID)
+	return err
+}
+
+func (r *MotorcycleRepository) UpdateMotorcycle(ctx *fasthttp.RequestCtx, motorcycle *model.UpdateMotorcycleRequest, userID int) error {
+	// First check if the motorcycle belongs to the user
+	var exists bool
+	checkQuery := `SELECT EXISTS(SELECT 1 FROM motorcycles WHERE id = $1 AND user_id = $2)`
+	err := r.db.QueryRow(ctx, checkQuery, motorcycle.ID, userID).Scan(&exists)
+
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		return fmt.Errorf("motorcycle not found or access denied")
+	}
+
+	keys, _, args := auth.BuildParams(motorcycle)
+
+	var updateFields []string
+	var updateArgs []any
+	updateArgs = append(updateArgs, motorcycle.ID)
+
+	paramIndex := 2
+	for i, key := range keys {
+		if key != "id" && key != "user_id" {
+			updateFields = append(updateFields, fmt.Sprintf("%s = $%d", key, paramIndex))
+			updateArgs = append(updateArgs, args[i])
+			paramIndex++
+		}
+	}
+
+	if len(updateFields) == 0 {
+		return fmt.Errorf("no valid fields to update")
+	}
+
+	q := `
+		UPDATE motorcycles 
+		SET ` + strings.Join(updateFields, ", ") + `, updated_at = NOW()
+		WHERE id = $1 AND user_id = $` + fmt.Sprintf("%d", paramIndex)
+
+	updateArgs = append(updateArgs, userID)
+
+	_, err = r.db.Exec(ctx, q, updateArgs...)
 	return err
 }
 

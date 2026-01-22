@@ -45,9 +45,14 @@ func (s *AdminService) CreateUser(ctx *fasthttp.RequestCtx, req *model.CreateUse
 }
 
 func (s *AdminService) GetUsers(ctx *fasthttp.RequestCtx, qRoleID string) model.Response {
+	if qRoleID == "" {
+		return model.Response{Error: errors.New("role_id is required (1 user, 2 dealer, 3 logistic, 4 broker, 5 car service)"), Status: http.StatusBadRequest}
+	}
+
 	qRoleIDInt, err := strconv.Atoi(qRoleID)
+
 	if err != nil {
-		return model.Response{Error: err, Status: http.StatusBadRequest}
+		return model.Response{Error: errors.New("role id must be integer"), Status: http.StatusBadRequest}
 	}
 	users, err := s.repo.GetUsers(ctx, qRoleIDInt)
 
@@ -688,6 +693,68 @@ func (s *AdminService) DeleteEngine(ctx *fasthttp.RequestCtx, id int) model.Resp
 	return model.Response{Data: model.Success{Message: "Engine deleted successfully"}}
 }
 
+// Comtrans Engines service methods
+func (s *AdminService) GetComtransEngines(ctx *fasthttp.RequestCtx) model.Response {
+	engines, err := s.repo.GetComtransEngines(ctx)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: engines}
+}
+
+func (s *AdminService) CreateComtransEngine(ctx *fasthttp.RequestCtx, req *model.CreateComtransEngineRequest) model.Response {
+	id, err := s.repo.CreateComtransEngine(ctx, req)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Comtrans engine created successfully"}}
+}
+
+func (s *AdminService) DeleteComtransEngine(ctx *fasthttp.RequestCtx, id int) model.Response {
+	err := s.repo.DeleteComtransEngine(ctx, id)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Comtrans engine deleted successfully"}}
+}
+
+// Moto Engines service methods
+func (s *AdminService) GetMotoEngines(ctx *fasthttp.RequestCtx) model.Response {
+	engines, err := s.repo.GetMotoEngines(ctx)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: engines}
+}
+
+func (s *AdminService) CreateMotoEngine(ctx *fasthttp.RequestCtx, req *model.CreateMotoEngineRequest) model.Response {
+	id, err := s.repo.CreateMotoEngine(ctx, req)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto engine created successfully"}}
+}
+
+func (s *AdminService) DeleteMotoEngine(ctx *fasthttp.RequestCtx, id int) model.Response {
+	err := s.repo.DeleteMotoEngine(ctx, id)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Moto engine deleted successfully"}}
+}
+
 // Regions service methods
 func (s *AdminService) GetRegions(ctx *fasthttp.RequestCtx, city_id int) model.Response {
 	regions, err := s.repo.GetRegions(ctx, city_id)
@@ -1275,15 +1342,6 @@ func (s *AdminService) GetComtransCategories(ctx *fasthttp.RequestCtx) model.Res
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 	return model.Response{Data: comtransCategories}
-}
-
-func (s *AdminService) GetComtransBrandsByCategoryID(ctx *fasthttp.RequestCtx, categoryId int) model.Response {
-	comtransBrands, err := s.repo.GetComtransBrandsByCategoryID(ctx, categoryId)
-
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusInternalServerError}
-	}
-	return model.Response{Data: comtransBrands}
 }
 
 func (s *AdminService) CreateComtransCategory(ctx *fasthttp.RequestCtx, req *model.CreateComtransCategoryRequest) model.Response {

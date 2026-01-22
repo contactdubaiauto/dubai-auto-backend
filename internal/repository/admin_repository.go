@@ -1003,6 +1003,76 @@ func (r *AdminRepository) DeleteEngine(ctx *fasthttp.RequestCtx, id int) error {
 	return err
 }
 
+// Comtrans Engines CRUD operations
+func (r *AdminRepository) GetComtransEngines(ctx *fasthttp.RequestCtx) ([]model.AdminComtransEngineResponse, error) {
+	engines := make([]model.AdminComtransEngineResponse, 0)
+	q := `SELECT id, name, name_ru, name_ae, created_at FROM com_engines ORDER BY id DESC`
+
+	rows, err := r.db.Query(ctx, q)
+	if err != nil {
+		return engines, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var engine model.AdminComtransEngineResponse
+		if err := rows.Scan(&engine.ID, &engine.Name, &engine.NameRu, &engine.NameAe, &engine.CreatedAt); err != nil {
+			return engines, err
+		}
+		engines = append(engines, engine)
+	}
+
+	return engines, err
+}
+
+func (r *AdminRepository) CreateComtransEngine(ctx *fasthttp.RequestCtx, req *model.CreateComtransEngineRequest) (int, error) {
+	q := `INSERT INTO com_engines (name, name_ru, name_ae) VALUES ($1, $2, $3) RETURNING id`
+	var id int
+	err := r.db.QueryRow(ctx, q, req.Name, req.NameRu, req.NameAe).Scan(&id)
+	return id, err
+}
+
+func (r *AdminRepository) DeleteComtransEngine(ctx *fasthttp.RequestCtx, id int) error {
+	q := `DELETE FROM com_engines WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id)
+	return err
+}
+
+// Moto Engines CRUD operations
+func (r *AdminRepository) GetMotoEngines(ctx *fasthttp.RequestCtx) ([]model.AdminMotoEngineResponse, error) {
+	engines := make([]model.AdminMotoEngineResponse, 0)
+	q := `SELECT id, name, name_ru, name_ae, created_at FROM moto_engines ORDER BY id DESC`
+
+	rows, err := r.db.Query(ctx, q)
+	if err != nil {
+		return engines, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var engine model.AdminMotoEngineResponse
+		if err := rows.Scan(&engine.ID, &engine.Name, &engine.NameRu, &engine.NameAe, &engine.CreatedAt); err != nil {
+			return engines, err
+		}
+		engines = append(engines, engine)
+	}
+
+	return engines, err
+}
+
+func (r *AdminRepository) CreateMotoEngine(ctx *fasthttp.RequestCtx, req *model.CreateMotoEngineRequest) (int, error) {
+	q := `INSERT INTO moto_engines (name, name_ru, name_ae) VALUES ($1, $2, $3) RETURNING id`
+	var id int
+	err := r.db.QueryRow(ctx, q, req.Name, req.NameRu, req.NameAe).Scan(&id)
+	return id, err
+}
+
+func (r *AdminRepository) DeleteMotoEngine(ctx *fasthttp.RequestCtx, id int) error {
+	q := `DELETE FROM moto_engines WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id)
+	return err
+}
+
 // Drivetrains CRUD operations
 func (r *AdminRepository) GetDrivetrains(ctx *fasthttp.RequestCtx) ([]model.AdminDrivetrainResponse, error) {
 	drivetrains := make([]model.AdminDrivetrainResponse, 0)
@@ -1381,34 +1451,6 @@ func (r *AdminRepository) CreateMotoCategory(ctx *fasthttp.RequestCtx, req *mode
 	return id, err
 }
 
-// func (r *AdminRepository) GetMotoBrandsByCategoryID(ctx *fasthttp.RequestCtx, id int) ([]model.AdminMotoBrandResponse, error) {
-// 	motoBrands := make([]model.AdminMotoBrandResponse, 0)
-// 	q := `
-// 		SELECT mb.id, mb.name, mb.name_ru, mb.name_ae, $2 || mb.image, mb.created_at
-// 		FROM moto_brands mb
-// 		WHERE mb.moto_category_id = $1
-// 		ORDER BY mb.id DESC`
-
-// 	rows, err := r.db.Query(ctx, q, id, r.config.IMAGE_BASE_URL)
-
-// 	if err != nil {
-// 		return motoBrands, err
-// 	}
-
-// 	defer rows.Close()
-
-// 	for rows.Next() {
-// 		var motoBrand model.AdminMotoBrandResponse
-// 		if err := rows.Scan(&motoBrand.ID, &motoBrand.Name, &motoBrand.NameRu, &motoBrand.NameAe, &motoBrand.Image,
-// 			&motoBrand.CreatedAt); err != nil {
-// 			return motoBrands, err
-// 		}
-// 		motoBrands = append(motoBrands, motoBrand)
-// 	}
-
-// 	return motoBrands, err
-// }
-
 func (r *AdminRepository) UpdateMotoCategory(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoCategoryRequest) error {
 	q := `UPDATE moto_categories SET name = $2, name_ru = $3, name_ae = $4 WHERE id = $1`
 	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.NameAe)
@@ -1425,7 +1467,7 @@ func (r *AdminRepository) DeleteMotoCategory(ctx *fasthttp.RequestCtx, id int) e
 func (r *AdminRepository) GetMotoBrands(ctx *fasthttp.RequestCtx) ([]model.AdminMotoBrandResponse, error) {
 	motoBrands := make([]model.AdminMotoBrandResponse, 0)
 	q := `
-		SELECT mb.id, mb.name, mb.name_ru, mb.name_ae, $1 || mb.image, mb.created_at
+		SELECT mb.id, mb.name, mb.name_ru, mb.name_ae, $1 || mb.logo, mb.created_at
 		FROM moto_brands mb
 		ORDER BY mb.id DESC
 	`
@@ -1484,7 +1526,7 @@ func (r *AdminRepository) CreateMotoBrand(ctx *fasthttp.RequestCtx, req *model.C
 }
 
 func (r *AdminRepository) CreateMotoBrandImage(ctx *fasthttp.RequestCtx, id int, path string) error {
-	q := `UPDATE moto_brands SET image = $2 WHERE id = $1`
+	q := `UPDATE moto_brands SET logo = $2 WHERE id = $1`
 	_, err := r.db.Exec(ctx, q, id, path)
 	return err
 }
@@ -1724,35 +1766,6 @@ func (r *AdminRepository) GetComtransCategories(ctx *fasthttp.RequestCtx) ([]mod
 	return comtransCategories, err
 }
 
-func (r *AdminRepository) GetComtransBrandsByCategoryID(ctx *fasthttp.RequestCtx, categoryId int) ([]model.AdminComtransBrandResponse, error) {
-	comtransBrands := make([]model.AdminComtransBrandResponse, 0)
-	q := `
-		SELECT cb.id, cb.name, cb.name_ru, cb.name_ae, $2 || cb.image, cb.comtran_category_id, cc.name as comtrans_category_name, cc.name_ru as comtrans_category_name_ru, cb.created_at
-		FROM com_brands cb
-		LEFT JOIN com_categories cc ON cb.comtran_category_id = cc.id
-		WHERE cb.comtran_category_id = $1
-		ORDER BY cb.id DESC
-	`
-
-	rows, err := r.db.Query(ctx, q, categoryId, r.config.IMAGE_BASE_URL)
-
-	if err != nil {
-		return comtransBrands, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var comtransBrand model.AdminComtransBrandResponse
-		if err := rows.Scan(&comtransBrand.ID, &comtransBrand.Name, &comtransBrand.NameRu, &comtransBrand.NameAe, &comtransBrand.Image, &comtransBrand.ComtransCategoryID,
-			&comtransBrand.ComtransCategoryName, &comtransBrand.ComtransCategoryNameRu, &comtransBrand.CreatedAt); err != nil {
-			return comtransBrands, err
-		}
-		comtransBrands = append(comtransBrands, comtransBrand)
-	}
-
-	return comtransBrands, err
-}
-
 func (r *AdminRepository) CreateComtransCategory(ctx *fasthttp.RequestCtx, req *model.CreateComtransCategoryRequest) (int, error) {
 	q := `INSERT INTO com_categories (name, name_ru, name_ae) VALUES ($1, $2, $3) RETURNING id`
 	var id int
@@ -1772,61 +1785,12 @@ func (r *AdminRepository) DeleteComtransCategory(ctx *fasthttp.RequestCtx, id in
 	return err
 }
 
-// // Comtrans Category Parameters CRUD operations
-// func (r *AdminRepository) GetComtransCategoryParameters(ctx *fasthttp.RequestCtx, categoryID int) ([]model.AdminComtransCategoryParameterResponse, error) {
-// 	comtransCategoryParameters := make([]model.AdminComtransCategoryParameterResponse, 0)
-// 	q := `
-// 		SELECT ccp.comtran_category_id, ccp.comtran_parameter_id, cp.name as comtrans_parameter_name, cp.name_ru as comtrans_parameter_name_ru, ccp.created_at
-// 		FROM com_category_parameters ccp
-// 		LEFT JOIN com_parameters cp ON ccp.comtran_parameter_id = cp.id
-// 		WHERE ccp.comtran_category_id = $1
-// 		ORDER BY ccp.created_at DESC
-// 	`
-
-// 	rows, err := r.db.Query(ctx, q, categoryID)
-// 	if err != nil {
-// 		return comtransCategoryParameters, err
-// 	}
-// 	defer rows.Close()
-
-// 	for rows.Next() {
-// 		var comtransCategoryParameter model.AdminComtransCategoryParameterResponse
-// 		if err := rows.Scan(&comtransCategoryParameter.ComtransCategoryID, &comtransCategoryParameter.ComtransParameterID,
-// 			&comtransCategoryParameter.ComtransParameterName, &comtransCategoryParameter.ComtransParameterNameRu, &comtransCategoryParameter.CreatedAt); err != nil {
-// 			return comtransCategoryParameters, err
-// 		}
-// 		comtransCategoryParameters = append(comtransCategoryParameters, comtransCategoryParameter)
-// 	}
-
-// 	return comtransCategoryParameters, err
-// }
-
-// func (r *AdminRepository) CreateComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryID int, req *model.CreateComtransCategoryParameterRequest) (int, error) {
-// 	q := `INSERT INTO com_category_parameters (comtran_category_id, comtran_parameter_id) VALUES ($1, $2) RETURNING comtran_parameter_id`
-// 	var id int
-// 	err := r.db.QueryRow(ctx, q, categoryID, req.ComtransParameterID).Scan(&id)
-// 	return id, err
-// }
-
-// func (r *AdminRepository) UpdateComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryID int, id int, req *model.UpdateComtransCategoryParameterRequest) error {
-// 	q := `UPDATE com_category_parameters SET comtran_parameter_id = $3 WHERE comtran_category_id = $1 AND comtran_parameter_id = $2`
-// 	_, err := r.db.Exec(ctx, q, categoryID, id, req.ComtransParameterID)
-// 	return err
-// }
-
-// func (r *AdminRepository) DeleteComtransCategoryParameter(ctx *fasthttp.RequestCtx, categoryID int, id int) error {
-// 	q := `DELETE FROM com_category_parameters WHERE comtran_category_id = $1 AND comtran_parameter_id = $2`
-// 	_, err := r.db.Exec(ctx, q, categoryID, id)
-// 	return err
-// }
-
 // Comtrans Brands CRUD operations
 func (r *AdminRepository) GetComtransBrands(ctx *fasthttp.RequestCtx) ([]model.AdminComtransBrandResponse, error) {
 	comtransBrands := make([]model.AdminComtransBrandResponse, 0)
 	q := `
-		SELECT cb.id, cb.name, cb.name_ru, cb.name_ae, $1 || cb.image, cb.comtran_category_id, cc.name as comtrans_category_name, cc.name_ru as comtrans_category_name_ru, cb.created_at
+		SELECT cb.id, cb.name, cb.name_ru, cb.name_ae, $1 || cb.logo, cb.created_at
 		FROM com_brands cb
-		LEFT JOIN com_categories cc ON cb.comtran_category_id = cc.id
 		ORDER BY cb.id DESC
 	`
 
@@ -1838,8 +1802,7 @@ func (r *AdminRepository) GetComtransBrands(ctx *fasthttp.RequestCtx) ([]model.A
 
 	for rows.Next() {
 		var comtransBrand model.AdminComtransBrandResponse
-		if err := rows.Scan(&comtransBrand.ID, &comtransBrand.Name, &comtransBrand.NameRu, &comtransBrand.NameAe, &comtransBrand.Image, &comtransBrand.ComtransCategoryID,
-			&comtransBrand.ComtransCategoryName, &comtransBrand.ComtransCategoryNameRu, &comtransBrand.CreatedAt); err != nil {
+		if err := rows.Scan(&comtransBrand.ID, &comtransBrand.Name, &comtransBrand.NameRu, &comtransBrand.NameAe, &comtransBrand.Image, &comtransBrand.CreatedAt); err != nil {
 			return comtransBrands, err
 		}
 		comtransBrands = append(comtransBrands, comtransBrand)
@@ -1878,21 +1841,21 @@ func (r *AdminRepository) GetComtransModelsByBrandID(ctx *fasthttp.RequestCtx, i
 }
 
 func (r *AdminRepository) CreateComtransBrand(ctx *fasthttp.RequestCtx, req *model.CreateComtransBrandRequest) (int, error) {
-	q := `INSERT INTO com_brands (name, name_ru, name_ae, comtran_category_id) VALUES ($1, $2, $3, $4) RETURNING id`
+	q := `INSERT INTO com_brands (name, name_ru, name_ae) VALUES ($1, $2, $3) RETURNING id`
 	var id int
-	err := r.db.QueryRow(ctx, q, req.Name, req.NameRu, req.NameAe, req.ComtransCategoryID).Scan(&id)
+	err := r.db.QueryRow(ctx, q, req.Name, req.NameRu, req.NameAe).Scan(&id)
 	return id, err
 }
 
 func (r *AdminRepository) CreateComtransBrandImage(ctx *fasthttp.RequestCtx, id int, path string) error {
-	q := `UPDATE com_brands SET image = $2 WHERE id = $1`
+	q := `UPDATE com_brands SET logo = $2 WHERE id = $1`
 	_, err := r.db.Exec(ctx, q, id, path)
 	return err
 }
 
 func (r *AdminRepository) UpdateComtransBrand(ctx *fasthttp.RequestCtx, id int, req *model.UpdateComtransBrandRequest) error {
-	q := `UPDATE com_brands SET name = $2, name_ru = $3, name_ae = $4, comtran_category_id = $5 WHERE id = $1`
-	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.NameAe, req.ComtransCategoryID)
+	q := `UPDATE com_brands SET name = $2, name_ru = $3, name_ae = $4 WHERE id = $1`
+	_, err := r.db.Exec(ctx, q, id, req.Name, req.NameRu, req.NameAe)
 	return err
 }
 
@@ -2118,7 +2081,9 @@ func (r *AdminRepository) GetReports(ctx *fasthttp.RequestCtx) ([]model.GetRepor
 				END,
 				'role_id', reported_user.role_id,
 				'contacts', reported_profile.contacts
-			) as reported_user
+			) as reported_user,
+			r.item_type,
+			r.item_id
 		FROM reports r
 		LEFT JOIN users reporter_user ON reporter_user.id = r.user_id
 		LEFT JOIN profiles reporter_profile ON reporter_profile.user_id = r.user_id
@@ -2134,7 +2099,7 @@ func (r *AdminRepository) GetReports(ctx *fasthttp.RequestCtx) ([]model.GetRepor
 
 	for rows.Next() {
 		var report model.GetReportsResponse
-		if err := rows.Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt, &report.Reporter, &report.ReportedUser); err != nil {
+		if err := rows.Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt, &report.Reporter, &report.ReportedUser, &report.ItemType, &report.ItemID); err != nil {
 			return reports, err
 		}
 		reports = append(reports, report)
@@ -2179,7 +2144,7 @@ func (r *AdminRepository) GetReportByID(ctx *fasthttp.RequestCtx, id int) (model
 		LEFT JOIN profiles reported_profile ON reported_profile.user_id = r.reported_user_id
 		WHERE r.id = $1
 	`
-	err := r.db.QueryRow(ctx, q, id, r.config.IMAGE_BASE_URL).Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt, &report.Reporter, &report.ReportedUser)
+	err := r.db.QueryRow(ctx, q, id, r.config.IMAGE_BASE_URL).Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt, &report.Reporter, &report.ReportedUser, &report.ItemType, &report.ItemID)
 	return report, err
 }
 

@@ -554,8 +554,38 @@ func (s *UserService) CreateReport(ctx *fasthttp.RequestCtx, report *model.Creat
 	}
 }
 
+func (s *UserService) CreateItemReport(ctx *fasthttp.RequestCtx, report *model.CreateItemReportRequest, userID int) model.Response {
+	id, err := s.UserRepository.CreateItemReport(ctx, report, userID)
+
+	if err != nil {
+		return model.Response{
+			Status: http.StatusInternalServerError,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: model.SuccessWithId{Id: id, Message: "Item report created successfully"},
+	}
+}
+
 func (s *UserService) GetReports(ctx *fasthttp.RequestCtx, userID int) model.Response {
 	reports, err := s.UserRepository.GetReports(ctx, userID)
+
+	if err != nil {
+		return model.Response{
+			Status: http.StatusInternalServerError,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: reports,
+	}
+}
+
+func (s *UserService) GetItemReports(ctx *fasthttp.RequestCtx, userID int) model.Response {
+	reports, err := s.UserRepository.GetItemReports(ctx, userID)
 
 	if err != nil {
 		return model.Response{

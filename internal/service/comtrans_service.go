@@ -246,6 +246,42 @@ func (s *ComtransService) SellComtrans(ctx *fasthttp.RequestCtx, comtransID, use
 	}
 }
 
+func (s *ComtransService) CancelComtrans(ctx *fasthttp.RequestCtx, comtransID *int, dir string) model.Response {
+	err := s.repository.CancelComtrans(ctx, comtransID)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	if dir != "" {
+		files.RemoveFolder(dir)
+	}
+
+	return model.Response{
+		Status: 200,
+		Data:   model.Success{Message: "Successfully cancelled commercial transport"},
+	}
+}
+
+func (s *ComtransService) UpdateComtrans(ctx *fasthttp.RequestCtx, comtrans *model.UpdateComtransRequest, userID int) model.Response {
+	err := s.repository.UpdateComtrans(ctx, comtrans, userID)
+
+	if err != nil {
+		return model.Response{
+			Status: 400,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Status: 200,
+		Data:   model.Success{Message: "Commercial transport updated successfully"},
+	}
+}
+
 func (s *ComtransService) DeleteComtrans(ctx *fasthttp.RequestCtx, comtransID int, dir string) model.Response {
 	err := s.repository.DeleteComtrans(ctx, comtransID)
 	if err != nil {

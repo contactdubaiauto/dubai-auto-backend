@@ -63,6 +63,29 @@ type CreateMotorcycleRequest struct {
 	Price            int      `json:"price" validate:"required"`
 }
 
+type UpdateMotorcycleRequest struct {
+	ID               int      `json:"id" validate:"required"`
+	Crash            *bool    `json:"crash"`
+	Wheel            *bool    `json:"wheel"`
+	MotoCategoryID   string   `json:"moto_category_id"`
+	BrandID          string   `json:"moto_brand_id"`
+	ModelID          string   `json:"moto_model_id"`
+	VinCode          string   `json:"vin_code"`
+	Description      string   `json:"description"`
+	PhoneNumbers     []string `json:"phone_numbers"`
+	FuelTypeID       int      `json:"fuel_type_id"`
+	CityID           int      `json:"city_id"`
+	ColorID          int      `json:"color_id"`
+	Engine           int      `json:"engine"`
+	Power            int      `json:"power"`
+	Year             int      `json:"year"`
+	NumberOfCyclesID int      `json:"number_of_cycles_id"`
+	TradeIn          int      `json:"trade_in"`
+	Odometer         int      `json:"odometer"`
+	Owners           int      `json:"owners"`
+	Price            int      `json:"price"`
+}
+
 // Owner represents the motorcycle owner information
 type MotorcycleOwner struct {
 	Contacts map[string]string `json:"contacts"`

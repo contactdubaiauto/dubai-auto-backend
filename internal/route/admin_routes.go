@@ -205,11 +205,18 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, v
 		motoModels.Delete("/:id", adminHandler.DeleteMotoModel)
 	}
 
+	// moto engines routes
+	motoEngines := r.Group("/moto-engines")
+	{
+		motoEngines.Get("/", adminHandler.GetMotoEngines)
+		motoEngines.Post("/", adminHandler.CreateMotoEngine)
+		motoEngines.Delete("/:id", adminHandler.DeleteMotoEngine)
+	}
+
 	// Comtrans Categories routes
 	comtransCategories := r.Group("/comtrans-categories")
 	{
 		comtransCategories.Get("/", adminHandler.GetComtransCategories)
-		comtransCategories.Get("/:id/brands", adminHandler.GetComtransBrandsByCategoryID)
 		comtransCategories.Post("/", adminHandler.CreateComtransCategory)
 		comtransCategories.Put("/:id", adminHandler.UpdateComtransCategory)
 		comtransCategories.Delete("/:id", adminHandler.DeleteComtransCategory)
@@ -233,6 +240,14 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, v
 		comtransModels.Post("/", adminHandler.CreateComtransModel)
 		comtransModels.Put("/:id", adminHandler.UpdateComtransModel)
 		comtransModels.Delete("/:id", adminHandler.DeleteComtransModel)
+	}
+
+	// Comtrans Engines routes
+	comtransEngines := r.Group("/comtrans-engines")
+	{
+		comtransEngines.Get("/", adminHandler.GetComtransEngines)
+		comtransEngines.Post("/", adminHandler.CreateComtransEngine)
+		comtransEngines.Delete("/:id", adminHandler.DeleteComtransEngine)
 	}
 
 	// company types
