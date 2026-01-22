@@ -13376,27 +13376,34 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/users/likes/{car_id}": {
+        "/api/v1/users/likes/{item_id}": {
             "post": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "User like a car",
+                "description": "User like a item",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "like"
                 ],
-                "summary": "Crate liked car",
+                "summary": "Crate liked item",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Car ID",
-                        "name": "car_id",
+                        "description": "Item ID",
+                        "name": "item_id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Item Type (car, motorcycle, comtran)",
+                        "name": "item_type",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -13445,20 +13452,27 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "User like a car",
+                "description": "User like a item",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "like"
                 ],
-                "summary": "remove Crate liked car",
+                "summary": "remove Crate liked item",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Car ID",
-                        "name": "car_id",
+                        "description": "Item ID",
+                        "name": "item_id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Item Type (car, motorcycle, comtran)",
+                        "name": "item_type",
+                        "in": "query",
                         "required": true
                     }
                 ],

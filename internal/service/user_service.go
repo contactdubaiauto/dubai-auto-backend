@@ -402,14 +402,17 @@ func (s *UserService) UpdateCar(ctx *fasthttp.RequestCtx, car *model.UpdateCarRe
 	}
 }
 
-func (s *UserService) CarLike(ctx *fasthttp.RequestCtx, carID, userID *int) model.Response {
-	err := s.UserRepository.CarLike(ctx, carID, userID)
+func (s *UserService) ItemLike(ctx *fasthttp.RequestCtx, userID int, itemID, itemType string) model.Response {
+	itemIDInt, err := strconv.Atoi(itemID)
 
 	if err != nil {
-		return model.Response{
-			Status: 409,
-			Error:  err,
-		}
+		return model.Response{Error: err, Status: http.StatusBadRequest}
+	}
+
+	err = s.UserRepository.ItemLike(ctx, itemIDInt, userID, itemType)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
 
 	return model.Response{
@@ -417,8 +420,14 @@ func (s *UserService) CarLike(ctx *fasthttp.RequestCtx, carID, userID *int) mode
 	}
 }
 
-func (s *UserService) RemoveLike(ctx *fasthttp.RequestCtx, carID, userID *int) model.Response {
-	err := s.UserRepository.RemoveLike(ctx, carID, userID)
+func (s *UserService) RemoveLike(ctx *fasthttp.RequestCtx, userID int, itemID, itemType string) model.Response {
+	itemIDInt, err := strconv.Atoi(itemID)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusBadRequest}
+	}
+
+	err = s.UserRepository.RemoveLike(ctx, itemIDInt, userID, itemType)
 
 	if err != nil {
 		return model.Response{

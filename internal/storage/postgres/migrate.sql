@@ -347,3 +347,58 @@ values
     ('service_demo@mashynbazar.com', 'dealer', 4, '$2a$10$siAe/KIRn06ittw8XL46HuEUyNN4JQgCyZlgOW/8pVyGJHJdrSRj2', +99361616164);
 
 CREATE TYPE item_type_enum AS ENUM ('car', 'moto', 'comtran');
+
+alter table user_likes add column "created_at" timestamp not null default now();
+
+
+
+CREATE TABLE user_comtran_likes (
+    user_id INT NOT NULL,
+    comtran_id INT NOT NULL,
+    created_at timestamp not null default now(),
+    PRIMARY KEY (user_id, comtran_id),
+    constraint fk_user_comtran_likes_comtran_id
+        foreign key (comtran_id)
+            references comtrans(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_user_comtran_likes_user_id
+        foreign key (user_id)
+            references users(id)
+                on delete cascade
+                on update cascade
+);
+
+CREATE TABLE user_moto_likes (
+    user_id INT NOT NULL,
+    moto_id INT NOT NULL,
+    created_at timestamp not null default now(),
+    PRIMARY KEY (user_id, moto_id),
+    constraint fk_user_moto_likes_moto_id
+        foreign key (moto_id)
+            references motorcycles(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_user_moto_likes_user_id
+        foreign key (user_id)
+            references users(id)
+                on delete cascade
+                on update cascade
+);
+
+CREATE TABLE user_comtran_likes (
+    user_id INT NOT NULL,
+    comtran_id INT NOT NULL,
+    created_at timestamp not null default now(),
+    PRIMARY KEY (user_id, comtran_id),
+    constraint fk_user_comtran_likes_comtran_id
+        foreign key (comtran_id)
+            references comtrans(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_user_comtran_likes_user_id
+        foreign key (user_id)
+            references users(id)
+                on delete cascade
+                on update cascade
+);

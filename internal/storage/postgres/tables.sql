@@ -569,6 +569,7 @@ create table images (
 CREATE TABLE user_likes (
     user_id INT NOT NULL,
     vehicle_id INT NOT NULL,
+    created_at timestamp not null default now(),
     PRIMARY KEY (user_id, vehicle_id),
     constraint fk_user_likes_vehicle_id
         foreign key (vehicle_id)
@@ -596,6 +597,7 @@ create table videos (
 
 
 drop table if exists moto_images;
+drop table if exists user_moto_likes;
 drop table if exists moto_videos;
 drop table if exists motorcycles;
 drop table if exists moto_engines;
@@ -603,6 +605,25 @@ drop table if exists number_of_cycles;
 drop table if exists moto_models;
 drop table if exists moto_brands;
 drop table if exists moto_categories;
+
+
+CREATE TABLE user_moto_likes (
+    user_id INT NOT NULL,
+    moto_id INT NOT NULL,
+    created_at timestamp not null default now(),
+    PRIMARY KEY (user_id, moto_id),
+    constraint fk_user_moto_likes_moto_id
+        foreign key (moto_id)
+            references motorcycles(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_user_moto_likes_user_id
+        foreign key (user_id)
+            references users(id)
+                on delete cascade
+                on update cascade
+);
+
 
 create table number_of_cycles (
     "id" serial primary key,
@@ -750,11 +771,31 @@ create table moto_videos (
 
 drop table if exists comtran_videos;
 drop table if exists comtran_images;
+drop table if exists user_comtran_likes;
 drop table if exists comtrans;
 drop table if exists com_engines;
 drop table if exists com_models;
 drop table if exists com_brands;
 drop table if exists com_categories;
+
+
+
+CREATE TABLE user_comtran_likes (
+    user_id INT NOT NULL,
+    comtran_id INT NOT NULL,
+    created_at timestamp not null default now(),
+    PRIMARY KEY (user_id, comtran_id),
+    constraint fk_user_comtran_likes_comtran_id
+        foreign key (comtran_id)
+            references comtrans(id)
+                on delete cascade
+                on update cascade,
+    constraint fk_user_comtran_likes_user_id
+        foreign key (user_id)
+            references users(id)
+                on delete cascade
+                on update cascade
+);
 
 create table com_categories (
     "id" serial primary key,
@@ -906,7 +947,7 @@ create table reports (
     "id" serial primary key,
     "reported_user_id" int not null,
     "user_id" int not null,
-    "report_type" varchar(255) not null,
+    "report_type" varchar(255) not null, -- spam, 
     "item_type" item_type_enum,
     "item_id" int,
     "report_description" varchar(255),

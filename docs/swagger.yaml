@@ -11108,15 +11108,20 @@ paths:
       summary: My liked cars
       tags:
       - like
-  /api/v1/users/likes/{car_id}:
+  /api/v1/users/likes/{item_id}:
     delete:
-      description: User like a car
+      description: User like a item
       parameters:
-      - description: Car ID
+      - description: Item ID
         in: path
-        name: car_id
+        name: item_id
         required: true
         type: integer
+      - description: Item Type (car, motorcycle, comtran)
+        in: query
+        name: item_type
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -11146,17 +11151,22 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       security:
       - BearerAuth: []
-      summary: remove Crate liked car
+      summary: remove Crate liked item
       tags:
       - like
     post:
-      description: User like a car
+      description: User like a item
       parameters:
-      - description: Car ID
+      - description: Item ID
         in: path
-        name: car_id
+        name: item_id
         required: true
         type: integer
+      - description: Item Type (car, motorcycle, comtran)
+        in: query
+        name: item_type
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -11186,7 +11196,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       security:
       - BearerAuth: []
-      summary: Crate liked car
+      summary: Crate liked item
       tags:
       - like
   /api/v1/users/messages/files:

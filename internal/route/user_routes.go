@@ -100,8 +100,8 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 
 		// likes
 		r.Get("/likes", auth.TokenGuard, auth.LanguageChecker, userHandler.Likes)
-		r.Post("/likes/:car_id", auth.TokenGuard, userHandler.CarLike)
-		r.Delete("/likes/:car_id", auth.TokenGuard, userHandler.RemoveLike)
+		r.Post("/likes/:item_id", auth.TokenGuard, userHandler.ItemLike)
+		r.Delete("/likes/:item_id", auth.TokenGuard, userHandler.RemoveLike)
 
 		// messages
 		r.Post("/messages/files", auth.TokenGuard, userHandler.CreateMessageFile)

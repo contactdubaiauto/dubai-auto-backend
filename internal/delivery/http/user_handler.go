@@ -1201,84 +1201,57 @@ func (h *UserHandler) GetHome(c *fiber.Ctx) error {
 // @Failure      500  {object} model.ResultMessage
 // @Router       /api/v1/users/likes [get]
 func (h *UserHandler) Likes(c *fiber.Ctx) error {
-	// todo: delete images if exist
-
 	userID := c.Locals("id").(int)
 	nameColumn := c.Locals("lang").(string)
 	data := h.UserService.Likes(c.Context(), &userID, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
-// Like car godoc
-// @Summary      Crate liked car
-// @Description  User like a car
+// Like item godoc
+// @Summary      Crate liked item
+// @Description  User like a item
 // @Tags         like
 // @Security     BearerAuth
 // @Produce      json
-// @Param        car_id   path      int  true  "Car ID"
+// @Param        item_id   path      int  true  "Item ID"
+// @Param        item_type   query      string  true  "Item Type (car, motorcycle, comtran)"
 // @Success      200  {object}  model.Success
 // @Failure      400  {object} model.ResultMessage
 // @Failure      401  {object} auth.ErrorResponse
 // @Failure		 403  {object} auth.ErrorResponse
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
-// @Router       /api/v1/users/likes/{car_id} [post]
-func (h *UserHandler) CarLike(c *fiber.Ctx) error {
-	// todo: delete images if exist
-
-	idStr := c.Params("car_id")
-	carID, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("car id must be integer"),
-		})
-	}
-
+// @Router       /api/v1/users/likes/{item_id} [post]
+func (h *UserHandler) ItemLike(c *fiber.Ctx) error {
+	itemIDStr := c.Params("item_id")
 	userID := c.Locals("id").(int)
-
-	if userID <= 0 {
-		return utils.FiberResponse(c, model.Response{
-			Status: 401,
-			Error:  errors.New("user_id must be must be bigger than 0"),
-		})
-	}
-
-	data := h.UserService.CarLike(c.Context(), &carID, &userID)
+	itemType := c.Query("item_type")
+	data := h.UserService.ItemLike(c.Context(), userID, itemIDStr, itemType)
 	return utils.FiberResponse(c, data)
 }
 
 // remove Like car godoc
-// @Summary      remove Crate liked car
-// @Description  User like a car
+// @Summary      remove Crate liked item
+// @Description  User like a item
 // @Tags         like
 // @Security     BearerAuth
 // @Produce      json
-// @Param        car_id   path      int  true  "Car ID"
+// @Param        item_id   path      int  true  "Item ID"
+// @Param        item_type   query      string  true  "Item Type (car, motorcycle, comtran)"
 // @Success      200  {object}  model.Success
 // @Failure      400  {object} model.ResultMessage
 // @Failure      401  {object} auth.ErrorResponse
 // @Failure		 403  {object} auth.ErrorResponse
 // @Failure      404  {object} model.ResultMessage
 // @Failure      500  {object} model.ResultMessage
-// @Router       /api/v1/users/likes/{car_id} [delete]
+// @Router       /api/v1/users/likes/{item_id} [delete]
 func (h *UserHandler) RemoveLike(c *fiber.Ctx) error {
 	// todo: delete images if exist
 
-	idStr := c.Params("car_id")
-	carID, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("car id must be integer"),
-		})
-	}
-
+	itemIDStr := c.Params("item_id")
+	itemType := c.Query("item_type")
 	userID := c.Locals("id").(int)
-
-	data := h.UserService.RemoveLike(c.Context(), &carID, &userID)
+	data := h.UserService.RemoveLike(c.Context(), userID, itemIDStr, itemType)
 	return utils.FiberResponse(c, data)
 }
 

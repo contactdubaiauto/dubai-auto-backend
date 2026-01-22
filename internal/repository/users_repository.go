@@ -24,6 +24,13 @@ func NewUserRepository(config *config.Config, db *pgxpool.Pool) *UserRepository 
 }
 
 func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, lastID, status int, nameColumn string) ([]model.GetMyCarsResponse, error) {
+	var statusQ string
+	if status == 3 {
+		statusQ = "status = $3 or status = 1"
+	} else {
+		statusQ = "status = $3"
+	}
+
 	cars := make([]model.GetMyCarsResponse, 0)
 	q := `
 		with vs as (        
@@ -34,7 +41,6 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 				ms.` + nameColumn + ` as model,
 				vs.year,
 				vs.price,
-				vs.credit,
 				vs.status,
 				vs.created_at,
 				images.images,
@@ -53,7 +59,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 					ORDER BY created_at DESC
 				) img
 			) images ON true
-			where vs.user_id = $1 and status = $3
+			where vs.user_id = $1 and (` + statusQ + `)
 			order by vs.id desc
 		),
 		cms as (
@@ -64,7 +70,6 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 				cms.` + nameColumn + ` as model,
 				cm.year,
 				cm.price,
-				cm.credit,
 				cm.status,
 				cm.created_at,
 				images.images,
@@ -83,7 +88,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 					ORDER BY created_at DESC
 				) img
 			) images ON true
-			where cm.user_id = $1 and cm.status = $3
+			where cm.user_id = $1 and (` + statusQ + `)
 		),
 		mts as (
 			select
@@ -93,7 +98,6 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 				mms.` + nameColumn + ` as model,
 				mt.year,
 				mt.price,
-				mt.credit,
 				mt.status,
 				mt.created_at,
 				mt.view_count,
@@ -112,12 +116,12 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 					ORDER BY created_at DESC
 				) img
 			) images ON true
-			where mt.user_id = $1 and mt.status = $3
+			where mt.user_id = $1 and (` + statusQ + `)
 		)
 		-- Union all three CTEs
 		select 
 			id, type, brand, model, 
-			year, price, credit, 
+			year, price,
 			status, created_at, 
 			view_count, images, my_car, 
 			crash 
@@ -125,7 +129,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 		union all
 		select 
 			id, type, brand, model, 
-			year, price, credit, 
+			year, price,
 			status, created_at, 
 			view_count, images, my_car, 
 			crash 
@@ -133,7 +137,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 		union all
 		select 
 			id, type, brand, model, 
-			year, price, credit, 
+			year, price,
 			status, created_at, 
 			view_count, images, my_car, 
 			crash 
@@ -157,7 +161,6 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 			&car.Model,
 			&car.Year,
 			&car.Price,
-			&car.Credit,
 			&car.Status,
 			&car.CreatedAt,
 			&car.ViewCount,
@@ -1589,21 +1592,50 @@ func (r *UserRepository) UpdateCar(ctx *fasthttp.RequestCtx, car *model.UpdateCa
 	return err
 }
 
-func (r *UserRepository) CarLike(ctx *fasthttp.RequestCtx, carID, userID *int) error {
+func (r *UserRepository) ItemLike(ctx *fasthttp.RequestCtx, itemID, userID int, itemType string) error {
 
-	q := `
-		INSERT INTO user_likes(user_id, vehicle_id) values ($2, $1)
-	`
-	_, err := r.db.Exec(ctx, q, carID, userID)
+	var q string
+	switch itemType {
+	case "car":
+		q = `
+			INSERT INTO user_likes(user_id, vehicle_id) values ($2, $1)
+		`
+	case "motorcycle":
+		q = `
+			INSERT INTO user_moto_likes(user_id, moto_id) values ($2, $1)
+		`
+	case "comtran":
+		q = `
+			INSERT INTO user_comtran_likes(user_id, comtran_id) values ($2, $1)
+		`
+	default:
+		return fmt.Errorf("invalid item type")
+	}
+
+	_, err := r.db.Exec(ctx, q, itemID, userID)
 	return err
 }
 
-func (r *UserRepository) RemoveLike(ctx *fasthttp.RequestCtx, carID, userID *int) error {
+func (r *UserRepository) RemoveLike(ctx *fasthttp.RequestCtx, itemID, userID int, itemType string) error {
 
-	q := `
-		delete from user_likes where vehicle_id = $1 and user_id = $2
-	`
-	_, err := r.db.Exec(ctx, q, carID, userID)
+	var q string
+	switch itemType {
+	case "car":
+		q = `
+			delete from user_likes where vehicle_id = $1 and user_id = $2
+		`
+	case "motorcycle":
+		q = `
+			delete from user_moto_likes where moto_id = $1 and user_id = $2
+		`
+	case "comtran":
+		q = `
+			delete from user_comtran_likes where comtran_id = $1 and user_id = $2
+		`
+	default:
+		return fmt.Errorf("invalid item type")
+	}
+	_, err := r.db.Exec(ctx, q, itemID, userID)
 	return err
 }
 

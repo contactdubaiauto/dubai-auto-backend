@@ -188,7 +188,6 @@ type GetMyCarsResponse struct {
 	Year      *int       `json:"year"`
 	Price     *int       `json:"price"`
 	ViewCount *int       `json:"view_count"`
-	Credit    *bool      `json:"credit"`
 	New       *bool      `json:"new"`
 	Crash     *bool      `json:"crash"`
 	MyCar     *bool      `json:"my_car"`
