@@ -813,7 +813,6 @@ create table comtrans (
     "engine" int, -- cm3
     "power" int, -- hp
     "year" int not null,
-    "number_of_cycles_id" int not null,
     "wheel" boolean not null default true, -- true left, false right
     "odometer" int not null default 0,
     "crash" boolean not null default false,

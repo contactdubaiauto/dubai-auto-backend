@@ -41,26 +41,6 @@ func (h *ComtransHandler) GetComtransCategories(c *fiber.Ctx) error {
 
 }
 
-// GetComtransParameters godoc
-// @Summary Get commercial transport parameters
-// @Description Get commercial transport parameters
-// @Tags comtrans
-// @Accept json
-// @Produce json
-// @Security 	 BearerAuth
-// @Param   Accept-Language  header  string  false  "Language"
-// @Param category_id path string true "Category ID"
-// @Success 200 {array} model.GetComtransParametersResponse
-// @Failure 500 {object} model.ResultMessage
-// @Router /api/v1/comtrans/categories/{category_id}/parameters [get]
-func (h *ComtransHandler) GetComtransParameters(c *fiber.Ctx) error {
-	ctx := c.Context()
-	categoryID := c.Params("category_id")
-	lang := c.Locals("lang").(string)
-	return utils.FiberResponse(c, h.service.GetComtransParameters(ctx, categoryID, lang))
-
-}
-
 // GetComtransBrands godoc
 // @Summary Get commercial transport brands
 // @Description Get commercial transport brands

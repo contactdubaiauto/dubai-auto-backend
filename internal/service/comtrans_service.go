@@ -33,20 +33,6 @@ func (s *ComtransService) GetComtransCategories(ctx *fasthttp.RequestCtx, lang s
 	}
 }
 
-func (s *ComtransService) GetComtransParameters(ctx *fasthttp.RequestCtx, categoryID string, lang string) model.Response {
-	data, err := s.repository.GetComtransParameters(ctx, categoryID, lang)
-	if err != nil {
-		return model.Response{
-			Status: 500,
-			Error:  err,
-		}
-	}
-	return model.Response{
-		Status: 200,
-		Data:   data,
-	}
-}
-
 func (s *ComtransService) GetComtransBrands(ctx *fasthttp.RequestCtx, categoryID string, lang string) model.Response {
 	data, err := s.repository.GetComtransBrands(ctx, categoryID, lang)
 	if err != nil {

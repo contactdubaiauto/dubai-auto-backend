@@ -8985,58 +8985,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/comtrans/categories/{category_id}/parameters": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get commercial transport parameters",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "comtrans"
-                ],
-                "summary": "Get commercial transport parameters",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Language",
-                        "name": "Accept-Language",
-                        "in": "header"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Category ID",
-                        "name": "category_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.GetComtransParametersResponse"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/third-party/dealer/car": {
             "post": {
                 "security": [
@@ -17835,23 +17783,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.ComtransParameter": {
-            "type": "object",
-            "properties": {
-                "parameter": {
-                    "type": "string"
-                },
-                "parameter_id": {
-                    "type": "integer"
-                },
-                "parameter_value": {
-                    "type": "string"
-                },
-                "parameter_value_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "model.Conversation": {
             "type": "object",
             "properties": {
@@ -18130,79 +18061,37 @@ const docTemplate = `{
                 }
             }
         },
-        "model.CreateComtransParameterRequest": {
-            "type": "object",
-            "required": [
-                "comtrans_category_id",
-                "name"
-            ],
-            "properties": {
-                "comtrans_category_id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
-                },
-                "name_ae": {
-                    "type": "string"
-                },
-                "name_ru": {
-                    "type": "string"
-                }
-            }
-        },
         "model.CreateComtransRequest": {
             "type": "object",
             "required": [
-                "city_id",
                 "color_id",
                 "comtran_brand_id",
                 "comtran_category_id",
                 "comtran_model_id",
                 "fuel_type_id",
-                "phone_number",
+                "phone_numbers",
                 "price",
-                "price_type",
+                "trade_in",
                 "vin_code",
                 "year"
             ],
             "properties": {
-                "can_look_coordinate": {
-                    "type": "string"
-                },
-                "certificate": {
-                    "type": "string"
-                },
-                "city_id": {
-                    "type": "integer"
-                },
                 "color_id": {
                     "type": "integer"
                 },
                 "comtran_brand_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "comtran_category_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "comtran_model_id": {
-                    "type": "string"
-                },
-                "contact_person": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "crash": {
                     "type": "boolean"
                 },
-                "date_of_purchase": {
-                    "type": "string"
-                },
                 "description": {
-                    "type": "string"
-                },
-                "email": {
                     "type": "string"
                 },
                 "engine": {
@@ -18211,29 +18100,17 @@ const docTemplate = `{
                 "fuel_type_id": {
                     "type": "integer"
                 },
-                "not_cleared": {
-                    "type": "boolean"
-                },
-                "number_of_cycles": {
-                    "type": "integer"
-                },
                 "odometer": {
                     "type": "integer"
-                },
-                "only_chat": {
-                    "type": "boolean"
                 },
                 "owners": {
                     "type": "integer"
                 },
-                "parameters": {
+                "phone_numbers": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.CreateComtransParameterRequest"
+                        "type": "string"
                     }
-                },
-                "phone_number": {
-                    "type": "string"
                 },
                 "power": {
                     "type": "integer"
@@ -18241,32 +18118,14 @@ const docTemplate = `{
                 "price": {
                     "type": "integer"
                 },
-                "price_type": {
-                    "type": "string",
-                    "enum": [
-                        "USD",
-                        "AED",
-                        "RUB",
-                        "EUR"
-                    ]
-                },
-                "protect_spam": {
-                    "type": "boolean"
-                },
-                "ptc": {
-                    "type": "boolean"
-                },
-                "refuse_dealers_calls": {
-                    "type": "boolean"
-                },
-                "verified_buyers": {
-                    "type": "boolean"
+                "trade_in": {
+                    "type": "integer"
                 },
                 "vin_code": {
                     "type": "string"
                 },
-                "warranty_date": {
-                    "type": "string"
+                "wheel": {
+                    "type": "boolean"
                 },
                 "year": {
                     "type": "integer"
@@ -18581,13 +18440,13 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "moto_brand_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "moto_category_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "moto_model_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "number_of_cycles_id": {
                     "type": "integer"
@@ -19017,41 +18876,10 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GetComtransParameterValuesResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.GetComtransParametersResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "values": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.GetComtransParameterValuesResponse"
-                    }
-                }
-            }
-        },
         "model.GetComtransResponse": {
             "type": "object",
             "properties": {
                 "can_look_coordinate": {
-                    "type": "string"
-                },
-                "certificate": {
                     "type": "string"
                 },
                 "city": {
@@ -19069,22 +18897,13 @@ const docTemplate = `{
                 "comtran_model": {
                     "type": "string"
                 },
-                "contact_person": {
-                    "type": "string"
-                },
                 "crash": {
                     "type": "boolean"
                 },
                 "created_at": {
                     "type": "string"
                 },
-                "date_of_purchase": {
-                    "type": "string"
-                },
                 "description": {
-                    "type": "string"
-                },
-                "email": {
                     "type": "string"
                 },
                 "engine": {
@@ -19102,20 +18921,11 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "my_car": {
+                "my_comtrans": {
                     "type": "boolean"
-                },
-                "not_cleared": {
-                    "type": "boolean"
-                },
-                "number_of_cycles": {
-                    "type": "integer"
                 },
                 "odometer": {
                     "type": "integer"
-                },
-                "only_chat": {
-                    "type": "boolean"
                 },
                 "owner": {
                     "$ref": "#/definitions/model.ComtransOwner"
@@ -19123,14 +18933,11 @@ const docTemplate = `{
                 "owners": {
                     "type": "integer"
                 },
-                "parameters": {
+                "phone_numbers": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.ComtransParameter"
+                        "type": "string"
                     }
-                },
-                "phone_number": {
-                    "type": "string"
                 },
                 "power": {
                     "type": "integer"
@@ -19138,26 +18945,14 @@ const docTemplate = `{
                 "price": {
                     "type": "integer"
                 },
-                "price_type": {
-                    "type": "string"
-                },
-                "protect_spam": {
-                    "type": "boolean"
-                },
-                "ptc": {
-                    "type": "boolean"
-                },
-                "refuse_dealers_calls": {
-                    "type": "boolean"
-                },
                 "status": {
                     "type": "string"
                 },
+                "trade_in": {
+                    "type": "integer"
+                },
                 "updated_at": {
                     "type": "string"
-                },
-                "verified_buyers": {
-                    "type": "boolean"
                 },
                 "videos": {
                     "type": "array",
@@ -19168,8 +18963,8 @@ const docTemplate = `{
                 "vin_code": {
                     "type": "string"
                 },
-                "warranty_date": {
-                    "type": "string"
+                "wheel": {
+                    "type": "boolean"
                 },
                 "year": {
                     "type": "integer"
@@ -19386,7 +19181,7 @@ const docTemplate = `{
                 "moto_model": {
                     "type": "string"
                 },
-                "my_car": {
+                "my_moto": {
                     "type": "boolean"
                 },
                 "number_of_cycles": {
@@ -20151,9 +19946,6 @@ const docTemplate = `{
                 "can_look_coordinate": {
                     "type": "string"
                 },
-                "certificate": {
-                    "type": "string"
-                },
                 "city_id": {
                     "type": "integer"
                 },
@@ -20161,27 +19953,18 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "comtran_brand_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "comtran_category_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "comtran_model_id": {
-                    "type": "string"
-                },
-                "contact_person": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "crash": {
                     "type": "boolean"
                 },
-                "date_of_purchase": {
-                    "type": "string"
-                },
                 "description": {
-                    "type": "string"
-                },
-                "email": {
                     "type": "string"
                 },
                 "engine": {
@@ -20193,29 +19976,17 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "not_cleared": {
-                    "type": "boolean"
-                },
-                "number_of_cycles": {
-                    "type": "integer"
-                },
                 "odometer": {
                     "type": "integer"
-                },
-                "only_chat": {
-                    "type": "boolean"
                 },
                 "owners": {
                     "type": "integer"
                 },
-                "parameters": {
+                "phone_numbers": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.CreateComtransParameterRequest"
+                        "type": "string"
                     }
-                },
-                "phone_number": {
-                    "type": "string"
                 },
                 "power": {
                     "type": "integer"
@@ -20223,26 +19994,14 @@ const docTemplate = `{
                 "price": {
                     "type": "integer"
                 },
-                "price_type": {
-                    "type": "string"
-                },
-                "protect_spam": {
-                    "type": "boolean"
-                },
-                "ptc": {
-                    "type": "boolean"
-                },
-                "refuse_dealers_calls": {
-                    "type": "boolean"
-                },
-                "verified_buyers": {
-                    "type": "boolean"
+                "trade_in": {
+                    "type": "integer"
                 },
                 "vin_code": {
                     "type": "string"
                 },
-                "warranty_date": {
-                    "type": "string"
+                "wheel": {
+                    "type": "boolean"
                 },
                 "year": {
                     "type": "integer"
@@ -20425,13 +20184,13 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "moto_brand_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "moto_category_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "moto_model_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "number_of_cycles_id": {
                     "type": "integer"

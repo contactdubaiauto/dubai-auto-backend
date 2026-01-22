@@ -195,13 +195,13 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, nameColu
 			mocs.` + nameColumn + ` as moto_category,
 			mbs.` + nameColumn + ` as moto_brand,
 			mms.` + nameColumn + ` as moto_model,
-			fts.` + nameColumn + ` as fuel_type,
+			meng.` + nameColumn + ` as fuel_type,
 			cs.name as city,
 			cls.` + nameColumn + ` as color,
 			CASE
 				WHEN mcs.user_id = 1 THEN TRUE
 				ELSE FALSE
-			END AS my_car,
+			END AS my_moto,
 			images.images,
 			videos.videos
 		from motorcycles mcs
@@ -209,7 +209,7 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, nameColu
 		left join moto_categories mocs on mocs.id = mcs.moto_category_id
 		left join moto_brands mbs on mbs.id = mcs.moto_brand_id
 		left join moto_models mms on mms.id = mcs.moto_model_id
-		left join fuel_types fts on fts.id = mcs.fuel_type_id
+		left join moto_engines meng on meng.id = mcs.engine_id
 		left join cities cs on cs.id = mcs.city_id
 		left join colors cls on cls.id = mcs.color_id
 		left join number_of_cycles nocs on nocs.id = mcs.number_of_cycles_id
@@ -249,7 +249,7 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, nameColu
 			&motorcycle.Owners, &motorcycle.VinCode, &motorcycle.Description, &motorcycle.PhoneNumbers,
 			&motorcycle.Price, &motorcycle.TradeIn, &motorcycle.Status,
 			&motorcycle.UpdatedAt, &motorcycle.CreatedAt, &motorcycle.MotoCategory, &motorcycle.MotoBrand,
-			&motorcycle.MotoModel, &motorcycle.FuelType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyCar,
+			&motorcycle.MotoModel, &motorcycle.FuelType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyMoto,
 			&motorcycle.Images, &motorcycle.Videos)
 
 		if err != nil {
@@ -361,13 +361,13 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 			mocs.` + nameColumn + ` as moto_category,
 			mbs.` + nameColumn + ` as moto_brand,
 			mms.` + nameColumn + ` as moto_model,
-			fts.` + nameColumn + ` as fuel_type,
+			meng.` + nameColumn + ` as fuel_type,
 			cs.name as city,
 			cls.` + nameColumn + ` as color,
 			CASE
 				WHEN mcs.user_id = $2 THEN TRUE
 				ELSE FALSE
-			END AS my_car,
+			END AS my_moto,
 			images.images,
 			videos.videos
 		from updated mcs
@@ -375,7 +375,7 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 		left join moto_categories mocs on mocs.id = mcs.moto_category_id
 		left join moto_brands mbs on mbs.id = mcs.moto_brand_id
 		left join moto_models mms on mms.id = mcs.moto_model_id
-		left join fuel_types fts on fts.id = mcs.fuel_type_id
+		left join moto_engines meng on meng.id = mcs.engine_id
 		left join cities cs on cs.id = mcs.city_id
 		left join colors cls on cls.id = mcs.color_id
 		left join number_of_cycles nocs on nocs.id = mcs.number_of_cycles_id
@@ -406,7 +406,7 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 		&motorcycle.Owners, &motorcycle.VinCode, &motorcycle.Description, &motorcycle.PhoneNumbers,
 		&motorcycle.Price, &motorcycle.TradeIn, &motorcycle.Status,
 		&motorcycle.UpdatedAt, &motorcycle.CreatedAt, &motorcycle.MotoCategory, &motorcycle.MotoBrand,
-		&motorcycle.MotoModel, &motorcycle.FuelType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyCar,
+		&motorcycle.MotoModel, &motorcycle.FuelType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyMoto,
 		&motorcycle.Images, &motorcycle.Videos)
 
 	return motorcycle, err
@@ -445,13 +445,13 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 			mocs.` + nameColumn + ` as moto_category,
 			mbs.` + nameColumn + ` as moto_brand,
 			mms.` + nameColumn + ` as moto_model,
-			fts.` + nameColumn + ` as fuel_type,
+			meng.` + nameColumn + ` as fuel_type,
 			cs.name as city,
 			cls.` + nameColumn + ` as color,
 			CASE
 				WHEN mcs.user_id = $2 THEN TRUE
 				ELSE FALSE
-			END AS my_car,
+			END AS my_moto,
 			images.images,
 			videos.videos
 		from motorcycles mcs
@@ -459,7 +459,7 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 		left join moto_categories mocs on mocs.id = mcs.moto_category_id
 		left join moto_brands mbs on mbs.id = mcs.moto_brand_id
 		left join moto_models mms on mms.id = mcs.moto_model_id
-		left join fuel_types fts on fts.id = mcs.fuel_type_id
+		left join moto_engines meng on meng.id = mcs.engine_id
 		left join cities cs on cs.id = mcs.city_id
 		left join colors cls on cls.id = mcs.color_id
 		left join number_of_cycles nocs on nocs.id = mcs.number_of_cycles_id
@@ -490,7 +490,7 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 		&motorcycle.Owners, &motorcycle.VinCode, &motorcycle.Description, &motorcycle.PhoneNumbers,
 		&motorcycle.Price, &motorcycle.TradeIn, &motorcycle.Status,
 		&motorcycle.UpdatedAt, &motorcycle.CreatedAt, &motorcycle.MotoCategory, &motorcycle.MotoBrand,
-		&motorcycle.MotoModel, &motorcycle.FuelType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyCar,
+		&motorcycle.MotoModel, &motorcycle.FuelType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyMoto,
 		&motorcycle.Images, &motorcycle.Videos)
 
 	return motorcycle, err

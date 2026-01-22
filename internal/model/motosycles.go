@@ -44,9 +44,9 @@ type GetMotorcycleModelsResponse struct {
 type CreateMotorcycleRequest struct {
 	Crash            *bool    `json:"crash"`
 	Wheel            *bool    `json:"wheel"`
-	MotoCategoryID   string   `json:"moto_category_id" validate:"required"`
-	BrandID          string   `json:"moto_brand_id" validate:"required"`
-	ModelID          string   `json:"moto_model_id" validate:"required"`
+	MotoCategoryID   int      `json:"moto_category_id" validate:"required"`
+	BrandID          int      `json:"moto_brand_id" validate:"required"`
+	ModelID          int      `json:"moto_model_id" validate:"required"`
 	VinCode          string   `json:"vin_code" validate:"required"`
 	Description      string   `json:"description"`
 	PhoneNumbers     []string `json:"phone_numbers" validate:"required"`
@@ -67,9 +67,9 @@ type UpdateMotorcycleRequest struct {
 	ID               int      `json:"id" validate:"required"`
 	Crash            *bool    `json:"crash"`
 	Wheel            *bool    `json:"wheel"`
-	MotoCategoryID   string   `json:"moto_category_id"`
-	BrandID          string   `json:"moto_brand_id"`
-	ModelID          string   `json:"moto_model_id"`
+	MotoCategoryID   int      `json:"moto_category_id"`
+	BrandID          int      `json:"moto_brand_id"`
+	ModelID          int      `json:"moto_model_id"`
 	VinCode          string   `json:"vin_code"`
 	Description      string   `json:"description"`
 	PhoneNumbers     []string `json:"phone_numbers"`
@@ -129,5 +129,5 @@ type GetMotorcyclesResponse struct {
 	Owners         int             `json:"owners"`
 	Price          int             `json:"price"`
 	TradeIn        int             `json:"trade_in"`
-	MyCar          bool            `json:"my_car"`
+	MyMoto         bool            `json:"my_moto"`
 }

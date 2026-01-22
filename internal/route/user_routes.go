@@ -72,16 +72,16 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Delete("/cars/:id", auth.TokenGuard, userHandler.DeleteCar)
 
 		// motorcycles
-		r.Post("/motorcycles", auth.TokenGuard, userHandler.CreateMotorcycle)
-		r.Get("/motorcycles", auth.TokenGuard, userHandler.GetMotorcycles)
-		r.Post("/motorcycles/:id/buy", auth.TokenGuard, userHandler.BuyMotorcycle)
-		r.Post("/motorcycles/:id/cancel", auth.TokenGuard, userHandler.CancelMotorcycle)
-		r.Post("/motorcycles/:id/dont-sell", auth.TokenGuard, userHandler.DontSellMotorcycle)
-		r.Post("/motorcycles/:id/sell", auth.TokenGuard, userHandler.SellMotorcycle)
-		r.Put("/motorcycles", auth.TokenGuard, userHandler.UpdateMotorcycle)
-		r.Delete("/motorcycles/:id/images", auth.TokenGuard, userHandler.DeleteMotorcycleImage)
-		r.Delete("/motorcycles/:id/videos", auth.TokenGuard, userHandler.DeleteMotorcycleVideo)
-		r.Delete("/motorcycles/:id", auth.TokenGuard, userHandler.DeleteMotorcycle)
+		r.Post("/motorcycles", auth.TokenGuard, auth.LanguageChecker, userHandler.CreateMotorcycle)
+		r.Get("/motorcycles", auth.LanguageChecker, userHandler.GetMotorcycles)
+		r.Post("/motorcycles/:id/buy", auth.TokenGuard, auth.LanguageChecker, userHandler.BuyMotorcycle)
+		r.Post("/motorcycles/:id/cancel", auth.TokenGuard, auth.LanguageChecker, userHandler.CancelMotorcycle)
+		r.Post("/motorcycles/:id/dont-sell", auth.TokenGuard, auth.LanguageChecker, userHandler.DontSellMotorcycle)
+		r.Post("/motorcycles/:id/sell", auth.TokenGuard, auth.LanguageChecker, userHandler.SellMotorcycle)
+		r.Put("/motorcycles", auth.TokenGuard, auth.LanguageChecker, userHandler.UpdateMotorcycle)
+		r.Delete("/motorcycles/:id/images", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycleImage)
+		r.Delete("/motorcycles/:id/videos", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycleVideo)
+		r.Delete("/motorcycles/:id", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycle)
 
 		// comtrans
 		r.Post("/comtrans", auth.TokenGuard, auth.LanguageChecker, userHandler.CreateComtrans)

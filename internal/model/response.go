@@ -371,7 +371,7 @@ type AdminBodyTypeResponse struct {
 	Name      string    `json:"name"`
 	NameRu    string    `json:"name_ru"`
 	NameAe    string    `json:"name_ae"`
-	Image     string    `json:"image"`
+	Image     *string   `json:"image"`
 	ID        int       `json:"id"`
 }
 
@@ -492,7 +492,7 @@ type AdminColorResponse struct {
 	Name      string    `json:"name"`
 	NameRu    string    `json:"name_ru"`
 	NameAe    string    `json:"name_ae"`
-	Image     string    `json:"image"`
+	Image     *string   `json:"image"`
 	ID        int       `json:"id"`
 }
 
@@ -509,7 +509,7 @@ type AdminMotoBrandResponse struct {
 	Name      string    `json:"name"`
 	NameRu    string    `json:"name_ru"`
 	NameAe    string    `json:"name_ae"`
-	Image     string    `json:"image"`
+	Image     *string   `json:"image"`
 	ID        int       `json:"id"`
 }
 
