@@ -195,7 +195,7 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, nameColu
 			mocs.` + nameColumn + ` as moto_category,
 			mbs.` + nameColumn + ` as moto_brand,
 			mms.` + nameColumn + ` as moto_model,
-			meng.` + nameColumn + ` as fuel_type,
+			meng.` + nameColumn + ` as engine_type,
 			cs.name as city,
 			cls.` + nameColumn + ` as color,
 			CASE
@@ -249,7 +249,7 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, nameColu
 			&motorcycle.Owners, &motorcycle.VinCode, &motorcycle.Description, &motorcycle.PhoneNumbers,
 			&motorcycle.Price, &motorcycle.TradeIn, &motorcycle.Status,
 			&motorcycle.UpdatedAt, &motorcycle.CreatedAt, &motorcycle.MotoCategory, &motorcycle.MotoBrand,
-			&motorcycle.MotoModel, &motorcycle.FuelType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyMoto,
+			&motorcycle.MotoModel, &motorcycle.EngineType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyMoto,
 			&motorcycle.Images, &motorcycle.Videos)
 
 		if err != nil {
@@ -361,7 +361,7 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 			mocs.` + nameColumn + ` as moto_category,
 			mbs.` + nameColumn + ` as moto_brand,
 			mms.` + nameColumn + ` as moto_model,
-			meng.` + nameColumn + ` as fuel_type,
+			meng.` + nameColumn + ` as engine_type,
 			cs.name as city,
 			cls.` + nameColumn + ` as color,
 			CASE
@@ -406,7 +406,7 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 		&motorcycle.Owners, &motorcycle.VinCode, &motorcycle.Description, &motorcycle.PhoneNumbers,
 		&motorcycle.Price, &motorcycle.TradeIn, &motorcycle.Status,
 		&motorcycle.UpdatedAt, &motorcycle.CreatedAt, &motorcycle.MotoCategory, &motorcycle.MotoBrand,
-		&motorcycle.MotoModel, &motorcycle.FuelType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyMoto,
+		&motorcycle.MotoModel, &motorcycle.EngineType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyMoto,
 		&motorcycle.Images, &motorcycle.Videos)
 
 	return motorcycle, err
@@ -445,7 +445,7 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 			mocs.` + nameColumn + ` as moto_category,
 			mbs.` + nameColumn + ` as moto_brand,
 			mms.` + nameColumn + ` as moto_model,
-			meng.` + nameColumn + ` as fuel_type,
+			meng.` + nameColumn + ` as engine_type,
 			cs.name as city,
 			cls.` + nameColumn + ` as color,
 			CASE
@@ -490,7 +490,7 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 		&motorcycle.Owners, &motorcycle.VinCode, &motorcycle.Description, &motorcycle.PhoneNumbers,
 		&motorcycle.Price, &motorcycle.TradeIn, &motorcycle.Status,
 		&motorcycle.UpdatedAt, &motorcycle.CreatedAt, &motorcycle.MotoCategory, &motorcycle.MotoBrand,
-		&motorcycle.MotoModel, &motorcycle.FuelType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyMoto,
+		&motorcycle.MotoModel, &motorcycle.EngineType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyMoto,
 		&motorcycle.Images, &motorcycle.Videos)
 
 	return motorcycle, err

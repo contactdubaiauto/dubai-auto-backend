@@ -50,7 +50,7 @@ type CreateMotorcycleRequest struct {
 	VinCode          string   `json:"vin_code" validate:"required"`
 	Description      string   `json:"description"`
 	PhoneNumbers     []string `json:"phone_numbers" validate:"required"`
-	FuelTypeID       int      `json:"fuel_type_id" validate:"required"`
+	EngineID         int      `json:"engine_id" validate:"required"`
 	CityID           int      `json:"city_id" validate:"required"`
 	ColorID          int      `json:"color_id" validate:"required"`
 	Engine           int      `json:"engine"`
@@ -73,7 +73,7 @@ type UpdateMotorcycleRequest struct {
 	VinCode          string   `json:"vin_code"`
 	Description      string   `json:"description"`
 	PhoneNumbers     []string `json:"phone_numbers"`
-	FuelTypeID       int      `json:"fuel_type_id"`
+	EngineID         int      `json:"engine_id"`
 	CityID           int      `json:"city_id"`
 	ColorID          int      `json:"color_id"`
 	Engine           int      `json:"engine"`
@@ -117,7 +117,7 @@ type GetMotorcyclesResponse struct {
 	MotoCategory   string          `json:"moto_category"`
 	MotoBrand      string          `json:"moto_brand"`
 	MotoModel      string          `json:"moto_model"`
-	FuelType       string          `json:"fuel_type"`
+	EngineType     string          `json:"engine_type"`
 	City           string          `json:"city"`
 	Color          string          `json:"color"`
 	ID             int             `json:"id"`

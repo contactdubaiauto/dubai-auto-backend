@@ -163,7 +163,7 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, nameColumn st
 			cocs.` + nameColumn + ` as comtran_category,
 			cbs.` + nameColumn + ` as comtran_brand,
 			cms.` + nameColumn + ` as comtran_model,
-			ces.` + nameColumn + ` as fuel_type,
+			ces.` + nameColumn + ` as engine_type,
 			cs.name as city,
 			cls.` + nameColumn + ` as color,
 			CASE
@@ -215,7 +215,7 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, nameColumn st
 			&comtrans.Odometer, &comtrans.Crash, &comtrans.Owners, &comtrans.VinCode, &comtrans.Description, &comtrans.CanLookCoordinate,
 			&comtrans.PhoneNumbers, &comtrans.Price, &comtrans.TradeIn, &comtrans.Status,
 			&comtrans.UpdatedAt, &comtrans.CreatedAt, &comtrans.ComtranCategory, &comtrans.ComtranBrand,
-			&comtrans.ComtranModel, &comtrans.FuelType, &comtrans.City, &comtrans.Color, &comtrans.MyComtrans,
+			&comtrans.ComtranModel, &comtrans.EngineType, &comtrans.City, &comtrans.Color, &comtrans.MyComtrans,
 			&comtrans.Images, &comtrans.Videos)
 
 		if err != nil {
@@ -323,7 +323,7 @@ func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransI
 			cocs.` + nameColumn + ` as comtran_category,
 			cbs.` + nameColumn + ` as comtran_brand,
 			cms.` + nameColumn + ` as comtran_model,
-			ces.` + nameColumn + ` as fuel_type,
+			ces.` + nameColumn + ` as engine_type,
 			cs.name as city,
 			cls.` + nameColumn + ` as color,
 			CASE
@@ -366,7 +366,7 @@ func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransI
 		&comtrans.Odometer, &comtrans.Crash, &comtrans.Owners, &comtrans.VinCode, &comtrans.Description, &comtrans.CanLookCoordinate,
 		&comtrans.PhoneNumbers, &comtrans.Price, &comtrans.TradeIn, &comtrans.Status,
 		&comtrans.UpdatedAt, &comtrans.CreatedAt, &comtrans.ComtranCategory, &comtrans.ComtranBrand,
-		&comtrans.ComtranModel, &comtrans.FuelType, &comtrans.City, &comtrans.Color, &comtrans.MyComtrans,
+		&comtrans.ComtranModel, &comtrans.EngineType, &comtrans.City, &comtrans.Color, &comtrans.MyComtrans,
 		&comtrans.Images, &comtrans.Videos)
 
 	return comtrans, err
@@ -401,7 +401,7 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 			cocs.` + nameColumn + ` as comtran_category,
 			cbs.` + nameColumn + ` as comtran_brand,
 			cms.` + nameColumn + ` as comtran_model,
-			ces.` + nameColumn + ` as fuel_type,
+			ces.` + nameColumn + ` as engine_type,
 			cs.name as city,
 			cls.` + nameColumn + ` as color,
 			CASE
@@ -444,7 +444,7 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 		&comtrans.Odometer, &comtrans.Crash, &comtrans.Owners, &comtrans.VinCode, &comtrans.Description, &comtrans.CanLookCoordinate,
 		&comtrans.PhoneNumbers, &comtrans.Price, &comtrans.TradeIn, &comtrans.Status,
 		&comtrans.UpdatedAt, &comtrans.CreatedAt, &comtrans.ComtranCategory, &comtrans.ComtranBrand,
-		&comtrans.ComtranModel, &comtrans.FuelType, &comtrans.City, &comtrans.Color, &comtrans.MyComtrans,
+		&comtrans.ComtranModel, &comtrans.EngineType, &comtrans.City, &comtrans.Color, &comtrans.MyComtrans,
 		&comtrans.Images, &comtrans.Videos)
 
 	return comtrans, err

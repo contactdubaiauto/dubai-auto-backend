@@ -28,7 +28,7 @@ type CreateComtransRequest struct {
 	VinCode           string   `json:"vin_code" validate:"required"`
 	Description       string   `json:"description"`
 	PhoneNumbers      []string `json:"phone_numbers" validate:"required"`
-	FuelTypeID        int      `json:"fuel_type_id" validate:"required"`
+	EngineID          int      `json:"engine_id" validate:"required"`
 	ColorID           int      `json:"color_id" validate:"required"`
 	Engine            int      `json:"engine"`
 	Power             int      `json:"power"`
@@ -50,7 +50,7 @@ type UpdateComtransRequest struct {
 	Description       string   `json:"description"`
 	CanLookCoordinate string   `json:"can_look_coordinate"`
 	PhoneNumbers      []string `json:"phone_numbers"`
-	FuelTypeID        int      `json:"fuel_type_id"`
+	EngineID          int      `json:"engine_id"`
 	CityID            int      `json:"city_id"`
 	ColorID           int      `json:"color_id"`
 	Engine            int      `json:"engine"`
@@ -86,7 +86,7 @@ type GetComtransResponse struct {
 	ComtranCategory   string        `json:"comtran_category"`
 	ComtranBrand      string        `json:"comtran_brand"`
 	ComtranModel      string        `json:"comtran_model"`
-	FuelType          string        `json:"fuel_type"`
+	EngineType        string        `json:"engine_type"`
 	City              string        `json:"city"`
 	Color             string        `json:"color"`
 	ID                int           `json:"id"`
