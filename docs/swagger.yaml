@@ -799,7 +799,7 @@ definitions:
         type: string
       engine:
         type: integer
-      fuel_type_id:
+      engine_id:
         type: integer
       odometer:
         type: integer
@@ -826,7 +826,7 @@ definitions:
     - comtran_brand_id
     - comtran_category_id
     - comtran_model_id
-    - fuel_type_id
+    - engine_id
     - phone_numbers
     - price
     - trade_in
@@ -1034,7 +1034,7 @@ definitions:
         type: string
       engine:
         type: integer
-      fuel_type_id:
+      engine_id:
         type: integer
       moto_brand_id:
         type: integer
@@ -1067,7 +1067,7 @@ definitions:
     required:
     - city_id
     - color_id
-    - fuel_type_id
+    - engine_id
     - moto_brand_id
     - moto_category_id
     - moto_model_id
@@ -1362,7 +1362,7 @@ definitions:
         type: string
       engine:
         type: integer
-      fuel_type:
+      engine_type:
         type: string
       id:
         type: integer
@@ -1527,7 +1527,7 @@ definitions:
         type: string
       engine:
         type: integer
-      fuel_type:
+      engine_type:
         type: string
       id:
         type: integer
@@ -2069,7 +2069,7 @@ definitions:
         type: string
       engine:
         type: integer
-      fuel_type_id:
+      engine_id:
         type: integer
       id:
         type: integer
@@ -2211,7 +2211,7 @@ definitions:
         type: string
       engine:
         type: integer
-      fuel_type_id:
+      engine_id:
         type: integer
       id:
         type: integer
@@ -2442,7 +2442,7 @@ definitions:
       username:
         type: string
     type: object
-host: localhost:8080
+host: api.mashynbazar.com
 info:
   contact: {}
   description: Project Description
@@ -11424,8 +11424,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
       summary: Get motorcycles
       tags:
       - motorcycles

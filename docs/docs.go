@@ -13830,11 +13830,6 @@ const docTemplate = `{
         },
         "/api/v1/users/motorcycles": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Get motorcycles",
                 "consumes": [
                     "application/json"
@@ -18068,7 +18063,7 @@ const docTemplate = `{
                 "comtran_brand_id",
                 "comtran_category_id",
                 "comtran_model_id",
-                "fuel_type_id",
+                "engine_id",
                 "phone_numbers",
                 "price",
                 "trade_in",
@@ -18097,7 +18092,7 @@ const docTemplate = `{
                 "engine": {
                     "type": "integer"
                 },
-                "fuel_type_id": {
+                "engine_id": {
                     "type": "integer"
                 },
                 "odometer": {
@@ -18409,7 +18404,7 @@ const docTemplate = `{
             "required": [
                 "city_id",
                 "color_id",
-                "fuel_type_id",
+                "engine_id",
                 "moto_brand_id",
                 "moto_category_id",
                 "moto_model_id",
@@ -18436,7 +18431,7 @@ const docTemplate = `{
                 "engine": {
                     "type": "integer"
                 },
-                "fuel_type_id": {
+                "engine_id": {
                     "type": "integer"
                 },
                 "moto_brand_id": {
@@ -18909,7 +18904,7 @@ const docTemplate = `{
                 "engine": {
                     "type": "integer"
                 },
-                "fuel_type": {
+                "engine_type": {
                     "type": "string"
                 },
                 "id": {
@@ -19160,7 +19155,7 @@ const docTemplate = `{
                 "engine": {
                     "type": "integer"
                 },
-                "fuel_type": {
+                "engine_type": {
                     "type": "string"
                 },
                 "id": {
@@ -19970,7 +19965,7 @@ const docTemplate = `{
                 "engine": {
                     "type": "integer"
                 },
-                "fuel_type_id": {
+                "engine_id": {
                     "type": "integer"
                 },
                 "id": {
@@ -20177,7 +20172,7 @@ const docTemplate = `{
                 "engine": {
                     "type": "integer"
                 },
-                "fuel_type_id": {
+                "engine_id": {
                     "type": "integer"
                 },
                 "id": {
@@ -20528,7 +20523,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "api.mashynbazar.com",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Project name",

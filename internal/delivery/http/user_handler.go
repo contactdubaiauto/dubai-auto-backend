@@ -1598,7 +1598,6 @@ func (h *UserHandler) CreateMotorcycle(c *fiber.Ctx) error {
 // @Tags motorcycles
 // @Accept json
 // @Produce json
-// @Security BearerAuth
 // @Param   Accept-Language  header  string  false  "Language"
 // @Success 200 {array} model.GetMotorcyclesResponse
 // @Failure 500 {object} model.ResultMessage

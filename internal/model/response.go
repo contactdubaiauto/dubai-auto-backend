@@ -561,15 +561,12 @@ type AdminComtransCategoryResponse struct {
 }
 
 type AdminComtransBrandResponse struct {
-	CreatedAt              time.Time `json:"created_at"`
-	Name                   string    `json:"name"`
-	NameRu                 string    `json:"name_ru"`
-	NameAe                 string    `json:"name_ae"`
-	Image                  string    `json:"image"`
-	ComtransCategoryName   string    `json:"comtrans_category_name"`
-	ComtransCategoryNameRu string    `json:"comtrans_category_name_ru"`
-	ID                     int       `json:"id"`
-	ComtransCategoryID     int       `json:"comtrans_category_id"`
+	CreatedAt time.Time `json:"created_at"`
+	Name      string    `json:"name"`
+	NameRu    string    `json:"name_ru"`
+	NameAe    string    `json:"name_ae"`
+	Image     *string   `json:"image"`
+	ID        int       `json:"id"`
 }
 
 type AdminComtransModelResponse struct {

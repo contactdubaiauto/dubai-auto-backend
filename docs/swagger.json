@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8080",
+    "host": "api.mashynbazar.com",
     "basePath": "/",
     "paths": {
         "/api/v1/admin/activity-fields": {
@@ -13824,11 +13824,6 @@
         },
         "/api/v1/users/motorcycles": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Get motorcycles",
                 "consumes": [
                     "application/json"
@@ -18062,7 +18057,7 @@
                 "comtran_brand_id",
                 "comtran_category_id",
                 "comtran_model_id",
-                "fuel_type_id",
+                "engine_id",
                 "phone_numbers",
                 "price",
                 "trade_in",
@@ -18091,7 +18086,7 @@
                 "engine": {
                     "type": "integer"
                 },
-                "fuel_type_id": {
+                "engine_id": {
                     "type": "integer"
                 },
                 "odometer": {
@@ -18403,7 +18398,7 @@
             "required": [
                 "city_id",
                 "color_id",
-                "fuel_type_id",
+                "engine_id",
                 "moto_brand_id",
                 "moto_category_id",
                 "moto_model_id",
@@ -18430,7 +18425,7 @@
                 "engine": {
                     "type": "integer"
                 },
-                "fuel_type_id": {
+                "engine_id": {
                     "type": "integer"
                 },
                 "moto_brand_id": {
@@ -18903,7 +18898,7 @@
                 "engine": {
                     "type": "integer"
                 },
-                "fuel_type": {
+                "engine_type": {
                     "type": "string"
                 },
                 "id": {
@@ -19154,7 +19149,7 @@
                 "engine": {
                     "type": "integer"
                 },
-                "fuel_type": {
+                "engine_type": {
                     "type": "string"
                 },
                 "id": {
@@ -19964,7 +19959,7 @@
                 "engine": {
                     "type": "integer"
                 },
-                "fuel_type_id": {
+                "engine_id": {
                     "type": "integer"
                 },
                 "id": {
@@ -20171,7 +20166,7 @@
                 "engine": {
                     "type": "integer"
                 },
-                "fuel_type_id": {
+                "engine_id": {
                     "type": "integer"
                 },
                 "id": {

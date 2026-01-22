@@ -337,3 +337,13 @@ drop table if exists com_parameters;
 CREATE TYPE item_type_enum AS ENUM ('car', 'moto', 'comtran');
 alter table reports add column "item_type" item_type_enum;
 alter table reports add column "item_id" int;
+
+-- password !23k5678
+insert into users (email, username, role_id, password, phone)
+values 
+    ('dealer_demo@mashynbazar.com', 'dealer', 2, '$2a$10$siAe/KIRn06ittw8XL46HuEUyNN4JQgCyZlgOW/8pVyGJHJdrSRj2', +99361616162),
+    ('logistics_demo@mashynbazar.com', 'dealer', 3, '$2a$10$siAe/KIRn06ittw8XL46HuEUyNN4JQgCyZlgOW/8pVyGJHJdrSRj2', +99361616163),
+    ('broker_demo@mashynbazar.com', 'dealer', 4, '$2a$10$siAe/KIRn06ittw8XL46HuEUyNN4JQgCyZlgOW/8pVyGJHJdrSRj2', +99361616164),
+    ('service_demo@mashynbazar.com', 'dealer', 4, '$2a$10$siAe/KIRn06ittw8XL46HuEUyNN4JQgCyZlgOW/8pVyGJHJdrSRj2', +99361616164);
+
+CREATE TYPE item_type_enum AS ENUM ('car', 'moto', 'comtran');
