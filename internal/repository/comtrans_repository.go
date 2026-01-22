@@ -50,14 +50,14 @@ func (r *ComtransRepository) GetComtransCategories(ctx *fasthttp.RequestCtx, nam
 	return data, nil
 }
 
-func (r *ComtransRepository) GetComtransBrands(ctx *fasthttp.RequestCtx, categoryID string, nameColumn string) ([]model.GetComtransBrandsResponse, error) {
+func (r *ComtransRepository) GetComtransBrands(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.GetComtransBrandsResponse, error) {
 	data := make([]model.GetComtransBrandsResponse, 0)
 	q := `
-		SELECT id, ` + nameColumn + `, $2 || image FROM com_brands
-		WHERE comtran_category_id = $1
+		SELECT id, ` + nameColumn + `, $1 || logo, model_count FROM com_brands
 	`
 
-	rows, err := r.db.Query(ctx, q, categoryID, r.config.IMAGE_BASE_URL)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
+
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (r *ComtransRepository) GetComtransBrands(ctx *fasthttp.RequestCtx, categor
 
 	for rows.Next() {
 		var brand model.GetComtransBrandsResponse
-		err = rows.Scan(&brand.ID, &brand.Name, &brand.Image)
+		err = rows.Scan(&brand.ID, &brand.Name, &brand.Image, &brand.ModelCount)
 
 		if err != nil {
 			return nil, err
@@ -78,11 +78,11 @@ func (r *ComtransRepository) GetComtransBrands(ctx *fasthttp.RequestCtx, categor
 	return data, nil
 }
 
-func (r *ComtransRepository) GetComtransModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID string, brandID string, nameColumn string) ([]model.GetComtransModelsResponse, error) {
+func (r *ComtransRepository) GetComtransModelsByBrandID(ctx *fasthttp.RequestCtx, brandID, nameColumn string) ([]model.GetComtransModelsResponse, error) {
 	data := make([]model.GetComtransModelsResponse, 0)
 	q := `
 		SELECT id, ` + nameColumn + ` FROM com_models
-		WHERE comtran_brand_id = $1
+		WHERE com_brand_id = $1
 	`
 
 	rows, err := r.db.Query(ctx, q, brandID)
@@ -134,7 +134,7 @@ func (r *ComtransRepository) CreateComtrans(ctx *fasthttp.RequestCtx, req model.
 	return data, err
 }
 
-func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.GetComtransResponse, error) {
+func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, nameColumn string) ([]model.GetComtransResponse, error) {
 	data := make([]model.GetComtransResponse, 0)
 	q := `
 		select 
@@ -153,7 +153,6 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, nameColumn st
 			cts.owners,
 			cts.vin_code,
 			cts.description,
-			cts.can_look_coordinate,
 			cts.phone_numbers,
 			cts.price,
 			cts.trade_in,
@@ -201,7 +200,7 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, nameColumn st
 
 	`
 
-	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL, userID)
 	if err != nil {
 		return data, err
 	}
@@ -212,7 +211,7 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, nameColumn st
 		var comtrans model.GetComtransResponse
 		err = rows.Scan(
 			&comtrans.ID, &comtrans.Owner, &comtrans.Engine, &comtrans.Power, &comtrans.Year,
-			&comtrans.Odometer, &comtrans.Crash, &comtrans.Owners, &comtrans.VinCode, &comtrans.Description, &comtrans.CanLookCoordinate,
+			&comtrans.Odometer, &comtrans.Crash, &comtrans.Owners, &comtrans.VinCode, &comtrans.Description,
 			&comtrans.PhoneNumbers, &comtrans.Price, &comtrans.TradeIn, &comtrans.Status,
 			&comtrans.UpdatedAt, &comtrans.CreatedAt, &comtrans.ComtranCategory, &comtrans.ComtranBrand,
 			&comtrans.ComtranModel, &comtrans.EngineType, &comtrans.City, &comtrans.Color, &comtrans.MyComtrans,
@@ -313,7 +312,6 @@ func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransI
 			cts.owners,
 			cts.vin_code,
 			cts.description,
-			cts.can_look_coordinate,
 			cts.phone_numbers,
 			cts.price,
 			cts.trade_in,
@@ -363,7 +361,7 @@ func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransI
 
 	err := r.db.QueryRow(ctx, q, comtransID, userID, r.config.IMAGE_BASE_URL).Scan(
 		&comtrans.ID, &comtrans.Owner, &comtrans.Engine, &comtrans.Power, &comtrans.Year,
-		&comtrans.Odometer, &comtrans.Crash, &comtrans.Owners, &comtrans.VinCode, &comtrans.Description, &comtrans.CanLookCoordinate,
+		&comtrans.Odometer, &comtrans.Crash, &comtrans.Owners, &comtrans.VinCode, &comtrans.Description,
 		&comtrans.PhoneNumbers, &comtrans.Price, &comtrans.TradeIn, &comtrans.Status,
 		&comtrans.UpdatedAt, &comtrans.CreatedAt, &comtrans.ComtranCategory, &comtrans.ComtranBrand,
 		&comtrans.ComtranModel, &comtrans.EngineType, &comtrans.City, &comtrans.Color, &comtrans.MyComtrans,
@@ -391,7 +389,6 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 			cts.owners,
 			cts.vin_code,
 			cts.description,
-			cts.can_look_coordinate,
 			cts.phone_numbers,
 			cts.price,
 			cts.trade_in,
@@ -441,7 +438,7 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 
 	err := r.db.QueryRow(ctx, q, comtransID, userID, r.config.IMAGE_BASE_URL).Scan(
 		&comtrans.ID, &comtrans.Owner, &comtrans.Engine, &comtrans.Power, &comtrans.Year,
-		&comtrans.Odometer, &comtrans.Crash, &comtrans.Owners, &comtrans.VinCode, &comtrans.Description, &comtrans.CanLookCoordinate,
+		&comtrans.Odometer, &comtrans.Crash, &comtrans.Owners, &comtrans.VinCode, &comtrans.Description,
 		&comtrans.PhoneNumbers, &comtrans.Price, &comtrans.TradeIn, &comtrans.Status,
 		&comtrans.UpdatedAt, &comtrans.CreatedAt, &comtrans.ComtranCategory, &comtrans.ComtranBrand,
 		&comtrans.ComtranModel, &comtrans.EngineType, &comtrans.City, &comtrans.Color, &comtrans.MyComtrans,

@@ -1899,15 +1899,64 @@ func (h *UserHandler) CreateComtrans(c *fiber.Ctx) error {
 // @Tags comtrans
 // @Accept json
 // @Produce json
-// @Security BearerAuth
 // @Param   Accept-Language  header  string  false  "Language"
 // @Success 200 {array} model.GetComtransResponse
 // @Failure 500 {object} model.ResultMessage
 // @Router /api/v1/users/comtrans [get]
 func (h *UserHandler) GetComtrans(c *fiber.Ctx) error {
 	ctx := c.Context()
+	userID := c.Locals("id").(int)
 	lang := c.Locals("lang").(string)
-	return utils.FiberResponse(c, h.ComtransService.GetComtrans(ctx, lang))
+	return utils.FiberResponse(c, h.ComtransService.GetComtrans(ctx, userID, lang))
+}
+
+// GetComtransCategories godoc
+// @Summary Get commercial transport categories
+// @Description Get commercial transport categories
+// @Tags comtrans
+// @Accept json
+// @Produce json
+// @Param   Accept-Language  header  string  false  "Language"
+// @Success 200 {array} model.GetComtransCategoriesResponse
+// @Failure 500 {object} model.ResultMessage
+// @Router /api/v1/users/comtrans/categories [get]
+func (h *UserHandler) GetComtransCategories(c *fiber.Ctx) error {
+	ctx := c.Context()
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.ComtransService.GetComtransCategories(ctx, lang))
+}
+
+// GetComtransBrands godoc
+// @Summary Get commercial transport brands
+// @Description Get commercial transport brands
+// @Tags comtrans
+// @Accept json
+// @Produce json
+// @Param   Accept-Language  header  string  false  "Language"
+// @Success 200 {array} model.GetComtransBrandsResponse
+// @Failure 500 {object} model.ResultMessage
+// @Router /api/v1/users/comtrans/brands [get]
+func (h *UserHandler) GetComtransBrands(c *fiber.Ctx) error {
+	ctx := c.Context()
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.ComtransService.GetComtransBrands(ctx, lang))
+}
+
+// GetComtransModelsByBrandID godoc
+// @Summary Get commercial transport models by brand ID
+// @Description Get commercial transport models by brand ID
+// @Tags comtrans
+// @Accept json
+// @Produce json
+// @Param   Accept-Language  header  string  false  "Language"
+// @Success 200 {array} model.GetComtransModelsResponse
+// @Failure 500 {object} model.ResultMessage
+// @Router /api/v1/users/comtrans/brands/:id/models [get]
+func (h *UserHandler) GetComtransModelsByBrandID(c *fiber.Ctx) error {
+	ctx := c.Context()
+	lang := c.Locals("lang").(string)
+	brandID := c.Params("id")
+	return utils.FiberResponse(c, h.ComtransService.GetComtransModelsByBrandID(ctx, brandID, lang))
 }
 
 // BuyComtrans godoc

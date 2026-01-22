@@ -84,8 +84,11 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Delete("/motorcycles/:id", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycle)
 
 		// comtrans
+		r.Get("/comtrans", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetComtrans)
+		r.Get("/comtrans/categories", auth.LanguageChecker, userHandler.GetComtransCategories)
+		r.Get("/comtrans/brands", auth.LanguageChecker, userHandler.GetComtransBrands)
+		r.Get("/comtrans/brands/:id/models", auth.LanguageChecker, userHandler.GetComtransModelsByBrandID)
 		r.Post("/comtrans", auth.TokenGuard, auth.LanguageChecker, userHandler.CreateComtrans)
-		r.Get("/comtrans", auth.TokenGuard, auth.LanguageChecker, userHandler.GetComtrans)
 		r.Post("/comtrans/:id/buy", auth.TokenGuard, auth.LanguageChecker, userHandler.BuyComtrans)
 		r.Post("/comtrans/:id/cancel", auth.TokenGuard, auth.LanguageChecker, userHandler.CancelComtrans)
 		r.Post("/comtrans/:id/dont-sell", auth.TokenGuard, auth.LanguageChecker, userHandler.DontSellComtrans)

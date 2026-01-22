@@ -33,8 +33,9 @@ func (s *ComtransService) GetComtransCategories(ctx *fasthttp.RequestCtx, lang s
 	}
 }
 
-func (s *ComtransService) GetComtransBrands(ctx *fasthttp.RequestCtx, categoryID string, lang string) model.Response {
-	data, err := s.repository.GetComtransBrands(ctx, categoryID, lang)
+func (s *ComtransService) GetComtransBrands(ctx *fasthttp.RequestCtx, lang string) model.Response {
+	data, err := s.repository.GetComtransBrands(ctx, lang)
+
 	if err != nil {
 		return model.Response{
 			Status: 500,
@@ -47,8 +48,8 @@ func (s *ComtransService) GetComtransBrands(ctx *fasthttp.RequestCtx, categoryID
 	}
 }
 
-func (s *ComtransService) GetComtransModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID string, brandID string, lang string) model.Response {
-	data, err := s.repository.GetComtransModelsByBrandID(ctx, categoryID, brandID, lang)
+func (s *ComtransService) GetComtransModelsByBrandID(ctx *fasthttp.RequestCtx, brandID, lang string) model.Response {
+	data, err := s.repository.GetComtransModelsByBrandID(ctx, brandID, lang)
 	if err != nil {
 		return model.Response{
 			Status: 500,
@@ -75,8 +76,8 @@ func (s *ComtransService) CreateComtrans(ctx *fasthttp.RequestCtx, comtrans mode
 	}
 }
 
-func (s *ComtransService) GetComtrans(ctx *fasthttp.RequestCtx, lang string) model.Response {
-	data, err := s.repository.GetComtrans(ctx, lang)
+func (s *ComtransService) GetComtrans(ctx *fasthttp.RequestCtx, userID int, lang string) model.Response {
+	data, err := s.repository.GetComtrans(ctx, userID, lang)
 	if err != nil {
 		return model.Response{
 			Status: 500,

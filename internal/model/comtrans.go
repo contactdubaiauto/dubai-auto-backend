@@ -9,9 +9,10 @@ type GetComtransCategoriesResponse struct {
 }
 
 type GetComtransBrandsResponse struct {
-	Name  string `json:"name"`
-	Image string `json:"image"`
-	ID    int    `json:"id"`
+	Name       string  `json:"name"`
+	ModelCount int     `json:"model_count"`
+	Image      *string `json:"image"`
+	ID         int     `json:"id"`
 }
 
 type GetComtransModelsResponse struct {
@@ -24,6 +25,7 @@ type CreateComtransRequest struct {
 	Wheel             *bool    `json:"wheel"`
 	ComtranCategoryID int      `json:"comtran_category_id" validate:"required"`
 	BrandID           int      `json:"comtran_brand_id" validate:"required"`
+	CityID            int      `json:"city_id" validate:"required"`
 	ModelID           int      `json:"comtran_model_id" validate:"required"`
 	VinCode           string   `json:"vin_code" validate:"required"`
 	Description       string   `json:"description"`
@@ -45,13 +47,12 @@ type UpdateComtransRequest struct {
 	Wheel             *bool    `json:"wheel"`
 	ComtranCategoryID int      `json:"comtran_category_id"`
 	BrandID           int      `json:"comtran_brand_id"`
+	CityID            int      `json:"city_id"`
 	ModelID           int      `json:"comtran_model_id"`
 	VinCode           string   `json:"vin_code"`
 	Description       string   `json:"description"`
-	CanLookCoordinate string   `json:"can_look_coordinate"`
 	PhoneNumbers      []string `json:"phone_numbers"`
 	EngineID          int      `json:"engine_id"`
-	CityID            int      `json:"city_id"`
 	ColorID           int      `json:"color_id"`
 	Engine            int      `json:"engine"`
 	Power             int      `json:"power"`
@@ -71,31 +72,30 @@ type ComtransOwner struct {
 }
 
 type GetComtransResponse struct {
-	UpdatedAt         time.Time     `json:"updated_at"`
-	CreatedAt         time.Time     `json:"created_at"`
-	Images            []string      `json:"images"`
-	Videos            []string      `json:"videos"`
-	PhoneNumbers      []string      `json:"phone_numbers"`
-	Owner             ComtransOwner `json:"owner"`
-	Crash             *bool         `json:"crash"`
-	VinCode           string        `json:"vin_code"`
-	Wheel             *bool         `json:"wheel"`
-	Description       string        `json:"description"`
-	CanLookCoordinate string        `json:"can_look_coordinate"`
-	Status            string        `json:"status"`
-	ComtranCategory   string        `json:"comtran_category"`
-	ComtranBrand      string        `json:"comtran_brand"`
-	ComtranModel      string        `json:"comtran_model"`
-	EngineType        string        `json:"engine_type"`
-	City              string        `json:"city"`
-	Color             string        `json:"color"`
-	ID                int           `json:"id"`
-	Engine            int           `json:"engine"`
-	Power             int           `json:"power"`
-	Year              int           `json:"year"`
-	Odometer          int           `json:"odometer"`
-	Owners            int           `json:"owners"`
-	TradeIn           int           `json:"trade_in"`
-	Price             int           `json:"price"`
-	MyComtrans        bool          `json:"my_comtrans"`
+	UpdatedAt       time.Time     `json:"updated_at"`
+	CreatedAt       time.Time     `json:"created_at"`
+	Images          []string      `json:"images"`
+	Videos          []string      `json:"videos"`
+	PhoneNumbers    []string      `json:"phone_numbers"`
+	Owner           ComtransOwner `json:"owner"`
+	Crash           *bool         `json:"crash"`
+	VinCode         string        `json:"vin_code"`
+	Wheel           *bool         `json:"wheel"`
+	Description     string        `json:"description"`
+	Status          string        `json:"status"`
+	ComtranCategory string        `json:"comtran_category"`
+	ComtranBrand    string        `json:"comtran_brand"`
+	ComtranModel    string        `json:"comtran_model"`
+	EngineType      string        `json:"engine_type"`
+	City            string        `json:"city"`
+	Color           string        `json:"color"`
+	ID              int           `json:"id"`
+	Engine          int           `json:"engine"`
+	Power           int           `json:"power"`
+	Year            int           `json:"year"`
+	Odometer        int           `json:"odometer"`
+	Owners          int           `json:"owners"`
+	TradeIn         int           `json:"trade_in"`
+	Price           int           `json:"price"`
+	MyComtrans      bool          `json:"my_comtrans"`
 }

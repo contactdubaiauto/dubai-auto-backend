@@ -779,6 +779,8 @@ definitions:
     type: object
   model.CreateComtransRequest:
     properties:
+      city_id:
+        type: integer
       color_id:
         type: integer
       comtran_brand_id:
@@ -816,6 +818,7 @@ definitions:
       year:
         type: integer
     required:
+    - city_id
     - color_id
     - comtran_brand_id
     - comtran_category_id
@@ -1317,6 +1320,8 @@ definitions:
         type: integer
       image:
         type: string
+      model_count:
+        type: integer
       name:
         type: string
     type: object
@@ -1336,8 +1341,6 @@ definitions:
     type: object
   model.GetComtransResponse:
     properties:
-      can_look_coordinate:
-        type: string
       city:
         type: string
       color:
@@ -2045,8 +2048,6 @@ definitions:
     type: object
   model.UpdateComtransRequest:
     properties:
-      can_look_coordinate:
-        type: string
       city_id:
         type: integer
       color_id:
@@ -8053,164 +8054,6 @@ paths:
       summary: User reset password
       tags:
       - auth
-  /api/v1/comtrans:
-    get:
-      consumes:
-      - application/json
-      description: Get commercial transports
-      parameters:
-      - description: Language
-        in: header
-        name: Accept-Language
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.GetComtransResponse'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get commercial transports
-      tags:
-      - comtrans
-    post:
-      consumes:
-      - application/json
-      description: Create commercial transport
-      parameters:
-      - description: Commercial Transport
-        in: body
-        name: comtrans
-        required: true
-        schema:
-          $ref: '#/definitions/model.CreateComtransRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.SuccessWithId'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Create commercial transport
-      tags:
-      - comtrans
-  /api/v1/comtrans/categories:
-    get:
-      consumes:
-      - application/json
-      description: Get commercial transport categories
-      parameters:
-      - description: Language
-        in: header
-        name: Accept-Language
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.GetComtransCategoriesResponse'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get commercial transport categories
-      tags:
-      - comtrans
-  /api/v1/comtrans/categories/{category_id}/brands:
-    get:
-      consumes:
-      - application/json
-      description: Get commercial transport brands
-      parameters:
-      - description: Language
-        in: header
-        name: Accept-Language
-        type: string
-      - description: Category ID
-        in: path
-        name: category_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.GetComtransBrandsResponse'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get commercial transport brands
-      tags:
-      - comtrans
-  /api/v1/comtrans/categories/{category_id}/brands/{brand_id}/models:
-    get:
-      consumes:
-      - application/json
-      description: Get commercial transport models by brand ID
-      parameters:
-      - description: Language
-        in: header
-        name: Accept-Language
-        type: string
-      - description: Category ID
-        in: path
-        name: category_id
-        required: true
-        type: string
-      - description: Brand ID
-        in: path
-        name: brand_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.GetComtransModelsResponse'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get commercial transport models by brand ID
-      tags:
-      - comtrans
   /api/v1/third-party/dealer/car:
     post:
       consumes:
@@ -10484,8 +10327,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
       summary: Get commercial transports
       tags:
       - comtrans
@@ -10863,6 +10704,84 @@ paths:
       security:
       - BearerAuth: []
       summary: Delete commercial transport video
+      tags:
+      - comtrans
+  /api/v1/users/comtrans/brands:
+    get:
+      consumes:
+      - application/json
+      description: Get commercial transport brands
+      parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetComtransBrandsResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get commercial transport brands
+      tags:
+      - comtrans
+  /api/v1/users/comtrans/brands/:id/models:
+    get:
+      consumes:
+      - application/json
+      description: Get commercial transport models by brand ID
+      parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetComtransModelsResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get commercial transport models by brand ID
+      tags:
+      - comtrans
+  /api/v1/users/comtrans/categories:
+    get:
+      consumes:
+      - application/json
+      description: Get commercial transport categories
+      parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetComtransCategoriesResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get commercial transport categories
       tags:
       - comtrans
   /api/v1/users/countries:
@@ -12111,453 +12030,6 @@ paths:
       summary: Get transmissions
       tags:
       - filter
-  /comtrans/{comtrans_id}/images:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Uploads images for a commercial transport (max 10 files)
-      parameters:
-      - description: Commercial Transport ID
-        in: path
-        name: comtrans_id
-        required: true
-        type: integer
-      - description: Commercial transport images (max 10)
-        in: formData
-        name: images
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Upload commercial transport images
-      tags:
-      - comtrans
-  /comtrans/{comtrans_id}/images/{image_id}:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes an image from a commercial transport
-      parameters:
-      - description: Commercial Transport ID
-        in: path
-        name: comtrans_id
-        required: true
-        type: integer
-      - description: Image ID
-        in: path
-        name: image_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Delete commercial transport image
-      tags:
-      - comtrans
-  /comtrans/{comtrans_id}/videos:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Uploads videos for a commercial transport (max 1 files)
-      parameters:
-      - description: Commercial Transport ID
-        in: path
-        name: comtrans_id
-        required: true
-        type: integer
-      - description: Commercial transport videos (max 1)
-        in: formData
-        name: videos
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Upload commercial transport videos
-      tags:
-      - comtrans
-  /comtrans/{comtrans_id}/videos/{video_id}:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes a video from a commercial transport
-      parameters:
-      - description: Commercial Transport ID
-        in: path
-        name: comtrans_id
-        required: true
-        type: integer
-      - description: Video ID
-        in: path
-        name: video_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Delete commercial transport video
-      tags:
-      - comtrans
-  /comtrans/{id}:
-    delete:
-      description: Deletes a commercial transport and its associated files
-      parameters:
-      - description: Commercial Transport ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Delete commercial transport
-      tags:
-      - comtrans
-    get:
-      description: Returns a commercial transport by its ID
-      parameters:
-      - description: Language
-        in: header
-        name: Accept-Language
-        type: string
-      - description: Commercial Transport ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.GetComtransResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      - BearerAuth: []
-      summary: Get commercial transport by ID
-      tags:
-      - comtrans
-  /comtrans/{id}/buy:
-    post:
-      description: Returns a status response message
-      parameters:
-      - description: Commercial Transport ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Buy commercial transport
-      tags:
-      - comtrans
-  /comtrans/{id}/dont-sell:
-    post:
-      description: Updates commercial transport status to not for sale
-      parameters:
-      - description: Commercial Transport ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Set commercial transport as not for sale
-      tags:
-      - comtrans
-  /comtrans/{id}/edit:
-    get:
-      description: Returns a commercial transport by its ID for editing
-      parameters:
-      - description: Language
-        in: header
-        name: Accept-Language
-        type: string
-      - description: Commercial Transport ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.GetComtransResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      - BearerAuth: []
-      summary: Get Edit commercial transport by ID
-      tags:
-      - comtrans
-  /comtrans/{id}/sell:
-    post:
-      description: Updates commercial transport status to for sale
-      parameters:
-      - description: Commercial Transport ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Set commercial transport for sale
-      tags:
-      - comtrans
   /motorcycles:
     get:
       consumes:
