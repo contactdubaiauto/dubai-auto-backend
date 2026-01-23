@@ -311,13 +311,13 @@ func (s *UserService) GetHome(ctx *fasthttp.RequestCtx, userID int, nameColumn s
 }
 
 func (s *UserService) GetCars(ctx *fasthttp.RequestCtx, userID int, targetUserID string, brands, models, regions, cities,
-	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors []string,
+	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors, dealers []string,
 	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer string,
 	new, wheel *bool, limit, lastID int, nameColumn string) model.Response {
 
 	cars, err := s.UserRepository.GetCars(ctx, userID, targetUserID, brands, models, regions, cities,
 		generations, transmissions, engines, drivetrains, body_types, fuel_types,
-		ownership_types, colors, year_from, year_to, credit,
+		ownership_types, colors, dealers, year_from, year_to, credit,
 		price_from, price_to, tradeIn, owners, crash, odometer, new, wheel, limit, lastID, nameColumn)
 
 	if err != nil {
@@ -533,6 +533,14 @@ func (s *UserService) GetUserByID(ctx *fasthttp.RequestCtx, userID string, nameC
 	}
 
 	return model.Response{Data: user}
+}
+
+func (s *UserService) GetDealers(ctx *fasthttp.RequestCtx) model.Response {
+	dealers, err := s.UserRepository.GetDealers(ctx)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: dealers}
 }
 
 func (s *UserService) GetThirdPartyUsers(ctx *fasthttp.RequestCtx, roleID, fromID, toID, search string) model.Response {

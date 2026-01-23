@@ -59,11 +59,11 @@ func NewUserHandler(userService *service.UserService, motorcycleService *service
 // @Param  	new   		      query   string  false  "true or false new"
 // @Param  	wheel   		  query   string  false  "true or false wheel"
 // @Param  	odometer   	      query   string  false  "Filter by odometer"
+// @Param  	dealers   	      query   string  false  "Filter by dealers"
 // @Param   price_from        query   string  false  "Filter by price from"
 // @Param   price_to          query   string  false  "Filter by price to"
 // @Param   limit             query   string  false  "Limit"
 // @Param   last_id           query   string  false  "Last item ID"
-// @Param   user_id           query   string  false  "User ID"
 // @Success      200  {array}  model.GetCarsResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -76,6 +76,7 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 	nameColumn := c.Locals("lang").(string)
 	userID := c.Locals("id").(int)
 	brands := auth.QueryParamToArray(c.Query("brands"))
+	dealers := auth.QueryParamToArray(c.Query("dealers"))
 	models := auth.QueryParamToArray(c.Query("models"))
 	regions := auth.QueryParamToArray(c.Query("regions"))
 	cities := auth.QueryParamToArray(c.Query("cities"))
@@ -129,7 +130,7 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
 	data := h.UserService.GetCars(c.Context(), userID, targetUserID, brands, models,
 		regions, cities, generations, transmissions, engines, drivetrains,
-		body_types, fuel_types, ownership_types, colors,
+		body_types, fuel_types, ownership_types, colors, dealers,
 		year_from, year_to, credit, price_from, price_to,
 		tradeIn, owners, crash, odometer, new, wheel, limitInt, lastIDInt, nameColumn)
 	return utils.FiberResponse(c, data)
@@ -1386,6 +1387,24 @@ func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
 
 	nameColumn := c.Locals("lang").(string)
 	data := h.UserService.GetUserByID(c.Context(), userID, nameColumn)
+	return utils.FiberResponse(c, data)
+}
+
+// GetDealers godoc
+// @Summary      Get dealers
+// @Description  Returns a list of dealers
+// @Tags         user
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}  model.ThirdPartyUserResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/dealers [get]
+func (h *UserHandler) GetDealers(c *fiber.Ctx) error {
+	data := h.UserService.GetDealers(c.Context())
 	return utils.FiberResponse(c, data)
 }
 

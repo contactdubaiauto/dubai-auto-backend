@@ -2437,7 +2437,7 @@ definitions:
       username:
         type: string
     type: object
-host: api.mashynbazar.com
+host: localhost:8080
 info:
   contact: {}
   description: Project Description
@@ -9529,6 +9529,10 @@ paths:
         in: query
         name: odometer
         type: string
+      - description: Filter by dealers
+        in: query
+        name: dealers
+        type: string
       - description: Filter by price from
         in: query
         name: price_from
@@ -9544,10 +9548,6 @@ paths:
       - description: Last item ID
         in: query
         name: last_id
-        type: string
-      - description: User ID
-        in: query
-        name: user_id
         type: string
       produces:
       - application/json
@@ -10824,6 +10824,43 @@ paths:
       summary: Get countries
       tags:
       - filter
+  /api/v1/users/dealers:
+    get:
+      description: Returns a list of dealers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.ThirdPartyUserResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get dealers
+      tags:
+      - user
   /api/v1/users/drivetrains:
     get:
       description: Returns a list of car drivetrains
