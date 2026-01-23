@@ -157,6 +157,7 @@ type GetCarsResponse struct {
 	New       *bool      `json:"new"`
 	Crash     *bool      `json:"crash"`
 	MyCar     *bool      `json:"my_car"`
+	Odometer  *int       `json:"odometer"`
 	ID        int        `json:"id"`
 }
 

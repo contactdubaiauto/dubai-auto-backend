@@ -286,8 +286,8 @@ func (r *ThirdPartyRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit
 			&car.Price,
 			&car.Status,
 			&car.CreatedAt,
-			&car.Images,
 			&car.ViewCount,
+			&car.Images,
 			&car.MyCar,
 			&car.Crash,
 		); err != nil {
@@ -433,8 +433,8 @@ func (r *ThirdPartyRepository) OnSale(ctx *fasthttp.RequestCtx, userID int, name
 			&car.Price,
 			&car.Status,
 			&car.CreatedAt,
-			&car.Images,
 			&car.ViewCount,
+			&car.Images,
 			&car.MyCar,
 			&car.Crash,
 		); err != nil {

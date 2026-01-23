@@ -145,8 +145,6 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 		order by created_at desc;
 
 	`
-	fmt.Println(q)
-	fmt.Println(status, userID)
 	rows, err := r.db.Query(ctx, q, userID, r.config.IMAGE_BASE_URL, status)
 
 	if err != nil {
@@ -165,8 +163,8 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 			&car.Price,
 			&car.Status,
 			&car.CreatedAt,
-			&car.Images,
 			&car.ViewCount,
+			&car.Images,
 			&car.MyCar,
 			&car.Crash,
 		); err != nil {
