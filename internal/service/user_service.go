@@ -312,8 +312,32 @@ func (s *UserService) GetHome(ctx *fasthttp.RequestCtx, userID int, nameColumn s
 
 func (s *UserService) GetCars(ctx *fasthttp.RequestCtx, userID int, targetUserID string, brands, models, regions, cities,
 	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors, dealers []string,
-	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer string,
-	new, wheel *bool, limit, lastID int, nameColumn string) model.Response {
+	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer, newQ, wheelQ string,
+	limit, lastID int, nameColumn string) model.Response {
+	var wheel *bool
+	var new *bool
+
+	if newQ != "" {
+		if newQ == "false" {
+			tmp := false
+			new = &tmp
+		} else {
+			tmp := true
+			new = &tmp
+		}
+
+	}
+
+	if wheelQ != "" {
+		if wheelQ == "false" {
+			tmp := false
+			wheel = &tmp
+		} else {
+			tmp := true
+			wheel = &tmp
+		}
+
+	}
 
 	cars, err := s.UserRepository.GetCars(ctx, userID, targetUserID, brands, models, regions, cities,
 		generations, transmissions, engines, drivetrains, body_types, fuel_types,

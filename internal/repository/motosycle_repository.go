@@ -162,7 +162,10 @@ func (r *MotorcycleRepository) CreateMotorcycle(ctx *fasthttp.RequestCtx, req mo
 	return data, err
 }
 
-func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.GetMotorcyclesResponse, error) {
+func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, userID int, brands, models, regions, cities,
+	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors, dealers []string,
+	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer string, newQ, wheelQ *bool,
+	limit, lastID int, nameColumn string) ([]model.GetMotorcyclesResponse, error) {
 	data := make([]model.GetMotorcyclesResponse, 0)
 	q := `
 		select 

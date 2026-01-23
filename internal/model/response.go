@@ -144,6 +144,23 @@ type Owner struct {
 }
 
 type GetCarsResponse struct {
+	Type      string     `json:"type"`
+	CreatedAt *time.Time `json:"created_at"`
+	Images    *[]string  `json:"images"`
+	Model     *string    `json:"model"`
+	Brand     *string    `json:"brand"`
+	Status    *int       `json:"status"`
+	TradeIn   *int       `json:"trade_in"`
+	Year      *int       `json:"year"`
+	Price     *int       `json:"price"`
+	ViewCount *int       `json:"view_count"`
+	New       *bool      `json:"new"`
+	Crash     *bool      `json:"crash"`
+	MyCar     *bool      `json:"my_car"`
+	ID        int        `json:"id"`
+}
+
+type GetCarResponse struct {
 	CreatedAt    *time.Time `json:"created_at"`
 	UpdatedAt    *time.Time `json:"updated_at"`
 	Images       *[]string  `json:"images"`

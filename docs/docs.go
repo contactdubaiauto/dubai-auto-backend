@@ -12134,23 +12134,181 @@ const docTemplate = `{
         },
         "/api/v1/users/comtrans": {
             "get": {
-                "description": "Get commercial transports",
-                "consumes": [
-                    "application/json"
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
                 ],
+                "description": "Returns a list of comtrans",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "comtrans"
                 ],
-                "summary": "Get commercial transports",
+                "summary": "Get comtrans",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "Language",
                         "name": "Accept-Language",
                         "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by brand IDs",
+                        "name": "brands",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by model IDs",
+                        "name": "models",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by region IDs",
+                        "name": "regions",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by city IDs",
+                        "name": "cities",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by generation IDs",
+                        "name": "generations",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by color IDs",
+                        "name": "colors",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by crash status, true or empty",
+                        "name": "crash",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by transmission IDs",
+                        "name": "transmissions",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by engine IDs",
+                        "name": "engines",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by drivetrain IDs",
+                        "name": "drivetrains",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by body type IDs",
+                        "name": "body_types",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fuel type IDs",
+                        "name": "fuel_types",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by trade_in id, from 1 to 5",
+                        "name": "trade_in",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by owners id, from 1 to 4",
+                        "name": "owners",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by ownership type IDs",
+                        "name": "ownership_types",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by year from",
+                        "name": "year_from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by year to",
+                        "name": "year_to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by credit",
+                        "name": "credit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "true or false new",
+                        "name": "new",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "true or false wheel",
+                        "name": "wheel",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by odometer",
+                        "name": "odometer",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by dealers",
+                        "name": "dealers",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by price from",
+                        "name": "price_from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by price to",
+                        "name": "price_to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Last item ID",
+                        "name": "last_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -12159,8 +12317,32 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.GetComtransResponse"
+                                "$ref": "#/definitions/model.GetCarsResponse"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
                         }
                     },
                     "500": {
@@ -13711,15 +13893,17 @@ const docTemplate = `{
         },
         "/api/v1/users/motorcycles": {
             "get": {
-                "description": "Get motorcycles",
-                "consumes": [
-                    "application/json"
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
                 ],
+                "description": "Returns a list of motorcycles",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "motorcycles"
+                    "car"
                 ],
                 "summary": "Get motorcycles",
                 "parameters": [
@@ -13728,6 +13912,162 @@ const docTemplate = `{
                         "description": "Language",
                         "name": "Accept-Language",
                         "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by brand IDs",
+                        "name": "brands",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by model IDs",
+                        "name": "models",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by region IDs",
+                        "name": "regions",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by city IDs",
+                        "name": "cities",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by generation IDs",
+                        "name": "generations",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by color IDs",
+                        "name": "colors",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by crash status, true or empty",
+                        "name": "crash",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by transmission IDs",
+                        "name": "transmissions",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by engine IDs",
+                        "name": "engines",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by drivetrain IDs",
+                        "name": "drivetrains",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by body type IDs",
+                        "name": "body_types",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fuel type IDs",
+                        "name": "fuel_types",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by trade_in id, from 1 to 5",
+                        "name": "trade_in",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by owners id, from 1 to 4",
+                        "name": "owners",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by ownership type IDs",
+                        "name": "ownership_types",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by year from",
+                        "name": "year_from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by year to",
+                        "name": "year_to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by credit",
+                        "name": "credit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "true or false new",
+                        "name": "new",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "true or false wheel",
+                        "name": "wheel",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by odometer",
+                        "name": "odometer",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by dealers",
+                        "name": "dealers",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by price from",
+                        "name": "price_from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by price to",
+                        "name": "price_to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Last item ID",
+                        "name": "last_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -13738,6 +14078,30 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/model.GetMotorcyclesResponse"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
                         }
                     },
                     "500": {
@@ -14952,49 +15316,6 @@ const docTemplate = `{
             }
         },
         "/motorcycles": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get motorcycles",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "motorcycles"
-                ],
-                "summary": "Get motorcycles",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Language",
-                        "name": "Accept-Language",
-                        "in": "header"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.GetMotorcyclesResponse"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            },
             "post": {
                 "security": [
                     {
@@ -16934,26 +17255,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.ComtransOwner": {
-            "type": "object",
-            "properties": {
-                "avatar": {
-                    "type": "string"
-                },
-                "contacts": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
         "model.Conversation": {
             "type": "object",
             "properties": {
@@ -17893,37 +18194,13 @@ const docTemplate = `{
         "model.GetCarsResponse": {
             "type": "object",
             "properties": {
-                "body_type": {
-                    "type": "string"
-                },
                 "brand": {
-                    "type": "string"
-                },
-                "city": {
-                    "type": "string"
-                },
-                "color": {
                     "type": "string"
                 },
                 "crash": {
                     "type": "boolean"
                 },
                 "created_at": {
-                    "type": "string"
-                },
-                "credit": {
-                    "type": "boolean"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "drivetrain": {
-                    "type": "string"
-                },
-                "engine": {
-                    "type": "string"
-                },
-                "fuel_type": {
                     "type": "string"
                 },
                 "id": {
@@ -17935,13 +18212,6 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "liked": {
-                    "type": "boolean"
-                },
-                "mileage": {
-                    "description": "todo: change it to odometer",
-                    "type": "integer"
-                },
                 "model": {
                     "type": "string"
                 },
@@ -17951,23 +18221,8 @@ const docTemplate = `{
                 "new": {
                     "type": "boolean"
                 },
-                "owner": {
-                    "$ref": "#/definitions/model.Owner"
-                },
-                "owners": {
-                    "type": "integer"
-                },
-                "phone_numbers": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "price": {
                     "type": "integer"
-                },
-                "region": {
-                    "type": "string"
                 },
                 "status": {
                     "type": "integer"
@@ -17975,23 +18230,11 @@ const docTemplate = `{
                 "trade_in": {
                     "type": "integer"
                 },
-                "transmission": {
+                "type": {
                     "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "videos": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "view_count": {
                     "type": "integer"
-                },
-                "vin_code": {
-                    "type": "string"
                 },
                 "year": {
                     "type": "integer"
@@ -18051,98 +18294,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
-                }
-            }
-        },
-        "model.GetComtransResponse": {
-            "type": "object",
-            "properties": {
-                "city": {
-                    "type": "string"
-                },
-                "color": {
-                    "type": "string"
-                },
-                "comtran_brand": {
-                    "type": "string"
-                },
-                "comtran_category": {
-                    "type": "string"
-                },
-                "comtran_model": {
-                    "type": "string"
-                },
-                "crash": {
-                    "type": "boolean"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "engine": {
-                    "type": "integer"
-                },
-                "engine_type": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "images": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "my_comtrans": {
-                    "type": "boolean"
-                },
-                "odometer": {
-                    "type": "integer"
-                },
-                "owner": {
-                    "$ref": "#/definitions/model.ComtransOwner"
-                },
-                "owners": {
-                    "type": "integer"
-                },
-                "phone_numbers": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "power": {
-                    "type": "integer"
-                },
-                "price": {
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "trade_in": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "videos": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "vin_code": {
-                    "type": "string"
-                },
-                "wheel": {
-                    "type": "boolean"
-                },
-                "year": {
-                    "type": "integer"
                 }
             }
         },

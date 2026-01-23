@@ -134,51 +134,188 @@ func (r *ComtransRepository) CreateComtrans(ctx *fasthttp.RequestCtx, req model.
 	return data, err
 }
 
-func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, nameColumn string) ([]model.GetComtransResponse, error) {
+func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, targetUserID string, brands, models, regions, cities,
+	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors, dealers []string,
+	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer string,
+	new, wheel *bool, limit, lastID int, nameColumn string) ([]model.GetComtransResponse, error) {
 	data := make([]model.GetComtransResponse, 0)
+	var qWhere string
+	var qValues []any
+	qValues = append(qValues, userID)
+	var i = 1
+
+	if len(brands) > 0 {
+		i += 1
+		qWhere += fmt.Sprintf(" AND bs.id = ANY($%d)", i)
+		qValues = append(qValues, brands)
+	}
+
+	if len(models) > 0 {
+		i += 1
+		qWhere += fmt.Sprintf(" AND ms.id = ANY($%d)", i)
+		qValues = append(qValues, models)
+	}
+
+	if len(regions) > 0 {
+		i += 1
+		qWhere += fmt.Sprintf(" AND rs.id = ANY($%d)", i)
+		qValues = append(qValues, regions)
+	}
+
+	if len(cities) > 0 {
+		i += 1
+		qWhere += fmt.Sprintf(" AND cs.id = ANY($%d)", i)
+		qValues = append(qValues, cities)
+	}
+
+	if len(transmissions) > 0 {
+		i += 1
+		qWhere += fmt.Sprintf(" AND ts.id = ANY($%d)", i)
+		qValues = append(qValues, transmissions)
+	}
+
+	if len(engines) > 0 {
+		i += 1
+		qWhere += fmt.Sprintf(" AND es.id = ANY($%d)", i)
+		qValues = append(qValues, engines)
+	}
+
+	if len(drivetrains) > 0 {
+		i += 1
+		qWhere += fmt.Sprintf(" AND ds.id = ANY($%d)", i)
+		qValues = append(qValues, drivetrains)
+	}
+
+	if len(body_types) > 0 {
+		i += 1
+		qWhere += fmt.Sprintf(" AND bts.id = ANY($%d)", i)
+		qValues = append(qValues, body_types)
+	}
+
+	if len(fuel_types) > 0 {
+		i += 1
+		qWhere += fmt.Sprintf(" AND fts.id = ANY($%d)", i)
+		qValues = append(qValues, fuel_types)
+	}
+
+	if len(generations) > 0 {
+		i += 1
+		qWhere += fmt.Sprintf(" AND gms.generation_id = ANY($%d)", i)
+		qValues = append(qValues, generations)
+	}
+
+	if len(colors) > 0 {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.color_id = ANY($%d)", i)
+		qValues = append(qValues, colors)
+	}
+
+	if len(dealers) > 0 {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.user_id = ANY($%d)", i)
+		qValues = append(qValues, dealers)
+	}
+
+	if len(ownership_types) > 0 {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.ownership_type_id = ANY($%d) ", i)
+		qValues = append(qValues, ownership_types)
+	}
+
+	if year_from != "" {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.year >= $%d", i)
+		qValues = append(qValues, year_from)
+	}
+
+	if year_to != "" {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.year <= $%d", i)
+		qValues = append(qValues, year_to)
+	}
+
+	if tradeIn != "" {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.trade_in = $%d", i)
+		qValues = append(qValues, tradeIn)
+	}
+
+	if owners != "" {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.owners = $%d", i)
+		qValues = append(qValues, owners)
+	}
+
+	if crash != "" {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.crash = $%d", i)
+		qValues = append(qValues, crash)
+	}
+
+	if credit != "" {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.credit = $%d", i)
+		qValues = append(qValues, true)
+	}
+
+	if credit != "" {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.credit = $%d", i)
+		qValues = append(qValues, true)
+	}
+
+	if price_from != "" {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.price >= $%d", i)
+		qValues = append(qValues, price_from)
+	}
+
+	if price_to != "" {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.price <= $%d", i)
+		qValues = append(qValues, price_to)
+	}
+
+	if new != nil {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.new = $%d", i)
+		qValues = append(qValues, new)
+	}
+
+	if wheel != nil {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.wheel = $%d", i)
+		qValues = append(qValues, wheel)
+	}
+
+	if odometer != "" {
+		i += 1
+		qWhere += fmt.Sprintf(" AND vs.odometer <= $%d", i)
+		qValues = append(qValues, odometer)
+	}
+
 	q := `
 		select 
 			cts.id,
-			json_build_object(
-				'id', pf.user_id,
-				'username', pf.username,
-				'avatar', $1 || pf.avatar,
-				'contacts', pf.contacts
-			) as owner,
-			cts.engine,
-			cts.power,
+			'comtran' as type,
+			cbs.` + nameColumn + ` as brand,
+			cms.` + nameColumn + ` as model,
 			cts.year,
-			cts.odometer,
-			cts.crash,
-			cts.owners,
-			cts.vin_code,
-			cts.description,
-			cts.phone_numbers,
 			cts.price,
-			cts.trade_in,
-			cts.status,
-			cts.updated_at,
 			cts.created_at,
-			cocs.` + nameColumn + ` as comtran_category,
-			cbs.` + nameColumn + ` as comtran_brand,
-			cms.` + nameColumn + ` as comtran_model,
-			ces.` + nameColumn + ` as engine_type,
-			cs.name as city,
-			cls.` + nameColumn + ` as color,
+			images.images,
+			cts.new,
+			cts.status,
+			cts.trade_in,
+			cts.crash,
+			cts.view_count,
 			CASE
 				WHEN cts.user_id = $2 THEN TRUE
 				ELSE FALSE
-			END AS my_comtrans,
-			images.images,
-			videos.videos
+			END AS my_comtrans
 		from comtrans cts
-		left join profiles pf on pf.user_id = cts.user_id
-		left join com_categories cocs on cocs.id = cts.comtran_category_id
 		left join com_brands cbs on cbs.id = cts.comtran_brand_id
 		left join com_models cms on cms.id = cts.comtran_model_id
-		left join com_engines ces on ces.id = cts.engine_id
-		left join cities cs on cs.id = cts.city_id
-		left join colors cls on cls.id = cts.color_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -187,16 +324,7 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, n
 				WHERE comtran_id = cts.id
 				ORDER BY created_at DESC
 			) img
-		) images ON true
-		LEFT JOIN LATERAL (
-			SELECT json_agg(v.video) AS videos
-			FROM (
-				SELECT $1 || video as video
-				FROM comtran_videos
-				WHERE comtran_id = cts.id
-				ORDER BY created_at DESC
-			) v
-		) videos ON true;
+		) images ON true;
 
 	`
 
@@ -208,20 +336,18 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, n
 	defer rows.Close()
 
 	for rows.Next() {
-		var comtrans model.GetComtransResponse
+		var com model.GetComtransResponse
 		err = rows.Scan(
-			&comtrans.ID, &comtrans.Owner, &comtrans.Engine, &comtrans.Power, &comtrans.Year,
-			&comtrans.Odometer, &comtrans.Crash, &comtrans.Owners, &comtrans.VinCode, &comtrans.Description,
-			&comtrans.PhoneNumbers, &comtrans.Price, &comtrans.TradeIn, &comtrans.Status,
-			&comtrans.UpdatedAt, &comtrans.CreatedAt, &comtrans.ComtranCategory, &comtrans.ComtranBrand,
-			&comtrans.ComtranModel, &comtrans.EngineType, &comtrans.City, &comtrans.Color, &comtrans.MyComtrans,
-			&comtrans.Images, &comtrans.Videos)
+			&com.ID, &com.Brand, &com.Model, &com.Year, &com.Price,
+			&com.CreatedAt, &com.Images,
+			&com.New, &com.Status, &com.TradeIn, &com.Crash,
+			&com.ViewCount, &com.MyCar)
 
 		if err != nil {
 			return data, err
 		}
 
-		data = append(data, comtrans)
+		data = append(data, com)
 	}
 
 	return data, err
@@ -287,8 +413,8 @@ func (r *ComtransRepository) DeleteComtransVideo(ctx *fasthttp.RequestCtx, comtr
 	return nil
 }
 
-func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransID, userID int, nameColumn string) (model.GetComtransResponse, error) {
-	var comtrans model.GetComtransResponse
+func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransID, userID int, nameColumn string) (model.GetComtranResponse, error) {
+	var comtrans model.GetComtranResponse
 	q := `
 		WITH updated AS (
 			UPDATE comtrans
@@ -370,8 +496,8 @@ func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransI
 	return comtrans, err
 }
 
-func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtransID, userID int, nameColumn string) (model.GetComtransResponse, error) {
-	var comtrans model.GetComtransResponse
+func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtransID, userID int, nameColumn string) (model.GetComtranResponse, error) {
+	var comtrans model.GetComtranResponse
 	q := `
 		select 
 			cts.id,

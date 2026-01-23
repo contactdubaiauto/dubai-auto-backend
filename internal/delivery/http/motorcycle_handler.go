@@ -119,23 +119,23 @@ func (h *MotorcycleHandler) GetMotorcycleModelsByBrandID(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, h.service.GetMotorcycleModelsByBrandID(ctx, categoryID, brandID, lang))
 }
 
-// GetMotorcycles godoc
-// @Summary Get motorcycles
-// @Description Get motorcycles
-// @Tags motorcycles
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param   Accept-Language  header  string  false  "Language"
-// @Success 200 {array} model.GetMotorcyclesResponse
-// @Failure 500 {object} model.ResultMessage
-// @Router /motorcycles [get]
-func (h *MotorcycleHandler) GetMotorcycles(c *fiber.Ctx) error {
-	ctx := c.Context()
-	lang := c.Locals("lang").(string)
-	return utils.FiberResponse(c, h.service.GetMotorcycles(ctx, lang))
+// // GetMotorcycles godoc
+// // @Summary Get motorcycles
+// // @Description Get motorcycles
+// // @Tags motorcycles
+// // @Accept json
+// // @Produce json
+// // @Security BearerAuth
+// // @Param   Accept-Language  header  string  false  "Language"
+// // @Success 200 {array} model.GetMotorcyclesResponse
+// // @Failure 500 {object} model.ResultMessage
+// // @Router /motorcycles [get]
+// func (h *MotorcycleHandler) GetMotorcycles(c *fiber.Ctx) error {
+// 	ctx := c.Context()
+// 	lang := c.Locals("lang").(string)
+// 	return utils.FiberResponse(c, h.service.GetMotorcycles(ctx, lang))
 
-}
+// }
 
 // CreateMotorcycle godoc
 // @Summary Create motorcycle

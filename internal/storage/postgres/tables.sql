@@ -118,7 +118,8 @@ create table users (
     "status" int not null default 1, -- 1 active, 2 pending, 3 inactive
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
-    unique("email","phone")
+    unique("email"),
+    unique("phone")
 );
 
 
@@ -694,6 +695,7 @@ create table motorcycles (
     "wheel" boolean not null default true, -- true left, false right
     "odometer" int not null default 0,
     "crash" boolean not null default false,
+    "new" boolean not null default false,
     "owners" int not null default 0,
     "vin_code" varchar(50),
     "description" text,
@@ -861,6 +863,7 @@ create table comtrans (
     "vin_code" varchar(50),
     "description" text,
     "phone_numbers" varchar(255)[] not null,
+    "new" boolean not null default false,
     "price" int not null,
     "trade_in" int not null default 1, -- 1. No exchange 2. Equal value 3. More expensive 4. Cheaper 5. Not a car
     "status" int not null default 1, -- 1-pending, 2-not sale (my cars), 3-on sale,

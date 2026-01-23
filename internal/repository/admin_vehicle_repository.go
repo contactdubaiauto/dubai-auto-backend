@@ -66,8 +66,8 @@ func (r *AdminRepository) GetVehicles(ctx *fasthttp.RequestCtx, limit, lastID in
 	return vehicles, err
 }
 
-func (r *AdminRepository) GetVehicleByID(ctx *fasthttp.RequestCtx, vehicleID int) (model.GetCarsResponse, error) {
-	car := model.GetCarsResponse{}
+func (r *AdminRepository) GetVehicleByID(ctx *fasthttp.RequestCtx, vehicleID int) (model.GetCarResponse, error) {
+	car := model.GetCarResponse{}
 
 	// Similar to user GetCarByID, but does NOT increment view_count and does not depend on "my_car" / "liked".
 	q := `

@@ -103,8 +103,39 @@ func (s *MotorcycleService) CreateMotorcycle(ctx *fasthttp.RequestCtx, motorcycl
 	}
 }
 
-func (s *MotorcycleService) GetMotorcycles(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
-	data, err := s.repository.GetMotorcycles(ctx, nameColumn)
+func (s *MotorcycleService) GetMotorcycles(ctx *fasthttp.RequestCtx, userID int, brands, models, regions, cities,
+	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors, dealers []string,
+	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer, newQ, wheelQ string,
+	limit, lastID int, nameColumn string) model.Response {
+	var wheel *bool
+	var new *bool
+
+	if newQ != "" {
+		if newQ == "false" {
+			tmp := false
+			new = &tmp
+		} else {
+			tmp := true
+			new = &tmp
+		}
+
+	}
+
+	if wheelQ != "" {
+		if wheelQ == "false" {
+			tmp := false
+			wheel = &tmp
+		} else {
+			tmp := true
+			wheel = &tmp
+		}
+
+	}
+
+	data, err := s.repository.GetMotorcycles(ctx, userID, brands, models, regions, cities,
+		generations, transmissions, engines, drivetrains, body_types, fuel_types,
+		ownership_types, colors, dealers, year_from, year_to, credit,
+		price_from, price_to, tradeIn, owners, crash, odometer, new, wheel, limit, lastID, nameColumn)
 	if err != nil {
 		return model.Response{
 			Status: 500,

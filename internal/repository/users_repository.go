@@ -145,6 +145,8 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 		order by created_at desc;
 
 	`
+	fmt.Println(q)
+	fmt.Println(status, userID)
 	rows, err := r.db.Query(ctx, q, userID, r.config.IMAGE_BASE_URL, status)
 
 	if err != nil {
@@ -163,8 +165,8 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 			&car.Price,
 			&car.Status,
 			&car.CreatedAt,
-			&car.ViewCount,
 			&car.Images,
+			&car.ViewCount,
 			&car.MyCar,
 			&car.Crash,
 		); err != nil {
@@ -172,6 +174,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 		}
 		cars = append(cars, car)
 	}
+
 	return cars, err
 }
 
@@ -916,43 +919,25 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int, nameColum
 	q := `
 		select 
 			vs.id,
+			'car' as type,
 			bs.` + nameColumn + ` as brand,
-			rs.` + nameColumn + ` as region,
-			cs.` + nameColumn + ` as city,
-			cls.` + nameColumn + ` as color,
 			ms.` + nameColumn + ` as model,
-			ts.` + nameColumn + ` as transmission,
-			es.` + nameColumn + ` as engine,
-			ds.` + nameColumn + ` as drive,
-			bts.` + nameColumn + ` as body_type,
-			fts.` + nameColumn + ` as fuel_type,
 			vs.year,
 			vs.price,
-			vs.odometer,
-			vs.vin_code,
-			vs.credit,
+			vs.created_at,
+			images.images,
 			vs.new,
 			vs.status,
-			vs.created_at,
-			vs.updated_at,
-			images,
-			vs.phone_numbers,
+			vs.trade_in,
+			vs.crash,
 			vs.view_count,
 			CASE
 				WHEN vs.user_id = $1 THEN TRUE
 				ELSE FALSE
 			END AS my_car
 		from vehicles vs
-		left join generation_modifications gms on gms.id = vs.modification_id
-		left join colors cls on vs.color_id = cls.id
 		left join brands bs on vs.brand_id = bs.id
-		left join regions rs on vs.region_id = rs.id
-		left join cities cs on vs.city_id = cs.id
 		left join models ms on vs.model_id = ms.id
-		left join transmissions ts on gms.transmission_id = ts.id
-		left join engines es on gms.engine_id = es.id
-		left join drivetrains ds on gms.drivetrain_id = ds.id
-		left join body_types bts on gms.body_type_id = bts.id
 		left join fuel_types fts on gms.fuel_type_id = fts.id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
@@ -979,10 +964,10 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int, nameColum
 		var car model.GetCarsResponse
 
 		if err := rows.Scan(
-			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
-			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
-			&car.Credit, &car.New, &car.Status, &car.CreatedAt,
-			&car.UpdatedAt, &car.Images, &car.PhoneNumbers, &car.ViewCount, &car.MyCar,
+			&car.ID, &car.Type, &car.Brand, &car.Model, &car.Year, &car.Price,
+			&car.CreatedAt, &car.Images,
+			&car.New, &car.Status, &car.TradeIn, &car.Crash,
+			&car.ViewCount, &car.MyCar,
 		); err != nil {
 			return home, err
 		}
@@ -1001,6 +986,7 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 	crash, odometer string, new, wheel *bool, limit, lastID int, nameColumn string) ([]model.GetCarsResponse, error) {
 	var qWhere string
 	var qValues []any
+	var qJoins string
 	qValues = append(qValues, userID)
 	var i = 1
 
@@ -1020,54 +1006,63 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 		i += 1
 		qWhere += fmt.Sprintf(" AND rs.id = ANY($%d)", i)
 		qValues = append(qValues, regions)
+		qJoins += " left join regions rs on vs.region_id = rs.id"
 	}
 
 	if len(cities) > 0 {
 		i += 1
 		qWhere += fmt.Sprintf(" AND cs.id = ANY($%d)", i)
 		qValues = append(qValues, cities)
+		qJoins += " left join cities cs on vs.city_id = cs.id"
 	}
 
 	if len(transmissions) > 0 {
 		i += 1
 		qWhere += fmt.Sprintf(" AND ts.id = ANY($%d)", i)
 		qValues = append(qValues, transmissions)
+		qJoins += " left join transmissions ts on vs.transmission_id = ts.id"
 	}
 
 	if len(engines) > 0 {
 		i += 1
 		qWhere += fmt.Sprintf(" AND es.id = ANY($%d)", i)
 		qValues = append(qValues, engines)
+		qJoins += " left join engines es on vs.engine_id = es.id"
 	}
 
 	if len(drivetrains) > 0 {
 		i += 1
 		qWhere += fmt.Sprintf(" AND ds.id = ANY($%d)", i)
 		qValues = append(qValues, drivetrains)
+		qJoins += " left join drivetrains ds on vs.drivetrain_id = ds.id"
 	}
 
 	if len(body_types) > 0 {
 		i += 1
 		qWhere += fmt.Sprintf(" AND bts.id = ANY($%d)", i)
 		qValues = append(qValues, body_types)
+		qJoins += " left join body_types bts on vs.body_type_id = bts.id"
 	}
 
 	if len(fuel_types) > 0 {
 		i += 1
 		qWhere += fmt.Sprintf(" AND fts.id = ANY($%d)", i)
 		qValues = append(qValues, fuel_types)
+		qJoins += " left join fuel_types fts on vs.fuel_type_id = fts.id"
 	}
 
 	if len(generations) > 0 {
 		i += 1
 		qWhere += fmt.Sprintf(" AND gms.generation_id = ANY($%d)", i)
 		qValues = append(qValues, generations)
+		qJoins += " left join generations gms on vs.generation_id = gms.id"
 	}
 
 	if len(colors) > 0 {
 		i += 1
 		qWhere += fmt.Sprintf(" AND vs.color_id = ANY($%d)", i)
 		qValues = append(qValues, colors)
+		qJoins += " left join colors cls on vs.color_id = cls.id"
 	}
 
 	if len(dealers) > 0 {
@@ -1154,103 +1149,47 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 		qValues = append(qValues, odometer)
 	}
 
-	// if targetUserID != "" {
-	// 	targetUserIDInt, err := strconv.Atoi(targetUserID)
-
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-
-	// 	i += 1
-	// 	qWhere += fmt.Sprintf(" AND vs.user_id = $%d", i)
-	// 	qValues = append(qValues, targetUserIDInt)
-	// }
-
 	cars := make([]model.GetCarsResponse, 0)
 	q := `
 		select 
 			vs.id,
-			bs.` + nameColumn + ` as brand,
-			rs.` + nameColumn + ` as region,
-			cs.` + nameColumn + ` as city,
-			cls.` + nameColumn + ` as color,
-			ms.` + nameColumn + ` as model,
-			ts.` + nameColumn + ` as transmission,
-			es.` + nameColumn + ` as engine,
-			ds.` + nameColumn + ` as drive,
-			bts.` + nameColumn + ` as body_type,
-			fts.` + nameColumn + ` as fuel_type,
+			'car' as type,
+			bs.%s as brand,
+			ms.%s as model,
 			vs.year,
 			vs.price,
-			vs.odometer,
-			vs.vin_code,
-			vs.credit,
+			vs.created_at,
+			images.images,
 			vs.new,
 			vs.status,
-			vs.created_at,
 			vs.trade_in,
-			vs.owners,
 			vs.crash,
-			vs.updated_at,
-			images.images,
-			videos.videos,
-			vs.phone_numbers,
 			vs.view_count,
 			CASE
 				WHEN vs.user_id = $1 THEN TRUE
 				ELSE FALSE
-			END AS my_car,
-			json_build_object(
-				'id', pf.user_id,
-				'username', pf.username,
-				'avatar', '` + r.config.IMAGE_BASE_URL + `' || pf.avatar,
-				'role_id', u.role_id,
-				'contacts', pf.contacts
-			) as owner,
-			vs.description,
-			CASE 
-				WHEN ul.vehicle_id IS NOT NULL THEN true
-				ELSE false
-			END AS liked
+			END AS my_car
 		from vehicles vs
-		left join generation_modifications gms on gms.id = vs.modification_id
-		left join colors cls on vs.color_id = cls.id
-		left join profiles pf on pf.user_id = vs.user_id
-		left join users u on u.id = vs.user_id
 		left join brands bs on vs.brand_id = bs.id
-		left join regions rs on vs.region_id = rs.id
-		left join cities cs on vs.city_id = cs.id
 		left join models ms on vs.model_id = ms.id
-		left join transmissions ts on gms.transmission_id = ts.id
-		left join engines es on gms.engine_id = es.id
-		left join drivetrains ds on gms.drivetrain_id = ds.id
-		left join body_types bts on gms.body_type_id = bts.id
-		left join fuel_types fts on gms.fuel_type_id = fts.id
-		left join user_likes ul on ul.vehicle_id = vs.id AND ul.user_id = $1
+		%s
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
-				SELECT '` + r.config.IMAGE_BASE_URL + `' || image as image
+				SELECT '%s'|| image as image
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
 			) img
 		) images ON true
-		LEFT JOIN LATERAL (
-			SELECT json_agg(v.video) AS videos
-			FROM (
-				SELECT '` + r.config.IMAGE_BASE_URL + `' || video as video
-				FROM videos
-				WHERE vehicle_id = vs.id
-				ORDER BY created_at DESC
-			) v
-		) videos ON true
-		where vs.status = 3 and vs.id > ` + strconv.Itoa(lastID) + `
-		` + qWhere + `
+		where vs.status = 3 and vs.id > %d
+		%s
 		order by vs.id desc
-		limit ` + strconv.Itoa(limit) + `
+		limit %d
 	`
-	rows, err := r.db.Query(ctx, q, qValues...)
+	rows, err := r.db.Query(ctx,
+		fmt.Sprintf(q, nameColumn, nameColumn, qJoins, r.config.IMAGE_BASE_URL, lastID, qWhere, limit),
+		qValues...)
 
 	if err != nil {
 		return cars, err
@@ -1260,10 +1199,10 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 	for rows.Next() {
 		var car model.GetCarsResponse
 		if err := rows.Scan(
-			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
-			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
-			&car.Credit, &car.New, &car.Status, &car.CreatedAt, &car.TradeIn, &car.Owners, &car.Crash,
-			&car.UpdatedAt, &car.Images, &car.Videos, &car.PhoneNumbers, &car.ViewCount, &car.MyCar, &car.Owner, &car.Description, &car.Liked,
+			&car.ID, &car.Type, &car.Brand, &car.Model, &car.Year, &car.Price,
+			&car.CreatedAt, &car.Images,
+			&car.New, &car.Status, &car.TradeIn, &car.Crash,
+			&car.ViewCount, &car.MyCar,
 		); err != nil {
 			return cars, err
 		}
@@ -1310,8 +1249,8 @@ func (r *UserRepository) GetPriceRecommendation(ctx *fasthttp.RequestCtx, filter
 	return prices, err
 }
 
-func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int, nameColumn string) (model.GetCarsResponse, error) {
-	car := model.GetCarsResponse{}
+func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int, nameColumn string) (model.GetCarResponse, error) {
+	car := model.GetCarResponse{}
 	q := `
 		WITH updated AS (
 			UPDATE vehicles
@@ -1650,49 +1589,25 @@ func (r *UserRepository) Likes(ctx *fasthttp.RequestCtx, userID *int, nameColumn
 	q := `
 		select 
 			vs.id,
+			'car' as type,
 			bs.` + nameColumn + ` as brand,
-			rs.` + nameColumn + ` as region,
-			cs.` + nameColumn + ` as city,
-			cls.` + nameColumn + ` as color,
 			ms.` + nameColumn + ` as model,
-			ts.` + nameColumn + ` as transmission,
-			es.` + nameColumn + ` as engine,
-			ds.` + nameColumn + ` as drive,
-			bts.` + nameColumn + ` as body_type,
-			fts.` + nameColumn + ` as fuel_type,
 			vs.year,
 			vs.price,
-			vs.odometer,
-			vs.vin_code,
-			vs.credit,
+			vs.created_at,
+			images.images,
 			vs.new,
 			vs.status,
-			vs.created_at,
 			vs.trade_in,
-			vs.owners,
-			vs.updated_at,
-			images.images,
-			videos.videos,
-			vs.phone_numbers, 
+			vs.crash,
 			vs.view_count,
-			true as my_car,
-			vs.description,
-			CASE 
-				WHEN ul.vehicle_id IS NOT NULL THEN true
-				ELSE false
-			END AS liked
+			CASE
+				WHEN vs.user_id = $1 THEN TRUE
+				ELSE FALSE
+			END AS my_car
 		from vehicles vs
-		left join generation_modifications gms on gms.id = vs.modification_id
-		left join colors cls on vs.color_id = cls.id
 		left join brands bs on vs.brand_id = bs.id
-		left join regions rs on vs.region_id = rs.id
-		left join cities cs on vs.city_id = cs.id
 		left join models ms on vs.model_id = ms.id
-		left join transmissions ts on gms.transmission_id = ts.id
-		left join engines es on gms.engine_id = es.id
-		left join drivetrains ds on gms.drivetrain_id = ds.id
-		left join body_types bts on gms.body_type_id = bts.id
-		left join fuel_types fts on gms.fuel_type_id = fts.id
 		inner join user_likes ul on ul.vehicle_id = vs.id AND ul.user_id = $1
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
@@ -1703,15 +1618,6 @@ func (r *UserRepository) Likes(ctx *fasthttp.RequestCtx, userID *int, nameColumn
 				ORDER BY created_at DESC
 			) img
 		) images ON true
-		LEFT JOIN LATERAL (
-			SELECT json_agg(v.video) AS videos
-			FROM (
-				SELECT $2 || video as video
-				FROM videos
-				WHERE vehicle_id = vs.id
-				ORDER BY created_at DESC
-			) v
-		) videos ON true
 		where vs.status = 3
 		order by vs.id desc
 	`
@@ -1727,10 +1633,10 @@ func (r *UserRepository) Likes(ctx *fasthttp.RequestCtx, userID *int, nameColumn
 		var car model.GetCarsResponse
 
 		if err := rows.Scan(
-			&car.ID, &car.Brand, &car.Region, &car.City, &car.Color, &car.Model, &car.Transmission, &car.Engine,
-			&car.Drivetrain, &car.BodyType, &car.FuelType, &car.Year, &car.Price, &car.Mileage, &car.VinCode,
-			&car.Credit, &car.New, &car.Status, &car.CreatedAt, &car.TradeIn, &car.Owners,
-			&car.UpdatedAt, &car.Images, &car.Videos, &car.PhoneNumbers, &car.ViewCount, &car.MyCar, &car.Description, &car.Liked,
+			&car.ID, &car.Type, &car.Brand, &car.Model, &car.Year, &car.Price,
+			&car.CreatedAt, &car.Images,
+			&car.New, &car.Status, &car.TradeIn, &car.Crash,
+			&car.ViewCount, &car.MyCar,
 		); err != nil {
 			return cars, err
 		}

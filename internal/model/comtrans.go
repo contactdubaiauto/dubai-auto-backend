@@ -72,6 +72,23 @@ type ComtransOwner struct {
 }
 
 type GetComtransResponse struct {
+	Type      string     `json:"type"`
+	CreatedAt *time.Time `json:"created_at"`
+	Images    *[]string  `json:"images"`
+	Model     *string    `json:"model"`
+	Brand     *string    `json:"brand"`
+	Status    *int       `json:"status"`
+	TradeIn   *int       `json:"trade_in"`
+	Year      *int       `json:"year"`
+	Price     *int       `json:"price"`
+	ViewCount *int       `json:"view_count"`
+	New       *bool      `json:"new"`
+	Crash     *bool      `json:"crash"`
+	MyCar     *bool      `json:"my_car"`
+	ID        int        `json:"id"`
+}
+
+type GetComtranResponse struct {
 	UpdatedAt       time.Time     `json:"updated_at"`
 	CreatedAt       time.Time     `json:"created_at"`
 	Images          []string      `json:"images"`

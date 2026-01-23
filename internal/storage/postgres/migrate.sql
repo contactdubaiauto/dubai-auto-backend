@@ -402,3 +402,15 @@ CREATE TABLE user_comtran_likes (
                 on delete cascade
                 on update cascade
 );
+
+-- 23.01.2026
+alter table comtrans add column "new" boolean not null default false;
+alter table motorcycles add column "new" boolean not null default false;
+
+
+alter table users drop constraint if exists users_phone_key;
+alter table users drop constraint if exists users_email_key;
+alter table users drop constraint if exists users_email_phone_key;
+alter table users add constraint users_email_unique unique (email);
+alter table users add constraint users_phone_unique unique (phone);
+

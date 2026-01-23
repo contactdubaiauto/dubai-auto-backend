@@ -33,7 +33,7 @@ func (r *AuthRepository) UserLoginGoogle(ctx *fasthttp.RequestCtx, claims model.
 	q := `
 		INSERT INTO users (email, password, username, phone)
 		VALUES ($1, 'google', $2, NULL)
-		ON CONFLICT (email, phone) DO UPDATE
+		ON CONFLICT (email) DO UPDATE
 		SET email = EXCLUDED.email, username = EXCLUDED.username
 		RETURNING id, role_id;
 	`
@@ -234,7 +234,7 @@ func (r *AuthRepository) UserEmailGetOrRegister(ctx *fasthttp.RequestCtx, userna
 	q := `
 		insert into users (email, password, username, phone)
 		values ($1, $2, $3, NULL)
-		on conflict (email, phone)
+		on conflict (email)
 		do update
 		set 
 			password = EXCLUDED.password
@@ -261,7 +261,7 @@ func (r *AuthRepository) UserPhoneGetOrRegister(ctx *fasthttp.RequestCtx, userna
 	q := `
 		insert into users (phone, password, username, email)
 		values ($1, $2, $3, NULL)
-		on conflict (email, phone)
+		on conflict (email)
 		do update
 		set 
 			password = EXCLUDED.password

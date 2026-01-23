@@ -263,7 +263,7 @@ func (r *AdminRepository) CreateApplication(ctx *fasthttp.RequestCtx, req model.
 	q := `
 		insert into users (email, password, username, role_id, phone)
 		values ($1, $2, $3, $4, $5) 
-		ON CONFLICT (email, phone) DO UPDATE
+		ON CONFLICT (email) DO UPDATE
 		SET password = EXCLUDED.password, created_at = now(), updated_at = now(), role_id = EXCLUDED.role_id, phone = EXCLUDED.phone
 		RETURNING id
 	`
@@ -467,7 +467,7 @@ func (r *AdminRepository) AcceptApplication(ctx *fasthttp.RequestCtx, id int, pa
 	q = `
 		insert into users (email, password, username, role_id, phone)
 		values ($1, $2, $3, $4, $5) 
-		ON CONFLICT (email, phone) DO UPDATE
+		ON CONFLICT (email) DO UPDATE
 		SET password = EXCLUDED.password, created_at = now(), updated_at = now(), role_id = EXCLUDED.role_id, phone = EXCLUDED.phone
 		RETURNING id, phone
 	`

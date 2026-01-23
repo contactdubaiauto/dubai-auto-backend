@@ -102,37 +102,13 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 	price_to := c.Query("price_to")
 	wheelQ := c.Query("wheel")
 	newQ := c.Query("new")
-	var wheel *bool
-	var new *bool
-
-	if newQ != "" {
-		if newQ == "false" {
-			tmp := false
-			new = &tmp
-		} else {
-			tmp := true
-			new = &tmp
-		}
-
-	}
-
-	if wheelQ != "" {
-		if wheelQ == "false" {
-			tmp := false
-			wheel = &tmp
-		} else {
-			tmp := true
-			wheel = &tmp
-		}
-
-	}
 
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
 	data := h.UserService.GetCars(c.Context(), userID, targetUserID, brands, models,
 		regions, cities, generations, transmissions, engines, drivetrains,
 		body_types, fuel_types, ownership_types, colors, dealers,
 		year_from, year_to, credit, price_from, price_to,
-		tradeIn, owners, crash, odometer, new, wheel, limitInt, lastIDInt, nameColumn)
+		tradeIn, owners, crash, odometer, newQ, wheelQ, limitInt, lastIDInt, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1565,19 +1541,83 @@ func (h *UserHandler) CreateMotorcycle(c *fiber.Ctx) error {
 }
 
 // GetMotorcycles godoc
-// @Summary Get motorcycles
-// @Description Get motorcycles
-// @Tags motorcycles
-// @Accept json
-// @Produce json
+// @Summary      Get motorcycles
+// @Description  Returns a list of motorcycles
+// @Tags         car
+// @Produce      json
+// @Security 	 BearerAuth
 // @Param   Accept-Language  header  string  false  "Language"
-// @Success 200 {array} model.GetMotorcyclesResponse
-// @Failure 500 {object} model.ResultMessage
-// @Router /api/v1/users/motorcycles [get]
+// @Param   brands            query   string  false  "Filter by brand IDs"
+// @Param   models            query   string  false  "Filter by model IDs"
+// @Param   regions           query   string  false  "Filter by region IDs"
+// @Param   cities            query   string  false  "Filter by city IDs"
+// @Param   generations       query   string  false  "Filter by generation IDs"
+// @Param   colors       	  query   string  false  "Filter by color IDs"
+// @Param   crash       	  query   string  false  "Filter by crash status, true or empty"
+// @Param   transmissions     query   string  false  "Filter by transmission IDs"
+// @Param   engines           query   string  false  "Filter by engine IDs"
+// @Param   drivetrains       query   string  false  "Filter by drivetrain IDs"
+// @Param   body_types        query   string  false  "Filter by body type IDs"
+// @Param   fuel_types        query   string  false  "Filter by fuel type IDs"
+// @Param   trade_in          query   string  false  "Filter by trade_in id, from 1 to 5"
+// @Param   owners            query   string  false  "Filter by owners id, from 1 to 4"
+// @Param   ownership_types   query   string  false  "Filter by ownership type IDs"
+// @Param   year_from         query   string  false  "Filter by year from"
+// @Param   year_to           query   string  false  "Filter by year to"
+// @Param   credit            query   string  false  "Filter by credit"
+// @Param  	new   		      query   string  false  "true or false new"
+// @Param  	wheel   		  query   string  false  "true or false wheel"
+// @Param  	odometer   	      query   string  false  "Filter by odometer"
+// @Param  	dealers   	      query   string  false  "Filter by dealers"
+// @Param   price_from        query   string  false  "Filter by price from"
+// @Param   price_to          query   string  false  "Filter by price to"
+// @Param   limit             query   string  false  "Limit"
+// @Param   last_id           query   string  false  "Last item ID"
+// @Success      200  {array}  model.GetMotorcyclesResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/motorcycles [get]
 func (h *UserHandler) GetMotorcycles(c *fiber.Ctx) error {
-	ctx := c.Context()
-	lang := c.Locals("lang").(string)
-	return utils.FiberResponse(c, h.MotorcycleService.GetMotorcycles(ctx, lang))
+
+	nameColumn := c.Locals("lang").(string)
+	userID := c.Locals("id").(int)
+	brands := auth.QueryParamToArray(c.Query("brands"))
+	dealers := auth.QueryParamToArray(c.Query("dealers"))
+	models := auth.QueryParamToArray(c.Query("models"))
+	regions := auth.QueryParamToArray(c.Query("regions"))
+	cities := auth.QueryParamToArray(c.Query("cities"))
+	generations := auth.QueryParamToArray(c.Query("generations"))
+	colors := auth.QueryParamToArray(c.Query("colors"))
+	transmissions := auth.QueryParamToArray(c.Query("transmissions"))
+	engines := auth.QueryParamToArray(c.Query("engines"))
+	drivetrains := auth.QueryParamToArray(c.Query("drivetrains"))
+	body_types := auth.QueryParamToArray(c.Query("body_types"))
+	fuel_types := auth.QueryParamToArray(c.Query("fuel_types"))
+	ownership_types := auth.QueryParamToArray(c.Query("ownership_types"))
+	year_from := c.Query("year_from")
+	limit := c.Query("limit")
+	lastID := c.Query("last_id")
+	odometer := c.Query("odometer")
+	year_to := c.Query("year_to")
+	tradeIn := c.Query("trade_in")
+	credit := c.Query("credit")
+	crash := c.Query("crash")
+	owners := c.Query("owners")
+	price_from := c.Query("price_from")
+	price_to := c.Query("price_to")
+	wheelQ := c.Query("wheel")
+	newQ := c.Query("new")
+
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
+	data := h.MotorcycleService.GetMotorcycles(c.Context(), userID, brands, models,
+		regions, cities, generations, transmissions, engines, drivetrains,
+		body_types, fuel_types, ownership_types, colors, dealers,
+		year_from, year_to, credit, price_from, price_to,
+		tradeIn, owners, crash, odometer, newQ, wheelQ, limitInt, lastIDInt, nameColumn)
+	return utils.FiberResponse(c, data)
 }
 
 // BuyMotorcycle godoc
@@ -1886,20 +1926,108 @@ func (h *UserHandler) CreateComtrans(c *fiber.Ctx) error {
 }
 
 // GetComtrans godoc
-// @Summary Get commercial transports
-// @Description Get commercial transports
-// @Tags comtrans
-// @Accept json
-// @Produce json
+// @Summary      Get comtrans
+// @Description  Returns a list of comtrans
+// @Tags         comtrans
+// @Produce      json
+// @Security 	 BearerAuth
 // @Param   Accept-Language  header  string  false  "Language"
-// @Success 200 {array} model.GetComtransResponse
-// @Failure 500 {object} model.ResultMessage
-// @Router /api/v1/users/comtrans [get]
+// @Param   brands            query   string  false  "Filter by brand IDs"
+// @Param   models            query   string  false  "Filter by model IDs"
+// @Param   regions           query   string  false  "Filter by region IDs"
+// @Param   cities            query   string  false  "Filter by city IDs"
+// @Param   generations       query   string  false  "Filter by generation IDs"
+// @Param   colors       	  query   string  false  "Filter by color IDs"
+// @Param   crash       	  query   string  false  "Filter by crash status, true or empty"
+// @Param   transmissions     query   string  false  "Filter by transmission IDs"
+// @Param   engines           query   string  false  "Filter by engine IDs"
+// @Param   drivetrains       query   string  false  "Filter by drivetrain IDs"
+// @Param   body_types        query   string  false  "Filter by body type IDs"
+// @Param   fuel_types        query   string  false  "Filter by fuel type IDs"
+// @Param   trade_in          query   string  false  "Filter by trade_in id, from 1 to 5"
+// @Param   owners            query   string  false  "Filter by owners id, from 1 to 4"
+// @Param   ownership_types   query   string  false  "Filter by ownership type IDs"
+// @Param   year_from         query   string  false  "Filter by year from"
+// @Param   year_to           query   string  false  "Filter by year to"
+// @Param   credit            query   string  false  "Filter by credit"
+// @Param  	new   		      query   string  false  "true or false new"
+// @Param  	wheel   		  query   string  false  "true or false wheel"
+// @Param  	odometer   	      query   string  false  "Filter by odometer"
+// @Param  	dealers   	      query   string  false  "Filter by dealers"
+// @Param   price_from        query   string  false  "Filter by price from"
+// @Param   price_to          query   string  false  "Filter by price to"
+// @Param   limit             query   string  false  "Limit"
+// @Param   last_id           query   string  false  "Last item ID"
+// @Success      200  {array}  model.GetCarsResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/comtrans [get]
 func (h *UserHandler) GetComtrans(c *fiber.Ctx) error {
-	ctx := c.Context()
+
+	nameColumn := c.Locals("lang").(string)
 	userID := c.Locals("id").(int)
-	lang := c.Locals("lang").(string)
-	return utils.FiberResponse(c, h.ComtransService.GetComtrans(ctx, userID, lang))
+	brands := auth.QueryParamToArray(c.Query("brands"))
+	dealers := auth.QueryParamToArray(c.Query("dealers"))
+	models := auth.QueryParamToArray(c.Query("models"))
+	regions := auth.QueryParamToArray(c.Query("regions"))
+	cities := auth.QueryParamToArray(c.Query("cities"))
+	generations := auth.QueryParamToArray(c.Query("generations"))
+	colors := auth.QueryParamToArray(c.Query("colors"))
+	transmissions := auth.QueryParamToArray(c.Query("transmissions"))
+	engines := auth.QueryParamToArray(c.Query("engines"))
+	drivetrains := auth.QueryParamToArray(c.Query("drivetrains"))
+	body_types := auth.QueryParamToArray(c.Query("body_types"))
+	fuel_types := auth.QueryParamToArray(c.Query("fuel_types"))
+	ownership_types := auth.QueryParamToArray(c.Query("ownership_types"))
+	targetUserID := c.Query("user_id")
+	year_from := c.Query("year_from")
+	limit := c.Query("limit")
+	lastID := c.Query("last_id")
+	odometer := c.Query("odometer")
+	year_to := c.Query("year_to")
+	tradeIn := c.Query("trade_in")
+	credit := c.Query("credit")
+	crash := c.Query("crash")
+	owners := c.Query("owners")
+	price_from := c.Query("price_from")
+	price_to := c.Query("price_to")
+	wheelQ := c.Query("wheel")
+	newQ := c.Query("new")
+	var wheel *bool
+	var new *bool
+
+	if newQ != "" {
+		if newQ == "false" {
+			tmp := false
+			new = &tmp
+		} else {
+			tmp := true
+			new = &tmp
+		}
+
+	}
+
+	if wheelQ != "" {
+		if wheelQ == "false" {
+			tmp := false
+			wheel = &tmp
+		} else {
+			tmp := true
+			wheel = &tmp
+		}
+
+	}
+
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
+	data := h.ComtransService.GetComtrans(c.Context(), userID, targetUserID, brands, models,
+		regions, cities, generations, transmissions, engines, drivetrains,
+		body_types, fuel_types, ownership_types, colors, dealers,
+		year_from, year_to, credit, price_from, price_to,
+		tradeIn, owners, crash, odometer, new, wheel, limitInt, lastIDInt, nameColumn)
+	return utils.FiberResponse(c, data)
 }
 
 // GetComtransCategories godoc
