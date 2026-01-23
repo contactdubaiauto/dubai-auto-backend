@@ -13426,11 +13426,6 @@ const docTemplate = `{
         },
         "/api/v1/users/home": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Returns a list of car home",
                 "produces": [
                     "application/json"
@@ -18220,6 +18215,9 @@ const docTemplate = `{
                 },
                 "new": {
                     "type": "boolean"
+                },
+                "odometer": {
+                    "type": "integer"
                 },
                 "price": {
                     "type": "integer"

@@ -936,6 +936,7 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int, nameColum
 		from vehicles vs
 		left join brands bs on vs.brand_id = bs.id
 		left join models ms on vs.model_id = ms.id
+		left join generation_modifications gms on gms.id = vs.modification_id
 		left join fuel_types fts on gms.fuel_type_id = fts.id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images

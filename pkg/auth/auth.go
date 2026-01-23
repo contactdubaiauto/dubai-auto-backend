@@ -159,6 +159,15 @@ func AdminGuard(c *fiber.Ctx) error {
 	return c.Next()
 }
 
+func ThirdPartyGuard(c *fiber.Ctx) error {
+	role, ok := c.Locals("role_id").(int)
+	// 0 admin, 1 user, 2 dealer, 3 logistic, 4 broker, 5 car service
+	if !ok || role == USER_ROLE {
+		return c.Status(http.StatusForbidden).JSON(ErrorResponse{Message: "token is invalid!duio"})
+	}
+	return c.Next()
+}
+
 func DealerGuard(c *fiber.Ctx) error {
 	role, ok := c.Locals("role_id").(int)
 

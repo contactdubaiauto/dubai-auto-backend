@@ -74,7 +74,7 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 
 		// motorcycles
 		r.Post("/motorcycles", auth.TokenGuard, auth.LanguageChecker, userHandler.CreateMotorcycle)
-		r.Get("/motorcycles", auth.LanguageChecker, userHandler.GetMotorcycles)
+		r.Get("/motorcycles", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetMotorcycles)
 		r.Post("/motorcycles/:id/buy", auth.TokenGuard, auth.LanguageChecker, userHandler.BuyMotorcycle)
 		r.Post("/motorcycles/:id/cancel", auth.TokenGuard, auth.LanguageChecker, userHandler.CancelMotorcycle)
 		r.Post("/motorcycles/:id/dont-sell", auth.TokenGuard, auth.LanguageChecker, userHandler.DontSellMotorcycle)

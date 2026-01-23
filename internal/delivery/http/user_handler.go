@@ -1146,7 +1146,6 @@ func (h *UserHandler) GetCountries(c *fiber.Ctx) error {
 // @Description  Returns a list of car home
 // @Tags         filter
 // @Produce      json
-// @Security 	 BearerAuth
 // @Param   Accept-Language  header  string  false  "Language"
 // @Success      200  {object}  model.Home
 // @Failure      400  {object}  model.ResultMessage
@@ -1966,7 +1965,6 @@ func (h *UserHandler) CreateComtrans(c *fiber.Ctx) error {
 // @Failure      500  {object}  model.ResultMessage
 // @Router       /api/v1/users/comtrans [get]
 func (h *UserHandler) GetComtrans(c *fiber.Ctx) error {
-
 	nameColumn := c.Locals("lang").(string)
 	userID := c.Locals("id").(int)
 	brands := auth.QueryParamToArray(c.Query("brands"))
