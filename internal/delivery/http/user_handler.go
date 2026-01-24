@@ -2060,6 +2060,22 @@ func (h *UserHandler) GetComtransBrands(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, h.ComtransService.GetComtransBrands(ctx, lang))
 }
 
+// GetComtransEngines godoc
+// @Summary Get commercial transport engines
+// @Description Get commercial transport engines
+// @Tags comtrans
+// @Accept json
+// @Produce json
+// @Param   Accept-Language  header  string  false  "Language"
+// @Success 200 {array} model.GetComtransModelsResponse
+// @Failure 500 {object} model.ResultMessage
+// @Router /api/v1/users/comtrans/engines [get]
+func (h *UserHandler) GetComtransEngines(c *fiber.Ctx) error {
+	ctx := c.Context()
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.ComtransService.GetComtransEngines(ctx, lang))
+}
+
 // GetComtransModelsByBrandID godoc
 // @Summary Get commercial transport models by brand ID
 // @Description Get commercial transport models by brand ID

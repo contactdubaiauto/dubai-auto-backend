@@ -78,6 +78,25 @@ func (r *ComtransRepository) GetComtransBrands(ctx *fasthttp.RequestCtx, nameCol
 	return data, nil
 }
 
+func (r *ComtransRepository) GetComtransEngines(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.GetComtransModelsResponse, error) {
+	data := make([]model.GetComtransModelsResponse, 0)
+	q := `
+		SELECT id, ` + nameColumn + ` FROM com_engines
+	`
+	rows, err := r.db.Query(ctx, q)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var engine model.GetComtransModelsResponse
+		err = rows.Scan(&engine.ID, &engine.Name)
+	}
+	return data, nil
+}
+
 func (r *ComtransRepository) GetComtransModelsByBrandID(ctx *fasthttp.RequestCtx, brandID, nameColumn string) ([]model.GetComtransModelsResponse, error) {
 	data := make([]model.GetComtransModelsResponse, 0)
 	q := `

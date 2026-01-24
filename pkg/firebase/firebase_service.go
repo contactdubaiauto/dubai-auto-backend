@@ -4,6 +4,7 @@ import (
 	"context"
 	"dubai-auto/internal/config"
 	"dubai-auto/internal/model"
+	"fmt"
 	"strconv"
 
 	firebase "firebase.google.com/go/v4"
@@ -89,6 +90,7 @@ func (fs *FirebaseService) SendToToken(token string, targetUserID int, data mode
 	}
 
 	response, err := fs.client.Send(fs.ctx, message)
+	fmt.Println(err)
 	return response, err
 }
 
@@ -105,30 +107,4 @@ func (fs *FirebaseService) SendToMultipleTokens(tokens []string, title, body str
 
 	response, err := fs.client.SendEachForMulticast(fs.ctx, message)
 	return response, err
-}
-
-// Send to topic (for broadcast notifications)
-func (fs *FirebaseService) SendToTopic(topic, title, body string, data map[string]string) (string, error) {
-	message := &messaging.Message{
-		Topic: topic,
-		Notification: &messaging.Notification{
-			Title: title,
-			Body:  body,
-		},
-		Data: data,
-	}
-
-	response, err := fs.client.Send(fs.ctx, message)
-
-	if err != nil {
-		return "", err
-	}
-
-	return response, nil
-}
-
-// Subscribe tokens to a topic
-func (fs *FirebaseService) SubscribeToTopic(tokens []string, topic string) error {
-	_, err := fs.client.SubscribeToTopic(fs.ctx, tokens, topic)
-	return err
 }

@@ -10,10 +10,10 @@ import (
 	"dubai-auto/internal/utils"
 )
 
-// GetVehicles godoc
-// @Summary      Get all vehicles
-// @Description  Returns a list of all vehicles
-// @Tags         admin-vehicles
+// GetCars godoc
+// @Summary      Get all cars
+// @Description  Returns a list of all cars
+// @Tags         admin-cars
 // @Produce      json
 // @Security     BearerAuth
 // @Success      200  {array}  model.AdminVehicleListItem
@@ -21,8 +21,8 @@ import (
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/vehicles [get]
-// Admin vehicles handlers
+// @Router       /api/v1/admin/cars [get]
+// Admin cars handlers
 func (h *AdminHandler) GetVehicles(c *fiber.Ctx) error {
 	limit := c.Query("limit")
 	lastID := c.Query("last_id")
@@ -35,7 +35,7 @@ func (h *AdminHandler) GetVehicles(c *fiber.Ctx) error {
 // GetVehicle godoc
 // @Summary      Get a vehicle by ID
 // @Description  Returns a vehicle by ID
-// @Tags         admin-vehicles
+// @Tags         admin-cars
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id  path  string  true  "Vehicle ID"
@@ -44,7 +44,7 @@ func (h *AdminHandler) GetVehicles(c *fiber.Ctx) error {
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/vehicles/{id} [get]
+// @Router       /api/v1/admin/cars/{id} [get]
 func (h *AdminHandler) GetVehicle(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
@@ -63,7 +63,7 @@ func (h *AdminHandler) GetVehicle(c *fiber.Ctx) error {
 // CreateVehicle godoc
 // @Summary      Create a vehicle
 // @Description  Creates a new vehicle
-// @Tags         admin-vehicles
+// @Tags         admin-cars
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
@@ -73,7 +73,7 @@ func (h *AdminHandler) GetVehicle(c *fiber.Ctx) error {
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/vehicles [post]
+// @Router       /api/v1/admin/cars [post]
 func (h *AdminHandler) CreateVehicle(c *fiber.Ctx) error {
 	req := &model.AdminCreateVehicleRequest{}
 
@@ -92,7 +92,7 @@ func (h *AdminHandler) CreateVehicle(c *fiber.Ctx) error {
 // UpdateVehicle godoc
 // @Summary      Update a vehicle
 // @Description  Updates a vehicle
-// @Tags         admin-vehicles
+// @Tags         admin-cars
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
@@ -103,7 +103,7 @@ func (h *AdminHandler) CreateVehicle(c *fiber.Ctx) error {
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/vehicles/{id} [put]
+// @Router       /api/v1/admin/cars/{id} [put]
 func (h *AdminHandler) UpdateVehicle(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
@@ -132,7 +132,7 @@ func (h *AdminHandler) UpdateVehicle(c *fiber.Ctx) error {
 // DeleteVehicle godoc
 // @Summary      Delete a vehicle
 // @Description  Deletes a vehicle
-// @Tags         admin-vehicles
+// @Tags         admin-cars
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id  path  string  true  "Vehicle ID"
@@ -141,7 +141,7 @@ func (h *AdminHandler) UpdateVehicle(c *fiber.Ctx) error {
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/vehicles/{id} [delete]
+// @Router       /api/v1/admin/cars/{id} [delete]
 func (h *AdminHandler) DeleteVehicle(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)

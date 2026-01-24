@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/valyala/fasthttp"
 
@@ -33,22 +34,8 @@ func (s *MotorcycleService) GetMotorcycleCategories(ctx *fasthttp.RequestCtx, na
 	}
 }
 
-// func (s *MotorcycleService) GetMotorcycleParameters(ctx *fasthttp.RequestCtx, categoryID string, nameColumn string) model.Response {
-// 	data, err := s.repository.GetMotorcycleParameters(ctx, categoryID, nameColumn)
-// 	if err != nil {
-// 		return model.Response{
-// 			Status: 500,
-// 			Error:  err,
-// 		}
-// 	}
-// 	return model.Response{
-// 		Status: 200,
-// 		Data:   data,
-// 	}
-// }
-
-func (s *MotorcycleService) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, categoryID string, nameColumn string) model.Response {
-	data, err := s.repository.GetMotorcycleBrands(ctx, categoryID, nameColumn)
+func (s *MotorcycleService) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
+	data, err := s.repository.GetMotorcycleBrands(ctx, nameColumn)
 	if err != nil {
 		return model.Response{
 			Status: 500,
@@ -75,8 +62,30 @@ func (s *MotorcycleService) GetNumberOfCycles(ctx *fasthttp.RequestCtx, nameColu
 	}
 }
 
-func (s *MotorcycleService) GetMotorcycleModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID string, brandID string, nameColumn string) model.Response {
-	data, err := s.repository.GetMotorcycleModelsByBrandID(ctx, categoryID, brandID, nameColumn)
+func (s *MotorcycleService) GetMotorcycleModelsByBrandID(ctx *fasthttp.RequestCtx, brandID, nameColumn string) model.Response {
+	brandIDInt, err := strconv.Atoi(brandID)
+	if err != nil {
+		return model.Response{
+			Status: 400,
+			Error:  errors.New("motorcycle brand id must be integer"),
+		}
+	}
+	data, err := s.repository.GetMotorcycleModelsByBrandID(ctx, brandIDInt, nameColumn)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+	return model.Response{
+		Status: 200,
+		Data:   data,
+	}
+}
+
+func (s *MotorcycleService) GetMotoEngines(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
+	data, err := s.repository.GetMotoEngines(ctx, nameColumn)
 	if err != nil {
 		return model.Response{
 			Status: 500,

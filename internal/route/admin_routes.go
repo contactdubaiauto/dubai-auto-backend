@@ -37,12 +37,10 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, f
 	}
 
 	// vehicles routes
-	vehicles := r.Group("/vehicles")
+	vehicles := r.Group("/cars")
 	{
 		vehicles.Get("/", adminHandler.GetVehicles)
 		vehicles.Get("/:id", adminHandler.GetVehicle)
-		vehicles.Post("/", adminHandler.CreateVehicle)
-		vehicles.Put("/:id", adminHandler.UpdateVehicle)
 		vehicles.Delete("/:id", adminHandler.DeleteVehicle)
 	}
 
@@ -214,6 +212,14 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, f
 		motoEngines.Post("/", adminHandler.CreateMotoEngine)
 		motoEngines.Delete("/:id", adminHandler.DeleteMotoEngine)
 	}
+
+	// // comtrans routes
+	// comtrans := r.Group("/comtrans")
+	// {
+	// 	comtrans.Get("/", adminHandler.GetComtrans)
+	// 	comtrans.Get("/:id", adminHandler.GetComtran)
+	// 	comtrans.Delete("/:id", adminHandler.DeleteComtran)
+	// }
 
 	// Comtrans Categories routes
 	comtransCategories := r.Group("/comtrans-categories")

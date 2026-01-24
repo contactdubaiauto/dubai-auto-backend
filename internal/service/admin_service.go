@@ -116,23 +116,12 @@ func (s *AdminService) SendUserNotifications(ctx context.Context, req *model.Sen
 		return model.Response{Data: model.Success{Message: "No devices to notify"}}
 	}
 
-	data := map[string]string{
-		"type":        "global_notification",
-		"title":       req.Title,
-		"description": req.Description,
-	}
-
-	// FCM multicast allows up to 500 tokens per request.
-	for i := 0; i < len(tokens); i += fcmBatchSize {
-		end := i + fcmBatchSize
-		if end > len(tokens) {
-			end = len(tokens)
-		}
-		batch := tokens[i:end]
-		_, err = s.firebase.SendToMultipleTokens(batch, req.Title, req.Description, data)
-		if err != nil {
-			return model.Response{Error: err, Status: http.StatusInternalServerError}
-		}
+	for _, token := range tokens {
+		s.firebase.SendToToken(token, 0, model.UserMessage{
+			Username: req.Title,
+			Avatar:   &req.Title,
+			Messages: []model.Message{{Message: req.Description, Type: 5}},
+		})
 	}
 
 	return model.Response{Data: model.Success{Message: "Notifications sent successfully"}}

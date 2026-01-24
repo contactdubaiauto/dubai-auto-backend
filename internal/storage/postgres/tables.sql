@@ -509,7 +509,8 @@ create table vehicles (
     "new" boolean not null default false,
     "color_id" int not null,
     "trade_in" int not null default 1, -- 1. No exchange 2. Equal value 3. More expensive 4. Cheaper 5. Not a car
-    "status" int not null default 1, -- 1-pending, 2-not sale (my cars), 3-on sale,
+    "status" int not null default 3, -- 2-not sale (my cars), 3-on sale,
+    "moderation_status" int not null default 1, -- 1-pending, 2-accepted, 3-declinede
     "updated_at" timestamp default now(),
     "created_at" timestamp default now(),
     constraint fk_vehicles_color_id
@@ -703,6 +704,7 @@ create table motorcycles (
     "price" int not null,
     "trade_in" int not null default 1, -- 1. No exchange 2. Equal value 3. More expensive 4. Cheaper 5. Not a car
     "status" int not null default 1, -- 1-pending, 2-not sale (my cars), 3-on sale,
+    "moderation_status" int not null default 1; -- 1-pending, 2-accepted, 3-declined
     "updated_at" timestamp not null default now(),
     "created_at" timestamp not null default now(),
     constraint fk_motorcycles_engine_id
@@ -867,6 +869,7 @@ create table comtrans (
     "price" int not null,
     "trade_in" int not null default 1, -- 1. No exchange 2. Equal value 3. More expensive 4. Cheaper 5. Not a car
     "status" int not null default 1, -- 1-pending, 2-not sale (my cars), 3-on sale,
+    "moderation_status" int not null default 1; -- 1-pending, 2-accepted, 3-declined
     "updated_at" timestamp not null default now(),
     "created_at" timestamp not null default now(),
     constraint fk_comtrans_user_id

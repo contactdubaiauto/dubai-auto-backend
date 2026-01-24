@@ -1971,7 +1971,6 @@ func (r *AdminRepository) GetDeviceTokensByRoleID(ctx context.Context, roleID in
 		INNER JOIN users u ON u.id = ut.user_id
 		WHERE u.role_id = $1
 		  AND ut.device_token IS NOT NULL
-		  AND trim(ut.device_token) != ''
 	`
 	rows, err := r.db.Query(ctx, q, roleID)
 	if err != nil {

@@ -24,6 +24,7 @@ func (r *AdminRepository) GetVehicles(ctx *fasthttp.RequestCtx, limit, lastID in
 			vs.price,
 			vs.status,
 			u.phone as user_phone,
+			images.images,
 			pf.username as user_name,
 			CASE
 				WHEN pf.avatar IS NULL OR pf.avatar = '' THEN NULL
@@ -34,6 +35,15 @@ func (r *AdminRepository) GetVehicles(ctx *fasthttp.RequestCtx, limit, lastID in
 		LEFT JOIN models ms ON vs.model_id = ms.id
 		LEFT JOIN users u ON u.id = vs.user_id
 		LEFT JOIN profiles pf ON pf.user_id = vs.user_id
+		LEFT JOIN LATERAL (
+			SELECT json_agg(img.image) AS images
+			FROM (
+				SELECT $1 || image as image
+				FROM images
+				WHERE vehicle_id = vs.id
+				ORDER BY created_at DESC
+			) img
+		) images ON true
 		WHERE vs.id > $2
 		ORDER BY vs.id DESC
 		LIMIT $3
@@ -55,6 +65,7 @@ func (r *AdminRepository) GetVehicles(ctx *fasthttp.RequestCtx, limit, lastID in
 			&v.Price,
 			&v.Status,
 			&v.UserPhone,
+			&v.Images,
 			&v.UserName,
 			&v.UserAvatar,
 		); err != nil {

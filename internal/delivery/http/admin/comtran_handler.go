@@ -9,6 +9,153 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// // GetComtrans godoc
+// // @Summary      Get all comtrans
+// // @Description  Returns a list of all comtrans
+// // @Tags         admin-comtrans
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Success      200  {array}  model.AdminComtranListItem
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans [get]
+// // Admin comtrans handlers
+// func (h *AdminHandler) GetComtrans(c *fiber.Ctx) error {
+// 	limit := c.Query("limit")
+// 	lastID := c.Query("last_id")
+
+// 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
+// 	data := h.service.GetComtrans(c.Context(), limitInt, lastIDInt)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // GetComtran godoc
+// // @Summary      Get a comtran by ID
+// // @Description  Returns a comtran by ID
+// // @Tags         admin-comtrans
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id  path  string  true  "Comtran ID"
+// // @Success      200  {object}  model.GetComtransResponse
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans/{id} [get]
+// func (h *AdminHandler) GetComtran(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("comtran id must be integer"),
+// 		})
+// 	}
+
+// 	data := h.service.GetComtranByID(c.Context(), id)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // // CreateComtran godoc
+// // // @Summary      Create a comtran
+// // // @Description  Creates a new comtran
+// // // @Tags         admin-comtrans
+// // // @Accept       json
+// // // @Produce      json
+// // // @Security     BearerAuth
+// // // @Param        comtran  body      model.AdminCreateVehicleRequest  true  "Comtran"
+// // // @Success      200  {object}  model.SuccessWithId
+// // // @Failure      400  {object}  model.ResultMessage
+// // // @Failure      401  {object}  auth.ErrorResponse
+// // // @Failure      403  {object}  auth.ErrorResponse
+// // // @Failure      500  {object}  model.ResultMessage
+// // // @Router       /api/v1/admin/comtrans [post]
+// // func (h *AdminHandler) CreateComtran(c *fiber.Ctx) error {
+// // 	req := &model.AdminCreateVehicleRequest{}
+
+// // 	if err := c.BodyParser(req); err != nil {
+// // 		return utils.FiberResponse(c, model.Response{Status: 400, Error: err})
+// // 	}
+
+// // 	if err := h.validator.Validate(req); err != nil {
+// // 		return utils.FiberResponse(c, model.Response{Status: 400, Error: err})
+// // 	}
+
+// // 	data := h.service.CreateComtran(c.Context(), req)
+// // 	return utils.FiberResponse(c, data)
+// // }
+
+// // UpdateComtran godoc
+// // @Summary      Update a comtran
+// // @Description  Updates a comtran
+// // @Tags         admin-comtrans
+// // @Accept       json
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id  path  string  true  "Comtran ID"
+// // @Param        comtran  body      model.AdminUpdateVehicleStatusRequest  true  "Comtran"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans/{id} [put]
+// func (h *AdminHandler) UpdateComtran(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("comtran id must be integer"),
+// 		})
+// 	}
+
+// 	req := &model.AdminUpdateVehicleStatusRequest{}
+
+// 	if err := c.BodyParser(req); err != nil {
+// 		return utils.FiberResponse(c, model.Response{Status: 400, Error: err})
+// 	}
+
+// 	if err := h.validator.Validate(req); err != nil {
+// 		return utils.FiberResponse(c, model.Response{Status: 400, Error: err})
+// 	}
+
+// 	data := h.service.UpdateComtransGetComtranstatus(c.Context(), id, req)
+// 	return utils.FiberResponse(c, data)
+// }
+
+// // DeleteComtran godoc
+// // @Summary      Delete a comtran
+// // @Description  Deletes a comtran
+// // @Tags         admin-comtrans
+// // @Produce      json
+// // @Security     BearerAuth
+// // @Param        id  path  string  true  "Comtran ID"
+// // @Success      200  {object}  model.Success
+// // @Failure      400  {object}  model.ResultMessage
+// // @Failure      401  {object}  auth.ErrorResponse
+// // @Failure      403  {object}  auth.ErrorResponse
+// // @Failure      500  {object}  model.ResultMessage
+// // @Router       /api/v1/admin/comtrans/{id} [delete]
+// func (h *AdminHandler) DeleteComtran(c *fiber.Ctx) error {
+// 	idStr := c.Params("id")
+// 	id, err := strconv.Atoi(idStr)
+
+// 	if err != nil {
+// 		return utils.FiberResponse(c, model.Response{
+// 			Status: 400,
+// 			Error:  errors.New("comtran id must be integer"),
+// 		})
+// 	}
+
+// 	data := h.service.DeleteComtran(c.Context(), id, "/images/comtrans/"+idStr)
+// 	return utils.FiberResponse(c, data)
+// }
+
 // Comtrans Engine handlers
 
 // GetComtransEngines godoc
@@ -310,182 +457,6 @@ func (h *AdminHandler) DeleteComtransCategory(c *fiber.Ctx) error {
 	data := h.service.DeleteComtransCategory(ctx, id)
 	return utils.FiberResponse(c, data)
 }
-
-// // Comtrans Category Parameters handlers
-
-// // GetComtransCategoryParameters godoc
-// // @Summary      Get comtrans category parameters
-// // @Description  Returns a list of comtrans category parameters for a specific category
-// // @Tags         admin-comtrans-category-parameters
-// // @Produce      json
-// // @Security     BearerAuth
-// // @Param        category_id   path      int  true  "Comtrans category ID"
-// // @Success      200  {array}  model.AdminComtransCategoryParameterResponse
-// // @Failure      400  {object}  model.ResultMessage
-// // @Failure      401  {object}  auth.ErrorResponse
-// // @Failure      403  {object}  auth.ErrorResponse
-// // @Failure      500  {object}  model.ResultMessage
-// // @Router       /api/v1/admin/comtrans-categories/{category_id}/parameters [get]
-// func (h *AdminHandler) GetComtransCategoryParameters(c *fiber.Ctx) error {
-// 	categoryIdStr := c.Params("category_id")
-// 	categoryId, err := strconv.Atoi(categoryIdStr)
-
-// 	if err != nil {
-// 		return utils.FiberResponse(c, model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("category id must be integer"),
-// 		})
-// 	}
-
-// 	ctx := c.Context()
-// 	data := h.service.GetComtransCategoryParameters(ctx, categoryId)
-// 	return utils.FiberResponse(c, data)
-// }
-
-// // CreateComtransCategoryParameter godoc
-// // @Summary      Create a comtrans category parameter
-// // @Description  Creates a new comtrans category parameter
-// // @Tags         admin-comtrans-category-parameters
-// // @Accept       json
-// // @Produce      json
-// // @Security     BearerAuth
-// // @Param        category_id   path      int                                         true  "Comtrans category ID"
-// // @Param        parameter     body      model.CreateComtransCategoryParameterRequest  true  "Comtrans category parameter data"
-// // @Success      200  {object}  model.SuccessWithId
-// // @Failure      400  {object}  model.ResultMessage
-// // @Failure      401  {object}  auth.ErrorResponse
-// // @Failure      403  {object}  auth.ErrorResponse
-// // @Failure      500  {object}  model.ResultMessage
-// // @Router       /api/v1/admin/comtrans-categories/{category_id}/parameters [post]
-// func (h *AdminHandler) CreateComtransCategoryParameter(c *fiber.Ctx) error {
-// 	categoryIdStr := c.Params("category_id")
-// 	categoryId, err := strconv.Atoi(categoryIdStr)
-
-// 	if err != nil {
-// 		return utils.FiberResponse(c, model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("category id must be integer"),
-// 		})
-// 	}
-
-// 	var req model.CreateComtransCategoryParameterRequest
-
-// 	if err := c.BodyParser(&req); err != nil {
-// 		return utils.FiberResponse(c, model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("invalid request body"),
-// 		})
-// 	}
-
-// 	if err := h.validator.Validate(&req); err != nil {
-// 		return utils.FiberResponse(c, model.Response{
-// 			Status: 400,
-// 			Error:  err,
-// 		})
-// 	}
-
-// 	ctx := c.Context()
-// 	data := h.service.CreateComtransCategoryParameter(ctx, categoryId, &req)
-// 	return utils.FiberResponse(c, data)
-// }
-
-// // UpdateComtransCategoryParameter godoc
-// // @Summary      Update a comtrans category parameter
-// // @Description  Updates a comtrans category parameter by ID
-// // @Tags         admin-comtrans-category-parameters
-// // @Accept       json
-// // @Produce      json
-// // @Security     BearerAuth
-// // @Param        category_id   path      int                                         true  "Comtrans category ID"
-// // @Param        id            path      int                                         true  "Comtrans category parameter ID"
-// // @Param        parameter     body      model.UpdateComtransCategoryParameterRequest  true  "Comtrans category parameter data"
-// // @Success      200  {object}  model.Success
-// // @Failure      400  {object}  model.ResultMessage
-// // @Failure      401  {object}  auth.ErrorResponse
-// // @Failure      403  {object}  auth.ErrorResponse
-// // @Failure      500  {object}  model.ResultMessage
-// // @Router       /api/v1/admin/comtrans-categories/{category_id}/parameters/{id} [put]
-// func (h *AdminHandler) UpdateComtransCategoryParameter(c *fiber.Ctx) error {
-// 	categoryIdStr := c.Params("category_id")
-// 	categoryId, err := strconv.Atoi(categoryIdStr)
-
-// 	if err != nil {
-// 		return utils.FiberResponse(c, model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("category id must be integer"),
-// 		})
-// 	}
-
-// 	idStr := c.Params("id")
-// 	id, err := strconv.Atoi(idStr)
-
-// 	if err != nil {
-// 		return utils.FiberResponse(c, model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("comtrans category parameter id must be integer"),
-// 		})
-// 	}
-
-// 	var req model.UpdateComtransCategoryParameterRequest
-
-// 	if err := c.BodyParser(&req); err != nil {
-// 		return utils.FiberResponse(c, model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("invalid request body"),
-// 		})
-// 	}
-
-// 	if err := h.validator.Validate(&req); err != nil {
-// 		return utils.FiberResponse(c, model.Response{
-// 			Status: 400,
-// 			Error:  err,
-// 		})
-// 	}
-
-// 	ctx := c.Context()
-// 	data := h.service.UpdateComtransCategoryParameter(ctx, categoryId, id, &req)
-// 	return utils.FiberResponse(c, data)
-// }
-
-// // DeleteComtransCategoryParameter godoc
-// // @Summary      Delete a comtrans category parameter
-// // @Description  Deletes a comtrans category parameter by ID
-// // @Tags         admin-comtrans-category-parameters
-// // @Produce      json
-// // @Security     BearerAuth
-// // @Param        category_id   path      int  true  "Comtrans category ID"
-// // @Param        id            path      int  true  "Comtrans category parameter ID"
-// // @Success      200  {object}  model.Success
-// // @Failure      400  {object}  model.ResultMessage
-// // @Failure      401  {object}  auth.ErrorResponse
-// // @Failure      403  {object}  auth.ErrorResponse
-// // @Failure      500  {object}  model.ResultMessage
-// // @Router       /api/v1/admin/comtrans-categories/{category_id}/parameters/{id} [delete]
-// func (h *AdminHandler) DeleteComtransCategoryParameter(c *fiber.Ctx) error {
-// 	categoryIdStr := c.Params("category_id")
-// 	categoryId, err := strconv.Atoi(categoryIdStr)
-
-// 	if err != nil {
-// 		return utils.FiberResponse(c, model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("category id must be integer"),
-// 		})
-// 	}
-
-// 	idStr := c.Params("id")
-// 	id, err := strconv.Atoi(idStr)
-
-// 	if err != nil {
-// 		return utils.FiberResponse(c, model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("comtrans category parameter id must be integer"),
-// 		})
-// 	}
-
-// 	ctx := c.Context()
-// 	data := h.service.DeleteComtransCategoryParameter(ctx, categoryId, id)
-// 	return utils.FiberResponse(c, data)
-// }
 
 // Comtrans Brands handlers
 

@@ -42,45 +42,6 @@ func (h *MotorcycleHandler) GetMotorcycleCategories(c *fiber.Ctx) error {
 
 }
 
-// // GetMotorcycleParameters godoc
-// // @Summary Get motorcycle parameters
-// // @Description Get motorcycle parameters
-// // @Tags motorcycles
-// // @Accept json
-// // @Produce json
-// // @Security 	 BearerAuth
-// // @Param   Accept-Language  header  string  false  "Language"
-// // @Param category_id path string true "Category ID"
-// // @Success 200 {array} model.GetMotorcycleParametersResponse
-// // @Failure 500 {object} model.ResultMessage
-// // @Router /motorcycles/categories/{category_id}/parameters [get]
-// func (h *MotorcycleHandler) GetMotorcycleParameters(c *fiber.Ctx) error {
-// 	ctx := c.Context()
-// 	categoryID := c.Params("category_id")
-// 	lang := c.Locals("lang").(string)
-// 	return utils.FiberResponse(c, h.service.GetMotorcycleParameters(ctx, categoryID, lang))
-// }
-
-// GetMotorcycleBrands godoc
-// @Summary Get motorcycle brands
-// @Description Get motorcycle brands
-// @Tags motorcycles
-// @Accept json
-// @Produce json
-// @Security 	 BearerAuth
-// @Param   Accept-Language  header  string  false  "Language"
-// @Param category_id path string true "Category ID"
-// @Success 200 {array} model.GetMotorcycleBrandsResponse
-// @Failure 500 {object} model.ResultMessage
-// @Router /motorcycles/categories/{category_id}/brands [get]
-func (h *MotorcycleHandler) GetMotorcycleBrands(c *fiber.Ctx) error {
-	ctx := c.Context()
-	categoryID := c.Params("category_id")
-	lang := c.Locals("lang").(string)
-	return utils.FiberResponse(c, h.service.GetMotorcycleBrands(ctx, categoryID, lang))
-
-}
-
 // GetNumberOfCycles godoc
 // @Summary Get number of cycles
 // @Description Get number of cycles
@@ -96,27 +57,6 @@ func (h *MotorcycleHandler) GetNumberOfCycles(c *fiber.Ctx) error {
 	ctx := c.Context()
 	lang := c.Locals("lang").(string)
 	return utils.FiberResponse(c, h.service.GetNumberOfCycles(ctx, lang))
-}
-
-// GetMotorcycleModelsByBrandID godoc
-// @Summary Get motorcycle models by brand ID
-// @Description Get motorcycle models by brand ID
-// @Tags motorcycles
-// @Accept json
-// @Produce json
-// @Security 	 BearerAuth
-// @Param   Accept-Language  header  string  false  "Language"
-// @Param category_id path string true "Category ID"
-// @Param brand_id path string true "Brand ID"
-// @Success 200 {array} model.GetMotorcycleModelsResponse
-// @Failure 500 {object} model.ResultMessage
-// @Router /motorcycles/categories/{category_id}/brands/{brand_id}/models [get]
-func (h *MotorcycleHandler) GetMotorcycleModelsByBrandID(c *fiber.Ctx) error {
-	ctx := c.Context()
-	categoryID := c.Params("category_id")
-	brandID := c.Params("brand_id")
-	lang := c.Locals("lang").(string)
-	return utils.FiberResponse(c, h.service.GetMotorcycleModelsByBrandID(ctx, categoryID, brandID, lang))
 }
 
 // // GetMotorcycles godoc
@@ -182,7 +122,7 @@ func (h *MotorcycleHandler) CreateMotorcycle(c *fiber.Ctx) error {
 // @Failure	 	 403  	 {object}  auth.ErrorResponse
 // @Failure      404     {object}  model.ResultMessage
 // @Failure      500     {object}  model.ResultMessage
-// @Router       /motorcycles/{motorcycle_id}/images [post]
+// @Router       /users/motorcycles/{motorcycle_id}/images [post]
 func (h *MotorcycleHandler) CreateMotorcycleImages(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
@@ -245,7 +185,7 @@ func (h *MotorcycleHandler) CreateMotorcycleImages(c *fiber.Ctx) error {
 // @Failure	 	 403  	 {object}  auth.ErrorResponse
 // @Failure      404     {object}  model.ResultMessage
 // @Failure      500     {object}  model.ResultMessage
-// @Router       /motorcycles/{motorcycle_id}/videos [post]
+// @Router       /users/motorcycles/{motorcycle_id}/videos [post]
 func (h *MotorcycleHandler) CreateMotorcycleVideos(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
@@ -308,7 +248,7 @@ func (h *MotorcycleHandler) CreateMotorcycleVideos(c *fiber.Ctx) error {
 // @Failure	 	 403  	 {object}  auth.ErrorResponse
 // @Failure      404     {object}  model.ResultMessage
 // @Failure      500     {object}  model.ResultMessage
-// @Router       /motorcycles/{motorcycle_id}/images/{image_id} [delete]
+// @Router       /users/motorcycles/{motorcycle_id}/images/{image_id} [delete]
 func (h *MotorcycleHandler) DeleteMotorcycleImage(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
@@ -351,7 +291,7 @@ func (h *MotorcycleHandler) DeleteMotorcycleImage(c *fiber.Ctx) error {
 // @Failure	 	 403  	 {object}  auth.ErrorResponse
 // @Failure      404     {object}  model.ResultMessage
 // @Failure      500     {object}  model.ResultMessage
-// @Router       /motorcycles/{motorcycle_id}/videos/{video_id} [delete]
+// @Router       /users/motorcycles/{motorcycle_id}/videos/{video_id} [delete]
 func (h *MotorcycleHandler) DeleteMotorcycleVideo(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
@@ -394,7 +334,7 @@ func (h *MotorcycleHandler) DeleteMotorcycleVideo(c *fiber.Ctx) error {
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /motorcycles/{id} [get]
+// @Router       /users/motorcycles/{id} [get]
 func (h *MotorcycleHandler) GetMotorcycleByID(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
@@ -428,7 +368,7 @@ func (h *MotorcycleHandler) GetMotorcycleByID(c *fiber.Ctx) error {
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /motorcycles/{id}/edit [get]
+// @Router       /users/motorcycles/{id}/edit [get]
 func (h *MotorcycleHandler) GetEditMotorcycleByID(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
@@ -460,7 +400,7 @@ func (h *MotorcycleHandler) GetEditMotorcycleByID(c *fiber.Ctx) error {
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /motorcycles/{id}/buy [post]
+// @Router       /users/motorcycles/{id}/buy [post]
 func (h *MotorcycleHandler) BuyMotorcycle(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
@@ -491,7 +431,7 @@ func (h *MotorcycleHandler) BuyMotorcycle(c *fiber.Ctx) error {
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /motorcycles/{id}/dont-sell [post]
+// @Router       /users/motorcycles/{id}/dont-sell [post]
 func (h *MotorcycleHandler) DontSellMotorcycle(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
@@ -522,7 +462,7 @@ func (h *MotorcycleHandler) DontSellMotorcycle(c *fiber.Ctx) error {
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /motorcycles/{id}/sell [post]
+// @Router       /users/motorcycles/{id}/sell [post]
 func (h *MotorcycleHandler) SellMotorcycle(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
@@ -553,7 +493,7 @@ func (h *MotorcycleHandler) SellMotorcycle(c *fiber.Ctx) error {
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /motorcycles/{id} [delete]
+// @Router       /users/motorcycles/{id} [delete]
 func (h *MotorcycleHandler) DeleteMotorcycle(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
@@ -571,4 +511,61 @@ func (h *MotorcycleHandler) DeleteMotorcycle(c *fiber.Ctx) error {
 
 	data := h.service.DeleteMotorcycle(ctx, id, dir)
 	return utils.FiberResponse(c, data)
+}
+
+// GetMotorcycleBrands godoc
+// @Summary      Get motorcycle brands
+// @Description  Returns a list of all motorcycle brands
+// @Tags         motorcycles
+// @Security     BearerAuth
+// @Produce      json
+// @Success      200  {array}  model.GetMotorcycleBrandsResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /users/motorcycles/brands [get]
+func (h *MotorcycleHandler) GetMotorcycleBrands(c *fiber.Ctx) error {
+	ctx := c.Context()
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.service.GetMotorcycleBrands(ctx, lang))
+}
+
+// GetMotorcycleModelsByBrandID godoc
+// @Summary      Get motorcycle models by brand ID
+// @Description  Returns a list of all motorcycle models by brand ID
+// @Tags         motorcycles
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path      int  true  "Motorcycle brand ID"
+// @Success      200  {array}  model.GetMotorcycleModelsResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /users/motorcycles/brands/{id}/models [get]
+func (h *MotorcycleHandler) GetMotorcycleModelsByBrandID(c *fiber.Ctx) error {
+	ctx := c.Context()
+	brandIDStr := c.Params("id")
+	lang := c.Locals("lang").(string)
+	data := h.service.GetMotorcycleModelsByBrandID(ctx, brandIDStr, lang)
+	return utils.FiberResponse(c, data)
+}
+
+// GetEngines godoc
+// @Summary      Get engines
+// @Description  Returns a list of all engines
+// @Tags         motorcycles
+// @Security     BearerAuth
+// @Produce      json
+// @Success      200  {array}  model.GetMotorcycleModelsResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /users/motorcycles/engines [get]
+func (h *MotorcycleHandler) GetMotoEngines(c *fiber.Ctx) error {
+	ctx := c.Context()
+	lang := c.Locals("lang").(string)
+	return utils.FiberResponse(c, h.service.GetMotoEngines(ctx, lang))
 }

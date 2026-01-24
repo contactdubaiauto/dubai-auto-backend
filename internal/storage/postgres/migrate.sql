@@ -414,3 +414,12 @@ alter table users drop constraint if exists users_email_phone_key;
 alter table users add constraint users_email_unique unique (email);
 alter table users add constraint users_phone_unique unique (phone);
 
+-- 24.01.2026
+alter table vehicles add column "moderation_status" int not null default 1; -- 1-pending, 2-accepted, 3-declined
+alter table motorcycles add column "moderation_status" int not null default 1; -- 1-pending, 2-accepted, 3-declined
+alter table comtrans add column "moderation_status" int not null default 1; -- 1-pending, 2-accepted, 3-declined
+
+
+alter table vehicles alter column status set default 3;
+alter table motorcycles alter column status set default 3;
+alter table comtrans alter column status set default 3;

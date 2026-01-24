@@ -50,14 +50,13 @@ func (r *MotorcycleRepository) GetMotorcycleCategories(ctx *fasthttp.RequestCtx,
 	return data, nil
 }
 
-func (r *MotorcycleRepository) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, categoryID string, nameColumn string) ([]model.GetMotorcycleBrandsResponse, error) {
+func (r *MotorcycleRepository) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.GetMotorcycleBrandsResponse, error) {
 	data := make([]model.GetMotorcycleBrandsResponse, 0)
 	q := `
-		SELECT id, ` + nameColumn + `, $2 || image as image FROM moto_brands
-		WHERE moto_category_id = $1
+		SELECT id, ` + nameColumn + `, $1 || image as image FROM moto_brands
 	`
 
-	rows, err := r.db.Query(ctx, q, categoryID, r.config.IMAGE_BASE_URL)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
 	if err != nil {
 		return nil, err
 	}
@@ -106,14 +105,14 @@ func (r *MotorcycleRepository) GetNumberOfCycles(ctx *fasthttp.RequestCtx, nameC
 	return data, nil
 }
 
-func (r *MotorcycleRepository) GetMotorcycleModelsByBrandID(ctx *fasthttp.RequestCtx, categoryID, brandID, nameColumn string) ([]model.GetMotorcycleModelsResponse, error) {
+func (r *MotorcycleRepository) GetMotorcycleModelsByBrandID(ctx *fasthttp.RequestCtx, brandID int, nameColumn string) ([]model.GetMotorcycleModelsResponse, error) {
 	data := make([]model.GetMotorcycleModelsResponse, 0)
 	q := `
 		SELECT id, ` + nameColumn + ` FROM moto_models
 		WHERE moto_brand_id = $1
 	`
-
 	rows, err := r.db.Query(ctx, q, brandID)
+
 	if err != nil {
 		return nil, err
 	}
@@ -131,6 +130,25 @@ func (r *MotorcycleRepository) GetMotorcycleModelsByBrandID(ctx *fasthttp.Reques
 		data = append(data, model)
 	}
 
+	return data, nil
+}
+
+func (r *MotorcycleRepository) GetMotoEngines(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.GetMotorcycleModelsResponse, error) {
+	data := make([]model.GetMotorcycleModelsResponse, 0)
+	q := `
+		SELECT id, ` + nameColumn + ` FROM moto_engines
+	`
+	rows, err := r.db.Query(ctx, q)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var engine model.GetMotorcycleModelsResponse
+		err = rows.Scan(&engine.ID, &engine.Name)
+	}
 	return data, nil
 }
 

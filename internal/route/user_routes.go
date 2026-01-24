@@ -22,6 +22,7 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 	comtransService := service.NewComtransService(comtransRepository)
 
 	userHandler := http.NewUserHandler(userService, motorcycleService, comtransService, validator)
+	motorcycleHandler := http.NewMotorcycleHandler(motorcycleService, validator)
 
 	{
 		// countries
@@ -73,8 +74,8 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Delete("/cars/:id", auth.TokenGuard, userHandler.DeleteCar)
 
 		// motorcycles
-		r.Post("/motorcycles", auth.TokenGuard, auth.LanguageChecker, userHandler.CreateMotorcycle)
 		r.Get("/motorcycles", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetMotorcycles)
+		r.Post("/motorcycles", auth.TokenGuard, auth.LanguageChecker, userHandler.CreateMotorcycle)
 		r.Post("/motorcycles/:id/buy", auth.TokenGuard, auth.LanguageChecker, userHandler.BuyMotorcycle)
 		r.Post("/motorcycles/:id/cancel", auth.TokenGuard, auth.LanguageChecker, userHandler.CancelMotorcycle)
 		r.Post("/motorcycles/:id/dont-sell", auth.TokenGuard, auth.LanguageChecker, userHandler.DontSellMotorcycle)
@@ -83,6 +84,11 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Delete("/motorcycles/:id/images", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycleImage)
 		r.Delete("/motorcycles/:id/videos", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycleVideo)
 		r.Delete("/motorcycles/:id", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycle)
+		r.Get("/motorcycles/categories", auth.LanguageChecker, motorcycleHandler.GetMotorcycleCategories)
+		r.Get("/motorcycles/number-of-cycles", auth.LanguageChecker, motorcycleHandler.GetNumberOfCycles)
+		r.Get("/motorcycles/engines", auth.LanguageChecker, motorcycleHandler.GetMotoEngines)
+		r.Get("/motorcycles/brands", auth.LanguageChecker, motorcycleHandler.GetMotorcycleBrands)
+		r.Get("/motorcycles/brands/:id/models", auth.LanguageChecker, motorcycleHandler.GetMotorcycleModelsByBrandID)
 
 		// comtrans
 		r.Get("/comtrans", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetComtrans)
@@ -98,6 +104,10 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Delete("/comtrans/:id/images", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteComtransImage)
 		r.Delete("/comtrans/:id/videos", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteComtransVideo)
 		r.Delete("/comtrans/:id", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteComtrans)
+		r.Get("/comtrans/categories", auth.LanguageChecker, userHandler.GetComtransCategories)
+		r.Get("/comtrans/engines", auth.LanguageChecker, userHandler.GetComtransEngines)
+		r.Get("/comtrans/brands", auth.LanguageChecker, userHandler.GetComtransBrands)
+		r.Get("/comtrans/brands/:id/models", auth.LanguageChecker, userHandler.GetComtransModelsByBrandID)
 
 		// likes
 		r.Get("/likes", auth.TokenGuard, auth.LanguageChecker, userHandler.Likes)
