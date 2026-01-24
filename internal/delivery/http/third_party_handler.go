@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -335,6 +336,8 @@ func (h *ThirdPartyHandler) UpdateDealerCar(c *fiber.Ctx) error {
 	}
 
 	car.ID = id
+	fmt.Println(car.Crash)
+	fmt.Println(car.Crash)
 	data := h.service.UpdateDealerCar(ctx, &car, dealerID)
 	return utils.FiberResponse(c, data)
 }
@@ -667,6 +670,830 @@ func (h *ThirdPartyHandler) DeleteDealerCar(c *fiber.Ctx) error {
 	}
 
 	data := h.service.DeleteDealerCar(ctx, id)
+	return utils.FiberResponse(c, data)
+}
+
+// Dealer Motorcycle handlers
+
+// CreateDealerMotorcycle godoc
+// @Summary      Create a dealer motorcycle
+// @Description  Creates a new motorcycle for the authenticated dealer
+// @Tags         dealer
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        motorcycle  body      model.CreateMotorcycleRequest  true  "Motorcycle data"
+// @Success      200  {object}  model.SuccessWithId
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/motorcycle [post]
+func (h *ThirdPartyHandler) CreateDealerMotorcycle(c *fiber.Ctx) error {
+	var motorcycle model.CreateMotorcycleRequest
+	dealerID := c.Locals("id").(int)
+	ctx := c.Context()
+
+	if err := c.BodyParser(&motorcycle); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	if err := h.validator.Validate(motorcycle); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	data := h.service.CreateDealerMotorcycle(ctx, &motorcycle, dealerID)
+	return utils.FiberResponse(c, data)
+}
+
+// UpdateDealerMotorcycle godoc
+// @Summary      Update a dealer motorcycle
+// @Description  Updates an existing motorcycle for the authenticated dealer
+// @Tags         dealer
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Motorcycle ID"
+// @Param        motorcycle  body      model.UpdateMotorcycleRequest  true  "Motorcycle data"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/motorcycle/{id} [post]
+func (h *ThirdPartyHandler) UpdateDealerMotorcycle(c *fiber.Ctx) error {
+	var motorcycle model.UpdateMotorcycleRequest
+	dealerID := c.Locals("id").(int)
+	ctx := c.Context()
+
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("motorcycle id must be integer"),
+		})
+	}
+
+	if err := c.BodyParser(&motorcycle); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	if err := h.validator.Validate(motorcycle); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	motorcycle.ID = id
+	data := h.service.UpdateDealerMotorcycle(ctx, &motorcycle, dealerID)
+	return utils.FiberResponse(c, data)
+}
+
+// GetEditDealerMotorcycleByID godoc
+// @Summary      Get Edit dealer motorcycle by ID
+// @Description  Returns a dealer motorcycle by its ID
+// @Tags         dealer
+// @Produce      json
+// @Param        id   path      int  true  "Dealer Motorcycle ID"
+// @Security 	 BearerAuth
+// @Param        Accept-Language  header  string  false  "Language"
+// @Success      200  {object}  model.GetEditMotorcycleResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/motorcycle/{id}/edit [get]
+func (h *ThirdPartyHandler) GetEditDealerMotorcycleByID(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	dealerID := c.Locals("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("dealer motorcycle id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	nameColumn := c.Locals("lang").(string)
+	data := h.service.GetEditDealerMotorcycleByID(ctx, id, dealerID, nameColumn)
+	return utils.FiberResponse(c, data)
+}
+
+// StatusDealerMotorcycle godoc
+// @Summary      Change dealer motorcycle status
+// @Description  Changes the status of a dealer motorcycle (sell/dont-sell)
+// @Tags         dealer
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Motorcycle ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/motorcycle/{id}/sell [post]
+// @Router       /api/v1/third-party/dealer/motorcycle/{id}/dont-sell [post]
+func (h *ThirdPartyHandler) StatusDealerMotorcycle(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	dealerID := c.Locals("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("motorcycle id must be integer"),
+		})
+	}
+
+	path := string(c.Context().Path())
+
+	if strings.Contains(path, "dont-sell") {
+		data := h.service.DealerDontSellMotorcycle(ctx, &id, &dealerID)
+		return utils.FiberResponse(c, data)
+	}
+
+	data := h.service.DealerSellMotorcycle(ctx, &id, &dealerID)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateDealerMotorcycleImages godoc
+// @Summary      Upload motorcycle images
+// @Description  Uploads images for a motorcycle (max 10 files)
+// @Tags         dealer
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        id      path      int     true   "Motorcycle ID"
+// @Param        images  formData  file    true   "Motorcycle images (max 10)"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure	 	 403  	 {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/motorcycle/{id}/images [post]
+func (h *ThirdPartyHandler) CreateDealerMotorcycleImages(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid dealer motorcycle ID"),
+		})
+	}
+
+	form, _ := c.MultipartForm()
+
+	if form == nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the dealer motorcycle images"),
+		})
+	}
+
+	images := form.File["images"]
+
+	if len(images) > 10 {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 10 dealer motorcycle images"),
+		})
+	}
+
+	paths, status, err := files.SaveFiles(images, config.ENV.STATIC_PATH+"motorcycles/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: status,
+			Error:  err,
+		})
+	}
+
+	data := h.service.CreateDealerMotorcycleImages(ctx, id, paths)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateDealerMotorcycleVideos godoc
+// @Summary      Upload motorcycle videos
+// @Description  Uploads videos for a motorcycle (max 1 files)
+// @Tags         dealer
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        id      path      int     true   "Motorcycle ID"
+// @Param        videos  formData  file    true   "Motorcycle videos (max 1)"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure	 	 403  	 {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/motorcycle/{id}/videos [post]
+func (h *ThirdPartyHandler) CreateDealerMotorcycleVideos(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid dealer motorcycle ID"),
+		})
+	}
+
+	form, _ := c.MultipartForm()
+
+	if form == nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the dealer motorcycle videos"),
+		})
+	}
+
+	videos := form.File["videos"]
+
+	if len(videos) > 1 {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 1 dealer motorcycle video(s)"),
+		})
+	}
+
+	path, err := files.SaveOriginal(videos[0], config.ENV.STATIC_PATH+"motorcycles/"+idStr+"/videos")
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	data := h.service.CreateDealerMotorcycleVideos(ctx, id, path)
+	return utils.FiberResponse(c, data)
+}
+
+// DeleteDealerMotorcycleImage godoc
+// @Summary      Delete dealer motorcycle image
+// @Description  Deletes a dealer motorcycle image by motorcycle ID and image path
+// @Tags         dealer
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id    path      int     true   "Dealer Motorcycle ID"
+// @Param        image body      model.DeleteCarImageRequest true "Image path"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/motorcycle/{id}/images [delete]
+func (h *ThirdPartyHandler) DeleteDealerMotorcycleImage(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	dealerMotorcycleID, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("dealer motorcycle id must be integer"),
+		})
+	}
+
+	var req model.DeleteCarImageRequest
+
+	if err := c.BodyParser(&req); err != nil || req.Image == "" {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid image path in request body"),
+		})
+	}
+
+	if err := h.validator.Validate(req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	ctx := c.Context()
+	resp := h.service.DeleteDealerMotorcycleImage(ctx, dealerMotorcycleID, req.Image)
+
+	if resp.Error == nil {
+		_ = files.RemoveFile(req.Image)
+	}
+	return utils.FiberResponse(c, resp)
+}
+
+// DeleteDealerMotorcycleVideo godoc
+// @Summary      Delete dealer motorcycle video
+// @Description  Deletes a dealer motorcycle video by motorcycle ID and video path
+// @Tags         dealer
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id    path      int     true   "Dealer Motorcycle ID"
+// @Param        video body      model.DeleteCarVideoRequest true "Video path"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/motorcycle/{id}/videos [delete]
+func (h *ThirdPartyHandler) DeleteDealerMotorcycleVideo(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	dealerMotorcycleID, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("dealer motorcycle id must be integer"),
+		})
+	}
+
+	var video model.DeleteCarVideoRequest
+
+	if err := c.BodyParser(&video); err != nil || video.Video == "" {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid video path in request body"),
+		})
+	}
+
+	if err := h.validator.Validate(video); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	ctx := c.Context()
+	resp := h.service.DeleteDealerMotorcycleVideo(ctx, dealerMotorcycleID, video.Video)
+
+	if resp.Error == nil {
+		files.RemoveFolder(config.ENV.STATIC_PATH + "motorcycles/" + idStr + "/videos")
+	}
+	return utils.FiberResponse(c, resp)
+}
+
+// DeleteDealerMotorcycle godoc
+// @Summary      Delete dealer motorcycle
+// @Description  Deletes a dealer motorcycle
+// @Tags         dealer
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Motorcycle ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/motorcycle/{id} [delete]
+func (h *ThirdPartyHandler) DeleteDealerMotorcycle(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("motorcycle id must be integer"),
+		})
+	}
+
+	data := h.service.DeleteDealerMotorcycle(ctx, id)
+	return utils.FiberResponse(c, data)
+}
+
+// Dealer Comtrans handlers
+
+// CreateDealerComtrans godoc
+// @Summary      Create a dealer comtrans
+// @Description  Creates a new commercial transport for the authenticated dealer
+// @Tags         dealer
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        comtrans  body      model.CreateComtransRequest  true  "Comtrans data"
+// @Success      200  {object}  model.SuccessWithId
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/comtrans [post]
+func (h *ThirdPartyHandler) CreateDealerComtrans(c *fiber.Ctx) error {
+	var comtrans model.CreateComtransRequest
+	dealerID := c.Locals("id").(int)
+	ctx := c.Context()
+
+	if err := c.BodyParser(&comtrans); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	if err := h.validator.Validate(comtrans); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	data := h.service.CreateDealerComtrans(ctx, &comtrans, dealerID)
+	return utils.FiberResponse(c, data)
+}
+
+// UpdateDealerComtrans godoc
+// @Summary      Update a dealer comtrans
+// @Description  Updates an existing commercial transport for the authenticated dealer
+// @Tags         dealer
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Comtrans ID"
+// @Param        comtrans  body      model.UpdateComtransRequest  true  "Comtrans data"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/comtrans/{id} [post]
+func (h *ThirdPartyHandler) UpdateDealerComtrans(c *fiber.Ctx) error {
+	var comtrans model.UpdateComtransRequest
+	dealerID := c.Locals("id").(int)
+	ctx := c.Context()
+
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("comtrans id must be integer"),
+		})
+	}
+
+	if err := c.BodyParser(&comtrans); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	if err := h.validator.Validate(comtrans); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	comtrans.ID = id
+	data := h.service.UpdateDealerComtrans(ctx, &comtrans, dealerID)
+	return utils.FiberResponse(c, data)
+}
+
+// GetEditDealerComtransByID godoc
+// @Summary      Get Edit dealer comtrans by ID
+// @Description  Returns a dealer comtrans by its ID
+// @Tags         dealer
+// @Produce      json
+// @Param        id   path      int  true  "Dealer Comtrans ID"
+// @Security 	 BearerAuth
+// @Param        Accept-Language  header  string  false  "Language"
+// @Success      200  {object}  model.GetEditComtransResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/comtrans/{id}/edit [get]
+func (h *ThirdPartyHandler) GetEditDealerComtransByID(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	dealerID := c.Locals("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("dealer comtrans id must be integer"),
+		})
+	}
+
+	ctx := c.Context()
+	nameColumn := c.Locals("lang").(string)
+	data := h.service.GetEditDealerComtransByID(ctx, id, dealerID, nameColumn)
+	return utils.FiberResponse(c, data)
+}
+
+// StatusDealerComtrans godoc
+// @Summary      Change dealer comtrans status
+// @Description  Changes the status of a dealer comtrans (sell/dont-sell)
+// @Tags         dealer
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Comtrans ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/comtrans/{id}/sell [post]
+// @Router       /api/v1/third-party/dealer/comtrans/{id}/dont-sell [post]
+func (h *ThirdPartyHandler) StatusDealerComtrans(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	dealerID := c.Locals("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("comtrans id must be integer"),
+		})
+	}
+
+	path := string(c.Context().Path())
+
+	if strings.Contains(path, "dont-sell") {
+		data := h.service.DealerDontSellComtrans(ctx, &id, &dealerID)
+		return utils.FiberResponse(c, data)
+	}
+
+	data := h.service.DealerSellComtrans(ctx, &id, &dealerID)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateDealerComtransImages godoc
+// @Summary      Upload comtrans images
+// @Description  Uploads images for a commercial transport (max 10 files)
+// @Tags         dealer
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        id      path      int     true   "Comtrans ID"
+// @Param        images  formData  file    true   "Comtrans images (max 10)"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure	 	 403  	 {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/comtrans/{id}/images [post]
+func (h *ThirdPartyHandler) CreateDealerComtransImages(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid dealer comtrans ID"),
+		})
+	}
+
+	form, _ := c.MultipartForm()
+
+	if form == nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the dealer comtrans images"),
+		})
+	}
+
+	images := form.File["images"]
+
+	if len(images) > 10 {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 10 dealer comtrans images"),
+		})
+	}
+
+	paths, status, err := files.SaveFiles(images, config.ENV.STATIC_PATH+"comtrans/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: status,
+			Error:  err,
+		})
+	}
+
+	data := h.service.CreateDealerComtransImages(ctx, id, paths)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateDealerComtransVideos godoc
+// @Summary      Upload comtrans videos
+// @Description  Uploads videos for a commercial transport (max 1 files)
+// @Tags         dealer
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        id      path      int     true   "Comtrans ID"
+// @Param        videos  formData  file    true   "Comtrans videos (max 1)"
+// @Success      200     {object}  model.Success
+// @Failure      400     {object}  model.ResultMessage
+// @Failure      401     {object}  auth.ErrorResponse
+// @Failure	 	 403  	 {object}  auth.ErrorResponse
+// @Failure      404     {object}  model.ResultMessage
+// @Failure      500     {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/comtrans/{id}/videos [post]
+func (h *ThirdPartyHandler) CreateDealerComtransVideos(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid dealer comtrans ID"),
+		})
+	}
+
+	form, _ := c.MultipartForm()
+
+	if form == nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the dealer comtrans videos"),
+		})
+	}
+
+	videos := form.File["videos"]
+
+	if len(videos) > 1 {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 1 dealer comtrans video(s)"),
+		})
+	}
+
+	path, err := files.SaveOriginal(videos[0], config.ENV.STATIC_PATH+"comtrans/"+idStr+"/videos")
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	data := h.service.CreateDealerComtransVideos(ctx, id, path)
+	return utils.FiberResponse(c, data)
+}
+
+// DeleteDealerComtransImage godoc
+// @Summary      Delete dealer comtrans image
+// @Description  Deletes a dealer comtrans image by comtrans ID and image path
+// @Tags         dealer
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id    path      int     true   "Dealer Comtrans ID"
+// @Param        image body      model.DeleteCarImageRequest true "Image path"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/comtrans/{id}/images [delete]
+func (h *ThirdPartyHandler) DeleteDealerComtransImage(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	dealerComtransID, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("dealer comtrans id must be integer"),
+		})
+	}
+
+	var req model.DeleteCarImageRequest
+
+	if err := c.BodyParser(&req); err != nil || req.Image == "" {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid image path in request body"),
+		})
+	}
+
+	if err := h.validator.Validate(req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	ctx := c.Context()
+	resp := h.service.DeleteDealerComtransImage(ctx, dealerComtransID, req.Image)
+
+	if resp.Error == nil {
+		_ = files.RemoveFile(req.Image)
+	}
+	return utils.FiberResponse(c, resp)
+}
+
+// DeleteDealerComtransVideo godoc
+// @Summary      Delete dealer comtrans video
+// @Description  Deletes a dealer comtrans video by comtrans ID and video path
+// @Tags         dealer
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id    path      int     true   "Dealer Comtrans ID"
+// @Param        video body      model.DeleteCarVideoRequest true "Video path"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/comtrans/{id}/videos [delete]
+func (h *ThirdPartyHandler) DeleteDealerComtransVideo(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	dealerComtransID, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("dealer comtrans id must be integer"),
+		})
+	}
+
+	var video model.DeleteCarVideoRequest
+
+	if err := c.BodyParser(&video); err != nil || video.Video == "" {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid video path in request body"),
+		})
+	}
+
+	if err := h.validator.Validate(video); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("invalid request data: " + err.Error()),
+		})
+	}
+
+	ctx := c.Context()
+	resp := h.service.DeleteDealerComtransVideo(ctx, dealerComtransID, video.Video)
+
+	if resp.Error == nil {
+		files.RemoveFolder(config.ENV.STATIC_PATH + "comtrans/" + idStr + "/videos")
+	}
+	return utils.FiberResponse(c, resp)
+}
+
+// DeleteDealerComtrans godoc
+// @Summary      Delete dealer comtrans
+// @Description  Deletes a dealer comtrans
+// @Tags         dealer
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "Comtrans ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/third-party/dealer/comtrans/{id} [delete]
+func (h *ThirdPartyHandler) DeleteDealerComtrans(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("comtrans id must be integer"),
+		})
+	}
+
+	data := h.service.DeleteDealerComtrans(ctx, id)
 	return utils.FiberResponse(c, data)
 }
 

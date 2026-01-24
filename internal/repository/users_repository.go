@@ -1183,8 +1183,8 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 			vs.crash,
 			vs.view_count,
 			CASE
-			WHEN vs.user_id = $1 THEN TRUE
-			ELSE FALSE
+				WHEN vs.user_id = $1 THEN TRUE
+				ELSE FALSE
 			END AS my_car,
 			vs.odometer,
 			CASE
@@ -1205,7 +1205,7 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 				ORDER BY created_at DESC
 			) img
 		) images ON true
-		where vs.status = 3 and vs.id > %d
+		where (vs.status = 3 or vs.status = 1) and vs.id > %d
 		%s
 		order by vs.id desc
 		limit %d
@@ -1452,7 +1452,7 @@ func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID 
 		LEFT JOIN LATERAL (
 			SELECT json_agg(json_build_object('image', img.image, 'id', img.id)) AS images
 			FROM (
-				SELECT '` + r.config.IMAGE_BASE_URL + `' || image as image, id
+				SELECT '` + r.config.IMAGE_BASE_URL + `' || images.image as image, images.id
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -1461,7 +1461,7 @@ func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID 
 		LEFT JOIN LATERAL (
 			SELECT json_agg(json_build_object('video', v.video, 'id', v.id)) AS videos
 			FROM (
-				SELECT '` + r.config.IMAGE_BASE_URL + `' || video as video, id
+				SELECT '` + r.config.IMAGE_BASE_URL + `' || videos.video as video, videos.id
 				FROM videos
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC

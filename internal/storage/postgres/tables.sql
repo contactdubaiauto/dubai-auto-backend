@@ -558,6 +558,7 @@ create table vehicles (
 
 
 create table images (
+    "id" serial primary key,
     "vehicle_id" int not null,
     "image" varchar(255) not null,
     "created_at" timestamp not null default now(),
@@ -586,6 +587,7 @@ CREATE TABLE user_likes (
 );
 
 create table videos (
+    "id" serial primary key,
     "vehicle_id" int not null,
     "video" varchar(255) not null,
     "created_at" timestamp not null default now(),

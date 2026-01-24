@@ -1443,7 +1443,7 @@ definitions:
         type: integer
       images:
         items:
-          type: string
+          $ref: '#/definitions/model.ImageObject'
         type: array
       model:
         $ref: '#/definitions/model.Model'
@@ -1473,7 +1473,7 @@ definitions:
         type: string
       videos:
         items:
-          type: string
+          $ref: '#/definitions/model.VideoObject'
         type: array
       view_count:
         type: integer
@@ -1518,6 +1518,69 @@ definitions:
         type: integer
       owner:
         $ref: '#/definitions/model.ComtransOwner'
+      owners:
+        type: integer
+      phone_numbers:
+        items:
+          type: string
+        type: array
+      power:
+        type: integer
+      price:
+        type: integer
+      status:
+        type: string
+      trade_in:
+        type: integer
+      updated_at:
+        type: string
+      videos:
+        items:
+          $ref: '#/definitions/model.VideoObject'
+        type: array
+      vin_code:
+        type: string
+      wheel:
+        type: boolean
+      year:
+        type: integer
+    type: object
+  model.GetEditMotorcycleResponse:
+    properties:
+      city:
+        type: string
+      color:
+        type: string
+      crash:
+        type: boolean
+      created_at:
+        type: string
+      description:
+        type: string
+      engine:
+        type: integer
+      engine_type:
+        type: string
+      id:
+        type: integer
+      images:
+        items:
+          $ref: '#/definitions/model.ImageObject'
+        type: array
+      moto_brand:
+        type: string
+      moto_category:
+        type: string
+      moto_model:
+        type: string
+      my_moto:
+        type: boolean
+      number_of_cycles:
+        type: string
+      odometer:
+        type: integer
+      owner:
+        $ref: '#/definitions/model.MotorcycleOwner'
       owners:
         type: integer
       phone_numbers:
@@ -8918,6 +8981,903 @@ paths:
       summary: Delete dealer car video
       tags:
       - dealer
+  /api/v1/third-party/dealer/comtrans:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new commercial transport for the authenticated dealer
+      parameters:
+      - description: Comtrans data
+        in: body
+        name: comtrans
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateComtransRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a dealer comtrans
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/comtrans/{id}:
+    delete:
+      description: Deletes a dealer comtrans
+      parameters:
+      - description: Comtrans ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete dealer comtrans
+      tags:
+      - dealer
+    post:
+      consumes:
+      - application/json
+      description: Updates an existing commercial transport for the authenticated
+        dealer
+      parameters:
+      - description: Comtrans ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comtrans data
+        in: body
+        name: comtrans
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateComtransRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a dealer comtrans
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/comtrans/{id}/dont-sell:
+    post:
+      description: Changes the status of a dealer comtrans (sell/dont-sell)
+      parameters:
+      - description: Comtrans ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Change dealer comtrans status
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/comtrans/{id}/edit:
+    get:
+      description: Returns a dealer comtrans by its ID
+      parameters:
+      - description: Dealer Comtrans ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetEditComtransResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get Edit dealer comtrans by ID
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/comtrans/{id}/images:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a dealer comtrans image by comtrans ID and image path
+      parameters:
+      - description: Dealer Comtrans ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Image path
+        in: body
+        name: image
+        required: true
+        schema:
+          $ref: '#/definitions/model.DeleteCarImageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete dealer comtrans image
+      tags:
+      - dealer
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads images for a commercial transport (max 10 files)
+      parameters:
+      - description: Comtrans ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comtrans images (max 10)
+        in: formData
+        name: images
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload comtrans images
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/comtrans/{id}/sell:
+    post:
+      description: Changes the status of a dealer comtrans (sell/dont-sell)
+      parameters:
+      - description: Comtrans ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Change dealer comtrans status
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/comtrans/{id}/videos:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a dealer comtrans video by comtrans ID and video path
+      parameters:
+      - description: Dealer Comtrans ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Video path
+        in: body
+        name: video
+        required: true
+        schema:
+          $ref: '#/definitions/model.DeleteCarVideoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete dealer comtrans video
+      tags:
+      - dealer
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads videos for a commercial transport (max 1 files)
+      parameters:
+      - description: Comtrans ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comtrans videos (max 1)
+        in: formData
+        name: videos
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload comtrans videos
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/motorcycle:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new motorcycle for the authenticated dealer
+      parameters:
+      - description: Motorcycle data
+        in: body
+        name: motorcycle
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateMotorcycleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SuccessWithId'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Create a dealer motorcycle
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/motorcycle/{id}:
+    delete:
+      description: Deletes a dealer motorcycle
+      parameters:
+      - description: Motorcycle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete dealer motorcycle
+      tags:
+      - dealer
+    post:
+      consumes:
+      - application/json
+      description: Updates an existing motorcycle for the authenticated dealer
+      parameters:
+      - description: Motorcycle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Motorcycle data
+        in: body
+        name: motorcycle
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateMotorcycleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Update a dealer motorcycle
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/motorcycle/{id}/dont-sell:
+    post:
+      description: Changes the status of a dealer motorcycle (sell/dont-sell)
+      parameters:
+      - description: Motorcycle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Change dealer motorcycle status
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/motorcycle/{id}/edit:
+    get:
+      description: Returns a dealer motorcycle by its ID
+      parameters:
+      - description: Dealer Motorcycle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetEditMotorcycleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get Edit dealer motorcycle by ID
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/motorcycle/{id}/images:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a dealer motorcycle image by motorcycle ID and image path
+      parameters:
+      - description: Dealer Motorcycle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Image path
+        in: body
+        name: image
+        required: true
+        schema:
+          $ref: '#/definitions/model.DeleteCarImageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete dealer motorcycle image
+      tags:
+      - dealer
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads images for a motorcycle (max 10 files)
+      parameters:
+      - description: Motorcycle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Motorcycle images (max 10)
+        in: formData
+        name: images
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload motorcycle images
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/motorcycle/{id}/sell:
+    post:
+      description: Changes the status of a dealer motorcycle (sell/dont-sell)
+      parameters:
+      - description: Motorcycle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Change dealer motorcycle status
+      tags:
+      - dealer
+  /api/v1/third-party/dealer/motorcycle/{id}/videos:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a dealer motorcycle video by motorcycle ID and video path
+      parameters:
+      - description: Dealer Motorcycle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Video path
+        in: body
+        name: video
+        required: true
+        schema:
+          $ref: '#/definitions/model.DeleteCarVideoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete dealer motorcycle video
+      tags:
+      - dealer
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads videos for a motorcycle (max 1 files)
+      parameters:
+      - description: Motorcycle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Motorcycle videos (max 1)
+        in: formData
+        name: videos
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload motorcycle videos
+      tags:
+      - dealer
   /api/v1/third-party/first-login:
     post:
       description: Returns a first login
@@ -11844,7 +12804,7 @@ paths:
         name: item_id
         required: true
         type: integer
-      - description: Item Type (car, motorcycle, comtran)
+      - description: 'Item Type (car, motorcycle, comtran), default: car'
         in: query
         name: item_type
         required: true
@@ -11889,7 +12849,7 @@ paths:
         name: item_id
         required: true
         type: integer
-      - description: Item Type (car, motorcycle, comtran)
+      - description: 'Item Type (car, motorcycle, comtran), default: car'
         in: query
         name: item_type
         required: true

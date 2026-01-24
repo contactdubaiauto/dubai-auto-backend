@@ -75,6 +75,7 @@ func (h *UserHandler) GetCars(c *fiber.Ctx) error {
 
 	nameColumn := c.Locals("lang").(string)
 	userID := c.Locals("id").(int)
+	fmt.Println(userID)
 	brands := auth.QueryParamToArray(c.Query("brands"))
 	dealers := auth.QueryParamToArray(c.Query("dealers"))
 	models := auth.QueryParamToArray(c.Query("models"))
@@ -1190,7 +1191,7 @@ func (h *UserHandler) Likes(c *fiber.Ctx) error {
 // @Security     BearerAuth
 // @Produce      json
 // @Param        item_id   path      int  true  "Item ID"
-// @Param        item_type   query      string  true  "Item Type (car, motorcycle, comtran)"
+// @Param        item_type   query      string  true  "Item Type (car, motorcycle, comtran), default: car"
 // @Success      200  {object}  model.Success
 // @Failure      400  {object} model.ResultMessage
 // @Failure      401  {object} auth.ErrorResponse
@@ -1201,7 +1202,7 @@ func (h *UserHandler) Likes(c *fiber.Ctx) error {
 func (h *UserHandler) ItemLike(c *fiber.Ctx) error {
 	itemIDStr := c.Params("item_id")
 	userID := c.Locals("id").(int)
-	itemType := c.Query("item_type")
+	itemType := c.Query("item_type", "car")
 	data := h.UserService.ItemLike(c.Context(), userID, itemIDStr, itemType)
 	return utils.FiberResponse(c, data)
 }
@@ -1213,7 +1214,7 @@ func (h *UserHandler) ItemLike(c *fiber.Ctx) error {
 // @Security     BearerAuth
 // @Produce      json
 // @Param        item_id   path      int  true  "Item ID"
-// @Param        item_type   query      string  true  "Item Type (car, motorcycle, comtran)"
+// @Param        item_type   query      string  true  "Item Type (car, motorcycle, comtran), default: car"
 // @Success      200  {object}  model.Success
 // @Failure      400  {object} model.ResultMessage
 // @Failure      401  {object} auth.ErrorResponse
@@ -1225,7 +1226,7 @@ func (h *UserHandler) RemoveLike(c *fiber.Ctx) error {
 	// todo: delete images if exist
 
 	itemIDStr := c.Params("item_id")
-	itemType := c.Query("item_type")
+	itemType := c.Query("item_type", "car")
 	userID := c.Locals("id").(int)
 	data := h.UserService.RemoveLike(c.Context(), userID, itemIDStr, itemType)
 	return utils.FiberResponse(c, data)

@@ -62,7 +62,7 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Get("/cars", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetCars)
 		r.Get("/cars/price-recommendation", auth.TokenGuard, userHandler.GetPriceRecommendation)
 		r.Get("/cars/:id", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetCarByID)
-		r.Get("/cars/:id/edit", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetEditCarByID)
+		r.Get("/cars/:id/edit", auth.TokenGuard, auth.LanguageChecker, userHandler.GetEditCarByID)
 		r.Post("/cars/:id/buy", auth.TokenGuard, userHandler.BuyCar)
 		r.Post("/cars", auth.TokenGuard, userHandler.CreateCar)
 		r.Post("/cars/:id/images", auth.TokenGuard, userHandler.CreateCarImages)
@@ -120,6 +120,8 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		// likes
 		r.Get("/likes", auth.TokenGuard, auth.LanguageChecker, userHandler.Likes)
 		r.Post("/likes/:item_id", auth.TokenGuard, userHandler.ItemLike)
+		// r.Post("/likes/:item_id", auth.TokenGuard, userHandler.ItemLike)
+		// r.Post("/likes/:car_id", auth.TokenGuard, userHandler.CarLike)
 		r.Delete("/likes/:item_id", auth.TokenGuard, userHandler.RemoveLike)
 
 		// messages

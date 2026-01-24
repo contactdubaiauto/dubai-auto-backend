@@ -568,6 +568,7 @@ func (r *ThirdPartyRepository) UpdateDealerCar(ctx *fasthttp.RequestCtx, car *mo
 		return fmt.Errorf("car not found or access denied")
 	}
 
+	// shun icinde eger false bolsa crash we beyleki boolean params build edilenok
 	keys, _, args := auth.BuildParams(car)
 
 	var updateFields []string
@@ -784,6 +785,440 @@ func (r *ThirdPartyRepository) DeleteDealerCarVideo(ctx *fasthttp.RequestCtx, ca
 func (r *ThirdPartyRepository) DeleteDealerCar(ctx *fasthttp.RequestCtx, id int) error {
 	q := `
 		delete from vehicles where id = $1
+	`
+	_, err := r.db.Exec(ctx, q, id)
+	return err
+}
+
+// Dealer Motorcycle repository methods
+
+func (r *ThirdPartyRepository) CreateDealerMotorcycle(ctx *fasthttp.RequestCtx, motorcycle *model.CreateMotorcycleRequest, dealerID int) (int, error) {
+	keys, values, args := auth.BuildParams(motorcycle)
+
+	q := `
+		INSERT INTO motorcycles 
+			(
+				` + strings.Join(keys, ", ") + `
+				, user_id
+			) VALUES (
+				` + strings.Join(values, ", ") + `,
+				$` + strconv.Itoa(len(keys)+1) + `
+			) RETURNING id
+	`
+	var id int
+	args = append(args, dealerID)
+	err := r.db.QueryRow(ctx, q, args...).Scan(&id)
+
+	return id, err
+}
+
+func (r *ThirdPartyRepository) UpdateDealerMotorcycle(ctx *fasthttp.RequestCtx, motorcycle *model.UpdateMotorcycleRequest, dealerID int) error {
+	var exists bool
+	checkQuery := `SELECT EXISTS(SELECT 1 FROM motorcycles WHERE id = $1 AND user_id = $2)`
+	err := r.db.QueryRow(ctx, checkQuery, motorcycle.ID, dealerID).Scan(&exists)
+
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		return fmt.Errorf("motorcycle not found or access denied")
+	}
+
+	keys, _, args := auth.BuildParams(motorcycle)
+
+	var updateFields []string
+	var updateArgs []any
+	updateArgs = append(updateArgs, motorcycle.ID)
+
+	paramIndex := 2
+	for i, key := range keys {
+		if key != "id" && key != "user_id" {
+			updateFields = append(updateFields, fmt.Sprintf("%s = $%d", key, paramIndex))
+			updateArgs = append(updateArgs, args[i])
+			paramIndex++
+		}
+	}
+
+	if len(updateFields) == 0 {
+		return fmt.Errorf("no valid fields to update")
+	}
+
+	q := `
+		UPDATE motorcycles 
+		SET ` + strings.Join(updateFields, ", ") + `, updated_at = NOW()
+		WHERE id = $1 AND user_id = $` + fmt.Sprintf("%d", paramIndex)
+
+	updateArgs = append(updateArgs, dealerID)
+
+	_, err = r.db.Exec(ctx, q, updateArgs...)
+	return err
+}
+
+func (r *ThirdPartyRepository) GetEditDealerMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, dealerID int, nameColumn string) (model.GetEditMotorcycleResponse, error) {
+	motorcycle := model.GetEditMotorcycleResponse{}
+
+	q := `
+		select 
+			mcs.id,
+			json_build_object(
+				'id', pf.user_id,
+				'username', pf.username,
+				'avatar', CASE
+					WHEN pf.avatar IS NULL OR pf.avatar = '' THEN ''
+					ELSE $3 || pf.avatar
+				END,
+				'contacts', pf.contacts
+			) as owner,
+			mcs.engine,
+			mcs.power,
+			mcs.year,
+			nocs.` + nameColumn + ` as number_of_cycles,
+			mcs.odometer,
+			mcs.crash,
+			mcs.wheel,
+			mcs.owners,
+			mcs.vin_code,
+			mcs.description,
+			mcs.phone_numbers,
+			mcs.price,
+			mcs.trade_in,
+			mcs.status::text,
+			mcs.updated_at,
+			mcs.created_at,
+			mocs.` + nameColumn + ` as moto_category,
+			mbs.` + nameColumn + ` as moto_brand,
+			mms.` + nameColumn + ` as moto_model,
+			meng.` + nameColumn + ` as engine_type,
+			cs.name as city,
+			cls.` + nameColumn + ` as color,
+			CASE
+				WHEN mcs.user_id = $2 THEN TRUE
+				ELSE FALSE
+			END AS my_moto,
+			images.images,
+			videos.videos
+		from motorcycles mcs
+		left join profiles pf on pf.user_id = mcs.user_id
+		left join moto_categories mocs on mocs.id = mcs.moto_category_id
+		left join moto_brands mbs on mbs.id = mcs.moto_brand_id
+		left join moto_models mms on mms.id = mcs.moto_model_id
+		left join moto_engines meng on meng.id = mcs.engine_id
+		left join cities cs on cs.id = mcs.city_id
+		left join colors cls on cls.id = mcs.color_id
+		left join number_of_cycles nocs on nocs.id = mcs.number_of_cycles_id
+		LEFT JOIN LATERAL (
+			SELECT json_agg(json_build_object('image', img.image, 'id', img.id)) AS images
+			FROM (
+				SELECT $3 || image as image, id
+				FROM moto_images
+				WHERE moto_id = mcs.id
+				ORDER BY created_at DESC
+			) img
+		) images ON true
+		LEFT JOIN LATERAL (
+			SELECT json_agg(json_build_object('video', v.video, 'id', v.id)) AS videos
+			FROM (
+				SELECT $3 || video as video, id
+				FROM moto_videos
+				WHERE moto_id = mcs.id
+				ORDER BY created_at DESC
+			) v
+		) videos ON true
+		WHERE mcs.id = $1 AND mcs.user_id = $2;
+	`
+	err := r.db.QueryRow(ctx, q, motorcycleID, dealerID, r.config.IMAGE_BASE_URL).Scan(
+		&motorcycle.ID, &motorcycle.Owner, &motorcycle.Engine, &motorcycle.Power, &motorcycle.Year,
+		&motorcycle.NumberOfCycles, &motorcycle.Odometer, &motorcycle.Crash, &motorcycle.Wheel,
+		&motorcycle.Owners, &motorcycle.VinCode, &motorcycle.Description, &motorcycle.PhoneNumbers,
+		&motorcycle.Price, &motorcycle.TradeIn, &motorcycle.Status,
+		&motorcycle.UpdatedAt, &motorcycle.CreatedAt, &motorcycle.MotoCategory, &motorcycle.MotoBrand,
+		&motorcycle.MotoModel, &motorcycle.EngineType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyMoto,
+		&motorcycle.Images, &motorcycle.Videos)
+
+	return motorcycle, err
+}
+
+func (r *ThirdPartyRepository) CreateDealerMotorcycleImages(ctx *fasthttp.RequestCtx, motorcycleID int, images []string) error {
+	if len(images) == 0 {
+		return nil
+	}
+
+	q := `
+		INSERT INTO moto_images (moto_id, image) VALUES ($1, $2)
+	`
+
+	for i := range images {
+		_, err := r.db.Exec(ctx, q, motorcycleID, images[i])
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *ThirdPartyRepository) CreateDealerMotorcycleVideos(ctx *fasthttp.RequestCtx, motorcycleID int, video string) error {
+	q := `
+		INSERT INTO moto_videos (moto_id, video) VALUES ($1, $2)
+	`
+
+	_, err := r.db.Exec(ctx, q, motorcycleID, video)
+	return err
+}
+
+func (r *ThirdPartyRepository) DealerDontSellMotorcycle(ctx *fasthttp.RequestCtx, motorcycleID, dealerID *int) error {
+	q := `
+		update motorcycles 
+			set status = 2 -- 2 is not sale
+		where id = $1 and status = 3 -- 3 is on sale
+			and user_id = $2
+	`
+
+	_, err := r.db.Exec(ctx, q, *motorcycleID, *dealerID)
+	return err
+}
+
+func (r *ThirdPartyRepository) DealerSellMotorcycle(ctx *fasthttp.RequestCtx, motorcycleID, dealerID *int) error {
+	q := `
+		update motorcycles 
+			set status = 3 -- 3 is on sale
+		where id = $1 and status = 2 -- 2 is not sale 
+			and user_id = $2
+	`
+	_, err := r.db.Exec(ctx, q, *motorcycleID, *dealerID)
+	return err
+}
+
+func (r *ThirdPartyRepository) DeleteDealerMotorcycleImage(ctx *fasthttp.RequestCtx, motorcycleID int, imagePath string) error {
+	q := `DELETE FROM moto_images WHERE moto_id = $1 AND image = $2`
+	_, err := r.db.Exec(ctx, q, motorcycleID, imagePath)
+	return err
+}
+
+func (r *ThirdPartyRepository) DeleteDealerMotorcycleVideo(ctx *fasthttp.RequestCtx, motorcycleID int, videoPath string) error {
+	q := `DELETE FROM moto_videos WHERE moto_id = $1 AND video = $2`
+	_, err := r.db.Exec(ctx, q, motorcycleID, videoPath)
+	return err
+}
+
+func (r *ThirdPartyRepository) DeleteDealerMotorcycle(ctx *fasthttp.RequestCtx, id int) error {
+	q := `
+		delete from motorcycles where id = $1
+	`
+	_, err := r.db.Exec(ctx, q, id)
+	return err
+}
+
+// Dealer Comtrans repository methods
+
+func (r *ThirdPartyRepository) CreateDealerComtrans(ctx *fasthttp.RequestCtx, comtrans *model.CreateComtransRequest, dealerID int) (int, error) {
+	keys, values, args := auth.BuildParams(comtrans)
+
+	q := `
+		INSERT INTO comtrans 
+			(
+				` + strings.Join(keys, ", ") + `
+				, user_id
+			) VALUES (
+				` + strings.Join(values, ", ") + `,
+				$` + strconv.Itoa(len(keys)+1) + `
+			) RETURNING id
+	`
+	var id int
+	args = append(args, dealerID)
+	err := r.db.QueryRow(ctx, q, args...).Scan(&id)
+
+	return id, err
+}
+
+func (r *ThirdPartyRepository) UpdateDealerComtrans(ctx *fasthttp.RequestCtx, comtrans *model.UpdateComtransRequest, dealerID int) error {
+	var exists bool
+	checkQuery := `SELECT EXISTS(SELECT 1 FROM comtrans WHERE id = $1 AND user_id = $2)`
+	err := r.db.QueryRow(ctx, checkQuery, comtrans.ID, dealerID).Scan(&exists)
+
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		return fmt.Errorf("comtrans not found or access denied")
+	}
+
+	keys, _, args := auth.BuildParams(comtrans)
+
+	var updateFields []string
+	var updateArgs []any
+	updateArgs = append(updateArgs, comtrans.ID)
+
+	paramIndex := 2
+	for i, key := range keys {
+		if key != "id" && key != "user_id" {
+			updateFields = append(updateFields, fmt.Sprintf("%s = $%d", key, paramIndex))
+			updateArgs = append(updateArgs, args[i])
+			paramIndex++
+		}
+	}
+
+	if len(updateFields) == 0 {
+		return fmt.Errorf("no valid fields to update")
+	}
+
+	q := `
+		UPDATE comtrans 
+		SET ` + strings.Join(updateFields, ", ") + `, updated_at = NOW()
+		WHERE id = $1 AND user_id = $` + fmt.Sprintf("%d", paramIndex)
+
+	updateArgs = append(updateArgs, dealerID)
+
+	_, err = r.db.Exec(ctx, q, updateArgs...)
+	return err
+}
+
+func (r *ThirdPartyRepository) GetEditDealerComtransByID(ctx *fasthttp.RequestCtx, comtransID, dealerID int, nameColumn string) (model.GetEditComtransResponse, error) {
+	comtrans := model.GetEditComtransResponse{}
+
+	q := `
+		select 
+			cts.id,
+			json_build_object(
+				'id', pf.user_id,
+				'username', pf.username,
+				'avatar', $3 || pf.avatar,
+				'contacts', pf.contacts
+			) as owner,
+			cts.engine,
+			cts.power,
+			cts.year,
+			cts.odometer,
+			cts.crash,
+			cts.owners,
+			cts.vin_code,
+			cts.description,
+			cts.phone_numbers,
+			cts.price,
+			cts.trade_in,
+			cts.status,
+			cts.updated_at,
+			cts.created_at,
+			cocs.` + nameColumn + ` as comtran_category,
+			cbs.` + nameColumn + ` as comtran_brand,
+			cms.` + nameColumn + ` as comtran_model,
+			ces.` + nameColumn + ` as engine_type,
+			cs.name as city,
+			cls.` + nameColumn + ` as color,
+			CASE
+				WHEN cts.user_id = $2 THEN TRUE
+				ELSE FALSE
+			END AS my_comtrans,
+			images.images,
+			videos.videos
+		from comtrans cts
+		left join profiles pf on pf.user_id = cts.user_id
+		left join com_categories cocs on cocs.id = cts.comtran_category_id
+		left join com_brands cbs on cbs.id = cts.comtran_brand_id
+		left join com_models cms on cms.id = cts.comtran_model_id
+		left join com_engines ces on ces.id = cts.engine_id
+		left join cities cs on cs.id = cts.city_id
+		left join colors cls on cls.id = cts.color_id
+		LEFT JOIN LATERAL (
+			SELECT json_agg(json_build_object('image', img.image, 'id', img.id)) AS images
+			FROM (
+				SELECT $3 || image as image, id
+				FROM comtran_images
+				WHERE comtran_id = cts.id
+				ORDER BY created_at DESC
+			) img
+		) images ON true
+		LEFT JOIN LATERAL (
+			SELECT json_agg(json_build_object('video', v.video, 'id', v.id)) AS videos
+			FROM (
+				SELECT $3 || video as video, id
+				FROM comtran_videos
+				WHERE comtran_id = cts.id
+				ORDER BY created_at DESC
+			) v
+		) videos ON true
+		WHERE cts.id = $1 AND cts.user_id = $2;
+	`
+
+	err := r.db.QueryRow(ctx, q, comtransID, dealerID, r.config.IMAGE_BASE_URL).Scan(
+		&comtrans.ID, &comtrans.Owner, &comtrans.Engine, &comtrans.Power, &comtrans.Year,
+		&comtrans.Odometer, &comtrans.Crash, &comtrans.Owners, &comtrans.VinCode, &comtrans.Description,
+		&comtrans.PhoneNumbers, &comtrans.Price, &comtrans.TradeIn, &comtrans.Status,
+		&comtrans.UpdatedAt, &comtrans.CreatedAt, &comtrans.ComtranCategory, &comtrans.ComtranBrand,
+		&comtrans.ComtranModel, &comtrans.EngineType, &comtrans.City, &comtrans.Color, &comtrans.MyComtrans,
+		&comtrans.Images, &comtrans.Videos)
+
+	return comtrans, err
+}
+
+func (r *ThirdPartyRepository) CreateDealerComtransImages(ctx *fasthttp.RequestCtx, comtransID int, images []string) error {
+	if len(images) == 0 {
+		return nil
+	}
+
+	q := `
+		INSERT INTO comtran_images (comtran_id, image) VALUES ($1, $2)
+	`
+
+	for i := range images {
+		_, err := r.db.Exec(ctx, q, comtransID, images[i])
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *ThirdPartyRepository) CreateDealerComtransVideos(ctx *fasthttp.RequestCtx, comtransID int, video string) error {
+	q := `
+		INSERT INTO comtran_videos (comtran_id, video) VALUES ($1, $2)
+	`
+
+	_, err := r.db.Exec(ctx, q, comtransID, video)
+	return err
+}
+
+func (r *ThirdPartyRepository) DealerDontSellComtrans(ctx *fasthttp.RequestCtx, comtransID, dealerID *int) error {
+	q := `
+		update comtrans 
+			set status = 2 -- 2 is not sale
+		where id = $1 and status = 3 -- 3 is on sale
+			and user_id = $2
+	`
+
+	_, err := r.db.Exec(ctx, q, *comtransID, *dealerID)
+	return err
+}
+
+func (r *ThirdPartyRepository) DealerSellComtrans(ctx *fasthttp.RequestCtx, comtransID, dealerID *int) error {
+	q := `
+		update comtrans 
+			set status = 3 -- 3 is on sale
+		where id = $1 and status = 2 -- 2 is not sale 
+			and user_id = $2
+	`
+	_, err := r.db.Exec(ctx, q, *comtransID, *dealerID)
+	return err
+}
+
+func (r *ThirdPartyRepository) DeleteDealerComtransImage(ctx *fasthttp.RequestCtx, comtransID int, imagePath string) error {
+	q := `DELETE FROM comtran_images WHERE comtran_id = $1 AND image = $2`
+	_, err := r.db.Exec(ctx, q, comtransID, imagePath)
+	return err
+}
+
+func (r *ThirdPartyRepository) DeleteDealerComtransVideo(ctx *fasthttp.RequestCtx, comtransID int, videoPath string) error {
+	q := `DELETE FROM comtran_videos WHERE comtran_id = $1 AND video = $2`
+	_, err := r.db.Exec(ctx, q, comtransID, videoPath)
+	return err
+}
+
+func (r *ThirdPartyRepository) DeleteDealerComtrans(ctx *fasthttp.RequestCtx, id int) error {
+	q := `
+		delete from comtrans where id = $1
 	`
 	_, err := r.db.Exec(ctx, q, id)
 	return err

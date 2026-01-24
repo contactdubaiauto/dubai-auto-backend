@@ -423,3 +423,7 @@ alter table comtrans add column "moderation_status" int not null default 1; -- 1
 alter table vehicles alter column status set default 3;
 alter table motorcycles alter column status set default 3;
 alter table comtrans alter column status set default 3;
+
+-- 25.01.2026
+alter table images add column "id" serial primary key;
+alter table videos add column "id" serial primary key;

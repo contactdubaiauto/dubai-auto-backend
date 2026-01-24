@@ -296,6 +296,268 @@ func (s *ThirdPartyService) DeleteDealerCar(ctx *fasthttp.RequestCtx, id int) mo
 	return model.Response{Data: model.Success{Message: "Car deleted successfully"}}
 }
 
+// Dealer Motorcycle service methods
+
+func (s *ThirdPartyService) CreateDealerMotorcycle(ctx *fasthttp.RequestCtx, motorcycle *model.CreateMotorcycleRequest, dealerID int) model.Response {
+	id, err := s.repo.CreateDealerMotorcycle(ctx, motorcycle, dealerID)
+
+	if err != nil {
+		return model.Response{
+			Status: 400,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: model.SuccessWithId{Id: id, Message: "Motorcycle created successfully"},
+	}
+}
+
+func (s *ThirdPartyService) UpdateDealerMotorcycle(ctx *fasthttp.RequestCtx, motorcycle *model.UpdateMotorcycleRequest, dealerID int) model.Response {
+	err := s.repo.UpdateDealerMotorcycle(ctx, motorcycle, dealerID)
+
+	if err != nil {
+		return model.Response{
+			Status: 400,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: model.Success{Message: "Motorcycle updated successfully"},
+	}
+}
+
+func (s *ThirdPartyService) GetEditDealerMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, dealerID int, nameColumn string) model.Response {
+	motorcycle, err := s.repo.GetEditDealerMotorcycleByID(ctx, motorcycleID, dealerID, nameColumn)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusNotFound}
+	}
+
+	return model.Response{Data: motorcycle}
+}
+
+func (s *ThirdPartyService) CreateDealerMotorcycleImages(ctx *fasthttp.RequestCtx, motorcycleID int, images []string) model.Response {
+	err := s.repo.CreateDealerMotorcycleImages(ctx, motorcycleID, images)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: model.Success{Message: "Dealer motorcycle images created successfully"},
+	}
+}
+
+func (s *ThirdPartyService) CreateDealerMotorcycleVideos(ctx *fasthttp.RequestCtx, motorcycleID int, video string) model.Response {
+	err := s.repo.CreateDealerMotorcycleVideos(ctx, motorcycleID, video)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: model.Success{Message: "Dealer motorcycle videos created successfully"},
+	}
+}
+
+func (s *ThirdPartyService) DealerDontSellMotorcycle(ctx *fasthttp.RequestCtx, motorcycleID, dealerID *int) model.Response {
+	err := s.repo.DealerDontSellMotorcycle(ctx, motorcycleID, dealerID)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{Data: model.Success{Message: "successfully updated status"}}
+}
+
+func (s *ThirdPartyService) DealerSellMotorcycle(ctx *fasthttp.RequestCtx, motorcycleID, dealerID *int) model.Response {
+	err := s.repo.DealerSellMotorcycle(ctx, motorcycleID, dealerID)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{Data: model.Success{Message: "successfully updated status"}}
+}
+
+func (s *ThirdPartyService) DeleteDealerMotorcycleImage(ctx *fasthttp.RequestCtx, motorcycleID int, imagePath string) model.Response {
+	err := s.repo.DeleteDealerMotorcycleImage(ctx, motorcycleID, imagePath)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Dealer motorcycle image deleted successfully"}}
+}
+
+func (s *ThirdPartyService) DeleteDealerMotorcycleVideo(ctx *fasthttp.RequestCtx, motorcycleID int, videoPath string) model.Response {
+	err := s.repo.DeleteDealerMotorcycleVideo(ctx, motorcycleID, videoPath)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Dealer motorcycle video deleted successfully"}}
+}
+
+func (s *ThirdPartyService) DeleteDealerMotorcycle(ctx *fasthttp.RequestCtx, id int) model.Response {
+	err := s.repo.DeleteDealerMotorcycle(ctx, id)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{Data: model.Success{Message: "Motorcycle deleted successfully"}}
+}
+
+// Dealer Comtrans service methods
+
+func (s *ThirdPartyService) CreateDealerComtrans(ctx *fasthttp.RequestCtx, comtrans *model.CreateComtransRequest, dealerID int) model.Response {
+	id, err := s.repo.CreateDealerComtrans(ctx, comtrans, dealerID)
+
+	if err != nil {
+		return model.Response{
+			Status: 400,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: model.SuccessWithId{Id: id, Message: "Commercial transport created successfully"},
+	}
+}
+
+func (s *ThirdPartyService) UpdateDealerComtrans(ctx *fasthttp.RequestCtx, comtrans *model.UpdateComtransRequest, dealerID int) model.Response {
+	err := s.repo.UpdateDealerComtrans(ctx, comtrans, dealerID)
+
+	if err != nil {
+		return model.Response{
+			Status: 400,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: model.Success{Message: "Commercial transport updated successfully"},
+	}
+}
+
+func (s *ThirdPartyService) GetEditDealerComtransByID(ctx *fasthttp.RequestCtx, comtransID, dealerID int, nameColumn string) model.Response {
+	comtrans, err := s.repo.GetEditDealerComtransByID(ctx, comtransID, dealerID, nameColumn)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusNotFound}
+	}
+
+	return model.Response{Data: comtrans}
+}
+
+func (s *ThirdPartyService) CreateDealerComtransImages(ctx *fasthttp.RequestCtx, comtransID int, images []string) model.Response {
+	err := s.repo.CreateDealerComtransImages(ctx, comtransID, images)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: model.Success{Message: "Dealer comtrans images created successfully"},
+	}
+}
+
+func (s *ThirdPartyService) CreateDealerComtransVideos(ctx *fasthttp.RequestCtx, comtransID int, video string) model.Response {
+	err := s.repo.CreateDealerComtransVideos(ctx, comtransID, video)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{
+		Data: model.Success{Message: "Dealer comtrans videos created successfully"},
+	}
+}
+
+func (s *ThirdPartyService) DealerDontSellComtrans(ctx *fasthttp.RequestCtx, comtransID, dealerID *int) model.Response {
+	err := s.repo.DealerDontSellComtrans(ctx, comtransID, dealerID)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{Data: model.Success{Message: "successfully updated status"}}
+}
+
+func (s *ThirdPartyService) DealerSellComtrans(ctx *fasthttp.RequestCtx, comtransID, dealerID *int) model.Response {
+	err := s.repo.DealerSellComtrans(ctx, comtransID, dealerID)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{Data: model.Success{Message: "successfully updated status"}}
+}
+
+func (s *ThirdPartyService) DeleteDealerComtransImage(ctx *fasthttp.RequestCtx, comtransID int, imagePath string) model.Response {
+	err := s.repo.DeleteDealerComtransImage(ctx, comtransID, imagePath)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Dealer comtrans image deleted successfully"}}
+}
+
+func (s *ThirdPartyService) DeleteDealerComtransVideo(ctx *fasthttp.RequestCtx, comtransID int, videoPath string) model.Response {
+	err := s.repo.DeleteDealerComtransVideo(ctx, comtransID, videoPath)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+
+	return model.Response{Data: model.Success{Message: "Dealer comtrans video deleted successfully"}}
+}
+
+func (s *ThirdPartyService) DeleteDealerComtrans(ctx *fasthttp.RequestCtx, id int) model.Response {
+	err := s.repo.DeleteDealerComtrans(ctx, id)
+
+	if err != nil {
+		return model.Response{
+			Status: 500,
+			Error:  err,
+		}
+	}
+
+	return model.Response{Data: model.Success{Message: "Commercial transport deleted successfully"}}
+}
+
 func (s *ThirdPartyService) GetLogistDestinations(ctx *fasthttp.RequestCtx, nameColumn string) model.Response {
 	destinations, err := s.repo.GetLogistDestinations(ctx, nameColumn)
 

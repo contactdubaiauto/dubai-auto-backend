@@ -230,8 +230,8 @@ type EditCarGeneration struct {
 type GetEditCarsResponse struct {
 	CreatedAt    *time.Time         `json:"created_at"`
 	UpdatedAt    *time.Time         `json:"updated_at"`
-	Images       *[]string          `json:"images"`
-	Videos       *[]string          `json:"videos"`
+	Images       *[]ImageObject     `json:"images"`
+	Videos       *[]VideoObject     `json:"videos"`
 	PhoneNumbers *[]string          `json:"phone_numbers"`
 	Brand        *Brand             `json:"brand"`
 	Region       *Region            `json:"region"`
