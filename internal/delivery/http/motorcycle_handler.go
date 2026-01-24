@@ -29,11 +29,10 @@ func NewMotorcycleHandler(service *service.MotorcycleService, validator *auth.Va
 // @Tags motorcycles
 // @Accept json
 // @Produce json
-// @Security 	 BearerAuth
 // @Param   Accept-Language  header  string  false  "Language"
 // @Success 200 {array} model.GetMotorcycleCategoriesResponse
 // @Failure 500 {object} model.ResultMessage
-// @Router /motorcycles/categories [get]
+// @Router /api/v1/users/motorcycles/categories [get]
 func (h *MotorcycleHandler) GetMotorcycleCategories(c *fiber.Ctx) error {
 
 	ctx := c.Context()
@@ -48,34 +47,15 @@ func (h *MotorcycleHandler) GetMotorcycleCategories(c *fiber.Ctx) error {
 // @Tags motorcycles
 // @Accept json
 // @Produce json
-// @Security 	 BearerAuth
 // @Param   Accept-Language  header  string  false  "Language"
 // @Success 200 {array} model.GetNumberOfCyclesResponse
 // @Failure 500 {object} model.ResultMessage
-// @Router /motorcycles/number-of-cycles [get]
+// @Router /api/v1/users/motorcycles/number-of-cycles [get]
 func (h *MotorcycleHandler) GetNumberOfCycles(c *fiber.Ctx) error {
 	ctx := c.Context()
 	lang := c.Locals("lang").(string)
 	return utils.FiberResponse(c, h.service.GetNumberOfCycles(ctx, lang))
 }
-
-// // GetMotorcycles godoc
-// // @Summary Get motorcycles
-// // @Description Get motorcycles
-// // @Tags motorcycles
-// // @Accept json
-// // @Produce json
-// // @Security BearerAuth
-// // @Param   Accept-Language  header  string  false  "Language"
-// // @Success 200 {array} model.GetMotorcyclesResponse
-// // @Failure 500 {object} model.ResultMessage
-// // @Router /motorcycles [get]
-// func (h *MotorcycleHandler) GetMotorcycles(c *fiber.Ctx) error {
-// 	ctx := c.Context()
-// 	lang := c.Locals("lang").(string)
-// 	return utils.FiberResponse(c, h.service.GetMotorcycles(ctx, lang))
-
-// }
 
 // CreateMotorcycle godoc
 // @Summary Create motorcycle
@@ -122,7 +102,7 @@ func (h *MotorcycleHandler) CreateMotorcycle(c *fiber.Ctx) error {
 // @Failure	 	 403  	 {object}  auth.ErrorResponse
 // @Failure      404     {object}  model.ResultMessage
 // @Failure      500     {object}  model.ResultMessage
-// @Router       /users/motorcycles/{motorcycle_id}/images [post]
+// @Router       /api/v1/users/motorcycles/{motorcycle_id}/images [post]
 func (h *MotorcycleHandler) CreateMotorcycleImages(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
@@ -185,7 +165,7 @@ func (h *MotorcycleHandler) CreateMotorcycleImages(c *fiber.Ctx) error {
 // @Failure	 	 403  	 {object}  auth.ErrorResponse
 // @Failure      404     {object}  model.ResultMessage
 // @Failure      500     {object}  model.ResultMessage
-// @Router       /users/motorcycles/{motorcycle_id}/videos [post]
+// @Router       /api/v1/users/motorcycles/{motorcycle_id}/videos [post]
 func (h *MotorcycleHandler) CreateMotorcycleVideos(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
@@ -233,49 +213,6 @@ func (h *MotorcycleHandler) CreateMotorcycleVideos(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
-// DeleteMotorcycleImage godoc
-// @Summary      Delete motorcycle image
-// @Description  Deletes an image from a motorcycle
-// @Tags         motorcycles
-// @Security     BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        motorcycle_id      path      int     true   "Motorcycle ID"
-// @Param        image_id      path      int     true   "Image ID"
-// @Success      200     {object}  model.Success
-// @Failure      400     {object}  model.ResultMessage
-// @Failure      401     {object}  auth.ErrorResponse
-// @Failure	 	 403  	 {object}  auth.ErrorResponse
-// @Failure      404     {object}  model.ResultMessage
-// @Failure      500     {object}  model.ResultMessage
-// @Router       /users/motorcycles/{motorcycle_id}/images/{image_id} [delete]
-func (h *MotorcycleHandler) DeleteMotorcycleImage(c *fiber.Ctx) error {
-	ctx := c.Context()
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("invalid motorcycle ID"),
-		})
-	}
-
-	imageIDStr := c.Params("image_id")
-	imageID, err := strconv.Atoi(imageIDStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("invalid image ID"),
-		})
-	}
-
-	data := h.service.DeleteMotorcycleImage(ctx, id, imageID)
-
-	return utils.FiberResponse(c, data)
-}
-
 // DeleteMotorcycleVideo godoc
 // @Summary      Delete motorcycle video
 // @Description  Deletes a video from a motorcycle
@@ -291,7 +228,7 @@ func (h *MotorcycleHandler) DeleteMotorcycleImage(c *fiber.Ctx) error {
 // @Failure	 	 403  	 {object}  auth.ErrorResponse
 // @Failure      404     {object}  model.ResultMessage
 // @Failure      500     {object}  model.ResultMessage
-// @Router       /users/motorcycles/{motorcycle_id}/videos/{video_id} [delete]
+// @Router       /api/v1/users/motorcycles/{motorcycle_id}/videos/{video_id} [delete]
 func (h *MotorcycleHandler) DeleteMotorcycleVideo(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
@@ -334,7 +271,7 @@ func (h *MotorcycleHandler) DeleteMotorcycleVideo(c *fiber.Ctx) error {
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /users/motorcycles/{id} [get]
+// @Router       /api/v1/users/motorcycles/{id} [get]
 func (h *MotorcycleHandler) GetMotorcycleByID(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
@@ -368,7 +305,7 @@ func (h *MotorcycleHandler) GetMotorcycleByID(c *fiber.Ctx) error {
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      404  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /users/motorcycles/{id}/edit [get]
+// @Router       /api/v1/users/motorcycles/{id}/edit [get]
 func (h *MotorcycleHandler) GetEditMotorcycleByID(c *fiber.Ctx) error {
 	ctx := c.Context()
 	idStr := c.Params("id")
@@ -387,144 +324,17 @@ func (h *MotorcycleHandler) GetEditMotorcycleByID(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
-// BuyMotorcycle godoc
-// @Summary      Buy motorcycle
-// @Description  Returns a status response message
-// @Tags         motorcycles
-// @Security     BearerAuth
-// @Produce      json
-// @Param        id   path      int  true  "Motorcycle ID"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      404  {object}  model.ResultMessage
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /users/motorcycles/{id}/buy [post]
-func (h *MotorcycleHandler) BuyMotorcycle(c *fiber.Ctx) error {
-	ctx := c.Context()
-	idStr := c.Params("id")
-	userID := c.Locals("id").(int)
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("motorcycle id must be integer"),
-		})
-	}
-
-	data := h.service.BuyMotorcycle(ctx, id, userID)
-	return utils.FiberResponse(c, data)
-}
-
-// DontSellMotorcycle godoc
-// @Summary      Set motorcycle as not for sale
-// @Description  Updates motorcycle status to not for sale
-// @Tags         motorcycles
-// @Security     BearerAuth
-// @Produce      json
-// @Param        id   path      int  true  "Motorcycle ID"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      404  {object}  model.ResultMessage
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /users/motorcycles/{id}/dont-sell [post]
-func (h *MotorcycleHandler) DontSellMotorcycle(c *fiber.Ctx) error {
-	ctx := c.Context()
-	idStr := c.Params("id")
-	userID := c.Locals("id").(int)
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("motorcycle id must be integer"),
-		})
-	}
-
-	data := h.service.DontSellMotorcycle(ctx, id, userID)
-	return utils.FiberResponse(c, data)
-}
-
-// SellMotorcycle godoc
-// @Summary      Set motorcycle for sale
-// @Description  Updates motorcycle status to for sale
-// @Tags         motorcycles
-// @Security     BearerAuth
-// @Produce      json
-// @Param        id   path      int  true  "Motorcycle ID"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      404  {object}  model.ResultMessage
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /users/motorcycles/{id}/sell [post]
-func (h *MotorcycleHandler) SellMotorcycle(c *fiber.Ctx) error {
-	ctx := c.Context()
-	idStr := c.Params("id")
-	userID := c.Locals("id").(int)
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("motorcycle id must be integer"),
-		})
-	}
-
-	data := h.service.SellMotorcycle(ctx, id, userID)
-	return utils.FiberResponse(c, data)
-}
-
-// DeleteMotorcycle godoc
-// @Summary      Delete motorcycle
-// @Description  Deletes a motorcycle and its associated files
-// @Tags         motorcycles
-// @Security     BearerAuth
-// @Produce      json
-// @Param        id   path      int  true  "Motorcycle ID"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      404  {object}  model.ResultMessage
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /users/motorcycles/{id} [delete]
-func (h *MotorcycleHandler) DeleteMotorcycle(c *fiber.Ctx) error {
-	ctx := c.Context()
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("motorcycle id must be integer"),
-		})
-	}
-
-	// Create directory path for file cleanup
-	dir := config.ENV.STATIC_PATH + "motorcycles/" + idStr
-
-	data := h.service.DeleteMotorcycle(ctx, id, dir)
-	return utils.FiberResponse(c, data)
-}
-
 // GetMotorcycleBrands godoc
 // @Summary      Get motorcycle brands
 // @Description  Returns a list of all motorcycle brands
 // @Tags         motorcycles
-// @Security     BearerAuth
 // @Produce      json
 // @Success      200  {array}  model.GetMotorcycleBrandsResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /users/motorcycles/brands [get]
+// @Router       /api/v1/users/motorcycles/brands [get]
 func (h *MotorcycleHandler) GetMotorcycleBrands(c *fiber.Ctx) error {
 	ctx := c.Context()
 	lang := c.Locals("lang").(string)
@@ -535,7 +345,6 @@ func (h *MotorcycleHandler) GetMotorcycleBrands(c *fiber.Ctx) error {
 // @Summary      Get motorcycle models by brand ID
 // @Description  Returns a list of all motorcycle models by brand ID
 // @Tags         motorcycles
-// @Security     BearerAuth
 // @Produce      json
 // @Param        id   path      int  true  "Motorcycle brand ID"
 // @Success      200  {array}  model.GetMotorcycleModelsResponse
@@ -543,7 +352,7 @@ func (h *MotorcycleHandler) GetMotorcycleBrands(c *fiber.Ctx) error {
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  auth.ErrorResponse
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /users/motorcycles/brands/{id}/models [get]
+// @Router       /api/v1/users/motorcycles/brands/{id}/models [get]
 func (h *MotorcycleHandler) GetMotorcycleModelsByBrandID(c *fiber.Ctx) error {
 	ctx := c.Context()
 	brandIDStr := c.Params("id")
@@ -556,14 +365,13 @@ func (h *MotorcycleHandler) GetMotorcycleModelsByBrandID(c *fiber.Ctx) error {
 // @Summary      Get engines
 // @Description  Returns a list of all engines
 // @Tags         motorcycles
-// @Security     BearerAuth
 // @Produce      json
 // @Success      200  {array}  model.GetMotorcycleModelsResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure      403  {object}  model.ResultMessage
 // @Failure      500  {object}  model.ResultMessage
-// @Router       /users/motorcycles/engines [get]
+// @Router       /api/v1/users/motorcycles/engines [get]
 func (h *MotorcycleHandler) GetMotoEngines(c *fiber.Ctx) error {
 	ctx := c.Context()
 	lang := c.Locals("lang").(string)

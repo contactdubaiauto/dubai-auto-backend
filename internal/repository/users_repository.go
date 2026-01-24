@@ -262,6 +262,7 @@ func (r *UserRepository) GetProfile(ctx *fasthttp.RequestCtx, userID int, nameCo
 			ps.registered_by,
 			ps.contacts,
 			ps.address,
+			$2 || ps.avatar,
 			json_build_object(
 				'id', cs.id,
 				'name', cs.` + nameColumn + `
@@ -274,8 +275,9 @@ func (r *UserRepository) GetProfile(ctx *fasthttp.RequestCtx, userID int, nameCo
 	`
 	var pf model.GetProfileResponse
 	var contactsJSON []byte
-	err := r.db.QueryRow(ctx, q, userID).Scan(&pf.ID, &pf.Email, &pf.Phone,
-		&pf.DrivingExperience, &pf.Notification, &pf.Username, &pf.Google, &pf.Birthday, &pf.AboutMe, &pf.RegisteredBy, &contactsJSON, &pf.Address, &pf.City)
+	err := r.db.QueryRow(ctx, q, userID, r.config.IMAGE_BASE_URL).Scan(&pf.ID, &pf.Email, &pf.Phone,
+		&pf.DrivingExperience, &pf.Notification, &pf.Username, &pf.Google,
+		&pf.Birthday, &pf.AboutMe, &pf.RegisteredBy, &contactsJSON, &pf.Address, &pf.Avatar, &pf.City)
 
 	if err == nil && len(contactsJSON) > 0 {
 		if err := json.Unmarshal(contactsJSON, &pf.Contacts); err != nil {
@@ -353,6 +355,18 @@ func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, pro
 
 	_, err = r.db.Exec(ctx, q, args...)
 
+	return err
+}
+
+func (r *UserRepository) SetProfileAvatar(ctx *fasthttp.RequestCtx, userID int, path string) error {
+	q := `UPDATE profiles SET avatar = $1 WHERE user_id = $2`
+	_, err := r.db.Exec(ctx, q, path, userID)
+	return err
+}
+
+func (r *UserRepository) DeleteProfileAvatar(ctx *fasthttp.RequestCtx, userID int) error {
+	q := `UPDATE profiles SET avatar = NULL WHERE user_id = $1`
+	_, err := r.db.Exec(ctx, q, userID)
 	return err
 }
 
@@ -932,12 +946,17 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int, nameColum
 			CASE
 				WHEN vs.user_id = $1 THEN TRUE
 				ELSE FALSE
-			END AS my_car
+			END AS my_car,
+			CASE
+				WHEN u.role_id = 2 THEN u.username
+				ELSE NULL
+			END AS owner_name
 		from vehicles vs
 		left join brands bs on vs.brand_id = bs.id
 		left join models ms on vs.model_id = ms.id
 		left join generation_modifications gms on gms.id = vs.modification_id
 		left join fuel_types fts on gms.fuel_type_id = fts.id
+		left join users u on u.id = vs.user_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -964,9 +983,8 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int, nameColum
 
 		if err := rows.Scan(
 			&car.ID, &car.Type, &car.Brand, &car.Model, &car.Year, &car.Price,
-			&car.CreatedAt, &car.Images,
-			&car.New, &car.Status, &car.TradeIn, &car.Crash,
-			&car.ViewCount, &car.MyCar,
+			&car.CreatedAt, &car.Images, &car.New, &car.Status, &car.TradeIn, &car.Crash,
+			&car.ViewCount, &car.MyCar, &car.OwnerName,
 		); err != nil {
 			return home, err
 		}
@@ -1165,12 +1183,18 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 			vs.crash,
 			vs.view_count,
 			CASE
-				WHEN vs.user_id = $1 THEN TRUE
-				ELSE FALSE
-			END AS my_car
+			WHEN vs.user_id = $1 THEN TRUE
+			ELSE FALSE
+			END AS my_car,
+			vs.odometer,
+			CASE
+				WHEN u.role_id = 2 THEN u.username
+				ELSE NULL
+			END AS owner_name
 		from vehicles vs
 		left join brands bs on vs.brand_id = bs.id
 		left join models ms on vs.model_id = ms.id
+		left join users u on u.id = vs.user_id
 		%s
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
@@ -1199,9 +1223,8 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 		var car model.GetCarsResponse
 		if err := rows.Scan(
 			&car.ID, &car.Type, &car.Brand, &car.Model, &car.Year, &car.Price,
-			&car.CreatedAt, &car.Images,
-			&car.New, &car.Status, &car.TradeIn, &car.Crash,
-			&car.ViewCount, &car.MyCar,
+			&car.CreatedAt, &car.Images, &car.New, &car.Status, &car.TradeIn, &car.Crash,
+			&car.ViewCount, &car.MyCar, &car.Odometer, &car.OwnerName,
 		); err != nil {
 			return cars, err
 		}
@@ -1427,18 +1450,18 @@ func (r *UserRepository) GetEditCarByID(ctx *fasthttp.RequestCtx, carID, userID 
 		left join cities cs on vs.city_id = cs.id
 		left join models ms on vs.model_id = ms.id
 		LEFT JOIN LATERAL (
-			SELECT json_agg(img.image) AS images
+			SELECT json_agg(json_build_object('image', img.image, 'id', img.id)) AS images
 			FROM (
-				SELECT '` + r.config.IMAGE_BASE_URL + `' || image as image
+				SELECT '` + r.config.IMAGE_BASE_URL + `' || image as image, id
 				FROM images
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
 			) img
 		) images ON true
 		LEFT JOIN LATERAL (
-			SELECT json_agg(v.video) AS videos
+			SELECT json_agg(json_build_object('video', v.video, 'id', v.id)) AS videos
 			FROM (
-				SELECT '` + r.config.IMAGE_BASE_URL + `' || video as video
+				SELECT '` + r.config.IMAGE_BASE_URL + `' || video as video, id
 				FROM videos
 				WHERE vehicle_id = vs.id
 				ORDER BY created_at DESC
@@ -1583,64 +1606,151 @@ func (r *UserRepository) RemoveLike(ctx *fasthttp.RequestCtx, itemID, userID int
 	return err
 }
 
-func (r *UserRepository) Likes(ctx *fasthttp.RequestCtx, userID *int, nameColumn string) ([]model.GetCarsResponse, error) {
-	cars := make([]model.GetCarsResponse, 0)
+func (r *UserRepository) Likes(ctx *fasthttp.RequestCtx, userID *int, nameColumn string) ([]model.GetMyCarsResponse, error) {
+	statusQ := "status = $3 or status = 1"
+
+	cars := make([]model.GetMyCarsResponse, 0)
 	q := `
+		with vs as (        
+			select 
+				vs.id,
+				'car' as type,
+				bs.` + nameColumn + ` as brand,
+				ms.` + nameColumn + ` as model,
+				vs.year,
+				vs.price,
+				vs.status,
+				vs.created_at,
+				images.images,
+				vs.view_count,
+				true as my_car,
+				vs.crash
+			from vehicles vs
+			left join brands bs on vs.brand_id = bs.id
+			left join models ms on vs.model_id = ms.id
+			LEFT JOIN LATERAL (
+				SELECT json_agg(img.image) AS images
+				FROM (
+					SELECT $2 || image as image
+					FROM images
+					WHERE vehicle_id = vs.id
+					ORDER BY created_at DESC
+				) img
+			) images ON true
+			where vs.id = any (select vehicle_id from user_likes where user_id = $1) and (` + statusQ + `)
+			order by vs.id desc
+		),
+		cms as (
+			select
+				cm.id,
+				'comtran' as type,
+				cbs.` + nameColumn + ` as brand,
+				cms.` + nameColumn + ` as model,
+				cm.year,
+				cm.price,
+				cm.status,
+				cm.created_at,
+				images.images,
+				cm.view_count,
+				true as my_car,
+				cm.crash
+			from comtrans cm
+			left join com_brands cbs on cbs.id = cm.comtran_brand_id
+			left join com_models cms on cms.id = cm.comtran_model_id
+			LEFT JOIN LATERAL (
+				SELECT json_agg(img.image) AS images
+				FROM (
+					SELECT $2 || image as image
+					FROM comtran_images
+					WHERE comtran_id = cm.id
+					ORDER BY created_at DESC
+				) img
+			) images ON true
+			where cm.id = any (select comtran_id from user_comtran_likes where user_id = $1) and (` + statusQ + `)
+		),
+		mts as (
+			select
+				mt.id,
+				'motorcycle' as type,
+				mbs.` + nameColumn + ` as brand,
+				mms.` + nameColumn + ` as model,
+				mt.year,
+				mt.price,
+				mt.status,
+				mt.created_at,
+				mt.view_count,
+				images.images,
+				true as my_car,
+				mt.crash
+			from motorcycles mt
+			left join moto_brands mbs on mbs.id = mt.moto_brand_id
+			left join moto_models mms on mms.id = mt.moto_model_id
+			LEFT JOIN LATERAL (
+				SELECT json_agg(img.image) AS images
+				FROM (
+					SELECT $2 || image as image
+					FROM moto_images
+					WHERE moto_id = mt.id
+					ORDER BY created_at DESC
+				) img
+			) images ON true
+			where mt.id = any (select moto_id from user_moto_likes where user_id = $1) and  (` + statusQ + `)
+		)
+		-- Union all three CTEs
 		select 
-			vs.id,
-			'car' as type,
-			bs.` + nameColumn + ` as brand,
-			ms.` + nameColumn + ` as model,
-			vs.year,
-			vs.price,
-			vs.created_at,
-			images.images,
-			vs.new,
-			vs.status,
-			vs.trade_in,
-			vs.crash,
-			vs.view_count,
-			CASE
-				WHEN vs.user_id = $1 THEN TRUE
-				ELSE FALSE
-			END AS my_car
-		from vehicles vs
-		left join brands bs on vs.brand_id = bs.id
-		left join models ms on vs.model_id = ms.id
-		inner join user_likes ul on ul.vehicle_id = vs.id AND ul.user_id = $1
-		LEFT JOIN LATERAL (
-			SELECT json_agg(img.image) AS images
-			FROM (
-				SELECT $2 || image as image
-				FROM images
-				WHERE vehicle_id = vs.id
-				ORDER BY created_at DESC
-			) img
-		) images ON true
-		where vs.status = 3
-		order by vs.id desc
+			id, type, brand, model, 
+			year, price,
+			status, created_at, 
+			view_count, images, my_car, 
+			crash 
+		from vs
+		union all
+		select 
+			id, type, brand, model, 
+			year, price,
+			status, created_at, 
+			view_count, images, my_car, 
+			crash 
+		from cms
+		union all
+		select 
+			id, type, brand, model, 
+			year, price,
+			status, created_at, 
+			view_count, images, my_car, 
+			crash 
+		from mts
+		order by created_at desc;
+
 	`
-	rows, err := r.db.Query(ctx, q, *userID, r.config.IMAGE_BASE_URL)
+	rows, err := r.db.Query(ctx, q, userID, r.config.IMAGE_BASE_URL, 3)
 
 	if err != nil {
 		return cars, err
 	}
-
 	defer rows.Close()
 
 	for rows.Next() {
-		var car model.GetCarsResponse
-
+		var car model.GetMyCarsResponse
 		if err := rows.Scan(
-			&car.ID, &car.Type, &car.Brand, &car.Model, &car.Year, &car.Price,
-			&car.CreatedAt, &car.Images,
-			&car.New, &car.Status, &car.TradeIn, &car.Crash,
-			&car.ViewCount, &car.MyCar,
+			&car.ID,
+			&car.Type,
+			&car.Brand,
+			&car.Model,
+			&car.Year,
+			&car.Price,
+			&car.Status,
+			&car.CreatedAt,
+			&car.ViewCount,
+			&car.Images,
+			&car.MyCar,
+			&car.Crash,
 		); err != nil {
 			return cars, err
 		}
 		cars = append(cars, car)
 	}
+
 	return cars, err
 }
 
@@ -1730,6 +1840,8 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 
 	q := `
 		select
+			users.id,
+			users.username,
 			about_me,
 			contacts,
 			address,
@@ -1772,6 +1884,8 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 	var profile model.ThirdPartyGetProfileRes
 	var contactsJSON []byte
 	err := r.db.QueryRow(ctx, q, userID, r.config.IMAGE_BASE_URL).Scan(
+		&profile.UserID,
+		&profile.Username,
 		&profile.AboutUs, &contactsJSON,
 		&profile.Address,
 		&profile.Coordinates, &profile.Avatar,
@@ -1902,6 +2016,66 @@ func (r *UserRepository) GetReports(ctx *fasthttp.RequestCtx, userID int) ([]mod
 			r.created_at,
 			r.item_type,
 			r.item_id,
+			CASE
+				WHEN r.item_type = 'car' THEN (
+					SELECT json_build_object(
+						'id', v.id,
+						'brand', b.name,
+						'model', m.name,
+						'price', v.price,
+						'images', images.images
+					)
+					FROM vehicles v
+					LEFT JOIN brands b ON v.brand_id = b.id
+					LEFT JOIN models m ON v.model_id = m.id
+					LEFT JOIN LATERAL (
+						SELECT json_agg($1 || image) AS images
+						FROM (
+							SELECT image FROM images WHERE vehicle_id = v.id ORDER BY created_at DESC
+						) img
+					) images ON true
+					WHERE v.id = r.item_id
+				)
+				WHEN r.item_type = 'moto' THEN (
+					SELECT json_build_object(
+						'id', m.id,
+						'brand', mb.name,
+						'model', mm.name,
+						'price', m.price,
+						'images', images.images
+					)
+					FROM motorcycles m
+					LEFT JOIN moto_brands mb ON m.brand_id = mb.id
+					LEFT JOIN moto_models mm ON m.model_id = mm.id
+					LEFT JOIN LATERAL (
+						SELECT json_agg($1 || image) AS images
+						FROM (
+							SELECT image FROM moto_images WHERE moto_id = m.id ORDER BY created_at DESC
+						) img
+					) images ON true
+					WHERE m.id = r.item_id
+				)
+				WHEN r.item_type = 'comtran' THEN (
+					SELECT json_build_object(
+						'id', c.id,
+						'brand', cb.name,
+						'model', cm.name,
+						'price', c.price,
+						'images', images.images
+					)
+					FROM comtrans c
+					LEFT JOIN com_brands cb ON c.brand_id = cb.id
+					LEFT JOIN com_models cm ON c.model_id = cm.id
+					LEFT JOIN LATERAL (
+						SELECT json_agg($1 || image) AS images
+						FROM (
+							SELECT image FROM comtran_images WHERE comtran_id = c.id ORDER BY created_at DESC
+						) img
+					) images ON true
+					WHERE c.id = r.item_id
+				)
+				ELSE NULL
+			END as item,
 			json_build_object(
 				'id', reporter_user.id,
 				'username', reporter_profile.username,
@@ -1940,7 +2114,7 @@ func (r *UserRepository) GetReports(ctx *fasthttp.RequestCtx, userID int) ([]mod
 		var report model.GetReportsResponse
 		if err := rows.Scan(&report.ID, &report.ReportedUserID, &report.ReportType,
 			&report.ReportDescription, &report.ReportStatus, &report.CreatedAt,
-			&report.ItemType, &report.ItemID, &report.Reporter, &report.ReportedUser); err != nil {
+			&report.ItemType, &report.ItemID, &report.Item, &report.Reporter, &report.ReportedUser); err != nil {
 			return reports, err
 		}
 		reports = append(reports, report)

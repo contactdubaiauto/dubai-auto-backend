@@ -84,7 +84,9 @@ type GetComtransResponse struct {
 	ViewCount *int       `json:"view_count"`
 	New       *bool      `json:"new"`
 	Crash     *bool      `json:"crash"`
-	MyCar     *bool      `json:"my_car"`
+	MyComtran *bool      `json:"my_comtran"`
+	Odometer  int        `json:"odometer"`
+	OwnerName *string    `json:"owner_name"`
 	ID        int        `json:"id"`
 }
 
@@ -93,6 +95,35 @@ type GetComtranResponse struct {
 	CreatedAt       time.Time     `json:"created_at"`
 	Images          []string      `json:"images"`
 	Videos          []string      `json:"videos"`
+	PhoneNumbers    []string      `json:"phone_numbers"`
+	Owner           ComtransOwner `json:"owner"`
+	Crash           *bool         `json:"crash"`
+	VinCode         string        `json:"vin_code"`
+	Wheel           *bool         `json:"wheel"`
+	Description     string        `json:"description"`
+	Status          string        `json:"status"`
+	ComtranCategory string        `json:"comtran_category"`
+	ComtranBrand    string        `json:"comtran_brand"`
+	ComtranModel    string        `json:"comtran_model"`
+	EngineType      string        `json:"engine_type"`
+	City            string        `json:"city"`
+	Color           string        `json:"color"`
+	ID              int           `json:"id"`
+	Engine          int           `json:"engine"`
+	Power           int           `json:"power"`
+	Year            int           `json:"year"`
+	Odometer        int           `json:"odometer"`
+	Owners          int           `json:"owners"`
+	TradeIn         int           `json:"trade_in"`
+	Price           int           `json:"price"`
+	MyComtrans      bool          `json:"my_comtrans"`
+}
+
+type GetEditComtransResponse struct {
+	UpdatedAt       time.Time     `json:"updated_at"`
+	CreatedAt       time.Time     `json:"created_at"`
+	Images          []ImageObject `json:"images"`
+	Videos          []VideoObject `json:"videos"`
 	PhoneNumbers    []string      `json:"phone_numbers"`
 	Owner           ComtransOwner `json:"owner"`
 	Crash           *bool         `json:"crash"`

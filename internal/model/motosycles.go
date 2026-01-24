@@ -25,9 +25,10 @@ type GetNumberOfCyclesResponse struct {
 // }
 
 type GetMotorcycleBrandsResponse struct {
-	Name  string `json:"name"`
-	Image string `json:"image"`
-	ID    int    `json:"id"`
+	Name       string  `json:"name"`
+	ID         int     `json:"id"`
+	Image      *string `json:"image"`
+	ModelCount int     `json:"model_count"`
 }
 
 type GetMotorcycleModelsResponse struct {
@@ -102,11 +103,60 @@ type MotorcycleOwner struct {
 // 	ParameterValueID int    `json:"parameter_value_id"`
 // }
 
-type GetMotorcyclesResponse struct {
+type GetMotorcycleResponse struct {
 	UpdatedAt      time.Time       `json:"updated_at"`
 	CreatedAt      time.Time       `json:"created_at"`
 	Images         []string        `json:"images"`
 	Videos         []string        `json:"videos"`
+	PhoneNumbers   []string        `json:"phone_numbers"`
+	Owner          MotorcycleOwner `json:"owner"`
+	Crash          *bool           `json:"crash"`
+	Wheel          *bool           `json:"wheel"`
+	VinCode        string          `json:"vin_code"`
+	Description    string          `json:"description"`
+	Status         string          `json:"status"`
+	MotoCategory   string          `json:"moto_category"`
+	MotoBrand      string          `json:"moto_brand"`
+	MotoModel      string          `json:"moto_model"`
+	EngineType     string          `json:"engine_type"`
+	City           string          `json:"city"`
+	Color          string          `json:"color"`
+	ID             int             `json:"id"`
+	Engine         int             `json:"engine"`
+	Power          int             `json:"power"`
+	Year           int             `json:"year"`
+	NumberOfCycles string          `json:"number_of_cycles"`
+	Odometer       int             `json:"odometer"`
+	Owners         int             `json:"owners"`
+	Price          int             `json:"price"`
+	TradeIn        int             `json:"trade_in"`
+	MyMoto         bool            `json:"my_moto"`
+}
+
+type GetMotorcyclesResponse struct {
+	Type      string     `json:"type"`
+	CreatedAt *time.Time `json:"created_at"`
+	Images    *[]string  `json:"images"`
+	Model     *string    `json:"model"`
+	Brand     *string    `json:"brand"`
+	Status    *int       `json:"status"`
+	TradeIn   *int       `json:"trade_in"`
+	Year      *int       `json:"year"`
+	Price     *int       `json:"price"`
+	ViewCount *int       `json:"view_count"`
+	New       *bool      `json:"new"`
+	Crash     *bool      `json:"crash"`
+	MyMoto    *bool      `json:"my_moto"`
+	Odometer  *int       `json:"odometer"`
+	OwnerName *string    `json:"owner_name"`
+	ID        int        `json:"id"`
+}
+
+type GetEditMotorcycleResponse struct {
+	UpdatedAt      time.Time       `json:"updated_at"`
+	CreatedAt      time.Time       `json:"created_at"`
+	Images         []ImageObject   `json:"images"`
+	Videos         []VideoObject   `json:"videos"`
 	PhoneNumbers   []string        `json:"phone_numbers"`
 	Owner          MotorcycleOwner `json:"owner"`
 	Crash          *bool           `json:"crash"`

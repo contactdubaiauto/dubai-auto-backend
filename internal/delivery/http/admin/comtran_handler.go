@@ -9,152 +9,77 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// // GetComtrans godoc
-// // @Summary      Get all comtrans
-// // @Description  Returns a list of all comtrans
-// // @Tags         admin-comtrans
-// // @Produce      json
-// // @Security     BearerAuth
-// // @Success      200  {array}  model.AdminComtranListItem
-// // @Failure      400  {object}  model.ResultMessage
-// // @Failure      401  {object}  auth.ErrorResponse
-// // @Failure      403  {object}  auth.ErrorResponse
-// // @Failure      500  {object}  model.ResultMessage
-// // @Router       /api/v1/admin/comtrans [get]
-// // Admin comtrans handlers
-// func (h *AdminHandler) GetComtrans(c *fiber.Ctx) error {
-// 	limit := c.Query("limit")
-// 	lastID := c.Query("last_id")
+// GetComtrans godoc
+// @Summary      Get all comtrans
+// @Description  Returns a list of all comtrans
+// @Tags         admin-comtrans
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}  model.AdminComtranListItem
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/comtrans [get]
+func (h *AdminHandler) GetComtrans(c *fiber.Ctx) error {
+	limit := c.Query("limit")
+	lastID := c.Query("last_id")
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
+	data := h.service.GetComtrans(c.Context(), limitInt, lastIDInt)
+	return utils.FiberResponse(c, data)
+}
 
-// 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
-// 	data := h.service.GetComtrans(c.Context(), limitInt, lastIDInt)
-// 	return utils.FiberResponse(c, data)
-// }
+// GetComtran godoc
+// @Summary      Get a comtran by ID
+// @Description  Returns a comtran by ID
+// @Tags         admin-comtrans
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id  path  string  true  "Comtran ID"
+// @Success      200  {object}  model.GetComtranResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/comtrans/{id} [get]
+func (h *AdminHandler) GetComtran(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("comtran id must be integer"),
+		})
+	}
+	data := h.service.GetComtranByID(c.Context(), id)
+	return utils.FiberResponse(c, data)
+}
 
-// // GetComtran godoc
-// // @Summary      Get a comtran by ID
-// // @Description  Returns a comtran by ID
-// // @Tags         admin-comtrans
-// // @Produce      json
-// // @Security     BearerAuth
-// // @Param        id  path  string  true  "Comtran ID"
-// // @Success      200  {object}  model.GetComtransResponse
-// // @Failure      400  {object}  model.ResultMessage
-// // @Failure      401  {object}  auth.ErrorResponse
-// // @Failure      403  {object}  auth.ErrorResponse
-// // @Failure      500  {object}  model.ResultMessage
-// // @Router       /api/v1/admin/comtrans/{id} [get]
-// func (h *AdminHandler) GetComtran(c *fiber.Ctx) error {
-// 	idStr := c.Params("id")
-// 	id, err := strconv.Atoi(idStr)
-
-// 	if err != nil {
-// 		return utils.FiberResponse(c, model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("comtran id must be integer"),
-// 		})
-// 	}
-
-// 	data := h.service.GetComtranByID(c.Context(), id)
-// 	return utils.FiberResponse(c, data)
-// }
-
-// // // CreateComtran godoc
-// // // @Summary      Create a comtran
-// // // @Description  Creates a new comtran
-// // // @Tags         admin-comtrans
-// // // @Accept       json
-// // // @Produce      json
-// // // @Security     BearerAuth
-// // // @Param        comtran  body      model.AdminCreateVehicleRequest  true  "Comtran"
-// // // @Success      200  {object}  model.SuccessWithId
-// // // @Failure      400  {object}  model.ResultMessage
-// // // @Failure      401  {object}  auth.ErrorResponse
-// // // @Failure      403  {object}  auth.ErrorResponse
-// // // @Failure      500  {object}  model.ResultMessage
-// // // @Router       /api/v1/admin/comtrans [post]
-// // func (h *AdminHandler) CreateComtran(c *fiber.Ctx) error {
-// // 	req := &model.AdminCreateVehicleRequest{}
-
-// // 	if err := c.BodyParser(req); err != nil {
-// // 		return utils.FiberResponse(c, model.Response{Status: 400, Error: err})
-// // 	}
-
-// // 	if err := h.validator.Validate(req); err != nil {
-// // 		return utils.FiberResponse(c, model.Response{Status: 400, Error: err})
-// // 	}
-
-// // 	data := h.service.CreateComtran(c.Context(), req)
-// // 	return utils.FiberResponse(c, data)
-// // }
-
-// // UpdateComtran godoc
-// // @Summary      Update a comtran
-// // @Description  Updates a comtran
-// // @Tags         admin-comtrans
-// // @Accept       json
-// // @Produce      json
-// // @Security     BearerAuth
-// // @Param        id  path  string  true  "Comtran ID"
-// // @Param        comtran  body      model.AdminUpdateVehicleStatusRequest  true  "Comtran"
-// // @Success      200  {object}  model.Success
-// // @Failure      400  {object}  model.ResultMessage
-// // @Failure      401  {object}  auth.ErrorResponse
-// // @Failure      403  {object}  auth.ErrorResponse
-// // @Failure      500  {object}  model.ResultMessage
-// // @Router       /api/v1/admin/comtrans/{id} [put]
-// func (h *AdminHandler) UpdateComtran(c *fiber.Ctx) error {
-// 	idStr := c.Params("id")
-// 	id, err := strconv.Atoi(idStr)
-
-// 	if err != nil {
-// 		return utils.FiberResponse(c, model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("comtran id must be integer"),
-// 		})
-// 	}
-
-// 	req := &model.AdminUpdateVehicleStatusRequest{}
-
-// 	if err := c.BodyParser(req); err != nil {
-// 		return utils.FiberResponse(c, model.Response{Status: 400, Error: err})
-// 	}
-
-// 	if err := h.validator.Validate(req); err != nil {
-// 		return utils.FiberResponse(c, model.Response{Status: 400, Error: err})
-// 	}
-
-// 	data := h.service.UpdateComtransGetComtranstatus(c.Context(), id, req)
-// 	return utils.FiberResponse(c, data)
-// }
-
-// // DeleteComtran godoc
-// // @Summary      Delete a comtran
-// // @Description  Deletes a comtran
-// // @Tags         admin-comtrans
-// // @Produce      json
-// // @Security     BearerAuth
-// // @Param        id  path  string  true  "Comtran ID"
-// // @Success      200  {object}  model.Success
-// // @Failure      400  {object}  model.ResultMessage
-// // @Failure      401  {object}  auth.ErrorResponse
-// // @Failure      403  {object}  auth.ErrorResponse
-// // @Failure      500  {object}  model.ResultMessage
-// // @Router       /api/v1/admin/comtrans/{id} [delete]
-// func (h *AdminHandler) DeleteComtran(c *fiber.Ctx) error {
-// 	idStr := c.Params("id")
-// 	id, err := strconv.Atoi(idStr)
-
-// 	if err != nil {
-// 		return utils.FiberResponse(c, model.Response{
-// 			Status: 400,
-// 			Error:  errors.New("comtran id must be integer"),
-// 		})
-// 	}
-
-// 	data := h.service.DeleteComtran(c.Context(), id, "/images/comtrans/"+idStr)
-// 	return utils.FiberResponse(c, data)
-// }
+// DeleteComtran godoc
+// @Summary      Delete a comtran
+// @Description  Deletes a comtran
+// @Tags         admin-comtrans
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id  path  string  true  "Comtran ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/comtrans/{id} [delete]
+func (h *AdminHandler) DeleteComtran(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("comtran id must be integer"),
+		})
+	}
+	data := h.service.DeleteComtran(c.Context(), id, "/images/comtrans/"+idStr)
+	return utils.FiberResponse(c, data)
+}
 
 // Comtrans Engine handlers
 

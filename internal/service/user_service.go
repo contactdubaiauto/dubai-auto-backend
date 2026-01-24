@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"mime/multipart"
 	"net/http"
 	"strconv"
 
@@ -126,6 +127,37 @@ func (s *UserService) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, profil
 	return model.Response{
 		Data: model.Success{Message: "Profile updated successfully"},
 	}
+}
+
+func (s *UserService) UploadProfileAvatar(ctx *fasthttp.RequestCtx, form *multipart.Form, userID int) model.Response {
+	if form == nil {
+		return model.Response{Status: 400, Error: errors.New("didn't upload the file")}
+	}
+	images := form.File["avatar"]
+	if len(images) == 0 {
+		images = form.File["avatar_image"]
+	}
+	if len(images) > 1 {
+		return model.Response{Status: 400, Error: errors.New("must upload maximum 1 file")}
+	}
+	if len(images) == 0 {
+		return model.Response{Status: 400, Error: errors.New("avatar file required")}
+	}
+	paths, status, err := files.SaveFiles(images, config.ENV.STATIC_PATH+"users/"+strconv.Itoa(userID)+"/avatar", config.ENV.DEFAULT_IMAGE_WIDTHS)
+	if err != nil {
+		return model.Response{Status: status, Error: err}
+	}
+	if err := s.UserRepository.SetProfileAvatar(ctx, userID, paths[0]); err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: model.Success{Message: "Avatar updated successfully"}}
+}
+
+func (s *UserService) DeleteProfileAvatar(ctx *fasthttp.RequestCtx, userID int) model.Response {
+	if err := s.UserRepository.DeleteProfileAvatar(ctx, userID); err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: model.Success{Message: "Avatar deleted successfully"}}
 }
 
 func (s *UserService) GetFilterBrands(ctx *fasthttp.RequestCtx, text, nameColumn string) model.Response {

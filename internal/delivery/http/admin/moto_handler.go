@@ -9,6 +9,78 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// GetMotorcycles godoc
+// @Summary      Get all motorcycles
+// @Description  Returns a list of all motorcycles
+// @Tags         admin-motorcycles
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}  model.AdminMotoListItem
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/motorcycles [get]
+func (h *AdminHandler) GetMotorcycles(c *fiber.Ctx) error {
+	limit := c.Query("limit")
+	lastID := c.Query("last_id")
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
+	data := h.service.GetMotorcycles(c.Context(), limitInt, lastIDInt)
+	return utils.FiberResponse(c, data)
+}
+
+// GetMotorcycle godoc
+// @Summary      Get a motorcycle by ID
+// @Description  Returns a motorcycle by ID
+// @Tags         admin-motorcycles
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id  path  string  true  "Motorcycle ID"
+// @Success      200  {object}  model.GetMotorcyclesResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/motorcycles/{id} [get]
+func (h *AdminHandler) GetMotorcycle(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("motorcycle id must be integer"),
+		})
+	}
+	data := h.service.GetMotorcycleByID(c.Context(), id)
+	return utils.FiberResponse(c, data)
+}
+
+// DeleteMotorcycle godoc
+// @Summary      Delete a motorcycle
+// @Description  Deletes a motorcycle
+// @Tags         admin-motorcycles
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id  path  string  true  "Motorcycle ID"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/motorcycles/{id} [delete]
+func (h *AdminHandler) DeleteMotorcycle(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("motorcycle id must be integer"),
+		})
+	}
+	data := h.service.DeleteMotorcycle(c.Context(), id, "/images/motorcycles/"+idStr)
+	return utils.FiberResponse(c, data)
+}
+
 // Moto Categories handlers
 
 // GetMotoCategories godoc

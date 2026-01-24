@@ -1320,7 +1320,6 @@ func (h *UserHandler) GetProfile(c *fiber.Ctx) error {
 // @Failure      500      {object}  model.ResultMessage
 // @Router       /api/v1/users/profile [put]
 func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
-	// todo: add city
 	var profile model.UpdateProfileRequest
 	userID := c.Locals("id").(int)
 
@@ -1339,6 +1338,47 @@ func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
 	}
 
 	data := h.UserService.UpdateProfile(c.Context(), userID, &profile)
+	return utils.FiberResponse(c, data)
+}
+
+// UploadProfileAvatar godoc
+// @Summary      Upload profile avatar
+// @Description  Uploads the authenticated user's profile avatar image
+// @Tags         profile
+// @Accept       multipart/form-data
+// @Produce      json
+// @Security     BearerAuth
+// @Param        avatar  formData  file  true  "Avatar image (max 1)"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/profile/avatar [post]
+func (h *UserHandler) UploadProfileAvatar(c *fiber.Ctx) error {
+	userID := c.Locals("id").(int)
+	form, err := c.MultipartForm()
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{Status: 400, Error: err})
+	}
+	data := h.UserService.UploadProfileAvatar(c.Context(), form, userID)
+	return utils.FiberResponse(c, data)
+}
+
+// DeleteProfileAvatar godoc
+// @Summary      Delete profile avatar
+// @Description  Deletes the authenticated user's profile avatar
+// @Tags         profile
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {object}  model.Success
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/profile/avatar [delete]
+func (h *UserHandler) DeleteProfileAvatar(c *fiber.Ctx) error {
+	userID := c.Locals("id").(int)
+	data := h.UserService.DeleteProfileAvatar(c.Context(), userID)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1542,9 +1582,9 @@ func (h *UserHandler) CreateMotorcycle(c *fiber.Ctx) error {
 // GetMotorcycles godoc
 // @Summary      Get motorcycles
 // @Description  Returns a list of motorcycles
-// @Tags         car
+// @Tags         motorcycles
 // @Produce      json
-// @Security 	 BearerAuth
+// @Security BearerAuth
 // @Param   Accept-Language  header  string  false  "Language"
 // @Param   brands            query   string  false  "Filter by brand IDs"
 // @Param   models            query   string  false  "Filter by model IDs"
@@ -1572,7 +1612,7 @@ func (h *UserHandler) CreateMotorcycle(c *fiber.Ctx) error {
 // @Param   price_to          query   string  false  "Filter by price to"
 // @Param   limit             query   string  false  "Limit"
 // @Param   last_id           query   string  false  "Last item ID"
-// @Success      200  {array}  model.GetMotorcyclesResponse
+// @Success      200  {array}  model.GetMotorcycleResponse
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
 // @Failure		 403  {object} auth.ErrorResponse
@@ -1739,6 +1779,112 @@ func (h *UserHandler) SellMotorcycle(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, h.MotorcycleService.SellMotorcycle(ctx, id, userID))
 }
 
+// CreateMotorcycleImages godoc
+// @Summary      Upload motorcycle images
+// @Description  Uploads images for a motorcycle (max 10 files)
+// @Tags         motorcycles
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        id       path      int    true  "Motorcycle ID"
+// @Param        images   formData  file   true  "Motorcycle images (max 10)"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/motorcycles/{id}/images [post]
+func (h *UserHandler) CreateMotorcycleImages(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("motorcycle id must be integer"),
+		})
+	}
+	form, _ := c.MultipartForm()
+	if form == nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the files"),
+		})
+	}
+	images := form.File["images"]
+	if len(images) == 0 {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("images are required"),
+		})
+	}
+	if len(images) > 10 {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 10 files"),
+		})
+	}
+	paths, status, err := files.SaveFiles(images, config.ENV.STATIC_PATH+"motorcycles/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{Status: status, Error: err})
+	}
+	data := h.MotorcycleService.CreateMotorcycleImages(ctx, id, paths)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateMotorcycleVideos godoc
+// @Summary      Upload motorcycle videos
+// @Description  Uploads videos for a motorcycle (max 1 file)
+// @Tags         motorcycles
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        id       path      int    true  "Motorcycle ID"
+// @Param        videos   formData  file   true  "Motorcycle videos (max 1)"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/motorcycles/{id}/videos [post]
+func (h *UserHandler) CreateMotorcycleVideos(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("motorcycle id must be integer"),
+		})
+	}
+	form, _ := c.MultipartForm()
+	if form == nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the files"),
+		})
+	}
+	videos := form.File["videos"]
+	if len(videos) == 0 {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("videos are required"),
+		})
+	}
+	if len(videos) > 1 {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 1 file(s)"),
+		})
+	}
+	path, err := files.SaveOriginal(videos[0], config.ENV.STATIC_PATH+"motorcycles/"+idStr+"/videos")
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{Status: 400, Error: err})
+	}
+	data := h.MotorcycleService.CreateMotorcycleVideos(ctx, id, path)
+	return utils.FiberResponse(c, data)
+}
+
 // UpdateMotorcycle godoc
 // @Summary      Update a motorcycle
 // @Description  Updates an existing motorcycle for the authenticated user
@@ -1784,7 +1930,7 @@ func (h *UserHandler) UpdateMotorcycle(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Motorcycle ID"
-// @Param        image_id   path      int  true  "Image ID"
+// @Param        image_id   query      int  true  "Image ID"
 // @Success      200     {object}  model.Success
 // @Failure      400     {object}  model.ResultMessage
 // @Failure      401     {object}  auth.ErrorResponse
@@ -1825,7 +1971,7 @@ func (h *UserHandler) DeleteMotorcycleImage(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Motorcycle ID"
-// @Param        video_id   path      int  true  "Video ID"
+// @Param        video_id   query      int  true  "Video ID"
 // @Success      200     {object}  model.Success
 // @Failure      400     {object}  model.ResultMessage
 // @Failure      401     {object}  auth.ErrorResponse
@@ -1929,7 +2075,7 @@ func (h *UserHandler) CreateComtrans(c *fiber.Ctx) error {
 // @Description  Returns a list of comtrans
 // @Tags         comtrans
 // @Produce      json
-// @Security 	 BearerAuth
+// @Security BearerAuth
 // @Param   Accept-Language  header  string  false  "Language"
 // @Param   brands            query   string  false  "Filter by brand IDs"
 // @Param   models            query   string  false  "Filter by model IDs"
@@ -2028,6 +2174,38 @@ func (h *UserHandler) GetComtrans(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
+// GetEditComtransByID godoc
+// @Summary      Get Edit comtrans by ID
+// @Description  Returns a comtrans by its ID for editing
+// @Tags         comtrans
+// @Produce      json
+// @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
+// @Param        id   path      int  true  "Comtrans ID"
+// @Success      200  {object}  model.GetEditComtransResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/comtrans/{id}/edit [get]
+func (h *UserHandler) GetEditComtransByID(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	nameColumn := c.Locals("lang").(string)
+	userID := c.Locals("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("comtrans id must be integer"),
+		})
+	}
+
+	data := h.ComtransService.GetEditComtransByID(c.Context(), id, userID, nameColumn)
+	return utils.FiberResponse(c, data)
+}
+
 // GetComtransCategories godoc
 // @Summary Get commercial transport categories
 // @Description Get commercial transport categories
@@ -2082,10 +2260,11 @@ func (h *UserHandler) GetComtransEngines(c *fiber.Ctx) error {
 // @Tags comtrans
 // @Accept json
 // @Produce json
+// @Param        id   path      int  true  "Commercial Transport Brand ID"
 // @Param   Accept-Language  header  string  false  "Language"
 // @Success 200 {array} model.GetComtransModelsResponse
 // @Failure 500 {object} model.ResultMessage
-// @Router /api/v1/users/comtrans/brands/:id/models [get]
+// @Router /api/v1/users/comtrans/brands/{id}/models [get]
 func (h *UserHandler) GetComtransModelsByBrandID(c *fiber.Ctx) error {
 	ctx := c.Context()
 	lang := c.Locals("lang").(string)
@@ -2213,6 +2392,112 @@ func (h *UserHandler) SellComtrans(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, h.ComtransService.SellComtrans(ctx, id, userID))
 }
 
+// CreateComtransImages godoc
+// @Summary      Upload commercial transport images
+// @Description  Uploads images for a commercial transport (max 10 files)
+// @Tags         comtrans
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        id       path      int    true  "Commercial Transport ID"
+// @Param        images   formData  file   true  "Commercial transport images (max 10)"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/comtrans/{id}/images [post]
+func (h *UserHandler) CreateComtransImages(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("commercial transport id must be integer"),
+		})
+	}
+	form, _ := c.MultipartForm()
+	if form == nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the files"),
+		})
+	}
+	images := form.File["images"]
+	if len(images) == 0 {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("images are required"),
+		})
+	}
+	if len(images) > 10 {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 10 files"),
+		})
+	}
+	paths, status, err := files.SaveFiles(images, config.ENV.STATIC_PATH+"comtrans/"+strconv.Itoa(id), config.ENV.DEFAULT_IMAGE_WIDTHS)
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{Status: status, Error: err})
+	}
+	data := h.ComtransService.CreateComtransImages(ctx, id, paths)
+	return utils.FiberResponse(c, data)
+}
+
+// CreateComtransVideos godoc
+// @Summary      Upload commercial transport videos
+// @Description  Uploads videos for a commercial transport (max 1 file)
+// @Tags         comtrans
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        id       path      int    true  "Commercial Transport ID"
+// @Param        videos   formData  file   true  "Commercial transport videos (max 1)"
+// @Success      200  {object}  model.Success
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/comtrans/{id}/videos [post]
+func (h *UserHandler) CreateComtransVideos(c *fiber.Ctx) error {
+	ctx := c.Context()
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("commercial transport id must be integer"),
+		})
+	}
+	form, _ := c.MultipartForm()
+	if form == nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("didn't upload the files"),
+		})
+	}
+	videos := form.File["videos"]
+	if len(videos) == 0 {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("videos are required"),
+		})
+	}
+	if len(videos) > 1 {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("must load maximum 1 file(s)"),
+		})
+	}
+	path, err := files.SaveOriginal(videos[0], config.ENV.STATIC_PATH+"comtrans/"+idStr+"/videos")
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{Status: 400, Error: err})
+	}
+	data := h.ComtransService.CreateComtransVideos(ctx, id, path)
+	return utils.FiberResponse(c, data)
+}
+
 // UpdateComtrans godoc
 // @Summary      Update a commercial transport
 // @Description  Updates an existing commercial transport for the authenticated user
@@ -2258,7 +2543,7 @@ func (h *UserHandler) UpdateComtrans(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Commercial Transport ID"
-// @Param        image_id   path      int  true  "Image ID"
+// @Param        image_id   query      int  true  "Image ID"
 // @Success      200     {object}  model.Success
 // @Failure      400     {object}  model.ResultMessage
 // @Failure      401     {object}  auth.ErrorResponse
@@ -2299,7 +2584,7 @@ func (h *UserHandler) DeleteComtransImage(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Commercial Transport ID"
-// @Param        video_id   path      int  true  "Video ID"
+// @Param        video_id   query      int  true  "Video ID"
 // @Success      200     {object}  model.Success
 // @Failure      400     {object}  model.ResultMessage
 // @Failure      401     {object}  auth.ErrorResponse

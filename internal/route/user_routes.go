@@ -46,6 +46,8 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Get("/profile/my-cars", auth.TokenGuard, auth.LanguageChecker, userHandler.GetMyCars)
 		r.Get("/profile/on-sale", auth.TokenGuard, auth.LanguageChecker, userHandler.OnSale)
 		r.Get("/profile", auth.TokenGuard, auth.LanguageChecker, userHandler.GetProfile)
+		r.Post("/profile/avatar", auth.TokenGuard, userHandler.UploadProfileAvatar)
+		r.Delete("/profile/avatar", auth.TokenGuard, userHandler.DeleteProfileAvatar)
 		r.Put("/profile", auth.TokenGuard, userHandler.UpdateProfile)
 
 		// brands
@@ -75,11 +77,14 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 
 		// motorcycles
 		r.Get("/motorcycles", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetMotorcycles)
+		r.Get("/motorcycles/:id/edit", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetEditMotorcycleByID)
 		r.Post("/motorcycles", auth.TokenGuard, auth.LanguageChecker, userHandler.CreateMotorcycle)
 		r.Post("/motorcycles/:id/buy", auth.TokenGuard, auth.LanguageChecker, userHandler.BuyMotorcycle)
 		r.Post("/motorcycles/:id/cancel", auth.TokenGuard, auth.LanguageChecker, userHandler.CancelMotorcycle)
 		r.Post("/motorcycles/:id/dont-sell", auth.TokenGuard, auth.LanguageChecker, userHandler.DontSellMotorcycle)
 		r.Post("/motorcycles/:id/sell", auth.TokenGuard, auth.LanguageChecker, userHandler.SellMotorcycle)
+		r.Post("/motorcycles/:id/images", auth.TokenGuard, auth.LanguageChecker, userHandler.CreateMotorcycleImages)
+		r.Post("/motorcycles/:id/videos", auth.TokenGuard, auth.LanguageChecker, userHandler.CreateMotorcycleVideos)
 		r.Put("/motorcycles", auth.TokenGuard, auth.LanguageChecker, userHandler.UpdateMotorcycle)
 		r.Delete("/motorcycles/:id/images", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycleImage)
 		r.Delete("/motorcycles/:id/videos", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycleVideo)
@@ -92,6 +97,7 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 
 		// comtrans
 		r.Get("/comtrans", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetComtrans)
+		r.Get("/comtrans/:id/edit", auth.TokenGuard, auth.LanguageChecker, userHandler.GetEditComtransByID)
 		r.Get("/comtrans/categories", auth.LanguageChecker, userHandler.GetComtransCategories)
 		r.Get("/comtrans/brands", auth.LanguageChecker, userHandler.GetComtransBrands)
 		r.Get("/comtrans/brands/:id/models", auth.LanguageChecker, userHandler.GetComtransModelsByBrandID)
@@ -100,6 +106,8 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Post("/comtrans/:id/cancel", auth.TokenGuard, auth.LanguageChecker, userHandler.CancelComtrans)
 		r.Post("/comtrans/:id/dont-sell", auth.TokenGuard, auth.LanguageChecker, userHandler.DontSellComtrans)
 		r.Post("/comtrans/:id/sell", auth.TokenGuard, auth.LanguageChecker, userHandler.SellComtrans)
+		r.Post("/comtrans/:id/images", auth.TokenGuard, auth.LanguageChecker, userHandler.CreateComtransImages)
+		r.Post("/comtrans/:id/videos", auth.TokenGuard, auth.LanguageChecker, userHandler.CreateComtransVideos)
 		r.Put("/comtrans", auth.TokenGuard, auth.LanguageChecker, userHandler.UpdateComtrans)
 		r.Delete("/comtrans/:id/images", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteComtransImage)
 		r.Delete("/comtrans/:id/videos", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteComtransVideo)

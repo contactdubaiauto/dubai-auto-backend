@@ -53,7 +53,7 @@ func (r *MotorcycleRepository) GetMotorcycleCategories(ctx *fasthttp.RequestCtx,
 func (r *MotorcycleRepository) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, nameColumn string) ([]model.GetMotorcycleBrandsResponse, error) {
 	data := make([]model.GetMotorcycleBrandsResponse, 0)
 	q := `
-		SELECT id, ` + nameColumn + `, $1 || image as image FROM moto_brands
+		SELECT id, ` + nameColumn + `, $1 || logo as image, model_count FROM moto_brands
 	`
 
 	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
@@ -65,7 +65,7 @@ func (r *MotorcycleRepository) GetMotorcycleBrands(ctx *fasthttp.RequestCtx, nam
 
 	for rows.Next() {
 		var brand model.GetMotorcycleBrandsResponse
-		err = rows.Scan(&brand.ID, &brand.Name, &brand.Image)
+		err = rows.Scan(&brand.ID, &brand.Name, &brand.Image, &brand.ModelCount)
 
 		if err != nil {
 			return nil, err
@@ -188,52 +188,31 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, userID i
 	q := `
 		select 
 			mcs.id,
-			json_build_object(
-				'id', pf.user_id,
-				'username', pf.username,
-				'avatar', CASE
-					WHEN pf.avatar IS NULL OR pf.avatar = '' THEN ''
-					ELSE $1 || pf.avatar
-				END,
-				'contacts', pf.contacts
-			) as owner,
-			mcs.engine,
-			mcs.power,
-			mcs.year,
-			nocs.` + nameColumn + ` as number_of_cycles,
-			mcs.odometer,
-			mcs.crash,
-			mcs.wheel,
-			mcs.owners,
-			mcs.vin_code,
-			mcs.description,
-			mcs.phone_numbers,
-			mcs.price,
-			mcs.trade_in,
-			mcs.status::text,
-			mcs.updated_at,
-			mcs.created_at,
-			mocs.` + nameColumn + ` as moto_category,
+			'moto' as type,
 			mbs.` + nameColumn + ` as moto_brand,
 			mms.` + nameColumn + ` as moto_model,
-			meng.` + nameColumn + ` as engine_type,
-			cs.name as city,
-			cls.` + nameColumn + ` as color,
+			mcs.year,
+			mcs.price,
+			mcs.created_at,
+			images.images,
+			mcs.new,
+			mcs.status,
+			mcs.trade_in,
+			mcs.crash,
+			mcs.odometer,
+			mcs.view_count,
 			CASE
-				WHEN mcs.user_id = 1 THEN TRUE
+				WHEN mcs.user_id = $2 THEN TRUE
 				ELSE FALSE
 			END AS my_moto,
-			images.images,
-			videos.videos
+			CASE
+				WHEN u.role_id = 2 THEN u.username
+				ELSE NULL
+			END AS owner_name
 		from motorcycles mcs
-		left join profiles pf on pf.user_id = mcs.user_id
-		left join moto_categories mocs on mocs.id = mcs.moto_category_id
 		left join moto_brands mbs on mbs.id = mcs.moto_brand_id
 		left join moto_models mms on mms.id = mcs.moto_model_id
-		left join moto_engines meng on meng.id = mcs.engine_id
-		left join cities cs on cs.id = mcs.city_id
-		left join colors cls on cls.id = mcs.color_id
-		left join number_of_cycles nocs on nocs.id = mcs.number_of_cycles_id
+		left join users u on u.id = mcs.user_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -255,7 +234,7 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, userID i
 
 	`
 
-	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -265,13 +244,10 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, userID i
 	for rows.Next() {
 		var motorcycle model.GetMotorcyclesResponse
 		err = rows.Scan(
-			&motorcycle.ID, &motorcycle.Owner, &motorcycle.Engine, &motorcycle.Power, &motorcycle.Year,
-			&motorcycle.NumberOfCycles, &motorcycle.Odometer, &motorcycle.Crash, &motorcycle.Wheel,
-			&motorcycle.Owners, &motorcycle.VinCode, &motorcycle.Description, &motorcycle.PhoneNumbers,
-			&motorcycle.Price, &motorcycle.TradeIn, &motorcycle.Status,
-			&motorcycle.UpdatedAt, &motorcycle.CreatedAt, &motorcycle.MotoCategory, &motorcycle.MotoBrand,
-			&motorcycle.MotoModel, &motorcycle.EngineType, &motorcycle.City, &motorcycle.Color, &motorcycle.MyMoto,
-			&motorcycle.Images, &motorcycle.Videos)
+			&motorcycle.ID, &motorcycle.Type, &motorcycle.Brand, &motorcycle.Model, &motorcycle.Year, &motorcycle.Price,
+			&motorcycle.CreatedAt, &motorcycle.Images,
+			&motorcycle.New, &motorcycle.Status, &motorcycle.TradeIn, &motorcycle.Crash, &motorcycle.Odometer,
+			&motorcycle.ViewCount, &motorcycle.MyMoto, &motorcycle.OwnerName)
 
 		if err != nil {
 			return nil, err
@@ -343,8 +319,8 @@ func (r *MotorcycleRepository) DeleteMotorcycleVideo(ctx *fasthttp.RequestCtx, m
 	return nil
 }
 
-func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, userID int, nameColumn string) (model.GetMotorcyclesResponse, error) {
-	var motorcycle model.GetMotorcyclesResponse
+func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, userID int, nameColumn string) (model.GetMotorcycleResponse, error) {
+	var motorcycle model.GetMotorcycleResponse
 	q := `
 		WITH updated AS (
 			UPDATE motorcycles
@@ -433,8 +409,8 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 	return motorcycle, err
 }
 
-func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, userID int, nameColumn string) (model.GetMotorcyclesResponse, error) {
-	var motorcycle model.GetMotorcyclesResponse
+func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, motorcycleID, userID int, nameColumn string) (model.GetEditMotorcycleResponse, error) {
+	var motorcycle model.GetEditMotorcycleResponse
 	q := `
 		select 
 			mcs.id,
@@ -485,18 +461,18 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 		left join colors cls on cls.id = mcs.color_id
 		left join number_of_cycles nocs on nocs.id = mcs.number_of_cycles_id
 		LEFT JOIN LATERAL (
-			SELECT json_agg(img.image) AS images
+			SELECT json_agg(json_build_object('image', img.image, 'id', img.id)) AS images
 			FROM (
-				SELECT $3 || image as image
+				SELECT $3 || image as image, id
 				FROM moto_images
 				WHERE moto_id = mcs.id
 				ORDER BY created_at DESC
 			) img
 		) images ON true
 		LEFT JOIN LATERAL (
-			SELECT json_agg(v.video) AS videos
+			SELECT json_agg(json_build_object('video', v.video, 'id', v.id)) AS videos
 			FROM (
-				SELECT $3 || video as video
+				SELECT $3 || video as video, id
 				FROM moto_videos
 				WHERE moto_id = mcs.id
 				ORDER BY created_at DESC

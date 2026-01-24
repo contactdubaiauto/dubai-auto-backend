@@ -238,7 +238,7 @@ func (s *AuthService) UserPhoneConfirmation(ctx *fasthttp.RequestCtx, user *mode
 
 func (s *AuthService) UserLoginEmail(ctx *fasthttp.RequestCtx, user *model.UserLoginEmail) model.Response {
 	otp := utils.RandomOTP()
-	username := utils.RandomUsername()
+	username := ""
 	// for google play store testing
 	if user.Email == "berdalyyew99@gmail.com" {
 		otp = 123456
@@ -377,7 +377,7 @@ func (s *AuthService) ThirdPartyLogin(ctx *fasthttp.RequestCtx, user *model.Thir
 
 func (s *AuthService) UserLoginPhone(ctx *fasthttp.RequestCtx, user *model.UserLoginPhone) model.Response {
 	otp := utils.RandomOTP()
-	username := utils.RandomUsername()
+	username := ""
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%d", otp)), bcrypt.DefaultCost)
 
 	if err != nil {

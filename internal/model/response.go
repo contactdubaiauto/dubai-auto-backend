@@ -39,6 +39,7 @@ type GetProfileResponse struct {
 	Google            *string           `json:"google"`
 	RegisteredBy      *string           `json:"registered_by"`
 	City              *City             `json:"city"`
+	Avatar            *string           `json:"avatar"`
 	Contacts          map[string]string `json:"contacts"`
 	Address           *string           `json:"address"`
 	AboutMe           *string           `json:"about_me"`
@@ -157,6 +158,7 @@ type GetCarsResponse struct {
 	New       *bool      `json:"new"`
 	Crash     *bool      `json:"crash"`
 	MyCar     *bool      `json:"my_car"`
+	OwnerName *string    `json:"owner_name"`
 	Odometer  *int       `json:"odometer"`
 	ID        int        `json:"id"`
 }
@@ -285,6 +287,32 @@ type AdminVehicleListItem struct {
 	Status      int      `json:"status"`
 	Price       int      `json:"price"`
 	ID          int      `json:"id"`
+}
+
+type AdminComtranListItem struct {
+	ID          int      `json:"id"`
+	Brand       *string  `json:"brand"`
+	Model       *string  `json:"model"`
+	Description *string  `json:"description"`
+	Price       int      `json:"price"`
+	Status      int      `json:"status"`
+	UserPhone   *string  `json:"user_phone"`
+	UserName    *string  `json:"user_name"`
+	UserAvatar  *string  `json:"user_avatar"`
+	Images      []string `json:"images"`
+}
+
+type AdminMotoListItem struct {
+	ID          int      `json:"id"`
+	Brand       *string  `json:"brand"`
+	Model       *string  `json:"model"`
+	Description *string  `json:"description"`
+	Price       int      `json:"price"`
+	Status      int      `json:"status"`
+	UserPhone   *string  `json:"user_phone"`
+	UserName    *string  `json:"user_name"`
+	UserAvatar  *string  `json:"user_avatar"`
+	Images      []string `json:"images"`
 }
 
 type UserResponse struct {
@@ -633,6 +661,7 @@ type ThirdPartProfileDestinationsRes struct {
 }
 
 type ThirdPartyGetProfileRes struct {
+	Username      *string                            `json:"username"`
 	Registered    *time.Time                         `json:"registered"`
 	Destinations  *[]ThirdPartProfileDestinationsRes `json:"destinations"`
 	CompanyName   *string                            `json:"company_name"`
@@ -684,4 +713,5 @@ type GetReportsResponse struct {
 	ReportedUser      *Owner    `json:"reported_user"`
 	ItemType          *string   `json:"item_type"`
 	ItemID            *int      `json:"item_id"`
+	Item              any       `json:"item"`
 }

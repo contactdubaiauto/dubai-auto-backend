@@ -1841,7 +1841,67 @@ func (r *AdminRepository) GetReports(ctx *fasthttp.RequestCtx) ([]model.GetRepor
 				'contacts', reported_profile.contacts
 			) as reported_user,
 			r.item_type,
-			r.item_id
+			r.item_id,
+			CASE
+				WHEN r.item_type = 'car' THEN (
+					SELECT json_build_object(
+						'id', v.id,
+						'brand', b.name,
+						'model', m.name,
+						'price', v.price,
+						'images', images.images
+					)
+					FROM vehicles v
+					LEFT JOIN brands b ON v.brand_id = b.id
+					LEFT JOIN models m ON v.model_id = m.id
+					LEFT JOIN LATERAL (
+						SELECT json_agg($1 || image) AS images
+						FROM (
+							SELECT image FROM images WHERE vehicle_id = v.id ORDER BY created_at DESC
+						) img
+					) images ON true
+					WHERE v.id = r.item_id
+				)
+				WHEN r.item_type = 'moto' THEN (
+					SELECT json_build_object(
+						'id', m.id,
+						'brand', mb.name,
+						'model', mm.name,
+						'price', m.price,
+						'images', images.images
+					)
+					FROM motorcycles m
+					LEFT JOIN moto_brands mb ON m.brand_id = mb.id
+					LEFT JOIN moto_models mm ON m.model_id = mm.id
+					LEFT JOIN LATERAL (
+						SELECT json_agg($1 || image) AS images
+						FROM (
+							SELECT image FROM moto_images WHERE moto_id = m.id ORDER BY created_at DESC
+						) img
+					) images ON true
+					WHERE m.id = r.item_id
+				)
+				WHEN r.item_type = 'comtran' THEN (
+					SELECT json_build_object(
+						'id', c.id,
+						'brand', cb.name,
+						'model', cm.name,
+						'price', c.price,
+						'images', images.images
+					)
+					FROM comtrans c
+					LEFT JOIN com_brands cb ON c.brand_id = cb.id
+					LEFT JOIN com_models cm ON c.model_id = cm.id
+					LEFT JOIN LATERAL (
+						SELECT json_agg($1 || image) AS images
+						FROM (
+							SELECT image FROM comtran_images WHERE comtran_id = c.id ORDER BY created_at DESC
+						) img
+					) images ON true
+					WHERE c.id = r.item_id
+				)
+				ELSE NULL
+			END as item
 		FROM reports r
 		LEFT JOIN users reporter_user ON reporter_user.id = r.user_id
 		LEFT JOIN profiles reporter_profile ON reporter_profile.user_id = r.user_id
@@ -1857,7 +1917,7 @@ func (r *AdminRepository) GetReports(ctx *fasthttp.RequestCtx) ([]model.GetRepor
 
 	for rows.Next() {
 		var report model.GetReportsResponse
-		if err := rows.Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt, &report.Reporter, &report.ReportedUser, &report.ItemType, &report.ItemID); err != nil {
+		if err := rows.Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt, &report.Reporter, &report.ReportedUser, &report.ItemType, &report.ItemID, &report.Item); err != nil {
 			return reports, err
 		}
 		reports = append(reports, report)
@@ -1894,7 +1954,69 @@ func (r *AdminRepository) GetReportByID(ctx *fasthttp.RequestCtx, id int) (model
 				END,
 				'role_id', reported_user.role_id,
 				'contacts', reported_profile.contacts
-			) as reported_user
+			) as reported_user,
+			r.item_type,
+			r.item_id,
+			CASE
+				WHEN r.item_type = 'car' THEN (
+					SELECT json_build_object(
+						'id', v.id,
+						'brand', b.name,
+						'model', m.name,
+						'price', v.price,
+						'images', images.images
+					)
+					FROM vehicles v
+					LEFT JOIN brands b ON v.brand_id = b.id
+					LEFT JOIN models m ON v.model_id = m.id
+					LEFT JOIN LATERAL (
+						SELECT json_agg($2 || image) AS images
+						FROM (
+							SELECT image FROM images WHERE vehicle_id = v.id ORDER BY created_at DESC
+						) img
+					) images ON true
+					WHERE v.id = r.item_id
+				)
+				WHEN r.item_type = 'moto' THEN (
+					SELECT json_build_object(
+						'id', m.id,
+						'brand', mb.name,
+						'model', mm.name,
+						'price', m.price,
+						'images', images.images
+					)
+					FROM motorcycles m
+					LEFT JOIN moto_brands mb ON m.brand_id = mb.id
+					LEFT JOIN moto_models mm ON m.model_id = mm.id
+					LEFT JOIN LATERAL (
+						SELECT json_agg($2 || image) AS images
+						FROM (
+							SELECT image FROM moto_images WHERE moto_id = m.id ORDER BY created_at DESC
+						) img
+					) images ON true
+					WHERE m.id = r.item_id
+				)
+				WHEN r.item_type = 'comtran' THEN (
+					SELECT json_build_object(
+						'id', c.id,
+						'brand', cb.name,
+						'model', cm.name,
+						'price', c.price,
+						'images', images.images
+					)
+					FROM comtrans c
+					LEFT JOIN com_brands cb ON c.brand_id = cb.id
+					LEFT JOIN com_models cm ON c.model_id = cm.id
+					LEFT JOIN LATERAL (
+						SELECT json_agg($2 || image) AS images
+						FROM (
+							SELECT image FROM comtran_images WHERE comtran_id = c.id ORDER BY created_at DESC
+						) img
+					) images ON true
+					WHERE c.id = r.item_id
+				)
+				ELSE NULL
+			END as item
 		FROM reports r
 		LEFT JOIN users reporter_user ON reporter_user.id = r.user_id
 		LEFT JOIN profiles reporter_profile ON reporter_profile.user_id = r.user_id
@@ -1902,7 +2024,7 @@ func (r *AdminRepository) GetReportByID(ctx *fasthttp.RequestCtx, id int) (model
 		LEFT JOIN profiles reported_profile ON reported_profile.user_id = r.reported_user_id
 		WHERE r.id = $1
 	`
-	err := r.db.QueryRow(ctx, q, id, r.config.IMAGE_BASE_URL).Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt, &report.Reporter, &report.ReportedUser, &report.ItemType, &report.ItemID)
+	err := r.db.QueryRow(ctx, q, id, r.config.IMAGE_BASE_URL).Scan(&report.ID, &report.ReportedUserID, &report.ReportType, &report.ReportDescription, &report.ReportStatus, &report.CreatedAt, &report.Reporter, &report.ReportedUser, &report.ItemType, &report.ItemID, &report.Item)
 	return report, err
 }
 

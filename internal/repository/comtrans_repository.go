@@ -101,7 +101,7 @@ func (r *ComtransRepository) GetComtransModelsByBrandID(ctx *fasthttp.RequestCtx
 	data := make([]model.GetComtransModelsResponse, 0)
 	q := `
 		SELECT id, ` + nameColumn + ` FROM com_models
-		WHERE com_brand_id = $1
+		WHERE comtran_brand_id = $1
 	`
 
 	rows, err := r.db.Query(ctx, q, brandID)
@@ -331,10 +331,16 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, t
 			CASE
 				WHEN cts.user_id = $2 THEN TRUE
 				ELSE FALSE
-			END AS my_comtrans
+			END AS my_comtrans,
+			cts.odometer,
+			CASE
+				WHEN u.role_id = 2 THEN u.username
+				ELSE NULL
+			END AS owner_name
 		from comtrans cts
 		left join com_brands cbs on cbs.id = cts.comtran_brand_id
 		left join com_models cms on cms.id = cts.comtran_model_id
+		left join users u on u.id = cts.user_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -353,14 +359,14 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, t
 	}
 
 	defer rows.Close()
-
+	fmt.Println("userID", userID)
 	for rows.Next() {
 		var com model.GetComtransResponse
 		err = rows.Scan(
-			&com.ID, &com.Brand, &com.Model, &com.Year, &com.Price,
+			&com.ID, &com.Type, &com.Brand, &com.Model, &com.Year, &com.Price,
 			&com.CreatedAt, &com.Images,
 			&com.New, &com.Status, &com.TradeIn, &com.Crash,
-			&com.ViewCount, &com.MyCar)
+			&com.ViewCount, &com.MyComtran, &com.Odometer, &com.OwnerName)
 
 		if err != nil {
 			return data, err
@@ -515,8 +521,8 @@ func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransI
 	return comtrans, err
 }
 
-func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtransID, userID int, nameColumn string) (model.GetComtranResponse, error) {
-	var comtrans model.GetComtranResponse
+func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtransID, userID int, nameColumn string) (model.GetEditComtransResponse, error) {
+	var comtrans model.GetEditComtransResponse
 	q := `
 		select 
 			cts.id,
@@ -561,18 +567,18 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 		left join cities cs on cs.id = cts.city_id
 		left join colors cls on cls.id = cts.color_id
 		LEFT JOIN LATERAL (
-			SELECT json_agg(img.image) AS images
+			SELECT json_agg(json_build_object('image', img.image, 'id', img.id)) AS images
 			FROM (
-				SELECT $1 || image as image
+				SELECT $3 || image as image, id
 				FROM comtran_images
 				WHERE comtran_id = cts.id
 				ORDER BY created_at DESC
 			) img
 		) images ON true
 		LEFT JOIN LATERAL (
-			SELECT json_agg(v.video) AS videos
+			SELECT json_agg(json_build_object('video', v.video, 'id', v.id)) AS videos
 			FROM (
-				SELECT $1 || video as video
+				SELECT $3 || video as video, id
 				FROM comtran_videos
 				WHERE comtran_id = cts.id
 				ORDER BY created_at DESC

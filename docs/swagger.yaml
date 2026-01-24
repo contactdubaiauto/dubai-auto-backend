@@ -129,6 +129,31 @@ definitions:
       name_ru:
         type: string
     type: object
+  model.AdminComtranListItem:
+    properties:
+      brand:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      images:
+        items:
+          type: string
+        type: array
+      model:
+        type: string
+      price:
+        type: integer
+      status:
+        type: integer
+      user_avatar:
+        type: string
+      user_name:
+        type: string
+      user_phone:
+        type: string
+    type: object
   model.AdminComtransBrandResponse:
     properties:
       created_at:
@@ -435,6 +460,31 @@ definitions:
       name_ru:
         type: string
     type: object
+  model.AdminMotoListItem:
+    properties:
+      brand:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      images:
+        items:
+          type: string
+        type: array
+      model:
+        type: string
+      price:
+        type: integer
+      status:
+        type: integer
+      user_avatar:
+        type: string
+      user_name:
+        type: string
+      user_phone:
+        type: string
+    type: object
   model.AdminMotoModelResponse:
     properties:
       created_at:
@@ -573,6 +623,19 @@ definitions:
       name_ae:
         type: string
       name_ru:
+        type: string
+    type: object
+  model.ComtransOwner:
+    properties:
+      avatar:
+        type: string
+      contacts:
+        additionalProperties:
+          type: string
+        type: object
+      id:
+        type: integer
+      username:
         type: string
     type: object
   model.Conversation:
@@ -1244,6 +1307,8 @@ definitions:
         type: boolean
       odometer:
         type: integer
+      owner_name:
+        type: string
       price:
         type: integer
       status:
@@ -1267,6 +1332,67 @@ definitions:
         items:
           $ref: '#/definitions/model.Region'
         type: array
+    type: object
+  model.GetComtranResponse:
+    properties:
+      city:
+        type: string
+      color:
+        type: string
+      comtran_brand:
+        type: string
+      comtran_category:
+        type: string
+      comtran_model:
+        type: string
+      crash:
+        type: boolean
+      created_at:
+        type: string
+      description:
+        type: string
+      engine:
+        type: integer
+      engine_type:
+        type: string
+      id:
+        type: integer
+      images:
+        items:
+          type: string
+        type: array
+      my_comtrans:
+        type: boolean
+      odometer:
+        type: integer
+      owner:
+        $ref: '#/definitions/model.ComtransOwner'
+      owners:
+        type: integer
+      phone_numbers:
+        items:
+          type: string
+        type: array
+      power:
+        type: integer
+      price:
+        type: integer
+      status:
+        type: string
+      trade_in:
+        type: integer
+      updated_at:
+        type: string
+      videos:
+        items:
+          type: string
+        type: array
+      vin_code:
+        type: string
+      wheel:
+        type: boolean
+      year:
+        type: integer
     type: object
   model.GetComtransBrandsResponse:
     properties:
@@ -1358,6 +1484,67 @@ definitions:
       year:
         type: integer
     type: object
+  model.GetEditComtransResponse:
+    properties:
+      city:
+        type: string
+      color:
+        type: string
+      comtran_brand:
+        type: string
+      comtran_category:
+        type: string
+      comtran_model:
+        type: string
+      crash:
+        type: boolean
+      created_at:
+        type: string
+      description:
+        type: string
+      engine:
+        type: integer
+      engine_type:
+        type: string
+      id:
+        type: integer
+      images:
+        items:
+          $ref: '#/definitions/model.ImageObject'
+        type: array
+      my_comtrans:
+        type: boolean
+      odometer:
+        type: integer
+      owner:
+        $ref: '#/definitions/model.ComtransOwner'
+      owners:
+        type: integer
+      phone_numbers:
+        items:
+          type: string
+        type: array
+      power:
+        type: integer
+      price:
+        type: integer
+      status:
+        type: string
+      trade_in:
+        type: integer
+      updated_at:
+        type: string
+      videos:
+        items:
+          $ref: '#/definitions/model.VideoObject'
+        type: array
+      vin_code:
+        type: string
+      wheel:
+        type: boolean
+      year:
+        type: integer
+    type: object
   model.GetFilterBrandsResponse:
     properties:
       all_brands:
@@ -1386,6 +1573,8 @@ definitions:
         type: integer
       image:
         type: string
+      model_count:
+        type: integer
       name:
         type: string
     type: object
@@ -1403,7 +1592,7 @@ definitions:
       name:
         type: string
     type: object
-  model.GetMotorcyclesResponse:
+  model.GetMotorcycleResponse:
     properties:
       city:
         type: string
@@ -1466,6 +1655,43 @@ definitions:
       year:
         type: integer
     type: object
+  model.GetMotorcyclesResponse:
+    properties:
+      brand:
+        type: string
+      crash:
+        type: boolean
+      created_at:
+        type: string
+      id:
+        type: integer
+      images:
+        items:
+          type: string
+        type: array
+      model:
+        type: string
+      my_moto:
+        type: boolean
+      new:
+        type: boolean
+      odometer:
+        type: integer
+      owner_name:
+        type: string
+      price:
+        type: integer
+      status:
+        type: integer
+      trade_in:
+        type: integer
+      type:
+        type: string
+      view_count:
+        type: integer
+      year:
+        type: integer
+    type: object
   model.GetNumberOfCyclesResponse:
     properties:
       id:
@@ -1487,6 +1713,8 @@ definitions:
       about_me:
         type: string
       address:
+        type: string
+      avatar:
         type: string
       birthday:
         type: string
@@ -1519,6 +1747,7 @@ definitions:
         type: string
       id:
         type: integer
+      item: {}
       item_id:
         type: integer
       item_type:
@@ -1542,6 +1771,13 @@ definitions:
         items:
           $ref: '#/definitions/model.GetCarsResponse'
         type: array
+    type: object
+  model.ImageObject:
+    properties:
+      id:
+        type: integer
+      image:
+        type: string
     type: object
   model.LoginFiberResponse:
     properties:
@@ -1774,6 +2010,8 @@ definitions:
         type: integer
       user_id:
         type: integer
+      username:
+        type: string
       vat_number:
         type: string
     type: object
@@ -2346,6 +2584,13 @@ definitions:
       updated_at:
         type: string
       username:
+        type: string
+    type: object
+  model.VideoObject:
+    properties:
+      id:
+        type: integer
+      video:
         type: string
     type: object
 host: api.mashynbazar.com
@@ -4371,6 +4616,39 @@ paths:
       summary: Update a company type
       tags:
       - admin-company-types
+  /api/v1/admin/comtrans:
+    get:
+      description: Returns a list of all comtrans
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminComtranListItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all comtrans
+      tags:
+      - admin-comtrans
   /api/v1/admin/comtrans-brands:
     get:
       description: Returns a list of all comtrans brands
@@ -5022,6 +5300,79 @@ paths:
       summary: Update a comtrans model
       tags:
       - admin-comtrans-models
+  /api/v1/admin/comtrans/{id}:
+    delete:
+      description: Deletes a comtran
+      parameters:
+      - description: Comtran ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a comtran
+      tags:
+      - admin-comtrans
+    get:
+      description: Returns a comtran by ID
+      parameters:
+      - description: Comtran ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetComtranResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get a comtran by ID
+      tags:
+      - admin-comtrans
   /api/v1/admin/countries:
     get:
       description: Returns a list of all countries
@@ -6700,6 +7051,112 @@ paths:
       summary: Update a moto model
       tags:
       - admin-moto-models
+  /api/v1/admin/motorcycles:
+    get:
+      description: Returns a list of all motorcycles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AdminMotoListItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get all motorcycles
+      tags:
+      - admin-motorcycles
+  /api/v1/admin/motorcycles/{id}:
+    delete:
+      description: Deletes a motorcycle
+      parameters:
+      - description: Motorcycle ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete a motorcycle
+      tags:
+      - admin-motorcycles
+    get:
+      description: Returns a motorcycle by ID
+      parameters:
+      - description: Motorcycle ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetMotorcyclesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get a motorcycle by ID
+      tags:
+      - admin-motorcycles
   /api/v1/admin/number-of-cycles:
     get:
       description: Returns a list of all number of cycles
@@ -10642,6 +11099,51 @@ paths:
       summary: Set commercial transport as not for sale
       tags:
       - comtrans
+  /api/v1/users/comtrans/{id}/edit:
+    get:
+      description: Returns a comtrans by its ID for editing
+      parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
+      - description: Comtrans ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetEditComtransResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get Edit comtrans by ID
+      tags:
+      - comtrans
   /api/v1/users/comtrans/{id}/images:
     delete:
       consumes:
@@ -10654,7 +11156,7 @@ paths:
         required: true
         type: integer
       - description: Image ID
-        in: path
+        in: query
         name: image_id
         required: true
         type: integer
@@ -10688,6 +11190,49 @@ paths:
       security:
       - BearerAuth: []
       summary: Delete commercial transport image
+      tags:
+      - comtrans
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads images for a commercial transport (max 10 files)
+      parameters:
+      - description: Commercial Transport ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Commercial transport images (max 10)
+        in: formData
+        name: images
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload commercial transport images
       tags:
       - comtrans
   /api/v1/users/comtrans/{id}/sell:
@@ -10743,7 +11288,7 @@ paths:
         required: true
         type: integer
       - description: Video ID
-        in: path
+        in: query
         name: video_id
         required: true
         type: integer
@@ -10779,6 +11324,49 @@ paths:
       summary: Delete commercial transport video
       tags:
       - comtrans
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads videos for a commercial transport (max 1 file)
+      parameters:
+      - description: Commercial Transport ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Commercial transport videos (max 1)
+        in: formData
+        name: videos
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload commercial transport videos
+      tags:
+      - comtrans
   /api/v1/users/comtrans/brands:
     get:
       consumes:
@@ -10805,12 +11393,17 @@ paths:
       summary: Get commercial transport brands
       tags:
       - comtrans
-  /api/v1/users/comtrans/brands/:id/models:
+  /api/v1/users/comtrans/brands/{id}/models:
     get:
       consumes:
       - application/json
       description: Get commercial transport models by brand ID
       parameters:
+      - description: Commercial Transport Brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: Language
         in: header
         name: Accept-Language
@@ -11540,7 +12133,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.GetMotorcyclesResponse'
+              $ref: '#/definitions/model.GetMotorcycleResponse'
             type: array
         "400":
           description: Bad Request
@@ -11566,7 +12159,7 @@ paths:
       - BearerAuth: []
       summary: Get motorcycles
       tags:
-      - car
+      - motorcycles
     post:
       consumes:
       - application/json
@@ -11680,6 +12273,51 @@ paths:
       security:
       - BearerAuth: []
       summary: Delete motorcycle
+      tags:
+      - motorcycles
+    get:
+      description: Returns a motorcycle by its ID
+      parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
+      - description: Motorcycle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetMotorcyclesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Get motorcycle by ID
       tags:
       - motorcycles
   /api/v1/users/motorcycles/{id}/buy:
@@ -11805,6 +12443,52 @@ paths:
       summary: Set motorcycle as not for sale
       tags:
       - motorcycles
+  /api/v1/users/motorcycles/{id}/edit:
+    get:
+      description: Returns a motorcycle by its ID for editing
+      parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
+      - description: Motorcycle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetMotorcyclesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Get Edit motorcycle by ID
+      tags:
+      - motorcycles
   /api/v1/users/motorcycles/{id}/images:
     delete:
       consumes:
@@ -11817,7 +12501,7 @@ paths:
         required: true
         type: integer
       - description: Image ID
-        in: path
+        in: query
         name: image_id
         required: true
         type: integer
@@ -11851,6 +12535,49 @@ paths:
       security:
       - BearerAuth: []
       summary: Delete motorcycle image
+      tags:
+      - motorcycles
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads images for a motorcycle (max 10 files)
+      parameters:
+      - description: Motorcycle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Motorcycle images (max 10)
+        in: formData
+        name: images
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload motorcycle images
       tags:
       - motorcycles
   /api/v1/users/motorcycles/{id}/sell:
@@ -11906,6 +12633,193 @@ paths:
         required: true
         type: integer
       - description: Video ID
+        in: query
+        name: video_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete motorcycle video
+      tags:
+      - motorcycles
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads videos for a motorcycle (max 1 file)
+      parameters:
+      - description: Motorcycle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Motorcycle videos (max 1)
+        in: formData
+        name: videos
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload motorcycle videos
+      tags:
+      - motorcycles
+  /api/v1/users/motorcycles/{motorcycle_id}/images:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads images for a motorcycle (max 10 files)
+      parameters:
+      - description: Motorcycle ID
+        in: path
+        name: motorcycle_id
+        required: true
+        type: integer
+      - description: Motorcycle images (max 10)
+        in: formData
+        name: images
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload motorcycle images
+      tags:
+      - motorcycles
+  /api/v1/users/motorcycles/{motorcycle_id}/videos:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads videos for a motorcycle (max 1 files)
+      parameters:
+      - description: Motorcycle ID
+        in: path
+        name: motorcycle_id
+        required: true
+        type: integer
+      - description: Motorcycle videos (max 10)
+        in: formData
+        name: videos
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload motorcycle videos
+      tags:
+      - motorcycles
+  /api/v1/users/motorcycles/{motorcycle_id}/videos/{video_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a video from a motorcycle
+      parameters:
+      - description: Motorcycle ID
+        in: path
+        name: motorcycle_id
+        required: true
+        type: integer
+      - description: Video ID
         in: path
         name: video_id
         required: true
@@ -11940,6 +12854,157 @@ paths:
       security:
       - BearerAuth: []
       summary: Delete motorcycle video
+      tags:
+      - motorcycles
+  /api/v1/users/motorcycles/brands:
+    get:
+      description: Returns a list of all motorcycle brands
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetMotorcycleBrandsResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get motorcycle brands
+      tags:
+      - motorcycles
+  /api/v1/users/motorcycles/brands/{id}/models:
+    get:
+      description: Returns a list of all motorcycle models by brand ID
+      parameters:
+      - description: Motorcycle brand ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetMotorcycleModelsResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get motorcycle models by brand ID
+      tags:
+      - motorcycles
+  /api/v1/users/motorcycles/categories:
+    get:
+      consumes:
+      - application/json
+      description: Get motorcycle categories
+      parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetMotorcycleCategoriesResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get motorcycle categories
+      tags:
+      - motorcycles
+  /api/v1/users/motorcycles/engines:
+    get:
+      description: Returns a list of all engines
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetMotorcycleModelsResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get engines
+      tags:
+      - motorcycles
+  /api/v1/users/motorcycles/number-of-cycles:
+    get:
+      consumes:
+      - application/json
+      description: Get number of cycles
+      parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.GetNumberOfCyclesResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: Get number of cycles
       tags:
       - motorcycles
   /api/v1/users/profile:
@@ -12018,6 +13083,71 @@ paths:
       security:
       - BearerAuth: []
       summary: Update user profile
+      tags:
+      - profile
+  /api/v1/users/profile/avatar:
+    delete:
+      description: Deletes the authenticated user's profile avatar
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Delete profile avatar
+      tags:
+      - profile
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads the authenticated user's profile avatar image
+      parameters:
+      - description: Avatar image (max 1)
+        in: formData
+        name: avatar
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Upload profile avatar
       tags:
       - profile
   /api/v1/users/profile/my-cars:
@@ -12324,614 +13454,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Create motorcycle
-      tags:
-      - motorcycles
-  /motorcycles/categories:
-    get:
-      consumes:
-      - application/json
-      description: Get motorcycle categories
-      parameters:
-      - description: Language
-        in: header
-        name: Accept-Language
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.GetMotorcycleCategoriesResponse'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get motorcycle categories
-      tags:
-      - motorcycles
-  /motorcycles/number-of-cycles:
-    get:
-      consumes:
-      - application/json
-      description: Get number of cycles
-      parameters:
-      - description: Language
-        in: header
-        name: Accept-Language
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.GetNumberOfCyclesResponse'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get number of cycles
-      tags:
-      - motorcycles
-  /users/motorcycles/{id}:
-    delete:
-      description: Deletes a motorcycle and its associated files
-      parameters:
-      - description: Motorcycle ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Delete motorcycle
-      tags:
-      - motorcycles
-    get:
-      description: Returns a motorcycle by its ID
-      parameters:
-      - description: Language
-        in: header
-        name: Accept-Language
-        type: string
-      - description: Motorcycle ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.GetMotorcyclesResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      - BearerAuth: []
-      summary: Get motorcycle by ID
-      tags:
-      - motorcycles
-  /users/motorcycles/{id}/buy:
-    post:
-      description: Returns a status response message
-      parameters:
-      - description: Motorcycle ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Buy motorcycle
-      tags:
-      - motorcycles
-  /users/motorcycles/{id}/dont-sell:
-    post:
-      description: Updates motorcycle status to not for sale
-      parameters:
-      - description: Motorcycle ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Set motorcycle as not for sale
-      tags:
-      - motorcycles
-  /users/motorcycles/{id}/edit:
-    get:
-      description: Returns a motorcycle by its ID for editing
-      parameters:
-      - description: Language
-        in: header
-        name: Accept-Language
-        type: string
-      - description: Motorcycle ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.GetMotorcyclesResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      - BearerAuth: []
-      summary: Get Edit motorcycle by ID
-      tags:
-      - motorcycles
-  /users/motorcycles/{id}/sell:
-    post:
-      description: Updates motorcycle status to for sale
-      parameters:
-      - description: Motorcycle ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Set motorcycle for sale
-      tags:
-      - motorcycles
-  /users/motorcycles/{motorcycle_id}/images:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Uploads images for a motorcycle (max 10 files)
-      parameters:
-      - description: Motorcycle ID
-        in: path
-        name: motorcycle_id
-        required: true
-        type: integer
-      - description: Motorcycle images (max 10)
-        in: formData
-        name: images
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Upload motorcycle images
-      tags:
-      - motorcycles
-  /users/motorcycles/{motorcycle_id}/images/{image_id}:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes an image from a motorcycle
-      parameters:
-      - description: Motorcycle ID
-        in: path
-        name: motorcycle_id
-        required: true
-        type: integer
-      - description: Image ID
-        in: path
-        name: image_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Delete motorcycle image
-      tags:
-      - motorcycles
-  /users/motorcycles/{motorcycle_id}/videos:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Uploads videos for a motorcycle (max 1 files)
-      parameters:
-      - description: Motorcycle ID
-        in: path
-        name: motorcycle_id
-        required: true
-        type: integer
-      - description: Motorcycle videos (max 10)
-        in: formData
-        name: videos
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Upload motorcycle videos
-      tags:
-      - motorcycles
-  /users/motorcycles/{motorcycle_id}/videos/{video_id}:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes a video from a motorcycle
-      parameters:
-      - description: Motorcycle ID
-        in: path
-        name: motorcycle_id
-        required: true
-        type: integer
-      - description: Video ID
-        in: path
-        name: video_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Delete motorcycle video
-      tags:
-      - motorcycles
-  /users/motorcycles/brands:
-    get:
-      description: Returns a list of all motorcycle brands
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.GetMotorcycleBrandsResponse'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get motorcycle brands
-      tags:
-      - motorcycles
-  /users/motorcycles/brands/{id}/models:
-    get:
-      description: Returns a list of all motorcycle models by brand ID
-      parameters:
-      - description: Motorcycle brand ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.GetMotorcycleModelsResponse'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get motorcycle models by brand ID
-      tags:
-      - motorcycles
-  /users/motorcycles/engines:
-    get:
-      description: Returns a list of all engines
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.GetMotorcycleModelsResponse'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Get engines
       tags:
       - motorcycles
   /ws/conversations:

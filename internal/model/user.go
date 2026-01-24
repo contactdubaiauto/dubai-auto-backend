@@ -114,3 +114,13 @@ type UpdateProfileRequest struct {
 type CreateCityRequest struct {
 	Name string `json:"name" validate:"required,min=2,max=255"`
 }
+
+type ImageObject struct {
+	ID    int    `json:"id"`
+	Image string `json:"image"`
+}
+
+type VideoObject struct {
+	ID    int    `json:"id"`
+	Video string `json:"video"`
+}
