@@ -420,10 +420,10 @@ func (h *AdminHandler) CreateBodyTypeImage(c *fiber.Ctx) error {
 
 	image := form.File["image"]
 
-	if len(image) > 10 {
+	if len(image) > 1 {
 		return utils.FiberResponse(c, model.Response{
 			Status: 400,
-			Error:  errors.New("must load maximum 10 files"),
+			Error:  errors.New("must load maximum 1 files"),
 		})
 	}
 

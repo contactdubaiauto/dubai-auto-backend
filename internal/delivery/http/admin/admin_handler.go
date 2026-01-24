@@ -173,6 +173,39 @@ func (h *AdminHandler) DeleteUser(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
+// SendUserNotifications godoc
+// @Summary      Send global notifications via FCM
+// @Description  Sends FCM notifications to all users with the given role_id. Request body: role_id (1 user, 2 dealer, 3 logistic, 4 broker, 5 car service), title, description.
+// @Tags         admin-users
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        body  body      model.SendNotificationRequest  true  "role_id, title, description"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/admin/users/notifications [post]
+func (h *AdminHandler) SendUserNotifications(c *fiber.Ctx) error {
+	var req model.SendNotificationRequest
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+	if err := h.validator.Validate(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+	ctx := c.Context()
+	data := h.service.SendUserNotifications(ctx, &req)
+	return utils.FiberResponse(c, data)
+}
+
 // Profile handlers
 
 // GetProfile godoc

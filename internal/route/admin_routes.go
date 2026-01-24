@@ -9,13 +9,14 @@ import (
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/service"
 	"dubai-auto/pkg/auth"
+	"dubai-auto/pkg/firebase"
 )
 
 // TODO: Hemmesini interface cykar!
 
-func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, validator *auth.Validator) {
+func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, firebaseService *firebase.FirebaseService, validator *auth.Validator) {
 	adminRepository := repository.NewAdminRepository(config, db)
-	adminService := service.NewAdminService(adminRepository)
+	adminService := service.NewAdminService(adminRepository, firebaseService)
 	adminHandler := http.NewAdminHandler(adminService, validator)
 
 	// profile routes
@@ -29,6 +30,7 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, v
 	{
 		users.Get("/", adminHandler.GetUsers)
 		users.Get("/:id", adminHandler.GetUser)
+		users.Post("/notifications", adminHandler.SendUserNotifications)
 		users.Post("/", adminHandler.CreateUser)
 		users.Put("/:id", adminHandler.UpdateUser)
 		users.Delete("/:id", adminHandler.DeleteUser)

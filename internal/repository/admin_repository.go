@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 
@@ -1960,4 +1961,31 @@ func (r *AdminRepository) DeleteNumberOfCycle(ctx *fasthttp.RequestCtx, id int) 
 	q := `DELETE FROM number_of_cycles WHERE id = $1`
 	_, err := r.db.Exec(ctx, q, id)
 	return err
+}
+
+// GetDeviceTokensByRoleID returns FCM device tokens for all users with the given role_id.
+func (r *AdminRepository) GetDeviceTokensByRoleID(ctx context.Context, roleID int) ([]string, error) {
+	q := `
+		SELECT ut.device_token
+		FROM user_tokens ut
+		INNER JOIN users u ON u.id = ut.user_id
+		WHERE u.role_id = $1
+		  AND ut.device_token IS NOT NULL
+		  AND trim(ut.device_token) != ''
+	`
+	rows, err := r.db.Query(ctx, q, roleID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tokens []string
+	for rows.Next() {
+		var t string
+		if err := rows.Scan(&t); err != nil {
+			return nil, err
+		}
+		tokens = append(tokens, t)
+	}
+	return tokens, rows.Err()
 }

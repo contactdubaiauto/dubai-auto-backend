@@ -23,6 +23,14 @@ type UpdateUserRequest struct {
 	Permissions []string `json:"permissions" validate:"omitempty"`
 }
 
+// SendNotificationRequest is the admin request to send global FCM notifications by role.
+// RoleID: 1 user, 2 dealer, 3 logistic, 4 broker, 5 car service.
+type SendNotificationRequest struct {
+	RoleID      int    `json:"role_id" validate:"required,min=1,max=5"`
+	Title       string `json:"title" validate:"required,min=1,max=255"`
+	Description string `json:"description" validate:"required,min=1"`
+}
+
 // Vehicles (admin) requests
 // NOTE: "vehicles" table is used for cars in this project.
 type AdminCreateVehicleRequest struct {

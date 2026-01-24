@@ -29,7 +29,7 @@ func Init(app *fiber.App, config *config.Config, db *pgxpool.Pool, firebaseServi
 			// SetupComtranRoutes(comtransRoute, config, db, validator)
 
 			adminRoute := v1.Group("/admin", auth.TokenGuard, auth.AdminGuard)
-			SetupAdminRoutes(adminRoute, config, db, validator)
+			SetupAdminRoutes(adminRoute, config, db, firebaseService, validator)
 
 			thirdPartyRoute := v1.Group("/third-party")
 			SetupThirdPartyRoutes(thirdPartyRoute, config, db, validator)

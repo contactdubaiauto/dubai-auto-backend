@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"mime/multipart"
@@ -17,14 +18,18 @@ import (
 	"dubai-auto/internal/repository"
 	"dubai-auto/internal/utils"
 	"dubai-auto/pkg/files"
+	"dubai-auto/pkg/firebase"
 )
 
+const fcmBatchSize = 500
+
 type AdminService struct {
-	repo *repository.AdminRepository
+	repo     *repository.AdminRepository
+	firebase *firebase.FirebaseService
 }
 
-func NewAdminService(repo *repository.AdminRepository) *AdminService {
-	return &AdminService{repo}
+func NewAdminService(repo *repository.AdminRepository, firebase *firebase.FirebaseService) *AdminService {
+	return &AdminService{repo: repo, firebase: firebase}
 }
 
 // Admin service methods
@@ -99,6 +104,38 @@ func (s *AdminService) DeleteUser(ctx *fasthttp.RequestCtx, id int) model.Respon
 	}
 	// todo: delete admin files if exists
 	return model.Response{Data: model.Success{Message: "User deleted successfully"}}
+}
+
+// SendUserNotifications sends global FCM notifications to all users with the given role_id.
+func (s *AdminService) SendUserNotifications(ctx context.Context, req *model.SendNotificationRequest) model.Response {
+	tokens, err := s.repo.GetDeviceTokensByRoleID(ctx, req.RoleID)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	if len(tokens) == 0 {
+		return model.Response{Data: model.Success{Message: "No devices to notify"}}
+	}
+
+	data := map[string]string{
+		"type":        "global_notification",
+		"title":       req.Title,
+		"description": req.Description,
+	}
+
+	// FCM multicast allows up to 500 tokens per request.
+	for i := 0; i < len(tokens); i += fcmBatchSize {
+		end := i + fcmBatchSize
+		if end > len(tokens) {
+			end = len(tokens)
+		}
+		batch := tokens[i:end]
+		_, err = s.firebase.SendToMultipleTokens(batch, req.Title, req.Description, data)
+		if err != nil {
+			return model.Response{Error: err, Status: http.StatusInternalServerError}
+		}
+	}
+
+	return model.Response{Data: model.Success{Message: "Notifications sent successfully"}}
 }
 
 // Profile service methods
@@ -1234,106 +1271,6 @@ func (s *AdminService) DeleteMotoModel(ctx *fasthttp.RequestCtx, id int) model.R
 
 	return model.Response{Data: model.Success{Message: "Moto model deleted successfully"}}
 }
-
-// // Moto Parameters service methods
-// func (s *AdminService) GetMotoParameters(ctx *fasthttp.RequestCtx) model.Response {
-// 	motoParameters, err := s.repo.GetMotoParameters(ctx)
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: motoParameters}
-// }
-
-// func (s *AdminService) CreateMotoParameter(ctx *fasthttp.RequestCtx, req *model.CreateMotoParameterRequest) model.Response {
-// 	id, err := s.repo.CreateMotoParameter(ctx, req)
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto parameter created successfully"}}
-// }
-
-// func (s *AdminService) UpdateMotoParameter(ctx *fasthttp.RequestCtx, id int, req *model.UpdateMotoParameterRequest) model.Response {
-// 	err := s.repo.UpdateMotoParameter(ctx, id, req)
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: model.Success{Message: "Moto parameter updated successfully"}}
-// }
-
-// func (s *AdminService) DeleteMotoParameter(ctx *fasthttp.RequestCtx, id int) model.Response {
-// 	err := s.repo.DeleteMotoParameter(ctx, id)
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: model.Success{Message: "Moto parameter deleted successfully"}}
-// }
-
-// // Moto Parameter Values service methods
-// func (s *AdminService) GetMotoParameterValues(ctx *fasthttp.RequestCtx, motoParamId int) model.Response {
-// 	motoParameterValues, err := s.repo.GetMotoParameterValues(ctx, motoParamId)
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: motoParameterValues}
-// }
-
-// func (s *AdminService) CreateMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, req *model.CreateMotoParameterValueRequest) model.Response {
-// 	id, err := s.repo.CreateMotoParameterValue(ctx, motoParamId, req)
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: model.SuccessWithId{Id: id, Message: "Moto parameter value created successfully"}}
-// }
-
-// func (s *AdminService) UpdateMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, id int, req *model.UpdateMotoParameterValueRequest) model.Response {
-// 	err := s.repo.UpdateMotoParameterValue(ctx, motoParamId, id, req)
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: model.Success{Message: "Moto parameter value updated successfully"}}
-// }
-
-// func (s *AdminService) DeleteMotoParameterValue(ctx *fasthttp.RequestCtx, motoParamId int, id int) model.Response {
-// 	err := s.repo.DeleteMotoParameterValue(ctx, motoParamId, id)
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: model.Success{Message: "Moto parameter value deleted successfully"}}
-// }
-
-// // Moto Category Parameters service methods
-// func (s *AdminService) GetMotoCategoryParameters(ctx *fasthttp.RequestCtx, categoryId int) model.Response {
-// 	motoCategoryParameters, err := s.repo.GetMotoCategoryParameters(ctx, categoryId)
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: motoCategoryParameters}
-// }
-
-// func (s *AdminService) CreateMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, req *model.CreateMotoCategoryParameterRequest) model.Response {
-// 	parameterId, err := s.repo.CreateMotoCategoryParameter(ctx, categoryId, req)
-
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: model.SuccessWithId{Id: parameterId, Message: "Moto category parameter created successfully"}}
-// }
-
-// func (s *AdminService) UpdateMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, parameterId int, req *model.UpdateMotoCategoryParameterRequest) model.Response {
-// 	err := s.repo.UpdateMotoCategoryParameter(ctx, categoryId, parameterId, req)
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: model.Success{Message: "Moto category parameter updated successfully"}}
-// }
-
-// func (s *AdminService) DeleteMotoCategoryParameter(ctx *fasthttp.RequestCtx, categoryId int, parameterId int) model.Response {
-// 	err := s.repo.DeleteMotoCategoryParameter(ctx, categoryId, parameterId)
-// 	if err != nil {
-// 		return model.Response{Error: err, Status: http.StatusInternalServerError}
-// 	}
-// 	return model.Response{Data: model.Success{Message: "Moto category parameter deleted successfully"}}
-// }
 
 // Comtrans Categories service methods
 func (s *AdminService) GetComtransCategories(ctx *fasthttp.RequestCtx) model.Response {
