@@ -2120,3 +2120,29 @@ func (r *AdminRepository) GetDeviceTokensByRoleID(ctx context.Context, roleID in
 
 	return tokens, rows.Err()
 }
+
+// GetUserDeviceToken returns the FCM device token for a specific user.
+func (r *AdminRepository) GetUserDeviceToken(ctx context.Context, userID int) (string, error) {
+	q := `SELECT device_token FROM user_tokens WHERE user_id = $1 AND device_token IS NOT NULL`
+	var token string
+	err := r.db.QueryRow(ctx, q, userID).Scan(&token)
+	return token, err
+}
+
+// InsertNotification inserts a notification record into the notifications table.
+func (r *AdminRepository) InsertNotification(ctx context.Context, notificationType string, userRoleID, userID int, itemType string, itemID int, title, message string) error {
+	q := `
+		INSERT INTO notifications (notification_type, user_role_id, user_id, item_type, item_id, title, message)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+	`
+	_, err := r.db.Exec(ctx, q, notificationType, userRoleID, userID, itemType, itemID, title, message)
+	return err
+}
+
+// GetUserRoleID returns the role_id for a specific user.
+func (r *AdminRepository) GetUserRoleID(ctx context.Context, userID int) (int, error) {
+	q := `SELECT role_id FROM users WHERE id = $1`
+	var roleID int
+	err := r.db.QueryRow(ctx, q, userID).Scan(&roleID)
+	return roleID, err
+}

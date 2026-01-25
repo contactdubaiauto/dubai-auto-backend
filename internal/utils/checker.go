@@ -35,6 +35,7 @@ func GMTTime() time.Time {
 
 func CheckLastIDLimit(lastID, limit, typeOfQuery string) (int, int) {
 	lastIDInt, limitInt := 0, 0
+
 	if typeOfQuery == "chat" {
 		lastIDInt, limitInt = 9999, 50
 	} else {

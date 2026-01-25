@@ -2,11 +2,18 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"dubai-auto/internal/model"
 )
 
 func (r *AdminRepository) GetMotorcycles(ctx context.Context, limit, lastID, moderationStatus int) ([]model.AdminMotoListItem, error) {
+	qWhere := ""
+
+	if moderationStatus != 0 {
+		qWhere = fmt.Sprintf(" AND cts.moderation_status = %d ", moderationStatus)
+	}
+
 	list := make([]model.AdminMotoListItem, 0)
 	q := `
 		SELECT
@@ -22,7 +29,9 @@ func (r *AdminRepository) GetMotorcycles(ctx context.Context, limit, lastID, mod
 			CASE
 				WHEN pf.avatar IS NULL OR pf.avatar = '' THEN NULL
 				ELSE $1 || pf.avatar
-			END AS user_avatar
+			END AS user_avatar,
+			m.moderation_status,
+			u.role_id
 		FROM motorcycles m
 		LEFT JOIN moto_brands mb ON m.moto_brand_id = mb.id
 		LEFT JOIN moto_models mm ON m.moto_model_id = mm.id
@@ -37,11 +46,12 @@ func (r *AdminRepository) GetMotorcycles(ctx context.Context, limit, lastID, mod
 				ORDER BY created_at DESC
 			) img
 		) images ON true
-		WHERE m.id > $2 AND m.moderation_status = $4
+		WHERE m.id > $2 ` + qWhere + `
 		ORDER BY m.id DESC
 		LIMIT $3
 	`
-	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL, lastID, limit, moderationStatus)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL, lastID, limit)
+
 	if err != nil {
 		return list, err
 	}
@@ -60,6 +70,8 @@ func (r *AdminRepository) GetMotorcycles(ctx context.Context, limit, lastID, mod
 			&v.Images,
 			&v.UserName,
 			&v.UserAvatar,
+			&v.ModerationStatus,
+			&v.UserRoleID,
 		); err != nil {
 			return list, err
 		}
@@ -74,11 +86,12 @@ func (r *AdminRepository) GetMotorcycleByID(ctx context.Context, id int) (model.
 		SELECT
 			m.id,
 			json_build_object(
-				'id', pf.user_id,
-				'username', pf.username,
+				'id', u.id,
+				'username', u.username,
 				'avatar', $2 || pf.avatar,
-				'contacts', pf.contacts
-			) AS owner,
+				'contacts', pf.contacts,
+				'role_id', u.role_id
+			) as owner,
 			m.engine,
 			m.power,
 			m.year,
@@ -103,8 +116,11 @@ func (r *AdminRepository) GetMotorcycleByID(ctx context.Context, id int) (model.
 			cl.name AS color,
 			false AS my_moto,
 			images.images,
-			videos.videos
+			videos.videos,
+			m.moderation_status,
+			u.role_id
 		FROM motorcycles m
+		LEFT JOIN users u ON u.id = m.user_id
 		LEFT JOIN profiles pf ON pf.user_id = m.user_id
 		LEFT JOIN moto_categories mc ON mc.id = m.moto_category_id
 		LEFT JOIN moto_brands mb ON mb.id = m.moto_brand_id
@@ -141,6 +157,8 @@ func (r *AdminRepository) GetMotorcycleByID(ctx context.Context, id int) (model.
 		&m.UpdatedAt, &m.CreatedAt, &m.MotoCategory, &m.MotoBrand,
 		&m.MotoModel, &m.EngineType, &m.City, &m.Color, &m.MyMoto,
 		&m.Images, &m.Videos,
+		&m.ModerationStatus,
+		&m.UserRoleID,
 	)
 	return m, err
 }
@@ -149,4 +167,22 @@ func (r *AdminRepository) DeleteMotorcycle(ctx context.Context, id int) error {
 	q := `DELETE FROM motorcycles WHERE id = $1`
 	_, err := r.db.Exec(ctx, q, id)
 	return err
+}
+
+// ModerateMotorcycle updates the moderation_status of a motorcycle and returns the user_id
+func (r *AdminRepository) ModerateMotorcycle(ctx context.Context, id int, status int) (int, error) {
+	qSet := ""
+
+	if status == 3 {
+		qSet = " , status = 2"
+	}
+	q := `
+		UPDATE motorcycles
+		SET moderation_status = $2, updated_at = now()` + qSet + `
+		WHERE id = $1
+		RETURNING user_id
+	`
+	var userID int
+	err := r.db.QueryRow(ctx, q, id, status).Scan(&userID)
+	return userID, err
 }

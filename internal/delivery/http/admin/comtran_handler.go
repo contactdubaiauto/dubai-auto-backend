@@ -27,7 +27,7 @@ import (
 func (h *AdminHandler) GetComtrans(c *fiber.Ctx) error {
 	limit := c.Query("limit")
 	lastID := c.Query("last_id")
-	moderationStatus := c.Query("moderation_status")
+	moderationStatus := c.Query("moderation_status", "0")
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
 	data := h.service.GetComtrans(c.Context(), limitInt, lastIDInt, moderationStatus)
 	return utils.FiberResponse(c, data)
@@ -82,6 +82,38 @@ func (h *AdminHandler) DeleteComtran(c *fiber.Ctx) error {
 		})
 	}
 	data := h.service.DeleteComtran(c.Context(), id, "/images/comtrans/"+idStr)
+	return utils.FiberResponse(c, data)
+}
+
+// ModerateComtranStatus godoc
+// @Summary      Moderate a comtran
+// @Description  Updates the moderation status of a comtran. If declined (status=3), sends push notification to the item's user.
+// @Tags         admin-comtrans
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        body  body      model.ModerateItemRequest  true  "Moderation request: id, status (1-pending, 2-accepted, 3-declined), title (optional), description (optional)"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/admin/comtrans/moderate [post]
+func (h *AdminHandler) ModerateComtranStatus(c *fiber.Ctx) error {
+	var req model.ModerateItemRequest
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+	if err := h.validator.Validate(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+	data := h.service.ModerateComtran(c.Context(), &req)
 	return utils.FiberResponse(c, data)
 }
 

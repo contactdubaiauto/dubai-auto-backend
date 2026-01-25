@@ -108,3 +108,37 @@ func (fs *FirebaseService) SendToMultipleTokens(tokens []string, title, body str
 	response, err := fs.client.SendEachForMulticast(fs.ctx, message)
 	return response, err
 }
+
+// SendSimpleNotification sends a simple notification to a single device token
+func (fs *FirebaseService) SendSimpleNotification(token, title, body string, data map[string]string) (string, error) {
+	message := &messaging.Message{
+		Token: token,
+		Notification: &messaging.Notification{
+			Title: title,
+			Body:  body,
+		},
+		Android: &messaging.AndroidConfig{
+			Priority: "high",
+			Notification: &messaging.AndroidNotification{
+				ChannelID: config.ENV.FCM_CHANNEL_ID,
+				Priority:  messaging.PriorityHigh,
+			},
+		},
+		APNS: &messaging.APNSConfig{
+			Payload: &messaging.APNSPayload{
+				Aps: &messaging.Aps{
+					Sound: "default",
+					Badge: &[]int{1}[0],
+					Alert: &messaging.ApsAlert{
+						Title: title,
+						Body:  body,
+					},
+				},
+			},
+		},
+		Data: data,
+	}
+
+	response, err := fs.client.Send(fs.ctx, message)
+	return response, err
+}

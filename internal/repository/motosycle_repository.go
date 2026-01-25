@@ -331,13 +331,11 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 		select 
 			mcs.id,
 			json_build_object(
-				'id', pf.user_id,
-				'username', pf.username,
-				'avatar', CASE
-					WHEN pf.avatar IS NULL OR pf.avatar = '' THEN ''
-					ELSE $3 || pf.avatar
-				END,
-				'contacts', pf.contacts
+				'id', u.id,
+				'username', u.username,
+				'avatar', $3 || pf.avatar,
+				'contacts', pf.contacts,
+				'role_id', u.role_id
 			) as owner,
 			mcs.engine,
 			mcs.power,
@@ -368,6 +366,7 @@ func (r *MotorcycleRepository) GetMotorcycleByID(ctx *fasthttp.RequestCtx, motor
 			images.images,
 			videos.videos
 		from updated mcs
+		left join users u on u.id = mcs.user_id
 		left join profiles pf on pf.user_id = mcs.user_id
 		left join moto_categories mocs on mocs.id = mcs.moto_category_id
 		left join moto_brands mbs on mbs.id = mcs.moto_brand_id
@@ -415,13 +414,11 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 		select 
 			mcs.id,
 			json_build_object(
-				'id', pf.user_id,
-				'username', pf.username,
-				'avatar', CASE
-					WHEN pf.avatar IS NULL OR pf.avatar = '' THEN ''
-					ELSE $3 || pf.avatar
-				END,
-				'contacts', pf.contacts
+				'id', u.id,
+				'username', u.username,
+				'avatar', $3 || pf.avatar,
+				'contacts', pf.contacts,
+				'role_id', u.role_id
 			) as owner,
 			mcs.engine,
 			mcs.power,
@@ -452,6 +449,7 @@ func (r *MotorcycleRepository) GetEditMotorcycleByID(ctx *fasthttp.RequestCtx, m
 			images.images,
 			videos.videos
 		from motorcycles mcs
+		left join users u on u.id = mcs.user_id
 		left join profiles pf on pf.user_id = mcs.user_id
 		left join moto_categories mocs on mocs.id = mcs.moto_category_id
 		left join moto_brands mbs on mbs.id = mcs.moto_brand_id

@@ -29,7 +29,7 @@ import (
 func (h *AdminHandler) GetVehicles(c *fiber.Ctx) error {
 	limit := c.Query("limit")
 	lastID := c.Query("last_id")
-	moderationStatus := c.Query("moderation_status")
+	moderationStatus := c.Query("moderation_status", "0")
 
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
 	data := h.service.GetVehicles(c.Context(), limitInt, lastIDInt, moderationStatus)
@@ -64,75 +64,6 @@ func (h *AdminHandler) GetVehicle(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
-// CreateVehicle godoc
-// @Summary      Create a vehicle
-// @Description  Creates a new vehicle
-// @Tags         admin-cars
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        vehicle  body      model.AdminCreateVehicleRequest  true  "Vehicle"
-// @Success      200  {object}  model.SuccessWithId
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/cars [post]
-func (h *AdminHandler) CreateVehicle(c *fiber.Ctx) error {
-	req := &model.AdminCreateVehicleRequest{}
-
-	if err := c.BodyParser(req); err != nil {
-		return utils.FiberResponse(c, model.Response{Status: 400, Error: err})
-	}
-
-	if err := h.validator.Validate(req); err != nil {
-		return utils.FiberResponse(c, model.Response{Status: 400, Error: err})
-	}
-
-	data := h.service.CreateVehicle(c.Context(), req)
-	return utils.FiberResponse(c, data)
-}
-
-// UpdateVehicle godoc
-// @Summary      Update a vehicle
-// @Description  Updates a vehicle
-// @Tags         admin-cars
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id  path  string  true  "Vehicle ID"
-// @Param        vehicle  body      model.AdminUpdateVehicleStatusRequest  true  "Vehicle"
-// @Success      200  {object}  model.Success
-// @Failure      400  {object}  model.ResultMessage
-// @Failure      401  {object}  auth.ErrorResponse
-// @Failure      403  {object}  auth.ErrorResponse
-// @Failure      500  {object}  model.ResultMessage
-// @Router       /api/v1/admin/cars/{id} [put]
-func (h *AdminHandler) UpdateVehicle(c *fiber.Ctx) error {
-	idStr := c.Params("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		return utils.FiberResponse(c, model.Response{
-			Status: 400,
-			Error:  errors.New("vehicle id must be integer"),
-		})
-	}
-
-	req := &model.AdminUpdateVehicleStatusRequest{}
-
-	if err := c.BodyParser(req); err != nil {
-		return utils.FiberResponse(c, model.Response{Status: 400, Error: err})
-	}
-
-	if err := h.validator.Validate(req); err != nil {
-		return utils.FiberResponse(c, model.Response{Status: 400, Error: err})
-	}
-
-	data := h.service.UpdateVehicleStatus(c.Context(), id, req)
-	return utils.FiberResponse(c, data)
-}
-
 // DeleteVehicle godoc
 // @Summary      Delete a vehicle
 // @Description  Deletes a vehicle
@@ -158,5 +89,37 @@ func (h *AdminHandler) DeleteVehicle(c *fiber.Ctx) error {
 	}
 
 	data := h.service.DeleteVehicle(c.Context(), id, "/images/cars/"+idStr)
+	return utils.FiberResponse(c, data)
+}
+
+// ModerateVehicleStatus godoc
+// @Summary      Moderate a vehicle
+// @Description  Updates the moderation status of a vehicle. If declined (status=3), sends push notification to the item's user.
+// @Tags         admin-cars
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        body  body      model.ModerateItemRequest  true  "Moderation request: id, status (1-pending, 2-accepted, 3-declined), title (optional), description (optional)"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/admin/cars/moderate [post]
+func (h *AdminHandler) ModerateVehicleStatus(c *fiber.Ctx) error {
+	var req model.ModerateItemRequest
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+	if err := h.validator.Validate(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+	data := h.service.ModerateVehicle(c.Context(), &req)
 	return utils.FiberResponse(c, data)
 }

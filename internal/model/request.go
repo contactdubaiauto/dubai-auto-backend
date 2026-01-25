@@ -436,3 +436,11 @@ type CreateItemReportRequest struct {
 type UpdateReportRequest struct {
 	ReportStatus int `json:"report_status" validate:"required,min=1,max=3"` // 1-pending, 2-resolved, 3-closed
 }
+
+// ModerateItemRequest is the request body for moderating items (vehicles, motorcycles, comtrans)
+type ModerateItemRequest struct {
+	ID          int    `json:"id" validate:"required"`
+	Status      int    `json:"status" validate:"required,min=1,max=3"` // 1-pending, 2-accepted, 3-declined
+	Title       string `json:"title"`                                  // optional, used for declined notification
+	Description string `json:"description"`                            // optional, used for declined notification
+}

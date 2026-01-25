@@ -143,6 +143,8 @@ definitions:
         type: array
       model:
         type: string
+      moderation_status:
+        type: integer
       price:
         type: integer
       status:
@@ -153,6 +155,8 @@ definitions:
         type: string
       user_phone:
         type: string
+      user_role_id:
+        type: integer
     type: object
   model.AdminComtransBrandResponse:
     properties:
@@ -230,60 +234,6 @@ definitions:
         type: string
       name_ru:
         type: string
-    type: object
-  model.AdminCreateVehicleRequest:
-    properties:
-      brand_id:
-        type: integer
-      city_id:
-        type: integer
-      color_id:
-        type: integer
-      crash:
-        type: boolean
-      description:
-        type: string
-      model_id:
-        type: integer
-      modification_id:
-        type: integer
-      new:
-        type: boolean
-      odometer:
-        type: integer
-      owners:
-        type: integer
-      phone_numbers:
-        items:
-          type: string
-        type: array
-      price:
-        type: integer
-      trade_in:
-        type: integer
-      user_id:
-        type: integer
-      vin_code:
-        type: string
-      wheel:
-        description: true left, false right
-        type: boolean
-      year:
-        type: integer
-    required:
-    - brand_id
-    - city_id
-    - color_id
-    - model_id
-    - modification_id
-    - odometer
-    - phone_numbers
-    - price
-    - trade_in
-    - user_id
-    - vin_code
-    - wheel
-    - year
     type: object
   model.AdminDrivetrainResponse:
     properties:
@@ -474,6 +424,8 @@ definitions:
         type: array
       model:
         type: string
+      moderation_status:
+        type: integer
       price:
         type: integer
       status:
@@ -484,6 +436,8 @@ definitions:
         type: string
       user_phone:
         type: string
+      user_role_id:
+        type: integer
     type: object
   model.AdminMotoModelResponse:
     properties:
@@ -543,16 +497,6 @@ definitions:
       name_ru:
         type: string
     type: object
-  model.AdminUpdateVehicleStatusRequest:
-    properties:
-      status:
-        description: 1-pending, 2-not sale, 3-on sale
-        maximum: 3
-        minimum: 1
-        type: integer
-    required:
-    - status
-    type: object
   model.AdminVehicleListItem:
     properties:
       brand:
@@ -567,6 +511,8 @@ definitions:
         type: array
       model:
         type: string
+      moderation_status:
+        type: integer
       price:
         type: integer
       status:
@@ -577,6 +523,8 @@ definitions:
         type: string
       user_phone:
         type: string
+      user_role_id:
+        type: integer
     type: object
   model.BodyType:
     properties:
@@ -634,6 +582,8 @@ definitions:
           type: string
         type: object
       id:
+        type: integer
+      role_id:
         type: integer
       username:
         type: string
@@ -1361,6 +1311,8 @@ definitions:
         items:
           type: string
         type: array
+      moderation_status:
+        type: integer
       my_comtrans:
         type: boolean
       odometer:
@@ -1383,6 +1335,8 @@ definitions:
         type: integer
       updated_at:
         type: string
+      user_role_id:
+        type: integer
       videos:
         items:
           type: string
@@ -1677,6 +1631,8 @@ definitions:
         items:
           type: string
         type: array
+      moderation_status:
+        type: integer
       moto_brand:
         type: string
       moto_category:
@@ -1707,6 +1663,8 @@ definitions:
         type: integer
       updated_at:
         type: string
+      user_role_id:
+        type: integer
       videos:
         items:
           type: string
@@ -1882,6 +1840,25 @@ definitions:
       name:
         type: string
     type: object
+  model.ModerateItemRequest:
+    properties:
+      description:
+        description: optional, used for declined notification
+        type: string
+      id:
+        type: integer
+      status:
+        description: 1-pending, 2-accepted, 3-declined
+        maximum: 3
+        minimum: 1
+        type: integer
+      title:
+        description: optional, used for declined notification
+        type: string
+    required:
+    - id
+    - status
+    type: object
   model.Modification:
     properties:
       drivetrain:
@@ -1904,6 +1881,8 @@ definitions:
           type: string
         type: object
       id:
+        type: integer
+      role_id:
         type: integer
       username:
         type: string
@@ -3825,45 +3804,6 @@ paths:
       summary: Get all cars
       tags:
       - admin-cars
-    post:
-      consumes:
-      - application/json
-      description: Creates a new vehicle
-      parameters:
-      - description: Vehicle
-        in: body
-        name: vehicle
-        required: true
-        schema:
-          $ref: '#/definitions/model.AdminCreateVehicleRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.SuccessWithId'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ResultMessage'
-      security:
-      - BearerAuth: []
-      summary: Create a vehicle
-      tags:
-      - admin-cars
   /api/v1/admin/cars/{id}:
     delete:
       description: Deletes a vehicle
@@ -3937,22 +3877,20 @@ paths:
       summary: Get a vehicle by ID
       tags:
       - admin-cars
-    put:
+  /api/v1/admin/cars/moderate:
+    post:
       consumes:
       - application/json
-      description: Updates a vehicle
+      description: Updates the moderation status of a vehicle. If declined (status=3),
+        sends push notification to the item's user.
       parameters:
-      - description: Vehicle ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Vehicle
+      - description: 'Moderation request: id, status (1-pending, 2-accepted, 3-declined),
+          title (optional), description (optional)'
         in: body
-        name: vehicle
+        name: body
         required: true
         schema:
-          $ref: '#/definitions/model.AdminUpdateVehicleStatusRequest'
+          $ref: '#/definitions/model.ModerateItemRequest'
       produces:
       - application/json
       responses:
@@ -3978,7 +3916,7 @@ paths:
             $ref: '#/definitions/model.ResultMessage'
       security:
       - BearerAuth: []
-      summary: Update a vehicle
+      summary: Moderate a vehicle
       tags:
       - admin-cars
   /api/v1/admin/cities:
@@ -5464,6 +5402,48 @@ paths:
       security:
       - BearerAuth: []
       summary: Get a comtran by ID
+      tags:
+      - admin-comtrans
+  /api/v1/admin/comtrans/moderate:
+    post:
+      consumes:
+      - application/json
+      description: Updates the moderation status of a comtran. If declined (status=3),
+        sends push notification to the item's user.
+      parameters:
+      - description: 'Moderation request: id, status (1-pending, 2-accepted, 3-declined),
+          title (optional), description (optional)'
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ModerateItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Moderate a comtran
       tags:
       - admin-comtrans
   /api/v1/admin/countries:
@@ -7261,6 +7241,48 @@ paths:
       security:
       - BearerAuth: []
       summary: Get a motorcycle by ID
+      tags:
+      - admin-motorcycles
+  /api/v1/admin/motorcycles/moderate:
+    post:
+      consumes:
+      - application/json
+      description: Updates the moderation status of a motorcycle. If declined (status=3),
+        sends push notification to the item's user.
+      parameters:
+      - description: 'Moderation request: id, status (1-pending, 2-accepted, 3-declined),
+          title (optional), description (optional)'
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ModerateItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Moderate a motorcycle
       tags:
       - admin-motorcycles
   /api/v1/admin/number-of-cycles:

@@ -94,6 +94,7 @@ type MotorcycleOwner struct {
 	Username string            `json:"username"`
 	Avatar   string            `json:"avatar"`
 	ID       int               `json:"id"`
+	RoleID   int               `json:"role_id"`
 }
 
 // // MotorcycleParameter represents a motorcycle parameter with its value
@@ -105,33 +106,35 @@ type MotorcycleOwner struct {
 // }
 
 type GetMotorcycleResponse struct {
-	UpdatedAt      time.Time       `json:"updated_at"`
-	CreatedAt      time.Time       `json:"created_at"`
-	Images         []string        `json:"images"`
-	Videos         []string        `json:"videos"`
-	PhoneNumbers   []string        `json:"phone_numbers"`
-	Owner          MotorcycleOwner `json:"owner"`
-	Crash          *bool           `json:"crash"`
-	Wheel          *bool           `json:"wheel"`
-	VinCode        string          `json:"vin_code"`
-	Description    string          `json:"description"`
-	Status         string          `json:"status"`
-	MotoCategory   string          `json:"moto_category"`
-	MotoBrand      string          `json:"moto_brand"`
-	MotoModel      string          `json:"moto_model"`
-	EngineType     string          `json:"engine_type"`
-	City           string          `json:"city"`
-	Color          string          `json:"color"`
-	ID             int             `json:"id"`
-	Engine         int             `json:"engine"`
-	Power          int             `json:"power"`
-	Year           int             `json:"year"`
-	NumberOfCycles string          `json:"number_of_cycles"`
-	Odometer       int             `json:"odometer"`
-	Owners         int             `json:"owners"`
-	Price          int             `json:"price"`
-	TradeIn        int             `json:"trade_in"`
-	MyMoto         bool            `json:"my_moto"`
+	UpdatedAt        time.Time       `json:"updated_at"`
+	CreatedAt        time.Time       `json:"created_at"`
+	Images           []string        `json:"images"`
+	Videos           []string        `json:"videos"`
+	PhoneNumbers     []string        `json:"phone_numbers"`
+	Owner            MotorcycleOwner `json:"owner"`
+	Crash            *bool           `json:"crash"`
+	Wheel            *bool           `json:"wheel"`
+	VinCode          string          `json:"vin_code"`
+	Description      string          `json:"description"`
+	Status           string          `json:"status"`
+	MotoCategory     string          `json:"moto_category"`
+	MotoBrand        string          `json:"moto_brand"`
+	MotoModel        string          `json:"moto_model"`
+	EngineType       string          `json:"engine_type"`
+	City             string          `json:"city"`
+	Color            string          `json:"color"`
+	ID               int             `json:"id"`
+	Engine           int             `json:"engine"`
+	Power            int             `json:"power"`
+	Year             int             `json:"year"`
+	NumberOfCycles   string          `json:"number_of_cycles"`
+	Odometer         int             `json:"odometer"`
+	Owners           int             `json:"owners"`
+	Price            int             `json:"price"`
+	ModerationStatus int             `json:"moderation_status"`
+	UserRoleID       int             `json:"user_role_id"`
+	TradeIn          int             `json:"trade_in"`
+	MyMoto           bool            `json:"my_moto"`
 }
 
 type GetMotorcyclesResponse struct {

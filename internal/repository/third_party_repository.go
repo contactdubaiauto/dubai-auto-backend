@@ -893,13 +893,11 @@ func (r *ThirdPartyRepository) GetEditDealerMotorcycleByID(ctx *fasthttp.Request
 		select 
 			mcs.id,
 			json_build_object(
-				'id', pf.user_id,
-				'username', pf.username,
-				'avatar', CASE
-					WHEN pf.avatar IS NULL OR pf.avatar = '' THEN ''
-					ELSE $3 || pf.avatar
-				END,
-				'contacts', pf.contacts
+				'id', u.id,
+				'username', u.username,
+				'avatar', $3 || pf.avatar,
+				'contacts', pf.contacts,
+				'role_id', u.role_id
 			) as owner,
 			mcs.engine,
 			mcs.power,
@@ -930,6 +928,7 @@ func (r *ThirdPartyRepository) GetEditDealerMotorcycleByID(ctx *fasthttp.Request
 			images.images,
 			videos.videos
 		from motorcycles mcs
+		left join users u on u.id = mcs.user_id
 		left join profiles pf on pf.user_id = mcs.user_id
 		left join moto_categories mocs on mocs.id = mcs.moto_category_id
 		left join moto_brands mbs on mbs.id = mcs.moto_brand_id
@@ -1125,10 +1124,11 @@ func (r *ThirdPartyRepository) GetEditDealerComtransByID(ctx *fasthttp.RequestCt
 		select 
 			cts.id,
 			json_build_object(
-				'id', pf.user_id,
-				'username', pf.username,
+				'id', u.id,
+				'username', u.username,
 				'avatar', $3 || pf.avatar,
-				'contacts', pf.contacts
+				'contacts', pf.contacts,
+				'role_id', u.role_id
 			) as owner,
 			cts.engine,
 			cts.power,
@@ -1157,6 +1157,7 @@ func (r *ThirdPartyRepository) GetEditDealerComtransByID(ctx *fasthttp.RequestCt
 			images.images,
 			videos.videos
 		from comtrans cts
+		left join users u on u.id = cts.user_id
 		left join profiles pf on pf.user_id = cts.user_id
 		left join com_categories cocs on cocs.id = cts.comtran_category_id
 		left join com_brands cbs on cbs.id = cts.comtran_brand_id

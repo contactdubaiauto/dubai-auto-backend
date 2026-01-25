@@ -164,37 +164,39 @@ type GetCarsResponse struct {
 }
 
 type GetCarResponse struct {
-	CreatedAt    *time.Time `json:"created_at"`
-	UpdatedAt    *time.Time `json:"updated_at"`
-	Images       *[]string  `json:"images"`
-	Videos       *[]string  `json:"videos"`
-	PhoneNumbers *[]string  `json:"phone_numbers"`
-	Owner        *Owner     `json:"owner"`
-	Brand        *string    `json:"brand"`
-	Region       *string    `json:"region"`
-	City         *string    `json:"city"`
-	Transmission *string    `json:"transmission"`
-	Engine       *string    `json:"engine"`
-	Drivetrain   *string    `json:"drivetrain"`
-	FuelType     *string    `json:"fuel_type"`
-	VinCode      *string    `json:"vin_code"`
-	Color        *string    `json:"color"`
-	Description  *string    `json:"description"`
-	Status       *int       `json:"status"`
-	TradeIn      *int       `json:"trade_in"`
-	Owners       *int       `json:"owners"`
-	Mileage      *int       `json:"mileage"` // todo: change it to odometer
-	Model        string     `json:"model"`
-	BodyType     string     `json:"body_type"`
-	ID           int        `json:"id"`
-	Year         int        `json:"year"`
-	Price        int        `json:"price"`
-	ViewCount    int        `json:"view_count"`
-	Credit       *bool      `json:"credit"`
-	New          *bool      `json:"new"`
-	Crash        *bool      `json:"crash"`
-	MyCar        *bool      `json:"my_car"`
-	Liked        *bool      `json:"liked"`
+	CreatedAt        *time.Time `json:"created_at"`
+	UpdatedAt        *time.Time `json:"updated_at"`
+	Images           *[]string  `json:"images"`
+	Videos           *[]string  `json:"videos"`
+	PhoneNumbers     *[]string  `json:"phone_numbers"`
+	Owner            *Owner     `json:"owner"`
+	Brand            *string    `json:"brand"`
+	Region           *string    `json:"region"`
+	City             *string    `json:"city"`
+	Transmission     *string    `json:"transmission"`
+	Engine           *string    `json:"engine"`
+	Drivetrain       *string    `json:"drivetrain"`
+	FuelType         *string    `json:"fuel_type"`
+	VinCode          *string    `json:"vin_code"`
+	Color            *string    `json:"color"`
+	Description      *string    `json:"description"`
+	Status           *int       `json:"status"`
+	TradeIn          *int       `json:"trade_in"`
+	Owners           *int       `json:"owners"`
+	Mileage          *int       `json:"mileage"` // todo: change it to odometer
+	Model            string     `json:"model"`
+	BodyType         string     `json:"body_type"`
+	ID               int        `json:"id"`
+	Year             int        `json:"year"`
+	Price            int        `json:"price"`
+	ViewCount        int        `json:"view_count"`
+	ModerationStatus int        `json:"moderation_status"`
+	UserRoleID       int        `json:"user_role_id"`
+	Credit           *bool      `json:"credit"`
+	New              *bool      `json:"new"`
+	Crash            *bool      `json:"crash"`
+	MyCar            *bool      `json:"my_car"`
+	Liked            *bool      `json:"liked"`
 }
 
 type GetMyCarsResponse struct {
@@ -278,42 +280,48 @@ type AdminProfileResponse struct {
 }
 
 type AdminVehicleListItem struct {
-	Images      []string `json:"images"`
-	Description *string  `json:"description"`
-	Brand       *string  `json:"brand"`
-	Model       *string  `json:"model"`
-	UserPhone   *string  `json:"user_phone"`
-	UserName    *string  `json:"user_name"`
-	UserAvatar  *string  `json:"user_avatar"`
-	Status      int      `json:"status"`
-	Price       int      `json:"price"`
-	ID          int      `json:"id"`
+	Images           []string `json:"images"`
+	Description      *string  `json:"description"`
+	Brand            *string  `json:"brand"`
+	Model            *string  `json:"model"`
+	UserPhone        *string  `json:"user_phone"`
+	UserName         *string  `json:"user_name"`
+	UserAvatar       *string  `json:"user_avatar"`
+	Status           int      `json:"status"`
+	Price            int      `json:"price"`
+	ID               int      `json:"id"`
+	ModerationStatus int      `json:"moderation_status"`
+	UserRoleID       int      `json:"user_role_id"`
 }
 
 type AdminComtranListItem struct {
-	ID          int      `json:"id"`
-	Brand       *string  `json:"brand"`
-	Model       *string  `json:"model"`
-	Description *string  `json:"description"`
-	Price       int      `json:"price"`
-	Status      int      `json:"status"`
-	UserPhone   *string  `json:"user_phone"`
-	UserName    *string  `json:"user_name"`
-	UserAvatar  *string  `json:"user_avatar"`
-	Images      []string `json:"images"`
+	ID               int      `json:"id"`
+	Brand            *string  `json:"brand"`
+	Model            *string  `json:"model"`
+	Description      *string  `json:"description"`
+	Price            int      `json:"price"`
+	Status           int      `json:"status"`
+	UserPhone        *string  `json:"user_phone"`
+	UserName         *string  `json:"user_name"`
+	UserAvatar       *string  `json:"user_avatar"`
+	Images           []string `json:"images"`
+	ModerationStatus int      `json:"moderation_status"`
+	UserRoleID       int      `json:"user_role_id"`
 }
 
 type AdminMotoListItem struct {
-	ID          int      `json:"id"`
-	Brand       *string  `json:"brand"`
-	Model       *string  `json:"model"`
-	Description *string  `json:"description"`
-	Price       int      `json:"price"`
-	Status      int      `json:"status"`
-	UserPhone   *string  `json:"user_phone"`
-	UserName    *string  `json:"user_name"`
-	UserAvatar  *string  `json:"user_avatar"`
-	Images      []string `json:"images"`
+	ID               int      `json:"id"`
+	Brand            *string  `json:"brand"`
+	Model            *string  `json:"model"`
+	Description      *string  `json:"description"`
+	Price            int      `json:"price"`
+	Status           int      `json:"status"`
+	UserPhone        *string  `json:"user_phone"`
+	UserName         *string  `json:"user_name"`
+	UserAvatar       *string  `json:"user_avatar"`
+	Images           []string `json:"images"`
+	ModerationStatus int      `json:"moderation_status"`
+	UserRoleID       int      `json:"user_role_id"`
 }
 
 type UserResponse struct {

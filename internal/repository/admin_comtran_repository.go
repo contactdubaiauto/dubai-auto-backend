@@ -2,11 +2,18 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"dubai-auto/internal/model"
 )
 
 func (r *AdminRepository) GetComtrans(ctx context.Context, limit, lastID, moderationStatus int) ([]model.AdminComtranListItem, error) {
+	qWhere := ""
+
+	if moderationStatus != 0 {
+		qWhere = fmt.Sprintf(" AND cts.moderation_status = %d ", moderationStatus)
+	}
+
 	list := make([]model.AdminComtranListItem, 0)
 	q := `
 		SELECT
@@ -22,7 +29,9 @@ func (r *AdminRepository) GetComtrans(ctx context.Context, limit, lastID, modera
 			CASE
 				WHEN pf.avatar IS NULL OR pf.avatar = '' THEN NULL
 				ELSE $1 || pf.avatar
-			END AS user_avatar
+			END AS user_avatar,
+			cts.moderation_status,
+			u.role_id
 		FROM comtrans cts
 		LEFT JOIN com_brands cbs ON cts.comtran_brand_id = cbs.id
 		LEFT JOIN com_models cms ON cts.comtran_model_id = cms.id
@@ -37,11 +46,11 @@ func (r *AdminRepository) GetComtrans(ctx context.Context, limit, lastID, modera
 				ORDER BY created_at DESC
 			) img
 		) images ON true
-		WHERE cts.id > $2 AND cts.moderation_status = $4
+		WHERE cts.id > $2 ` + qWhere + `
 		ORDER BY cts.id DESC
 		LIMIT $3
 	`
-	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL, lastID, limit, moderationStatus)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL, lastID, limit)
 	if err != nil {
 		return list, err
 	}
@@ -60,6 +69,8 @@ func (r *AdminRepository) GetComtrans(ctx context.Context, limit, lastID, modera
 			&v.Images,
 			&v.UserName,
 			&v.UserAvatar,
+			&v.ModerationStatus,
+			&v.UserRoleID,
 		); err != nil {
 			return list, err
 		}
@@ -74,11 +85,12 @@ func (r *AdminRepository) GetComtranByID(ctx context.Context, id int) (model.Get
 		SELECT
 			cts.id,
 			json_build_object(
-				'id', pf.user_id,
-				'username', pf.username,
+				'id', u.id,
+				'username', u.username,
 				'avatar', $2 || pf.avatar,
-				'contacts', pf.contacts
-			) AS owner,
+				'contacts', pf.contacts,
+				'role_id', u.role_id
+			) as owner,
 			cts.engine,
 			cts.power,
 			cts.year,
@@ -101,7 +113,9 @@ func (r *AdminRepository) GetComtranByID(ctx context.Context, id int) (model.Get
 			cls.name AS color,
 			false AS my_comtrans,
 			images.images,
-			videos.videos
+			videos.videos,
+			cts.moderation_status,
+			u.role_id
 		FROM comtrans cts
 		LEFT JOIN profiles pf ON pf.user_id = cts.user_id
 		LEFT JOIN com_categories cocs ON cocs.id = cts.comtran_category_id
@@ -110,6 +124,7 @@ func (r *AdminRepository) GetComtranByID(ctx context.Context, id int) (model.Get
 		LEFT JOIN com_engines ces ON ces.id = cts.engine_id
 		LEFT JOIN cities cs ON cs.id = cts.city_id
 		LEFT JOIN colors cls ON cls.id = cts.color_id
+		LEFT JOIN users u ON u.id = cts.user_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -137,6 +152,8 @@ func (r *AdminRepository) GetComtranByID(ctx context.Context, id int) (model.Get
 		&com.UpdatedAt, &com.CreatedAt, &com.ComtranCategory, &com.ComtranBrand,
 		&com.ComtranModel, &com.EngineType, &com.City, &com.Color, &com.MyComtrans,
 		&com.Images, &com.Videos,
+		&com.ModerationStatus,
+		&com.UserRoleID,
 	)
 	return com, err
 }
@@ -145,4 +162,22 @@ func (r *AdminRepository) DeleteComtran(ctx context.Context, id int) error {
 	q := `DELETE FROM comtrans WHERE id = $1`
 	_, err := r.db.Exec(ctx, q, id)
 	return err
+}
+
+// ModerateComtran updates the moderation_status of a comtran and returns the user_id
+func (r *AdminRepository) ModerateComtran(ctx context.Context, id int, status int) (int, error) {
+	qSet := ""
+
+	if status == 3 {
+		qSet = " , status = 2"
+	}
+	q := `
+		UPDATE comtrans
+		SET moderation_status = $2, updated_at = now()` + qSet + `
+		WHERE id = $1
+		RETURNING user_id
+	`
+	var userID int
+	err := r.db.QueryRow(ctx, q, id, status).Scan(&userID)
+	return userID, err
 }

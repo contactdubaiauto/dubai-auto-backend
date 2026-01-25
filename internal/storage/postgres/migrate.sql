@@ -461,3 +461,21 @@ alter table comtrans alter column moderation_status set default 1;
 alter table vehicles alter column status set default 3;
 alter table motorcycles alter column status set default 3;
 alter table comtrans alter column status set default 3;
+
+
+create table notifications (
+    "id" serial primary key,
+    "notification_type" varchar(255),
+    "user_role_id" int,
+    "user_id" int,
+    "item_type" item_type_enum,
+    "item_id" int,
+    "title" varchar(255),
+    "message" text,
+    "created_at" timestamp not null default now(),
+    constraint fk_notifications_user_id
+        foreign key (user_id)
+            references users(id)
+                on delete cascade
+                on update cascade
+);

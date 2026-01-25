@@ -1811,14 +1811,16 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/api/v1/admin/cars/moderate": {
             "post": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Creates a new vehicle",
+                "description": "Updates the moderation status of a vehicle. If declined (status=3), sends push notification to the item's user.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1828,15 +1830,15 @@ const docTemplate = `{
                 "tags": [
                     "admin-cars"
                 ],
-                "summary": "Create a vehicle",
+                "summary": "Moderate a vehicle",
                 "parameters": [
                     {
-                        "description": "Vehicle",
-                        "name": "vehicle",
+                        "description": "Moderation request: id, status (1-pending, 2-accepted, 3-declined), title (optional), description (optional)",
+                        "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.AdminCreateVehicleRequest"
+                            "$ref": "#/definitions/model.ModerateItemRequest"
                         }
                     }
                 ],
@@ -1844,7 +1846,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.SuccessWithId"
+                            "$ref": "#/definitions/model.Success"
                         }
                     },
                     "400": {
@@ -1903,74 +1905,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.GetCarsResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/auth.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ResultMessage"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Updates a vehicle",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-cars"
-                ],
-                "summary": "Update a vehicle",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Vehicle ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Vehicle",
-                        "name": "vehicle",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.AdminUpdateVehicleStatusRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Success"
                         }
                     },
                     "400": {
@@ -4222,6 +4156,69 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/comtrans/moderate": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Updates the moderation status of a comtran. If declined (status=3), sends push notification to the item's user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-comtrans"
+                ],
+                "summary": "Moderate a comtran",
+                "parameters": [
+                    {
+                        "description": "Moderation request: id, status (1-pending, 2-accepted, 3-declined), title (optional), description (optional)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ModerateItemRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -7032,6 +7029,69 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/model.AdminMotoListItem"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/motorcycles/moderate": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Updates the moderation status of a motorcycle. If declined (status=3), sends push notification to the item's user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-motorcycles"
+                ],
+                "summary": "Moderate a motorcycle",
+                "parameters": [
+                    {
+                        "description": "Moderation request: id, status (1-pending, 2-accepted, 3-declined), title (optional), description (optional)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ModerateItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Success"
                         }
                     },
                     "400": {
@@ -18630,6 +18690,9 @@ const docTemplate = `{
                 "model": {
                     "type": "string"
                 },
+                "moderation_status": {
+                    "type": "integer"
+                },
                 "price": {
                     "type": "integer"
                 },
@@ -18644,6 +18707,9 @@ const docTemplate = `{
                 },
                 "user_phone": {
                     "type": "string"
+                },
+                "user_role_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -18762,81 +18828,6 @@ const docTemplate = `{
                 },
                 "name_ru": {
                     "type": "string"
-                }
-            }
-        },
-        "model.AdminCreateVehicleRequest": {
-            "type": "object",
-            "required": [
-                "brand_id",
-                "city_id",
-                "color_id",
-                "model_id",
-                "modification_id",
-                "odometer",
-                "phone_numbers",
-                "price",
-                "trade_in",
-                "user_id",
-                "vin_code",
-                "wheel",
-                "year"
-            ],
-            "properties": {
-                "brand_id": {
-                    "type": "integer"
-                },
-                "city_id": {
-                    "type": "integer"
-                },
-                "color_id": {
-                    "type": "integer"
-                },
-                "crash": {
-                    "type": "boolean"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "model_id": {
-                    "type": "integer"
-                },
-                "modification_id": {
-                    "type": "integer"
-                },
-                "new": {
-                    "type": "boolean"
-                },
-                "odometer": {
-                    "type": "integer"
-                },
-                "owners": {
-                    "type": "integer"
-                },
-                "phone_numbers": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "price": {
-                    "type": "integer"
-                },
-                "trade_in": {
-                    "type": "integer"
-                },
-                "user_id": {
-                    "type": "integer"
-                },
-                "vin_code": {
-                    "type": "string"
-                },
-                "wheel": {
-                    "description": "true left, false right",
-                    "type": "boolean"
-                },
-                "year": {
-                    "type": "integer"
                 }
             }
         },
@@ -19128,6 +19119,9 @@ const docTemplate = `{
                 "model": {
                     "type": "string"
                 },
+                "moderation_status": {
+                    "type": "integer"
+                },
                 "price": {
                     "type": "integer"
                 },
@@ -19142,6 +19136,9 @@ const docTemplate = `{
                 },
                 "user_phone": {
                     "type": "string"
+                },
+                "user_role_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -19234,20 +19231,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AdminUpdateVehicleStatusRequest": {
-            "type": "object",
-            "required": [
-                "status"
-            ],
-            "properties": {
-                "status": {
-                    "description": "1-pending, 2-not sale, 3-on sale",
-                    "type": "integer",
-                    "maximum": 3,
-                    "minimum": 1
-                }
-            }
-        },
         "model.AdminVehicleListItem": {
             "type": "object",
             "properties": {
@@ -19269,6 +19252,9 @@ const docTemplate = `{
                 "model": {
                     "type": "string"
                 },
+                "moderation_status": {
+                    "type": "integer"
+                },
                 "price": {
                     "type": "integer"
                 },
@@ -19283,6 +19269,9 @@ const docTemplate = `{
                 },
                 "user_phone": {
                     "type": "string"
+                },
+                "user_role_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -19372,6 +19361,9 @@ const docTemplate = `{
                     }
                 },
                 "id": {
+                    "type": "integer"
+                },
+                "role_id": {
                     "type": "integer"
                 },
                 "username": {
@@ -20430,6 +20422,9 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "moderation_status": {
+                    "type": "integer"
+                },
                 "my_comtrans": {
                     "type": "boolean"
                 },
@@ -20462,6 +20457,9 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "user_role_id": {
+                    "type": "integer"
                 },
                 "videos": {
                     "type": "array",
@@ -20910,6 +20908,9 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "moderation_status": {
+                    "type": "integer"
+                },
                 "moto_brand": {
                     "type": "string"
                 },
@@ -20954,6 +20955,9 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "user_role_id": {
+                    "type": "integer"
                 },
                 "videos": {
                     "type": "array",
@@ -21223,6 +21227,32 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ModerateItemRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "status"
+            ],
+            "properties": {
+                "description": {
+                    "description": "optional, used for declined notification",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "1-pending, 2-accepted, 3-declined",
+                    "type": "integer",
+                    "maximum": 3,
+                    "minimum": 1
+                },
+                "title": {
+                    "description": "optional, used for declined notification",
+                    "type": "string"
+                }
+            }
+        },
         "model.Modification": {
             "type": "object",
             "properties": {
@@ -21256,6 +21286,9 @@ const docTemplate = `{
                     }
                 },
                 "id": {
+                    "type": "integer"
+                },
+                "role_id": {
                     "type": "integer"
                 },
                 "username": {

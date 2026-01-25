@@ -973,4 +973,19 @@ create table reports (
                 on update cascade
 );
 
-
+create table notifications (
+    "id" serial primary key,
+    "notification_type" varchar(255),
+    "user_role_id" int,
+    "user_id" int,
+    "item_type" item_type_enum,
+    "item_id" int,
+    "title" varchar(255),
+    "message" text,
+    "created_at" timestamp not null default now(),
+    constraint fk_notifications_user_id
+        foreign key (user_id)
+            references users(id)
+                on delete cascade
+                on update cascade
+);

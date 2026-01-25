@@ -66,6 +66,7 @@ type UpdateComtransRequest struct {
 
 // Owner represents the comtrans owner information
 type ComtransOwner struct {
+	RoleID   int               `json:"role_id"`
 	Contacts map[string]string `json:"contacts"`
 	Username string            `json:"username"`
 	Avatar   string            `json:"avatar"`
@@ -92,32 +93,34 @@ type GetComtransResponse struct {
 }
 
 type GetComtranResponse struct {
-	UpdatedAt       time.Time     `json:"updated_at"`
-	CreatedAt       time.Time     `json:"created_at"`
-	Images          []string      `json:"images"`
-	Videos          []string      `json:"videos"`
-	PhoneNumbers    []string      `json:"phone_numbers"`
-	Owner           ComtransOwner `json:"owner"`
-	Crash           *bool         `json:"crash"`
-	VinCode         string        `json:"vin_code"`
-	Wheel           *bool         `json:"wheel"`
-	Description     string        `json:"description"`
-	Status          string        `json:"status"`
-	ComtranCategory string        `json:"comtran_category"`
-	ComtranBrand    string        `json:"comtran_brand"`
-	ComtranModel    string        `json:"comtran_model"`
-	EngineType      string        `json:"engine_type"`
-	City            string        `json:"city"`
-	Color           string        `json:"color"`
-	ID              int           `json:"id"`
-	Engine          int           `json:"engine"`
-	Power           int           `json:"power"`
-	Year            int           `json:"year"`
-	Odometer        int           `json:"odometer"`
-	Owners          int           `json:"owners"`
-	TradeIn         int           `json:"trade_in"`
-	Price           int           `json:"price"`
-	MyComtrans      bool          `json:"my_comtrans"`
+	UpdatedAt        time.Time     `json:"updated_at"`
+	CreatedAt        time.Time     `json:"created_at"`
+	Images           []string      `json:"images"`
+	Videos           []string      `json:"videos"`
+	PhoneNumbers     []string      `json:"phone_numbers"`
+	Owner            ComtransOwner `json:"owner"`
+	Crash            *bool         `json:"crash"`
+	VinCode          string        `json:"vin_code"`
+	Wheel            *bool         `json:"wheel"`
+	Description      string        `json:"description"`
+	Status           string        `json:"status"`
+	ComtranCategory  string        `json:"comtran_category"`
+	ComtranBrand     string        `json:"comtran_brand"`
+	ComtranModel     string        `json:"comtran_model"`
+	EngineType       string        `json:"engine_type"`
+	City             string        `json:"city"`
+	Color            string        `json:"color"`
+	ID               int           `json:"id"`
+	Engine           int           `json:"engine"`
+	Power            int           `json:"power"`
+	Year             int           `json:"year"`
+	Odometer         int           `json:"odometer"`
+	Owners           int           `json:"owners"`
+	TradeIn          int           `json:"trade_in"`
+	Price            int           `json:"price"`
+	MyComtrans       bool          `json:"my_comtrans"`
+	ModerationStatus int           `json:"moderation_status"`
+	UserRoleID       int           `json:"user_role_id"`
 }
 
 type GetEditComtransResponse struct {

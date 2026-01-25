@@ -40,6 +40,7 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, f
 	vehicles := r.Group("/cars")
 	{
 		vehicles.Get("/", adminHandler.GetVehicles)
+		vehicles.Post("/moderate", adminHandler.ModerateVehicleStatus)
 		vehicles.Get("/:id", adminHandler.GetVehicle)
 		vehicles.Delete("/:id", adminHandler.DeleteVehicle)
 	}
@@ -181,6 +182,7 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, f
 	{
 		motorcycles.Get("/", adminHandler.GetMotorcycles)
 		motorcycles.Get("/:id", adminHandler.GetMotorcycle)
+		motorcycles.Post("/moderate", adminHandler.ModerateMotorcycleStatus)
 		motorcycles.Delete("/:id", adminHandler.DeleteMotorcycle)
 	}
 
@@ -226,6 +228,7 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, f
 	{
 		comtrans.Get("/", adminHandler.GetComtrans)
 		comtrans.Get("/:id", adminHandler.GetComtran)
+		comtrans.Post("/moderate", adminHandler.ModerateComtranStatus)
 		comtrans.Delete("/:id", adminHandler.DeleteComtran)
 	}
 

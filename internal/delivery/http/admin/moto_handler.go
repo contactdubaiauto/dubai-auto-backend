@@ -28,7 +28,7 @@ func (h *AdminHandler) GetMotorcycles(c *fiber.Ctx) error {
 	limit := c.Query("limit")
 	lastID := c.Query("last_id")
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
-	moderationStatus := c.Query("moderation_status")
+	moderationStatus := c.Query("moderation_status", "0")
 	data := h.service.GetMotorcycles(c.Context(), limitInt, lastIDInt, moderationStatus)
 	return utils.FiberResponse(c, data)
 }
@@ -82,6 +82,38 @@ func (h *AdminHandler) DeleteMotorcycle(c *fiber.Ctx) error {
 		})
 	}
 	data := h.service.DeleteMotorcycle(c.Context(), id, "/images/motorcycles/"+idStr)
+	return utils.FiberResponse(c, data)
+}
+
+// ModerateMotorcycleStatus godoc
+// @Summary      Moderate a motorcycle
+// @Description  Updates the moderation status of a motorcycle. If declined (status=3), sends push notification to the item's user.
+// @Tags         admin-motorcycles
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        body  body      model.ModerateItemRequest  true  "Moderation request: id, status (1-pending, 2-accepted, 3-declined), title (optional), description (optional)"
+// @Success      200   {object}  model.Success
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/admin/motorcycles/moderate [post]
+func (h *AdminHandler) ModerateMotorcycleStatus(c *fiber.Ctx) error {
+	var req model.ModerateItemRequest
+	if err := c.BodyParser(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+	if err := h.validator.Validate(&req); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+	data := h.service.ModerateMotorcycle(c.Context(), &req)
 	return utils.FiberResponse(c, data)
 }
 

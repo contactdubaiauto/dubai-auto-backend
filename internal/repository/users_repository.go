@@ -430,7 +430,8 @@ func (r *UserRepository) GetCities(ctx *fasthttp.RequestCtx, text, nameColumn st
 		from cities c
 		left join regions r on r.city_id = c.id
 		where c.` + nameColumn + ` ILIKE '%' || $1 || '%'
-		group by c.id, c.` + nameColumn + `;
+		group by c.id, c.` + nameColumn + `
+		order by c.id desc;
 	`
 	rows, err := r.db.Query(ctx, q, text)
 
@@ -1316,10 +1317,11 @@ func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int,
 				ELSE FALSE
 			END AS my_car,
 			json_build_object(
-				'id', pf.user_id,
-				'username', pf.username,
+				'id', u.id,
+				'username', u.username,
 				'avatar', $3 || pf.avatar,
-				'contacts', pf.contacts
+				'contacts', pf.contacts,
+				'role_id', u.role_id
 			) as owner,
 			 vs.description,
 			CASE 
@@ -1340,6 +1342,7 @@ func (r *UserRepository) GetCarByID(ctx *fasthttp.RequestCtx, carID, userID int,
 		LEFT JOIN body_types bts ON gms.body_type_id = bts.id
 		LEFT JOIN fuel_types fts ON gms.fuel_type_id = fts.id
 		left join user_likes ul on ul.vehicle_id = vs.id AND ul.user_id = $2
+		left join users u on u.id = vs.user_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
