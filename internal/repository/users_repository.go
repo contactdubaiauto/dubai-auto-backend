@@ -46,7 +46,8 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 				images.images,
 				vs.view_count,
 				true as my_car,
-				vs.crash
+				vs.crash,
+				vs.moderation_status
 			from vehicles vs
 			left join brands bs on vs.brand_id = bs.id
 			left join models ms on vs.model_id = ms.id
@@ -75,7 +76,8 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 				images.images,
 				cm.view_count,
 				true as my_car,
-				cm.crash
+				cm.crash,
+				cm.moderation_status
 			from comtrans cm
 			left join com_brands cbs on cbs.id = cm.comtran_brand_id
 			left join com_models cms on cms.id = cm.comtran_model_id
@@ -103,7 +105,8 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 				mt.view_count,
 				images.images,
 				true as my_car,
-				mt.crash
+				mt.crash,
+				mt.moderation_status
 			from motorcycles mt
 			left join moto_brands mbs on mbs.id = mt.moto_brand_id
 			left join moto_models mms on mms.id = mt.moto_model_id
@@ -124,7 +127,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 			year, price,
 			status, created_at, 
 			view_count, images, my_car, 
-			crash 
+			crash, moderation_status
 		from vs
 		union all
 		select 
@@ -132,7 +135,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 			year, price,
 			status, created_at, 
 			view_count, images, my_car, 
-			crash 
+			crash, moderation_status
 		from cms
 		union all
 		select 
@@ -140,7 +143,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 			year, price,
 			status, created_at, 
 			view_count, images, my_car, 
-			crash 
+			crash, moderation_status
 		from mts
 		order by created_at desc;
 
@@ -167,6 +170,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 			&car.Images,
 			&car.MyCar,
 			&car.Crash,
+			&car.ModerationStatus,
 		); err != nil {
 			return cars, err
 		}

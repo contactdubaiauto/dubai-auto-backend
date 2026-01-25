@@ -11,8 +11,7 @@ import (
 )
 
 // Vehicles (admin) repository methods.
-
-func (r *AdminRepository) GetVehicles(ctx *fasthttp.RequestCtx, limit, lastID int) ([]model.AdminVehicleListItem, error) {
+func (r *AdminRepository) GetVehicles(ctx *fasthttp.RequestCtx, limit, lastID, moderationStatus int) ([]model.AdminVehicleListItem, error) {
 	vehicles := make([]model.AdminVehicleListItem, 0)
 
 	q := `
@@ -44,15 +43,16 @@ func (r *AdminRepository) GetVehicles(ctx *fasthttp.RequestCtx, limit, lastID in
 				ORDER BY created_at DESC
 			) img
 		) images ON true
-		WHERE vs.id > $2
+		WHERE vs.id > $2 AND vs.moderation_status = $4
 		ORDER BY vs.id DESC
 		LIMIT $3
 	`
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL, lastID, limit, moderationStatus)
 
-	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL, lastID, limit)
 	if err != nil {
 		return vehicles, err
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {

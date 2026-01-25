@@ -16,6 +16,9 @@ import (
 // @Tags         admin-cars
 // @Produce      json
 // @Security     BearerAuth
+// @Param        moderation_status  query  string  false  "Moderation Status"
+// @Param        limit  query  string  false  "Limit"
+// @Param        last_id  query  string  false  "Last ID"
 // @Success      200  {array}  model.AdminVehicleListItem
 // @Failure      400  {object}  model.ResultMessage
 // @Failure      401  {object}  auth.ErrorResponse
@@ -26,9 +29,10 @@ import (
 func (h *AdminHandler) GetVehicles(c *fiber.Ctx) error {
 	limit := c.Query("limit")
 	lastID := c.Query("last_id")
+	moderationStatus := c.Query("moderation_status")
 
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
-	data := h.service.GetVehicles(c.Context(), limitInt, lastIDInt)
+	data := h.service.GetVehicles(c.Context(), limitInt, lastIDInt, moderationStatus)
 	return utils.FiberResponse(c, data)
 }
 

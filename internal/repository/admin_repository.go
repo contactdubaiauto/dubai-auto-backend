@@ -2087,26 +2087,36 @@ func (r *AdminRepository) DeleteNumberOfCycle(ctx *fasthttp.RequestCtx, id int) 
 
 // GetDeviceTokensByRoleID returns FCM device tokens for all users with the given role_id.
 func (r *AdminRepository) GetDeviceTokensByRoleID(ctx context.Context, roleID int) ([]string, error) {
+	qWhere := ""
+
+	if roleID != 0 {
+		qWhere = fmt.Sprintf(`AND u.role_id = %d`, roleID)
+	}
+
 	q := `
 		SELECT ut.device_token
 		FROM user_tokens ut
 		INNER JOIN users u ON u.id = ut.user_id
-		WHERE u.role_id = $1
-		  AND ut.device_token IS NOT NULL
+		WHERE ut.device_token IS NOT NULL ` + qWhere + `
 	`
-	rows, err := r.db.Query(ctx, q, roleID)
+	rows, err := r.db.Query(ctx, q)
+
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
+	defer rows.Close()
 	var tokens []string
+
 	for rows.Next() {
 		var t string
+
 		if err := rows.Scan(&t); err != nil {
 			return nil, err
 		}
+
 		tokens = append(tokens, t)
 	}
+
 	return tokens, rows.Err()
 }

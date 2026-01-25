@@ -198,20 +198,21 @@ type GetCarResponse struct {
 }
 
 type GetMyCarsResponse struct {
-	Type      string     `json:"type"`
-	Model     *string    `json:"model"`
-	CreatedAt *time.Time `json:"created_at"`
-	Images    *[]string  `json:"images"`
-	Brand     *string    `json:"brand"`
-	Status    *int       `json:"status"`
-	TradeIn   *int       `json:"trade_in"`
-	Year      *int       `json:"year"`
-	Price     *int       `json:"price"`
-	ViewCount *int       `json:"view_count"`
-	New       *bool      `json:"new"`
-	Crash     *bool      `json:"crash"`
-	MyCar     *bool      `json:"my_car"`
-	ID        int        `json:"id"`
+	Type             string     `json:"type"`
+	Model            *string    `json:"model"`
+	CreatedAt        *time.Time `json:"created_at"`
+	Images           *[]string  `json:"images"`
+	Brand            *string    `json:"brand"`
+	Status           *int       `json:"status"`
+	TradeIn          *int       `json:"trade_in"`
+	Year             *int       `json:"year"`
+	Price            *int       `json:"price"`
+	ViewCount        *int       `json:"view_count"`
+	New              *bool      `json:"new"`
+	Crash            *bool      `json:"crash"`
+	MyCar            *bool      `json:"my_car"`
+	ID               int        `json:"id"`
+	ModerationStatus int        `json:"moderation_status"`
 }
 
 type City struct {

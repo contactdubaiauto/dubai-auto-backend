@@ -6,7 +6,7 @@ import (
 	"dubai-auto/internal/model"
 )
 
-func (r *AdminRepository) GetComtrans(ctx context.Context, limit, lastID int) ([]model.AdminComtranListItem, error) {
+func (r *AdminRepository) GetComtrans(ctx context.Context, limit, lastID, moderationStatus int) ([]model.AdminComtranListItem, error) {
 	list := make([]model.AdminComtranListItem, 0)
 	q := `
 		SELECT
@@ -37,11 +37,11 @@ func (r *AdminRepository) GetComtrans(ctx context.Context, limit, lastID int) ([
 				ORDER BY created_at DESC
 			) img
 		) images ON true
-		WHERE cts.id > $2
+		WHERE cts.id > $2 AND cts.moderation_status = $4
 		ORDER BY cts.id DESC
 		LIMIT $3
 	`
-	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL, lastID, limit)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL, lastID, limit, moderationStatus)
 	if err != nil {
 		return list, err
 	}

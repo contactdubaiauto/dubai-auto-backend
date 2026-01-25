@@ -3,13 +3,18 @@ package service
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"dubai-auto/internal/model"
 	"dubai-auto/pkg/files"
 )
 
-func (s *AdminService) GetComtrans(ctx context.Context, limit, lastID int) model.Response {
-	list, err := s.repo.GetComtrans(ctx, limit, lastID)
+func (s *AdminService) GetComtrans(ctx context.Context, limit, lastID int, moderationStatus string) model.Response {
+	moderationStatusInt, err := strconv.Atoi(moderationStatus)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusBadRequest}
+	}
+	list, err := s.repo.GetComtrans(ctx, limit, lastID, moderationStatusInt)
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}

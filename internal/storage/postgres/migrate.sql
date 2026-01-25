@@ -453,3 +453,11 @@ alter table comtrans add constraint fk_comtrans_city_id
             on delete set null
             on update cascade;
 
+
+alter table vehicles alter column moderation_status set default 1;
+alter table motorcycles alter column moderation_status set default 1;
+alter table comtrans alter column moderation_status set default 1;
+
+alter table vehicles alter column status set default 3;
+alter table motorcycles alter column status set default 3;
+alter table comtrans alter column status set default 3;

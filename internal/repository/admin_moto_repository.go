@@ -6,7 +6,7 @@ import (
 	"dubai-auto/internal/model"
 )
 
-func (r *AdminRepository) GetMotorcycles(ctx context.Context, limit, lastID int) ([]model.AdminMotoListItem, error) {
+func (r *AdminRepository) GetMotorcycles(ctx context.Context, limit, lastID, moderationStatus int) ([]model.AdminMotoListItem, error) {
 	list := make([]model.AdminMotoListItem, 0)
 	q := `
 		SELECT
@@ -37,11 +37,11 @@ func (r *AdminRepository) GetMotorcycles(ctx context.Context, limit, lastID int)
 				ORDER BY created_at DESC
 			) img
 		) images ON true
-		WHERE m.id > $2
+		WHERE m.id > $2 AND m.moderation_status = $4
 		ORDER BY m.id DESC
 		LIMIT $3
 	`
-	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL, lastID, limit)
+	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL, lastID, limit, moderationStatus)
 	if err != nil {
 		return list, err
 	}

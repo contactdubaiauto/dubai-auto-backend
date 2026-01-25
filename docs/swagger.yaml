@@ -3782,6 +3782,19 @@ paths:
   /api/v1/admin/cars:
     get:
       description: Returns a list of all cars
+      parameters:
+      - description: Moderation Status
+        in: query
+        name: moderation_status
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: Last ID
+        in: query
+        name: last_id
+        type: string
       produces:
       - application/json
       responses:
@@ -4686,6 +4699,19 @@ paths:
   /api/v1/admin/comtrans:
     get:
       description: Returns a list of all comtrans
+      parameters:
+      - description: Moderation Status
+        in: query
+        name: moderation_status
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: Last ID
+        in: query
+        name: last_id
+        type: string
       produces:
       - application/json
       responses:
@@ -7121,6 +7147,19 @@ paths:
   /api/v1/admin/motorcycles:
     get:
       description: Returns a list of all motorcycles
+      parameters:
+      - description: Moderation Status
+        in: query
+        name: moderation_status
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: Last ID
+        in: query
+        name: last_id
+        type: string
       produces:
       - application/json
       responses:

@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/valyala/fasthttp"
 
@@ -12,12 +13,19 @@ import (
 
 // Vehicles (admin) service methods.
 
-func (s *AdminService) GetVehicles(ctx *fasthttp.RequestCtx, limit, lastID int) model.Response {
-	vehicles, err := s.repo.GetVehicles(ctx, limit, lastID)
+func (s *AdminService) GetVehicles(ctx *fasthttp.RequestCtx, limit, lastID int, moderationStatus string) model.Response {
+	moderationStatusInt, err := strconv.Atoi(moderationStatus)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusBadRequest}
+	}
+
+	vehicles, err := s.repo.GetVehicles(ctx, limit, lastID, moderationStatusInt)
 
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
 	return model.Response{Data: vehicles}
 }
 

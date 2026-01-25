@@ -705,7 +705,7 @@ create table motorcycles (
     "phone_numbers" varchar(255)[] not null,
     "price" int not null,
     "trade_in" int not null default 1, -- 1. No exchange 2. Equal value 3. More expensive 4. Cheaper 5. Not a car
-    "status" int not null default 1, -- 1-pending, 2-not sale (my cars), 3-on sale,
+    "status" int not null default 3, -- 1-pending, 2-not sale (my cars), 3-on sale,
     "moderation_status" int not null default 1; -- 1-pending, 2-accepted, 3-declined
     "updated_at" timestamp not null default now(),
     "created_at" timestamp not null default now(),
@@ -870,7 +870,7 @@ create table comtrans (
     "new" boolean not null default false,
     "price" int not null,
     "trade_in" int not null default 1, -- 1. No exchange 2. Equal value 3. More expensive 4. Cheaper 5. Not a car
-    "status" int not null default 1, -- 1-pending, 2-not sale (my cars), 3-on sale,
+    "status" int not null default 3, -- 1-pending, 2-not sale (my cars), 3-on sale,
     "moderation_status" int not null default 1; -- 1-pending, 2-accepted, 3-declined
     "updated_at" timestamp not null default now(),
     "created_at" timestamp not null default now(),
@@ -972,3 +972,5 @@ create table reports (
                 on delete cascade
                 on update cascade
 );
+
+

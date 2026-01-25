@@ -1144,9 +1144,9 @@ func (h *ThirdPartyHandler) UpdateDealerComtrans(c *fiber.Ctx) error {
 	var comtrans model.UpdateComtransRequest
 	dealerID := c.Locals("id").(int)
 	ctx := c.Context()
-
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
+
 	if err != nil {
 		return utils.FiberResponse(c, model.Response{
 			Status: 400,

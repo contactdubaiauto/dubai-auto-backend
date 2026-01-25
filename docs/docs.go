@@ -1756,6 +1756,26 @@ const docTemplate = `{
                     "admin-cars"
                 ],
                 "summary": "Get all cars",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Moderation Status",
+                        "name": "moderation_status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Last ID",
+                        "name": "last_id",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3164,6 +3184,26 @@ const docTemplate = `{
                     "admin-comtrans"
                 ],
                 "summary": "Get all comtrans",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Moderation Status",
+                        "name": "moderation_status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Last ID",
+                        "name": "last_id",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -6964,6 +7004,26 @@ const docTemplate = `{
                     "admin-motorcycles"
                 ],
                 "summary": "Get all motorcycles",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Moderation Status",
+                        "name": "moderation_status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Last ID",
+                        "name": "last_id",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
