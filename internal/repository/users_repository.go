@@ -295,10 +295,10 @@ func (r *UserRepository) GetProfile(ctx *fasthttp.RequestCtx, userID int, nameCo
 func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, profile *model.UpdateProfileRequest) error {
 
 	q := `
-	UPDATE users 
-	SET username = $2, 
-	phone = $3, email = $4
-	WHERE id = $1
+		UPDATE users 
+		SET username = $2, 
+		phone = $3, email = $4
+		WHERE id = $1
 	`
 	_, err := r.db.Exec(ctx, q, userID, profile.Username, profile.PhoneNumber, profile.Email)
 
@@ -341,21 +341,26 @@ func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, pro
 		return nil // No fields to update
 	}
 
-	// Build dynamic SET clause
+	// Build dynamic SET clause and values placeholders
 	var setClause []string
+	var valuePlaceholders []string
 
 	for i, key := range keys {
-		setClause = append(setClause, fmt.Sprintf("%s = $%d", key, i+1))
+		setClause = append(setClause, fmt.Sprintf("%s = EXCLUDED.%s", key, key))
+		valuePlaceholders = append(valuePlaceholders, fmt.Sprintf("$%d", i+2)) // +2 because $1 is user_id
 	}
 
+	// Add last_active_date to set clause
 	setClause = append(setClause, "last_active_date = NOW()")
-	args = append(args, userID)
+
+	// Prepend userID to args
+	args = append([]interface{}{userID}, args...)
 
 	q = fmt.Sprintf(`
-		UPDATE profiles 
-		SET %s
-		WHERE user_id = $%d
-	`, strings.Join(setClause, ", "), len(args))
+		INSERT INTO profiles (user_id, %s)
+		VALUES ($1, %s)
+		ON CONFLICT (user_id) DO UPDATE SET %s
+	`, strings.Join(keys, ", "), strings.Join(valuePlaceholders, ", "), strings.Join(setClause, ", "))
 
 	_, err = r.db.Exec(ctx, q, args...)
 
@@ -363,7 +368,11 @@ func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, pro
 }
 
 func (r *UserRepository) SetProfileAvatar(ctx *fasthttp.RequestCtx, userID int, path string) error {
-	q := `UPDATE profiles SET avatar = $1 WHERE user_id = $2`
+	q := `
+		INSERT INTO profiles (user_id, avatar)
+		VALUES ($2, $1)
+		ON CONFLICT (user_id) DO UPDATE SET avatar = EXCLUDED.avatar
+	`
 	_, err := r.db.Exec(ctx, q, path, userID)
 	return err
 }
