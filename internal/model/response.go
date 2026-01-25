@@ -137,6 +137,8 @@ type Home struct {
 }
 
 type Owner struct {
+	Email    *string           `json:"email"`
+	Phone    *string           `json:"phone"`
 	Avatar   *string           `json:"avatar"`
 	Username *string           `json:"username"`
 	Id       *int              `json:"id"`
@@ -723,4 +725,14 @@ type GetReportsResponse struct {
 	ItemType          *string   `json:"item_type"`
 	ItemID            *int      `json:"item_id"`
 	Item              any       `json:"item"`
+}
+
+// AdminNotificationResponse represents a global notification sent by admin.
+type AdminNotificationResponse struct {
+	ID               int       `json:"id"`
+	NotificationType *string   `json:"notification_type"`
+	UserRoleID       *int      `json:"user_role_id"`
+	Title            *string   `json:"title"`
+	Message          *string   `json:"message"`
+	CreatedAt        time.Time `json:"created_at"`
 }

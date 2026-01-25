@@ -154,167 +154,119 @@ func (r *ComtransRepository) CreateComtrans(ctx *fasthttp.RequestCtx, req model.
 }
 
 func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, targetUserID string, brands, models, regions, cities,
-	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors, dealers []string,
-	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer string,
+	transmissions, engines, fuel_types, colors, dealers []string,
+	year_from, year_to, price_from, price_to, tradeIn, owners, crash, odometer string,
 	new, wheel *bool, limit, lastID int, nameColumn string) ([]model.GetComtransResponse, error) {
 	data := make([]model.GetComtransResponse, 0)
 	var qWhere string
 	var qValues []any
-	qValues = append(qValues, userID)
-	var i = 1
+	// $1 = IMAGE_BASE_URL, $2 = userID, $3 = lastID
+	qValues = append(qValues, r.config.IMAGE_BASE_URL, userID, lastID)
+	i := 3
 
 	if len(brands) > 0 {
-		i += 1
-		qWhere += fmt.Sprintf(" AND bs.id = ANY($%d)", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cbs.id = ANY($%d)", i)
 		qValues = append(qValues, brands)
 	}
 
 	if len(models) > 0 {
-		i += 1
-		qWhere += fmt.Sprintf(" AND ms.id = ANY($%d)", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cms.id = ANY($%d)", i)
 		qValues = append(qValues, models)
 	}
 
-	if len(regions) > 0 {
-		i += 1
-		qWhere += fmt.Sprintf(" AND rs.id = ANY($%d)", i)
-		qValues = append(qValues, regions)
-	}
-
 	if len(cities) > 0 {
-		i += 1
-		qWhere += fmt.Sprintf(" AND cs.id = ANY($%d)", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cts.city_id = ANY($%d)", i)
 		qValues = append(qValues, cities)
 	}
 
-	if len(transmissions) > 0 {
-		i += 1
-		qWhere += fmt.Sprintf(" AND ts.id = ANY($%d)", i)
-		qValues = append(qValues, transmissions)
-	}
-
-	if len(engines) > 0 {
-		i += 1
-		qWhere += fmt.Sprintf(" AND es.id = ANY($%d)", i)
-		qValues = append(qValues, engines)
-	}
-
-	if len(drivetrains) > 0 {
-		i += 1
-		qWhere += fmt.Sprintf(" AND ds.id = ANY($%d)", i)
-		qValues = append(qValues, drivetrains)
-	}
-
-	if len(body_types) > 0 {
-		i += 1
-		qWhere += fmt.Sprintf(" AND bts.id = ANY($%d)", i)
-		qValues = append(qValues, body_types)
-	}
-
 	if len(fuel_types) > 0 {
-		i += 1
-		qWhere += fmt.Sprintf(" AND fts.id = ANY($%d)", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cts.engine_id = ANY($%d)", i)
 		qValues = append(qValues, fuel_types)
 	}
 
-	if len(generations) > 0 {
-		i += 1
-		qWhere += fmt.Sprintf(" AND gms.generation_id = ANY($%d)", i)
-		qValues = append(qValues, generations)
-	}
-
 	if len(colors) > 0 {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.color_id = ANY($%d)", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cts.color_id = ANY($%d)", i)
 		qValues = append(qValues, colors)
 	}
 
 	if len(dealers) > 0 {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.user_id = ANY($%d)", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cts.user_id = ANY($%d)", i)
 		qValues = append(qValues, dealers)
 	}
 
-	if len(ownership_types) > 0 {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.ownership_type_id = ANY($%d) ", i)
-		qValues = append(qValues, ownership_types)
-	}
-
 	if year_from != "" {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.year >= $%d", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cts.year >= $%d", i)
 		qValues = append(qValues, year_from)
 	}
 
 	if year_to != "" {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.year <= $%d", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cts.year <= $%d", i)
 		qValues = append(qValues, year_to)
 	}
 
 	if tradeIn != "" {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.trade_in = $%d", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cts.trade_in = $%d", i)
 		qValues = append(qValues, tradeIn)
 	}
 
 	if owners != "" {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.owners = $%d", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cts.owners = $%d", i)
 		qValues = append(qValues, owners)
 	}
 
 	if crash != "" {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.crash = $%d", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cts.crash = $%d", i)
 		qValues = append(qValues, crash)
 	}
 
-	if credit != "" {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.credit = $%d", i)
-		qValues = append(qValues, true)
-	}
-
-	if credit != "" {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.credit = $%d", i)
-		qValues = append(qValues, true)
-	}
-
 	if price_from != "" {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.price >= $%d", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cts.price >= $%d", i)
 		qValues = append(qValues, price_from)
 	}
 
 	if price_to != "" {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.price <= $%d", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cts.price <= $%d", i)
 		qValues = append(qValues, price_to)
 	}
 
 	if new != nil {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.new = $%d", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cts.new = $%d", i)
 		qValues = append(qValues, new)
 	}
 
 	if wheel != nil {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.wheel = $%d", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cts.wheel = $%d", i)
 		qValues = append(qValues, wheel)
 	}
 
 	if odometer != "" {
-		i += 1
-		qWhere += fmt.Sprintf(" AND vs.odometer <= $%d", i)
+		i++
+		qWhere += fmt.Sprintf(" AND cts.odometer <= $%d", i)
 		qValues = append(qValues, odometer)
 	}
 
+	// Add limit parameter
+	i++
+	limitPlaceholder := fmt.Sprintf("$%d", i)
+	qValues = append(qValues, limit)
+
 	q := `
-		select 
+		SELECT 
 			cts.id,
 			'comtran' as type,
 			cbs.` + nameColumn + ` as brand,
@@ -337,10 +289,10 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, t
 				WHEN u.role_id = 2 THEN u.username
 				ELSE NULL
 			END AS owner_name
-		from comtrans cts
-		left join com_brands cbs on cbs.id = cts.comtran_brand_id
-		left join com_models cms on cms.id = cts.comtran_model_id
-		left join users u on u.id = cts.user_id
+		FROM comtrans cts
+		LEFT JOIN com_brands cbs ON cbs.id = cts.comtran_brand_id
+		LEFT JOIN com_models cms ON cms.id = cts.comtran_model_id
+		LEFT JOIN users u ON u.id = cts.user_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -349,17 +301,20 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, t
 				WHERE comtran_id = cts.id
 				ORDER BY created_at DESC
 			) img
-		) images ON true;
-
+		) images ON true
+		WHERE cts.status = 3 AND (cts.moderation_status = 1 OR cts.moderation_status = 2) AND cts.id > $3
+		` + qWhere + `
+		ORDER BY cts.id DESC
+		LIMIT ` + limitPlaceholder + `
 	`
 
-	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL, userID)
+	rows, err := r.db.Query(ctx, q, qValues...)
 	if err != nil {
 		return data, err
 	}
 
 	defer rows.Close()
-	fmt.Println("userID", userID)
+
 	for rows.Next() {
 		var com model.GetComtransResponse
 		err = rows.Scan(

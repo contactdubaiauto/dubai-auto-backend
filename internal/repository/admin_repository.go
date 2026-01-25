@@ -1827,7 +1827,9 @@ func (r *AdminRepository) GetReports(ctx *fasthttp.RequestCtx) ([]model.GetRepor
 					WHEN reporter_profile.avatar IS NULL OR reporter_profile.avatar = '' THEN NULL
 					ELSE $1 || reporter_profile.avatar
 				END,
+				'email', reporter_user.email,
 				'role_id', reporter_user.role_id,
+				'phone', reporter_user.phone,
 				'contacts', reporter_profile.contacts
 			) as reporter,
 			json_build_object(
@@ -1837,7 +1839,9 @@ func (r *AdminRepository) GetReports(ctx *fasthttp.RequestCtx) ([]model.GetRepor
 					WHEN reported_profile.avatar IS NULL OR reported_profile.avatar = '' THEN NULL
 					ELSE $1 || reported_profile.avatar
 				END,
+				'email', reported_user.email,
 				'role_id', reported_user.role_id,
+				'phone', reported_user.phone,
 				'contacts', reported_profile.contacts
 			) as reported_user,
 			r.item_type,
@@ -1942,7 +1946,9 @@ func (r *AdminRepository) GetReportByID(ctx *fasthttp.RequestCtx, id int) (model
 					WHEN reporter_profile.avatar IS NULL OR reporter_profile.avatar = '' THEN NULL
 					ELSE $2 || reporter_profile.avatar
 				END,
+				'email', reporter_user.email,
 				'role_id', reporter_user.role_id,
+				'phone', reporter_user.phone,
 				'contacts', reporter_profile.contacts
 			) as reporter,
 			json_build_object(
@@ -1952,7 +1958,9 @@ func (r *AdminRepository) GetReportByID(ctx *fasthttp.RequestCtx, id int) (model
 					WHEN reported_profile.avatar IS NULL OR reported_profile.avatar = '' THEN NULL
 					ELSE $2 || reported_profile.avatar
 				END,
+				'email', reported_user.email,
 				'role_id', reported_user.role_id,
+				'phone', reported_user.phone,
 				'contacts', reported_profile.contacts
 			) as reported_user,
 			r.item_type,
@@ -2086,7 +2094,7 @@ func (r *AdminRepository) DeleteNumberOfCycle(ctx *fasthttp.RequestCtx, id int) 
 }
 
 // GetDeviceTokensByRoleID returns FCM device tokens for all users with the given role_id.
-func (r *AdminRepository) GetDeviceTokensByRoleID(ctx context.Context, roleID int) ([]string, error) {
+func (r *AdminRepository) GetDeviceTokensByRoleID(ctx context.Context, roleID int, req model.SendNotificationRequest) ([]string, error) {
 	qWhere := ""
 
 	if roleID != 0 {
@@ -2118,7 +2126,20 @@ func (r *AdminRepository) GetDeviceTokensByRoleID(ctx context.Context, roleID in
 		tokens = append(tokens, t)
 	}
 
-	return tokens, rows.Err()
+	// Insert notification for each user in req. The following is an example using notifications table.
+	insertQ := `
+		INSERT INTO notifications (notification_type, user_role_id, title, message)
+		VALUES ($1, $2, $3, $4)
+	`
+	r.db.Exec(ctx,
+		insertQ,
+		"general",
+		roleID,
+		req.Title,
+		req.Description,
+	)
+
+	return tokens, nil
 }
 
 // GetUserDeviceToken returns the FCM device token for a specific user.
@@ -2145,4 +2166,31 @@ func (r *AdminRepository) GetUserRoleID(ctx context.Context, userID int) (int, e
 	var roleID int
 	err := r.db.QueryRow(ctx, q, userID).Scan(&roleID)
 	return roleID, err
+}
+
+// GetGlobalNotifications returns all global notifications (where user_id IS NULL).
+func (r *AdminRepository) GetGlobalNotifications(ctx context.Context, limit, lastID int) ([]model.AdminNotificationResponse, error) {
+	notifications := make([]model.AdminNotificationResponse, 0)
+	q := `
+		SELECT id, notification_type, user_role_id, title, message, created_at
+		FROM notifications
+		WHERE user_id IS NULL AND id > $1
+		ORDER BY id DESC
+		LIMIT $2
+	`
+	rows, err := r.db.Query(ctx, q, lastID, limit)
+	if err != nil {
+		return notifications, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var n model.AdminNotificationResponse
+		if err := rows.Scan(&n.ID, &n.NotificationType, &n.UserRoleID, &n.Title, &n.Message, &n.CreatedAt); err != nil {
+			return notifications, err
+		}
+		notifications = append(notifications, n)
+	}
+
+	return notifications, rows.Err()
 }

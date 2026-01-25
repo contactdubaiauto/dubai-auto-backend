@@ -181,12 +181,125 @@ func (r *MotorcycleRepository) CreateMotorcycle(ctx *fasthttp.RequestCtx, req mo
 }
 
 func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, userID int, brands, models, regions, cities,
-	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors, dealers []string,
-	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer string, newQ, wheelQ *bool,
+	transmissions, categories, engines, fuel_types, colors, dealers []string,
+	year_from, year_to, price_from, price_to, tradeIn, owners, crash, odometer string, newQ, wheelQ *bool,
 	limit, lastID int, nameColumn string) ([]model.GetMotorcyclesResponse, error) {
 	data := make([]model.GetMotorcyclesResponse, 0)
+	var qWhere string
+	var qValues []any
+	// $1 = IMAGE_BASE_URL, $2 = userID, $3 = lastID
+	qValues = append(qValues, r.config.IMAGE_BASE_URL, userID, lastID)
+	i := 3
+
+	if len(brands) > 0 {
+		i++
+		qWhere += fmt.Sprintf(" AND mbs.id = ANY($%d)", i)
+		qValues = append(qValues, brands)
+	}
+
+	if len(models) > 0 {
+		i++
+		qWhere += fmt.Sprintf(" AND mms.id = ANY($%d)", i)
+		qValues = append(qValues, models)
+	}
+
+	if len(categories) > 0 {
+		i++
+		qWhere += fmt.Sprintf(" AND mcs.moto_category_id = ANY($%d)", i)
+		qValues = append(qValues, categories)
+	}
+
+	if len(cities) > 0 {
+		i++
+		qWhere += fmt.Sprintf(" AND mcs.city_id = ANY($%d)", i)
+		qValues = append(qValues, cities)
+	}
+
+	if len(engines) > 0 {
+		i++
+		qWhere += fmt.Sprintf(" AND mcs.engine_id = ANY($%d)", i)
+		qValues = append(qValues, engines)
+	}
+
+	if len(colors) > 0 {
+		i++
+		qWhere += fmt.Sprintf(" AND mcs.color_id = ANY($%d)", i)
+		qValues = append(qValues, colors)
+	}
+
+	if len(dealers) > 0 {
+		i++
+		qWhere += fmt.Sprintf(" AND mcs.user_id = ANY($%d)", i)
+		qValues = append(qValues, dealers)
+	}
+
+	if year_from != "" {
+		i++
+		qWhere += fmt.Sprintf(" AND mcs.year >= $%d", i)
+		qValues = append(qValues, year_from)
+	}
+
+	if year_to != "" {
+		i++
+		qWhere += fmt.Sprintf(" AND mcs.year <= $%d", i)
+		qValues = append(qValues, year_to)
+	}
+
+	if tradeIn != "" {
+		i++
+		qWhere += fmt.Sprintf(" AND mcs.trade_in = $%d", i)
+		qValues = append(qValues, tradeIn)
+	}
+
+	if owners != "" {
+		i++
+		qWhere += fmt.Sprintf(" AND mcs.owners = $%d", i)
+		qValues = append(qValues, owners)
+	}
+
+	if crash != "" {
+		i++
+		qWhere += fmt.Sprintf(" AND mcs.crash = $%d", i)
+		qValues = append(qValues, crash)
+	}
+
+	if price_from != "" {
+		i++
+		qWhere += fmt.Sprintf(" AND mcs.price >= $%d", i)
+		qValues = append(qValues, price_from)
+	}
+
+	if price_to != "" {
+		i++
+		qWhere += fmt.Sprintf(" AND mcs.price <= $%d", i)
+		qValues = append(qValues, price_to)
+	}
+
+	if newQ != nil {
+		i++
+		qWhere += fmt.Sprintf(" AND mcs.new = $%d", i)
+		qValues = append(qValues, newQ)
+	}
+
+	if wheelQ != nil {
+		i++
+		qWhere += fmt.Sprintf(" AND mcs.wheel = $%d", i)
+		qValues = append(qValues, wheelQ)
+	}
+
+	if odometer != "" {
+		i++
+		qWhere += fmt.Sprintf(" AND mcs.odometer <= $%d", i)
+		qValues = append(qValues, odometer)
+	}
+
+	// Add limit parameter
+	i++
+	limitPlaceholder := fmt.Sprintf("$%d", i)
+	qValues = append(qValues, limit)
+
 	q := `
-		select 
+		SELECT 
 			mcs.id,
 			'moto' as type,
 			mbs.` + nameColumn + ` as moto_brand,
@@ -209,10 +322,10 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, userID i
 				WHEN u.role_id = 2 THEN u.username
 				ELSE NULL
 			END AS owner_name
-		from motorcycles mcs
-		left join moto_brands mbs on mbs.id = mcs.moto_brand_id
-		left join moto_models mms on mms.id = mcs.moto_model_id
-		left join users u on u.id = mcs.user_id
+		FROM motorcycles mcs
+		LEFT JOIN moto_brands mbs ON mbs.id = mcs.moto_brand_id
+		LEFT JOIN moto_models mms ON mms.id = mcs.moto_model_id
+		LEFT JOIN users u ON u.id = mcs.user_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -222,19 +335,13 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, userID i
 				ORDER BY created_at DESC
 			) img
 		) images ON true
-		LEFT JOIN LATERAL (
-			SELECT json_agg(v.video) AS videos
-			FROM (
-				SELECT $1 || video as video
-				FROM moto_videos
-				WHERE moto_id = mcs.id
-				ORDER BY created_at DESC
-			) v
-		) videos ON true;
-
+		WHERE mcs.status = 3 AND (mcs.moderation_status = 1 OR mcs.moderation_status = 2) AND mcs.id > $3
+		` + qWhere + `
+		ORDER BY mcs.id DESC
+		LIMIT ` + limitPlaceholder + `
 	`
 
-	rows, err := r.db.Query(ctx, q, r.config.IMAGE_BASE_URL, userID)
+	rows, err := r.db.Query(ctx, q, qValues...)
 	if err != nil {
 		return nil, err
 	}

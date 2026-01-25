@@ -166,14 +166,9 @@ func (r *AdminRepository) DeleteComtran(ctx context.Context, id int) error {
 
 // ModerateComtran updates the moderation_status of a comtran and returns the user_id
 func (r *AdminRepository) ModerateComtran(ctx context.Context, id int, status int) (int, error) {
-	qSet := ""
-
-	if status == 3 {
-		qSet = " , status = 2"
-	}
 	q := `
 		UPDATE comtrans
-		SET moderation_status = $2, updated_at = now()` + qSet + `
+		SET moderation_status = $2, updated_at = now()
 		WHERE id = $1
 		RETURNING user_id
 	`

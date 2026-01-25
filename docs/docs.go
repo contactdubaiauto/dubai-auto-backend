@@ -7664,7 +7664,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Report data",
+                        "description": "Report data. status:  -- 1-pending, 2-resolved, 3-closed",
                         "name": "report",
                         "in": "body",
                         "required": true,
@@ -8137,6 +8137,70 @@ const docTemplate = `{
             }
         },
         "/api/v1/admin/users/notifications": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns all global notifications sent by admin (where user_id is null)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-users"
+                ],
+                "summary": "Get global notifications",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Last ID",
+                        "name": "last_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.AdminNotificationResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -19171,6 +19235,29 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AdminNotificationResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "notification_type": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "user_role_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.AdminNumberOfCycleResponse": {
             "type": "object",
             "properties": {
@@ -21308,8 +21395,14 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "email": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
+                },
+                "phone": {
+                    "type": "string"
                 },
                 "role_id": {
                     "type": "integer"

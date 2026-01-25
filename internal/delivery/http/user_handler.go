@@ -1629,21 +1629,17 @@ func (h *UserHandler) GetMotorcycles(c *fiber.Ctx) error {
 	models := auth.QueryParamToArray(c.Query("models"))
 	regions := auth.QueryParamToArray(c.Query("regions"))
 	cities := auth.QueryParamToArray(c.Query("cities"))
-	generations := auth.QueryParamToArray(c.Query("generations"))
 	colors := auth.QueryParamToArray(c.Query("colors"))
 	transmissions := auth.QueryParamToArray(c.Query("transmissions"))
+	categories := auth.QueryParamToArray(c.Query("categories"))
 	engines := auth.QueryParamToArray(c.Query("engines"))
-	drivetrains := auth.QueryParamToArray(c.Query("drivetrains"))
-	body_types := auth.QueryParamToArray(c.Query("body_types"))
 	fuel_types := auth.QueryParamToArray(c.Query("fuel_types"))
-	ownership_types := auth.QueryParamToArray(c.Query("ownership_types"))
 	year_from := c.Query("year_from")
 	limit := c.Query("limit")
 	lastID := c.Query("last_id")
 	odometer := c.Query("odometer")
 	year_to := c.Query("year_to")
 	tradeIn := c.Query("trade_in")
-	credit := c.Query("credit")
 	crash := c.Query("crash")
 	owners := c.Query("owners")
 	price_from := c.Query("price_from")
@@ -1653,10 +1649,9 @@ func (h *UserHandler) GetMotorcycles(c *fiber.Ctx) error {
 
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
 	data := h.MotorcycleService.GetMotorcycles(c.Context(), userID, brands, models,
-		regions, cities, generations, transmissions, engines, drivetrains,
-		body_types, fuel_types, ownership_types, colors, dealers,
-		year_from, year_to, credit, price_from, price_to,
-		tradeIn, owners, crash, odometer, newQ, wheelQ, limitInt, lastIDInt, nameColumn)
+		regions, cities, transmissions, categories, engines, fuel_types, colors, dealers,
+		year_from, year_to, price_from, price_to, tradeIn, owners, crash, odometer, newQ,
+		wheelQ, limitInt, lastIDInt, nameColumn)
 	return utils.FiberResponse(c, data)
 }
 
@@ -2119,14 +2114,10 @@ func (h *UserHandler) GetComtrans(c *fiber.Ctx) error {
 	models := auth.QueryParamToArray(c.Query("models"))
 	regions := auth.QueryParamToArray(c.Query("regions"))
 	cities := auth.QueryParamToArray(c.Query("cities"))
-	generations := auth.QueryParamToArray(c.Query("generations"))
 	colors := auth.QueryParamToArray(c.Query("colors"))
 	transmissions := auth.QueryParamToArray(c.Query("transmissions"))
 	engines := auth.QueryParamToArray(c.Query("engines"))
-	drivetrains := auth.QueryParamToArray(c.Query("drivetrains"))
-	body_types := auth.QueryParamToArray(c.Query("body_types"))
 	fuel_types := auth.QueryParamToArray(c.Query("fuel_types"))
-	ownership_types := auth.QueryParamToArray(c.Query("ownership_types"))
 	targetUserID := c.Query("user_id")
 	year_from := c.Query("year_from")
 	limit := c.Query("limit")
@@ -2134,7 +2125,6 @@ func (h *UserHandler) GetComtrans(c *fiber.Ctx) error {
 	odometer := c.Query("odometer")
 	year_to := c.Query("year_to")
 	tradeIn := c.Query("trade_in")
-	credit := c.Query("credit")
 	crash := c.Query("crash")
 	owners := c.Query("owners")
 	price_from := c.Query("price_from")
@@ -2168,9 +2158,8 @@ func (h *UserHandler) GetComtrans(c *fiber.Ctx) error {
 
 	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
 	data := h.ComtransService.GetComtrans(c.Context(), userID, targetUserID, brands, models,
-		regions, cities, generations, transmissions, engines, drivetrains,
-		body_types, fuel_types, ownership_types, colors, dealers,
-		year_from, year_to, credit, price_from, price_to,
+		regions, cities, transmissions, engines, fuel_types, colors, dealers,
+		year_from, year_to, price_from, price_to,
 		tradeIn, owners, crash, odometer, new, wheel, limitInt, lastIDInt, nameColumn)
 	return utils.FiberResponse(c, data)
 }

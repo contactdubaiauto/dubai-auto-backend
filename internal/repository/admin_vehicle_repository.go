@@ -211,14 +211,9 @@ func (r *AdminRepository) DeleteVehicle(ctx *fasthttp.RequestCtx, vehicleID int)
 
 // ModerateVehicle updates the moderation_status of a vehicle and returns the user_id
 func (r *AdminRepository) ModerateVehicle(ctx *fasthttp.RequestCtx, vehicleID int, status int) (int, error) {
-	qSet := ""
-
-	if status == 3 {
-		qSet = " , status = 2"
-	}
 	q := `
 		UPDATE vehicles
-		SET moderation_status = $2, updated_at = now()` + qSet + `
+		SET moderation_status = $2, updated_at = now()
 		WHERE id = $1
 		RETURNING user_id
 	`

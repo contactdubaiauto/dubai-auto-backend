@@ -107,11 +107,13 @@ func (s *AdminService) DeleteUser(ctx *fasthttp.RequestCtx, id int) model.Respon
 }
 
 // SendUserNotifications sends global FCM notifications to all users with the given role_id.
-func (s *AdminService) SendUserNotifications(ctx context.Context, req *model.SendNotificationRequest) model.Response {
-	tokens, err := s.repo.GetDeviceTokensByRoleID(ctx, req.RoleID)
+func (s *AdminService) SendUserNotifications(ctx context.Context, req model.SendNotificationRequest) model.Response {
+	tokens, err := s.repo.GetDeviceTokensByRoleID(ctx, req.RoleID, req)
+
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusInternalServerError}
 	}
+
 	if len(tokens) == 0 {
 		return model.Response{Data: model.Success{Message: "No devices to notify"}}
 	}
@@ -125,6 +127,15 @@ func (s *AdminService) SendUserNotifications(ctx context.Context, req *model.Sen
 	}
 
 	return model.Response{Data: model.Success{Message: "Notifications sent successfully"}}
+}
+
+// GetUserNotifications returns all global notifications sent by admin.
+func (s *AdminService) GetUserNotifications(ctx context.Context, limit, lastID int) model.Response {
+	notifications, err := s.repo.GetGlobalNotifications(ctx, limit, lastID)
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: notifications}
 }
 
 // Profile service methods

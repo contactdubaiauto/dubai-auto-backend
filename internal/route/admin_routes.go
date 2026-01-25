@@ -29,9 +29,10 @@ func SetupAdminRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, f
 	users := r.Group("/users")
 	{
 		users.Get("/", adminHandler.GetUsers)
-		users.Get("/:id", adminHandler.GetUser)
+		users.Get("/notifications", adminHandler.GetUserNotifications)
 		users.Post("/notifications", adminHandler.SendUserNotifications)
 		users.Post("/", adminHandler.CreateUser)
+		users.Get("/:id", adminHandler.GetUser)
 		users.Put("/:id", adminHandler.UpdateUser)
 		users.Delete("/:id", adminHandler.DeleteUser)
 	}

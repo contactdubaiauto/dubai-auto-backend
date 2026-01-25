@@ -202,7 +202,30 @@ func (h *AdminHandler) SendUserNotifications(c *fiber.Ctx) error {
 		})
 	}
 	ctx := c.Context()
-	data := h.service.SendUserNotifications(ctx, &req)
+	data := h.service.SendUserNotifications(ctx, req)
+	return utils.FiberResponse(c, data)
+}
+
+// GetUserNotifications godoc
+// @Summary      Get global notifications
+// @Description  Returns all global notifications sent by admin (where user_id is null)
+// @Tags         admin-users
+// @Produce      json
+// @Security     BearerAuth
+// @Param        limit   query  string  false  "Limit"
+// @Param        last_id query  string  false  "Last ID"
+// @Success      200  {array}   model.AdminNotificationResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/admin/users/notifications [get]
+func (h *AdminHandler) GetUserNotifications(c *fiber.Ctx) error {
+	limit := c.Query("limit", "20")
+	lastID := c.Query("last_id", "0")
+	lastIDInt, limitInt := utils.CheckLastIDLimit(lastID, limit, "")
+	ctx := c.Context()
+	data := h.service.GetUserNotifications(ctx, limitInt, lastIDInt)
 	return utils.FiberResponse(c, data)
 }
 
@@ -1445,7 +1468,7 @@ func (h *AdminHandler) GetReportByID(c *fiber.Ctx) error {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id      path      int                   true  "Report ID"
-// @Param        report  body      model.UpdateReportRequest  true  "Report data"
+// @Param        report  body      model.UpdateReportRequest  true  "Report data. status:  -- 1-pending, 2-resolved, 3-closed"
 // @Success      200     {object}  model.Success
 // @Failure      400     {object}  model.ResultMessage
 // @Failure      401     {object}  auth.ErrorResponse

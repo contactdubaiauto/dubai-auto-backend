@@ -1219,7 +1219,7 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 				ORDER BY created_at DESC
 			) img
 		) images ON true
-		where (vs.status = 3 or vs.status = 1) and vs.id > %d
+		where vs.status = 3 and (vs.moderation_status = 1 or vs.moderation_status = 2) and vs.id > %d
 		%s
 		order by vs.id desc
 		limit %d

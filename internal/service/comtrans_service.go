@@ -91,12 +91,12 @@ func (s *ComtransService) CreateComtrans(ctx *fasthttp.RequestCtx, comtrans mode
 }
 
 func (s *ComtransService) GetComtrans(ctx *fasthttp.RequestCtx, userID int, targetUserID string, brands, models, regions, cities,
-	generations, transmissions, engines, drivetrains, body_types, fuel_types, ownership_types, colors, dealers []string,
-	year_from, year_to, credit, price_from, price_to, tradeIn, owners, crash, odometer string,
+	transmissions, engines, fuel_types, colors, dealers []string,
+	year_from, year_to, price_from, price_to, tradeIn, owners, crash, odometer string,
 	new, wheel *bool, limit, lastID int, nameColumn string) model.Response {
 	data, err := s.repository.GetComtrans(ctx, userID, targetUserID, brands, models, regions, cities,
-		generations, transmissions, engines, drivetrains, body_types, fuel_types,
-		ownership_types, colors, dealers, year_from, year_to, credit,
+		transmissions, engines, fuel_types,
+		colors, dealers, year_from, year_to,
 		price_from, price_to, tradeIn, owners, crash, odometer, new, wheel, limit, lastID, nameColumn)
 	if err != nil {
 		return model.Response{
