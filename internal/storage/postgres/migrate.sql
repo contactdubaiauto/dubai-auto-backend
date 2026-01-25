@@ -427,3 +427,29 @@ alter table comtrans alter column status set default 3;
 -- 25.01.2026
 alter table images add column "id" serial primary key;
 alter table videos add column "id" serial primary key;
+
+alter table vehicles alter column city_id drop default;
+alter table vehicles drop constraint fk_vehicles_city_id;
+alter table vehicles add constraint fk_vehicles_city_id
+    foreign key (city_id)
+        references cities(id)
+            on delete set null
+            on update cascade;
+
+
+alter table motorcycles alter column city_id drop not null;
+alter table motorcycles drop constraint fk_motorcycles_city_id;
+alter table motorcycles add constraint fk_vehicles_city_id
+        foreign key (city_id)
+            references cities(id)
+                on delete set null
+                on update cascade;
+
+alter table comtrans alter column city_id drop not null;
+alter table comtrans drop constraint fk_comtrans_city_id;
+alter table comtrans add constraint fk_comtrans_city_id
+    foreign key (city_id)
+        references cities(id)
+            on delete set null
+            on update cascade;
+

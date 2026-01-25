@@ -21749,6 +21749,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "new": {
+                    "type": "boolean"
+                },
                 "odometer": {
                     "type": "integer"
                 },
@@ -21964,6 +21967,9 @@ const docTemplate = `{
                 },
                 "moto_model_id": {
                     "type": "integer"
+                },
+                "new": {
+                    "type": "boolean"
                 },
                 "number_of_cycles_id": {
                     "type": "integer"

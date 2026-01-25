@@ -269,12 +269,12 @@ func (r *SocketRepository) GetConversations(userID int) ([]model.Conversation, e
 			u.id user_id,
 			c.id
 		from conversations c
-		join users u on u.id = 
+		LEFT JOIN users u on u.id = 
 			case 
 				when c.user_id_1 = $1 then c.user_id_2 
 				else c.user_id_1 
 			end
-		join profiles p on p.user_id = u.id
+		LEFT JOIN profiles p on p.user_id = u.id
 		where c.user_id_1 = $1 or c.user_id_2 = $1
 		order by c.updated_at desc
 	`

@@ -556,8 +556,19 @@ func (r *MotorcycleRepository) UpdateMotorcycle(ctx *fasthttp.RequestCtx, motorc
 	var updateFields []string
 	var updateArgs []any
 	updateArgs = append(updateArgs, motorcycle.ID)
-
 	paramIndex := 2
+	if !*motorcycle.Crash {
+		updateFields = append(updateFields, "crash = $"+strconv.Itoa(paramIndex))
+		updateArgs = append(updateArgs, false)
+		paramIndex++
+	}
+
+	if !*motorcycle.New {
+		updateFields = append(updateFields, "new = $"+strconv.Itoa(paramIndex))
+		updateArgs = append(updateArgs, false)
+		paramIndex++
+	}
+
 	for i, key := range keys {
 		if key != "id" && key != "user_id" {
 			updateFields = append(updateFields, fmt.Sprintf("%s = $%d", key, paramIndex))

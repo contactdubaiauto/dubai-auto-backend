@@ -1871,8 +1871,8 @@ func (r *AdminRepository) GetReports(ctx *fasthttp.RequestCtx) ([]model.GetRepor
 						'images', images.images
 					)
 					FROM motorcycles m
-					LEFT JOIN moto_brands mb ON m.brand_id = mb.id
-					LEFT JOIN moto_models mm ON m.model_id = mm.id
+					LEFT JOIN moto_brands mb ON m.moto_brand_id = mb.id
+					LEFT JOIN moto_models mm ON m.moto_model_id = mm.id
 					LEFT JOIN LATERAL (
 						SELECT json_agg($1 || image) AS images
 						FROM (
@@ -1890,8 +1890,8 @@ func (r *AdminRepository) GetReports(ctx *fasthttp.RequestCtx) ([]model.GetRepor
 						'images', images.images
 					)
 					FROM comtrans c
-					LEFT JOIN com_brands cb ON c.brand_id = cb.id
-					LEFT JOIN com_models cm ON c.model_id = cm.id
+					LEFT JOIN com_brands cb ON c.comtran_brand_id = cb.id
+					LEFT JOIN com_models cm ON c.comtran_model_id = cm.id
 					LEFT JOIN LATERAL (
 						SELECT json_agg($1 || image) AS images
 						FROM (
@@ -1986,8 +1986,8 @@ func (r *AdminRepository) GetReportByID(ctx *fasthttp.RequestCtx, id int) (model
 						'images', images.images
 					)
 					FROM motorcycles m
-					LEFT JOIN moto_brands mb ON m.brand_id = mb.id
-					LEFT JOIN moto_models mm ON m.model_id = mm.id
+					LEFT JOIN moto_brands mb ON m.moto_brand_id = mb.id
+					LEFT JOIN moto_models mm ON m.moto_model_id = mm.id
 					LEFT JOIN LATERAL (
 						SELECT json_agg($2 || image) AS images
 						FROM (
@@ -2005,8 +2005,8 @@ func (r *AdminRepository) GetReportByID(ctx *fasthttp.RequestCtx, id int) (model
 						'images', images.images
 					)
 					FROM comtrans c
-					LEFT JOIN com_brands cb ON c.brand_id = cb.id
-					LEFT JOIN com_models cm ON c.model_id = cm.id
+					LEFT JOIN com_brands cb ON c.comtran_brand_id = cb.id
+					LEFT JOIN com_models cm ON c.comtran_model_id = cm.id
 					LEFT JOIN LATERAL (
 						SELECT json_agg($2 || image) AS images
 						FROM (

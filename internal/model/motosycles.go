@@ -68,6 +68,7 @@ type UpdateMotorcycleRequest struct {
 	ID               int      `json:"id" validate:"required"`
 	Crash            *bool    `json:"crash"`
 	Wheel            *bool    `json:"wheel"`
+	New              *bool    `json:"new"`
 	MotoCategoryID   int      `json:"moto_category_id"`
 	BrandID          int      `json:"moto_brand_id"`
 	ModelID          int      `json:"moto_model_id"`

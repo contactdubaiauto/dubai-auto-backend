@@ -179,7 +179,7 @@ create table profiles (
     constraint fk_profiles_city_id 
         foreign key (city_id) 
             references cities(id) 
-                on delete cascade 
+                on delete set null
                 on update cascade,
     constraint fk_profiles_company_type_id
         foreign key (company_type_id)
@@ -546,12 +546,12 @@ create table vehicles (
     constraint fk_vehicles_region_id
         foreign key (region_id)
             references regions(id)
-                on delete cascade
+                on delete set null
                 on update cascade,
     constraint fk_vehicles_city_id
         foreign key (city_id)
             references cities(id)
-                on delete cascade
+                on delete set null
                 on update cascade
 );
 
@@ -742,7 +742,7 @@ create table motorcycles (
     constraint fk_motorcycles_city_id
         foreign key (city_id)
             references cities(id)
-                on delete cascade
+                on delete set null
                 on update cascade,
     constraint fk_motorcycles_number_of_cycles_id
         foreign key (number_of_cycles_id)
@@ -855,7 +855,7 @@ create table comtrans (
     "comtran_brand_id" int not null,
     "comtran_model_id" int not null,
     "engine_id" int not null, -- fuel_type
-    "city_id" int not null,
+    "city_id" int,
     "color_id" int not null,
     "engine" int, -- cm3
     "power" int, -- hp
@@ -907,7 +907,7 @@ create table comtrans (
     constraint fk_comtrans_city_id
         foreign key (city_id)
             references cities(id)
-                on delete cascade
+                on delete set null
                 on update cascade
 );
 

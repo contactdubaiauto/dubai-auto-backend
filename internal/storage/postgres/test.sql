@@ -1,3 +1,53 @@
+select 
+    c.updated_at,
+    case 
+        when c.user_id_1 = 241 then c.user_1_unread_messages
+        else c.user_2_unread_messages
+    end as unread_messages,
+    c.last_message,
+    c.last_message_type,
+    c.last_message_id,
+    u.username,
+    p.avatar,
+    u.id user_id,
+    c.id
+from conversations c
+join users u on u.id = 
+    case 
+        when c.user_id_1 = 241 then c.user_id_2 
+        else c.user_id_1 
+    end
+join profiles p on p.user_id = u.id
+where c.user_id_1 = 241 or c.user_id_2 = 241
+order by c.updated_at desc
+
+select 
+    c.updated_at,
+    case 
+        when c.user_id_1 = 241 then c.user_1_unread_messages
+        else c.user_2_unread_messages
+    end as unread_messages,
+    c.last_message,
+    c.last_message_type,
+    c.last_message_id,
+    u.username,
+    p.avatar,
+    u.id user_id,
+    c.id
+from conversations c
+LEFT JOIN users u on u.id = 
+    case 
+        when c.user_id_1 = 241 then c.user_id_2 
+        else c.user_id_1 
+    end
+LEFT JOIN profiles p on p.user_id = u.id
+where c.user_id_1 = 241 or c.user_id_2 = 241
+order by c.updated_at desc
+
+
+
+
+
 with vs as (        
                         select 
                                 vs.id,

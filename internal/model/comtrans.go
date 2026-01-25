@@ -45,6 +45,7 @@ type UpdateComtransRequest struct {
 	ID                int      `json:"id" validate:"required"`
 	Crash             *bool    `json:"crash"`
 	Wheel             *bool    `json:"wheel"`
+	New               *bool    `json:"new"`
 	ComtranCategoryID int      `json:"comtran_category_id"`
 	BrandID           int      `json:"comtran_brand_id"`
 	CityID            int      `json:"city_id"`

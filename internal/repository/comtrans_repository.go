@@ -661,8 +661,20 @@ func (r *ComtransRepository) UpdateComtrans(ctx *fasthttp.RequestCtx, comtrans *
 	var updateFields []string
 	var updateArgs []any
 	updateArgs = append(updateArgs, comtrans.ID)
-
 	paramIndex := 2
+
+	if !*comtrans.Crash {
+		updateFields = append(updateFields, "crash = $"+strconv.Itoa(paramIndex))
+		updateArgs = append(updateArgs, false)
+		paramIndex++
+	}
+
+	if !*comtrans.New {
+		updateFields = append(updateFields, "new = $"+strconv.Itoa(paramIndex))
+		updateArgs = append(updateArgs, false)
+		paramIndex++
+	}
+
 	for i, key := range keys {
 		if key != "id" && key != "user_id" && key != "parameters" {
 			updateFields = append(updateFields, fmt.Sprintf("%s = $%d", key, paramIndex))
