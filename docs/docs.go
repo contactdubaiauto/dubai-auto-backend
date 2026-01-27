@@ -20455,6 +20455,9 @@ const docTemplate = `{
                 "brand": {
                     "type": "string"
                 },
+                "city": {
+                    "type": "string"
+                },
                 "crash": {
                     "type": "boolean"
                 },
@@ -21124,6 +21127,9 @@ const docTemplate = `{
                 "brand": {
                     "type": "string"
                 },
+                "city": {
+                    "type": "string"
+                },
                 "crash": {
                     "type": "boolean"
                 },
@@ -21243,6 +21249,9 @@ const docTemplate = `{
                 },
                 "registered_by": {
                     "type": "string"
+                },
+                "unread_notifications": {
+                    "type": "integer"
                 },
                 "username": {
                     "type": "string"
@@ -22569,7 +22578,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "api.mashynbazar.com",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Project name",

@@ -2140,10 +2140,15 @@ func (r *AdminRepository) GetDeviceTokensByRoleID(ctx context.Context, roleID in
 	)
 
 	q = `
-		update profiles set unread_notifications = unread_notifications + 1
-		inner join user_tokens ut on ut.user_id = profiles.user_id
-		inner join users u on u.id = ut.user_id
-		WHERE ut.device_token IS NOT NULL ` + qWhere + `;
+		UPDATE profiles
+		SET unread_notifications = unread_notifications + 1
+		where user_id = any (
+			select ut.user_id 
+			FROM user_tokens ut
+			INNER JOIN users u ON u.id = ut.user_id
+			WHERE ut.device_token IS NOT NULL ` + qWhere + `
+		);
+
 	`
 
 	_, err = r.db.Query(ctx, q)

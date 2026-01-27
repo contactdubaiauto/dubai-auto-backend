@@ -265,6 +265,7 @@ func (r *UserRepository) GetProfile(ctx *fasthttp.RequestCtx, userID int, nameCo
 			ps.about_me,
 			ps.registered_by,
 			ps.contacts,
+			ps.unread_notifications,
 			ps.address,
 			$2 || ps.avatar,
 			json_build_object(
@@ -281,7 +282,7 @@ func (r *UserRepository) GetProfile(ctx *fasthttp.RequestCtx, userID int, nameCo
 	var contactsJSON []byte
 	err := r.db.QueryRow(ctx, q, userID, r.config.IMAGE_BASE_URL).Scan(&pf.ID, &pf.Email, &pf.Phone,
 		&pf.DrivingExperience, &pf.Notification, &pf.Username, &pf.Google,
-		&pf.Birthday, &pf.AboutMe, &pf.RegisteredBy, &contactsJSON, &pf.Address, &pf.Avatar, &pf.City)
+		&pf.Birthday, &pf.AboutMe, &pf.RegisteredBy, &contactsJSON, &pf.UnreadNotifications, &pf.Address, &pf.Avatar, &pf.City)
 
 	if err == nil && len(contactsJSON) > 0 {
 		if err := json.Unmarshal(contactsJSON, &pf.Contacts); err != nil {

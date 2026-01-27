@@ -32,20 +32,21 @@ type GetBrandsResponse struct {
 }
 
 type GetProfileResponse struct {
-	Birthday          *time.Time        `json:"birthday"`
-	Email             *string           `json:"email"`
-	Phone             *string           `json:"phone"`
-	Username          *string           `json:"username"`
-	Google            *string           `json:"google"`
-	RegisteredBy      *string           `json:"registered_by"`
-	City              *City             `json:"city"`
-	Avatar            *string           `json:"avatar"`
-	Contacts          map[string]string `json:"contacts"`
-	Address           *string           `json:"address"`
-	AboutMe           *string           `json:"about_me"`
-	DrivingExperience *int              `json:"driving_experience"`
-	ID                int               `json:"id"`
-	Notification      *bool             `json:"notification"`
+	Birthday            *time.Time        `json:"birthday"`
+	Email               *string           `json:"email"`
+	Phone               *string           `json:"phone"`
+	Username            *string           `json:"username"`
+	Google              *string           `json:"google"`
+	RegisteredBy        *string           `json:"registered_by"`
+	City                *City             `json:"city"`
+	Avatar              *string           `json:"avatar"`
+	Contacts            map[string]string `json:"contacts"`
+	Address             *string           `json:"address"`
+	UnreadNotifications *int              `json:"unread_notifications"`
+	AboutMe             *string           `json:"about_me"`
+	DrivingExperience   *int              `json:"driving_experience"`
+	ID                  int               `json:"id"`
+	Notification        *bool             `json:"notification"`
 }
 
 type GetFilterBrandsResponse struct {

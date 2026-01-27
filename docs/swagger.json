@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8080",
+    "host": "api.mashynbazar.com",
     "basePath": "/",
     "paths": {
         "/api/v1/admin/activity-fields": {
@@ -20449,6 +20449,9 @@
                 "brand": {
                     "type": "string"
                 },
+                "city": {
+                    "type": "string"
+                },
                 "crash": {
                     "type": "boolean"
                 },
@@ -21118,6 +21121,9 @@
                 "brand": {
                     "type": "string"
                 },
+                "city": {
+                    "type": "string"
+                },
                 "crash": {
                     "type": "boolean"
                 },
@@ -21237,6 +21243,9 @@
                 },
                 "registered_by": {
                     "type": "string"
+                },
+                "unread_notifications": {
+                    "type": "integer"
                 },
                 "username": {
                     "type": "string"
