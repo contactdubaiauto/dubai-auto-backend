@@ -2636,3 +2636,23 @@ func (h *UserHandler) DeleteComtrans(c *fiber.Ctx) error {
 	dir := config.ENV.STATIC_PATH + "comtrans/" + idStr
 	return utils.FiberResponse(c, h.ComtransService.DeleteComtrans(ctx, id, dir))
 }
+
+// GetNotifications godoc
+// @Summary      Get notifications
+// @Description  Returns all notifications for the authenticated user
+// @Tags         user-notifications
+// @Security     BearerAuth
+// @Produce      json
+// @Success      200  {array}  model.NotificationResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure      403  {object}  auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/notifications [get]
+func (h *UserHandler) GetNotifications(c *fiber.Ctx) error {
+	ctx := c.Context()
+	userID := c.Locals("id").(int)
+	data := h.UserService.GetNotifications(ctx, userID)
+	return utils.FiberResponse(c, data)
+}

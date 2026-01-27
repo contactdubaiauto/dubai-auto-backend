@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "api.mashynbazar.com",
+    "host": "localhost:8080",
     "basePath": "/",
     "paths": {
         "/api/v1/admin/activity-fields": {
@@ -17632,6 +17632,64 @@
                 }
             }
         },
+        "/api/v1/users/notifications": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns all notifications for the authenticated user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-notifications"
+                ],
+                "summary": "Get notifications",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.NotificationResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/profile": {
             "get": {
                 "security": [
@@ -19696,8 +19754,7 @@
             "properties": {
                 "name": {
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 1
+                    "maxLength": 255
                 },
                 "name_ae": {
                     "type": "string"
@@ -19832,8 +19889,7 @@
             "properties": {
                 "name": {
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 1
+                    "maxLength": 255
                 },
                 "name_ae": {
                     "type": "string"
@@ -20043,8 +20099,7 @@
             "properties": {
                 "name": {
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 1
+                    "maxLength": 255
                 },
                 "name_ae": {
                     "type": "string"
@@ -21325,8 +21380,7 @@
                 "status": {
                     "description": "1-pending, 2-accepted, 3-declined",
                     "type": "integer",
-                    "maximum": 3,
-                    "minimum": 1
+                    "maximum": 3
                 },
                 "title": {
                     "description": "optional, used for declined notification",
@@ -21373,6 +21427,23 @@
                     "type": "integer"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.NotificationResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 }
             }
@@ -21440,18 +21511,15 @@
             ],
             "properties": {
                 "description": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "string"
                 },
                 "role_id": {
                     "type": "integer",
-                    "maximum": 5,
-                    "minimum": 1
+                    "maximum": 5
                 },
                 "title": {
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 1
+                    "maxLength": 255
                 }
             }
         },
@@ -22241,8 +22309,7 @@
                 "report_status": {
                     "description": "1-pending, 2-resolved, 3-closed",
                     "type": "integer",
-                    "maximum": 3,
-                    "minimum": 1
+                    "maximum": 3
                 }
             }
         },
@@ -22267,9 +22334,7 @@
                     "default": 1
                 },
                 "status": {
-                    "type": "integer",
-                    "maximum": 3,
-                    "minimum": 1
+                    "type": "integer"
                 },
                 "username": {
                     "type": "string",

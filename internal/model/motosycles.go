@@ -153,6 +153,7 @@ type GetMotorcyclesResponse struct {
 	MyMoto    *bool      `json:"my_moto"`
 	Odometer  *int       `json:"odometer"`
 	OwnerName *string    `json:"owner_name"`
+	City      *string    `json:"city"`
 	ID        int        `json:"id"`
 }
 

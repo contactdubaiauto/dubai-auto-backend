@@ -156,6 +156,7 @@ create table profiles (
     "vat_number" varchar(100),
     "driving_experience" int,
     "notification" boolean default false,
+    "unread_notifications" int default 0 not null,
     "username" varchar(100) not null,
     "registered_by" varchar(20) not null,
     "google" varchar(200),

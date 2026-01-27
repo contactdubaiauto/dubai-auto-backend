@@ -656,3 +656,12 @@ func (s *UserService) GetReports(ctx *fasthttp.RequestCtx, userID int) model.Res
 		Data: reports,
 	}
 }
+
+func (s *UserService) GetNotifications(ctx *fasthttp.RequestCtx, userID int) model.Response {
+	notifications, err := s.UserRepository.GetNotifications(ctx, userID)
+
+	if err != nil {
+		return model.Response{Error: err, Status: http.StatusInternalServerError}
+	}
+	return model.Response{Data: notifications}
+}

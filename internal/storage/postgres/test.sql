@@ -1,3 +1,12 @@
+insert into users (email, password, username)
+		values ('1010101010', '123456', 'test')
+		on conflict (email)
+		do update
+		set 
+			password = EXCLUDED.password
+		returning id;
+
+
 select 
     c.updated_at,
     case 

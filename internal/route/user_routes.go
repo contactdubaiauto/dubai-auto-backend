@@ -132,6 +132,9 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Get("/reports", auth.TokenGuard, userHandler.GetReports)
 		r.Post("/item-reports", auth.TokenGuard, userHandler.CreateItemReports)
 
+		// notifications
+		r.Get("/notifications", auth.TokenGuard, userHandler.GetNotifications)
+
 		// users
 		r.Get("/:id", auth.LanguageChecker, userHandler.GetUserByID)
 

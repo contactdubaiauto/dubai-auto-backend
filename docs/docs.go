@@ -17638,6 +17638,64 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/users/notifications": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns all notifications for the authenticated user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-notifications"
+                ],
+                "summary": "Get notifications",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.NotificationResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/profile": {
             "get": {
                 "security": [
@@ -19702,8 +19760,7 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 1
+                    "maxLength": 255
                 },
                 "name_ae": {
                     "type": "string"
@@ -19838,8 +19895,7 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 1
+                    "maxLength": 255
                 },
                 "name_ae": {
                     "type": "string"
@@ -20049,8 +20105,7 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 1
+                    "maxLength": 255
                 },
                 "name_ae": {
                     "type": "string"
@@ -21331,8 +21386,7 @@ const docTemplate = `{
                 "status": {
                     "description": "1-pending, 2-accepted, 3-declined",
                     "type": "integer",
-                    "maximum": 3,
-                    "minimum": 1
+                    "maximum": 3
                 },
                 "title": {
                     "description": "optional, used for declined notification",
@@ -21379,6 +21433,23 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.NotificationResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 }
             }
@@ -21446,18 +21517,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "description": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "string"
                 },
                 "role_id": {
                     "type": "integer",
-                    "maximum": 5,
-                    "minimum": 1
+                    "maximum": 5
                 },
                 "title": {
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 1
+                    "maxLength": 255
                 }
             }
         },
@@ -22247,8 +22315,7 @@ const docTemplate = `{
                 "report_status": {
                     "description": "1-pending, 2-resolved, 3-closed",
                     "type": "integer",
-                    "maximum": 3,
-                    "minimum": 1
+                    "maximum": 3
                 }
             }
         },
@@ -22273,9 +22340,7 @@ const docTemplate = `{
                     "default": 1
                 },
                 "status": {
-                    "type": "integer",
-                    "maximum": 3,
-                    "minimum": 1
+                    "type": "integer"
                 },
                 "username": {
                     "type": "string",
@@ -22504,7 +22569,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "api.mashynbazar.com",
+	Host:             "localhost:8080",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Project name",

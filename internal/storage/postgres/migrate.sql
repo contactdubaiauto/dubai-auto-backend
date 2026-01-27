@@ -479,3 +479,12 @@ create table notifications (
                 on delete cascade
                 on update cascade
 );
+
+    
+alter table profiles add column "unread_notifications" int default 0 not null;
+
+-- 26.01.2026
+ALTER TABLE profiles ALTER COLUMN registered_by SET DEFAULT 'app';
+
+-- 27.01.2026
+alter table profiles add column "unread_notifications" int default 0 not null;

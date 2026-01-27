@@ -964,13 +964,15 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int, nameColum
 			CASE
 				WHEN u.role_id = 2 THEN u.username
 				ELSE NULL
-			END AS owner_name
+			END AS owner_name,
+			cs.` + nameColumn + ` as city
 		from vehicles vs
 		left join brands bs on vs.brand_id = bs.id
 		left join models ms on vs.model_id = ms.id
 		left join generation_modifications gms on gms.id = vs.modification_id
 		left join fuel_types fts on gms.fuel_type_id = fts.id
 		left join users u on u.id = vs.user_id
+		left join cities cs on cs.id = vs.city_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -998,7 +1000,7 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int, nameColum
 		if err := rows.Scan(
 			&car.ID, &car.Type, &car.Brand, &car.Model, &car.Year, &car.Price,
 			&car.CreatedAt, &car.Images, &car.New, &car.Status, &car.TradeIn, &car.Crash,
-			&car.ViewCount, &car.MyCar, &car.OwnerName,
+			&car.ViewCount, &car.MyCar, &car.OwnerName, &car.City,
 		); err != nil {
 			return home, err
 		}
@@ -1084,9 +1086,9 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 
 	if len(generations) > 0 {
 		i += 1
-		qWhere += fmt.Sprintf(" AND gms.generation_id = ANY($%d)", i)
+		qWhere += fmt.Sprintf(" AND gms.id = ANY($%d)", i)
 		qValues = append(qValues, generations)
-		qJoins += " left join generations gms on vs.generation_id = gms.id"
+		qJoins += " left join generation_modifications gms on gms.id = vs.modification_id"
 	}
 
 	if len(colors) > 0 {
@@ -1204,10 +1206,12 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 			CASE
 				WHEN u.role_id = 2 THEN u.username
 				ELSE NULL
-			END AS owner_name
+			END AS owner_name,
+			cs.` + nameColumn + ` as city
 		from vehicles vs
 		left join brands bs on vs.brand_id = bs.id
 		left join models ms on vs.model_id = ms.id
+		left join cities cs on vs.city_id = cs.id
 		left join users u on u.id = vs.user_id
 		%s
 		LEFT JOIN LATERAL (
@@ -1238,7 +1242,7 @@ func (r *UserRepository) GetCars(ctx *fasthttp.RequestCtx, userID int,
 		if err := rows.Scan(
 			&car.ID, &car.Type, &car.Brand, &car.Model, &car.Year, &car.Price,
 			&car.CreatedAt, &car.Images, &car.New, &car.Status, &car.TradeIn, &car.Crash,
-			&car.ViewCount, &car.MyCar, &car.Odometer, &car.OwnerName,
+			&car.ViewCount, &car.MyCar, &car.Odometer, &car.OwnerName, &car.City,
 		); err != nil {
 			return cars, err
 		}
@@ -2073,8 +2077,8 @@ func (r *UserRepository) GetReports(ctx *fasthttp.RequestCtx, userID int) ([]mod
 						'images', images.images
 					)
 					FROM motorcycles m
-					LEFT JOIN moto_brands mb ON m.brand_id = mb.id
-					LEFT JOIN moto_models mm ON m.model_id = mm.id
+					LEFT JOIN moto_brands mb ON m.moto_brand_id = mb.id
+					LEFT JOIN moto_models mm ON m.moto_model_id = mm.id
 					LEFT JOIN LATERAL (
 						SELECT json_agg($1 || image) AS images
 						FROM (
@@ -2092,8 +2096,8 @@ func (r *UserRepository) GetReports(ctx *fasthttp.RequestCtx, userID int) ([]mod
 						'images', images.images
 					)
 					FROM comtrans c
-					LEFT JOIN com_brands cb ON c.brand_id = cb.id
-					LEFT JOIN com_models cm ON c.model_id = cm.id
+					LEFT JOIN com_brands cb ON c.comtran_brand_id = cb.id
+					LEFT JOIN com_models cm ON c.comtran_model_id = cm.id
 					LEFT JOIN LATERAL (
 						SELECT json_agg($1 || image) AS images
 						FROM (
@@ -2148,4 +2152,38 @@ func (r *UserRepository) GetReports(ctx *fasthttp.RequestCtx, userID int) ([]mod
 		reports = append(reports, report)
 	}
 	return reports, err
+}
+
+func (r *UserRepository) GetNotifications(ctx *fasthttp.RequestCtx, userID int) ([]model.NotificationResponse, error) {
+	notifications := make([]model.NotificationResponse, 0)
+	q := `
+		SELECT id, title, message, created_at
+		FROM notifications
+		WHERE user_id = $1 or user_id is null
+		ORDER BY created_at DESC
+	`
+	rows, err := r.db.Query(ctx, q, userID)
+	if err != nil {
+		return notifications, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var notification model.NotificationResponse
+		if err := rows.Scan(&notification.ID, &notification.Title, &notification.Message, &notification.CreatedAt); err != nil {
+			return notifications, err
+		}
+		notifications = append(notifications, notification)
+	}
+
+	q = `
+		update profiles set unread_notifications = 0 where user_id = $1;
+	`
+	_, err = r.db.Exec(ctx, q, userID)
+
+	if err != nil {
+		return notifications, err
+	}
+
+	return notifications, err
 }

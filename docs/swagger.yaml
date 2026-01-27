@@ -771,7 +771,6 @@ definitions:
     properties:
       name:
         maxLength: 255
-        minLength: 1
         type: string
       name_ae:
         type: string
@@ -866,7 +865,6 @@ definitions:
     properties:
       name:
         maxLength: 255
-        minLength: 1
         type: string
       name_ae:
         type: string
@@ -1013,7 +1011,6 @@ definitions:
     properties:
       name:
         maxLength: 255
-        minLength: 1
         type: string
       name_ae:
         type: string
@@ -1865,7 +1862,6 @@ definitions:
       status:
         description: 1-pending, 2-accepted, 3-declined
         maximum: 3
-        minimum: 1
         type: integer
       title:
         description: optional, used for declined notification
@@ -1900,6 +1896,17 @@ definitions:
       role_id:
         type: integer
       username:
+        type: string
+    type: object
+  model.NotificationResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      title:
         type: string
     type: object
   model.Owner:
@@ -1940,15 +1947,12 @@ definitions:
   model.SendNotificationRequest:
     properties:
       description:
-        minLength: 1
         type: string
       role_id:
         maximum: 5
-        minimum: 1
         type: integer
       title:
         maxLength: 255
-        minLength: 1
         type: string
     required:
     - description
@@ -2491,7 +2495,6 @@ definitions:
       report_status:
         description: 1-pending, 2-resolved, 3-closed
         maximum: 3
-        minimum: 1
         type: integer
     required:
     - report_status
@@ -2511,8 +2514,6 @@ definitions:
         default: 1
         type: integer
       status:
-        maximum: 3
-        minimum: 1
         type: integer
       username:
         maxLength: 255
@@ -2658,7 +2659,7 @@ definitions:
       video:
         type: string
     type: object
-host: api.mashynbazar.com
+host: localhost:8080
 info:
   contact: {}
   description: Project Description
@@ -14093,6 +14094,43 @@ paths:
       summary: Get number of cycles
       tags:
       - motorcycles
+  /api/v1/users/notifications:
+    get:
+      description: Returns all notifications for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.NotificationResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get notifications
+      tags:
+      - user-notifications
   /api/v1/users/profile:
     get:
       description: Returns a list of user profile

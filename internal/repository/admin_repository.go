@@ -2105,7 +2105,7 @@ func (r *AdminRepository) GetDeviceTokensByRoleID(ctx context.Context, roleID in
 		SELECT ut.device_token
 		FROM user_tokens ut
 		INNER JOIN users u ON u.id = ut.user_id
-		WHERE ut.device_token IS NOT NULL ` + qWhere + `
+		WHERE ut.device_token IS NOT NULL ` + qWhere + `;
 	`
 	rows, err := r.db.Query(ctx, q)
 
@@ -2139,7 +2139,16 @@ func (r *AdminRepository) GetDeviceTokensByRoleID(ctx context.Context, roleID in
 		req.Description,
 	)
 
-	return tokens, nil
+	q = `
+		update profiles set unread_notifications = unread_notifications + 1
+		inner join user_tokens ut on ut.user_id = profiles.user_id
+		inner join users u on u.id = ut.user_id
+		WHERE ut.device_token IS NOT NULL ` + qWhere + `;
+	`
+
+	_, err = r.db.Query(ctx, q)
+
+	return tokens, err
 }
 
 // GetUserDeviceToken returns the FCM device token for a specific user.

@@ -288,10 +288,12 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, t
 			CASE
 				WHEN u.role_id = 2 THEN u.username
 				ELSE NULL
-			END AS owner_name
+			END AS owner_name,
+			cs.` + nameColumn + ` as city
 		FROM comtrans cts
 		LEFT JOIN com_brands cbs ON cbs.id = cts.comtran_brand_id
 		LEFT JOIN com_models cms ON cms.id = cts.comtran_model_id
+		left join cities cs on cs.id = cts.city_id
 		LEFT JOIN users u ON u.id = cts.user_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
@@ -321,7 +323,7 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, t
 			&com.ID, &com.Type, &com.Brand, &com.Model, &com.Year, &com.Price,
 			&com.CreatedAt, &com.Images,
 			&com.New, &com.Status, &com.TradeIn, &com.Crash,
-			&com.ViewCount, &com.MyComtran, &com.Odometer, &com.OwnerName)
+			&com.ViewCount, &com.MyComtran, &com.Odometer, &com.OwnerName, &com.City)
 
 		if err != nil {
 			return data, err

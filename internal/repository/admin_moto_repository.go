@@ -11,7 +11,7 @@ func (r *AdminRepository) GetMotorcycles(ctx context.Context, limit, lastID, mod
 	qWhere := ""
 
 	if moderationStatus != 0 {
-		qWhere = fmt.Sprintf(" AND cts.moderation_status = %d ", moderationStatus)
+		qWhere = fmt.Sprintf(" AND m.moderation_status = %d ", moderationStatus)
 	}
 
 	list := make([]model.AdminMotoListItem, 0)

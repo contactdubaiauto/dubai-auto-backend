@@ -321,11 +321,13 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, userID i
 			CASE
 				WHEN u.role_id = 2 THEN u.username
 				ELSE NULL
-			END AS owner_name
+			END AS owner_name,
+			cs.` + nameColumn + ` as city
 		FROM motorcycles mcs
 		LEFT JOIN moto_brands mbs ON mbs.id = mcs.moto_brand_id
 		LEFT JOIN moto_models mms ON mms.id = mcs.moto_model_id
 		LEFT JOIN users u ON u.id = mcs.user_id
+		LEFT JOIN cities cs on cs.id = mcs.city_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -354,7 +356,7 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, userID i
 			&motorcycle.ID, &motorcycle.Type, &motorcycle.Brand, &motorcycle.Model, &motorcycle.Year, &motorcycle.Price,
 			&motorcycle.CreatedAt, &motorcycle.Images,
 			&motorcycle.New, &motorcycle.Status, &motorcycle.TradeIn, &motorcycle.Crash, &motorcycle.Odometer,
-			&motorcycle.ViewCount, &motorcycle.MyMoto, &motorcycle.OwnerName)
+			&motorcycle.ViewCount, &motorcycle.MyMoto, &motorcycle.OwnerName, &motorcycle.City)
 
 		if err != nil {
 			return nil, err

@@ -232,8 +232,8 @@ func (r *AuthRepository) TempUserPhoneGetOrRegister(ctx *fasthttp.RequestCtx, us
 func (r *AuthRepository) UserEmailGetOrRegister(ctx *fasthttp.RequestCtx, username, email, password string) (int, error) {
 	var userID int
 	q := `
-		insert into users (email, password, username, phone)
-		values ($1, $2, $3, NULL)
+		insert into users (email, password, username)
+		values ($1, $2, $3)
 		on conflict (email)
 		do update
 		set 
@@ -259,9 +259,9 @@ func (r *AuthRepository) UserPhoneGetOrRegister(ctx *fasthttp.RequestCtx, userna
 
 	var userID int
 	q := `
-		insert into users (phone, password, username, email)
-		values ($1, $2, $3, NULL)
-		on conflict (email)
+		insert into users (phone, password, username)
+		values ($1, $2, $3)
+		on conflict (phone)
 		do update
 		set 
 			password = EXCLUDED.password

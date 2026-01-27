@@ -18,7 +18,7 @@ type UpdateUserRequest struct {
 	Username    string   `json:"username" validate:"omitempty,min=2,max=255"`
 	Email       string   `json:"email" validate:"omitempty,email"`
 	Password    string   `json:"password" validate:"omitempty,min=8"`
-	Status      int      `json:"status" validate:"omitempty,min=1,max=3"`
+	Status      int      `json:"status" validate:"omitempty"`
 	RoleID      int      `json:"role_id" default:"1"`
 	Permissions []string `json:"permissions" validate:"omitempty"`
 }
@@ -26,9 +26,9 @@ type UpdateUserRequest struct {
 // SendNotificationRequest is the admin request to send global FCM notifications by role.
 // RoleID: 1 user, 2 dealer, 3 logistic, 4 broker, 5 car service.
 type SendNotificationRequest struct {
-	RoleID      int    `json:"role_id" validate:"required,min=1,max=5"`
-	Title       string `json:"title" validate:"required,min=1,max=255"`
-	Description string `json:"description" validate:"required,min=1"`
+	RoleID      int    `json:"role_id" validate:"required,max=5"`
+	Title       string `json:"title" validate:"required,max=255"`
+	Description string `json:"description" validate:"required"`
 }
 
 // Vehicles (admin) requests
@@ -54,7 +54,7 @@ type AdminCreateVehicleRequest struct {
 }
 
 type AdminUpdateVehicleStatusRequest struct {
-	Status int `json:"status" validate:"required,min=1,max=3"` // 1-pending, 2-not sale, 3-on sale
+	Status int `json:"status" validate:"required"` // 1-pending, 2-not sale, 3-on sale
 }
 
 type CreateNameRequest struct {
@@ -110,21 +110,21 @@ type CreateNumberOfCycleRequest struct {
 
 // Engine requests
 type CreateEngineRequest struct {
-	Name   string `json:"name" validate:"required,min=1,max=255"`
+	Name   string `json:"name" validate:"required,max=255"`
 	NameRu string `json:"name_ru"`
 	NameAe string `json:"name_ae"`
 }
 
 // Comtrans Engine requests
 type CreateComtransEngineRequest struct {
-	Name   string `json:"name" validate:"required,min=1,max=255"`
+	Name   string `json:"name" validate:"required,max=255"`
 	NameRu string `json:"name_ru"`
 	NameAe string `json:"name_ae"`
 }
 
 // Moto Engine requests
 type CreateMotoEngineRequest struct {
-	Name   string `json:"name" validate:"required,min=1,max=255"`
+	Name   string `json:"name" validate:"required,max=255"`
 	NameRu string `json:"name_ru"`
 	NameAe string `json:"name_ae"`
 }
@@ -296,13 +296,13 @@ type UpdateMotoParameterRequest struct {
 
 // Moto Parameter Value requests
 type CreateMotoParameterValueRequest struct {
-	Name   string `json:"name" validate:"required,min=1,max=100"`
+	Name   string `json:"name" validate:"required,max=100"`
 	NameRu string `json:"name_ru"`
 	NameAe string `json:"name_ae"`
 }
 
 type UpdateMotoParameterValueRequest struct {
-	Name   string `json:"name" validate:"required,min=1,max=100"`
+	Name   string `json:"name" validate:"required,max=100"`
 	NameRu string `json:"name_ru"`
 	NameAe string `json:"name_ae"`
 }
@@ -374,13 +374,13 @@ type UpdateComtransParameterRequest struct {
 
 // Comtrans Parameter Value requests
 type CreateComtransParameterValueRequest struct {
-	Name   string `json:"name" validate:"required,min=1,max=100"`
+	Name   string `json:"name" validate:"required,max=100"`
 	NameRu string `json:"name_ru"`
 	NameAe string `json:"name_ae"`
 }
 
 type UpdateComtransParameterValueRequest struct {
-	Name   string `json:"name" validate:"required,min=1,max=100"`
+	Name   string `json:"name" validate:"required,max=100"`
 	NameRu string `json:"name_ru"`
 	NameAe string `json:"name_ae"`
 }
@@ -434,13 +434,13 @@ type CreateItemReportRequest struct {
 }
 
 type UpdateReportRequest struct {
-	ReportStatus int `json:"report_status" validate:"required,min=1,max=3"` // 1-pending, 2-resolved, 3-closed
+	ReportStatus int `json:"report_status" validate:"required,max=3"` // 1-pending, 2-resolved, 3-closed
 }
 
 // ModerateItemRequest is the request body for moderating items (vehicles, motorcycles, comtrans)
 type ModerateItemRequest struct {
 	ID          int    `json:"id" validate:"required"`
-	Status      int    `json:"status" validate:"required,min=1,max=3"` // 1-pending, 2-accepted, 3-declined
-	Title       string `json:"title"`                                  // optional, used for declined notification
-	Description string `json:"description"`                            // optional, used for declined notification
+	Status      int    `json:"status" validate:"required,max=3"` // 1-pending, 2-accepted, 3-declined
+	Title       string `json:"title"`                            // optional, used for declined notification
+	Description string `json:"description"`                      // optional, used for declined notification
 }

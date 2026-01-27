@@ -89,6 +89,7 @@ type GetComtransResponse struct {
 	MyComtran *bool      `json:"my_comtran"`
 	Odometer  int        `json:"odometer"`
 	OwnerName *string    `json:"owner_name"`
+	City      *string    `json:"city"`
 	ID        int        `json:"id"`
 }
 

@@ -161,6 +161,7 @@ type GetCarsResponse struct {
 	Crash     *bool      `json:"crash"`
 	MyCar     *bool      `json:"my_car"`
 	OwnerName *string    `json:"owner_name"`
+	City      *string    `json:"city"`
 	Odometer  *int       `json:"odometer"`
 	ID        int        `json:"id"`
 }
@@ -735,4 +736,12 @@ type AdminNotificationResponse struct {
 	Title            *string   `json:"title"`
 	Message          *string   `json:"message"`
 	CreatedAt        time.Time `json:"created_at"`
+}
+
+// Notification responses
+type NotificationResponse struct {
+	ID        int       `json:"id"`
+	Title     *string   `json:"title"`
+	Message   *string   `json:"message"`
+	CreatedAt time.Time `json:"created_at"`
 }
