@@ -166,20 +166,21 @@ type GetEditMotorcycleResponse struct {
 	Owner          MotorcycleOwner `json:"owner"`
 	Crash          *bool           `json:"crash"`
 	Wheel          *bool           `json:"wheel"`
+	New            *bool           `json:"new"`
 	VinCode        string          `json:"vin_code"`
 	Description    string          `json:"description"`
 	Status         string          `json:"status"`
-	MotoCategory   string          `json:"moto_category"`
-	MotoBrand      string          `json:"moto_brand"`
-	MotoModel      string          `json:"moto_model"`
-	EngineType     string          `json:"engine_type"`
-	City           string          `json:"city"`
-	Color          string          `json:"color"`
+	MotoCategory   *Model          `json:"moto_category"`
+	MotoBrand      *Model          `json:"moto_brand"`
+	MotoModel      *Model          `json:"moto_model"`
+	EngineType     *Model          `json:"engine_type"`
+	City           *City           `json:"city"`
+	Color          *Color          `json:"color"`
 	ID             int             `json:"id"`
 	Engine         int             `json:"engine"`
 	Power          int             `json:"power"`
 	Year           int             `json:"year"`
-	NumberOfCycles string          `json:"number_of_cycles"`
+	NumberOfCycles *Model          `json:"number_of_cycles"`
 	Odometer       int             `json:"odometer"`
 	Owners         int             `json:"owners"`
 	Price          int             `json:"price"`

@@ -55,6 +55,34 @@ func (h *AuthHandler) UserLoginGoogle(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
+// UserLoginApple godoc
+// @Summary      User login apple
+// @Description  Authenticates a user and returns a JWT token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      model.UserLoginApple  true  "User login apple credentials"
+// @Success      200   {object}  model.LoginFiberResponse
+// @Failure      400   {object}  model.ResultMessage
+// @Failure      401   {object}  auth.ErrorResponse
+// @Failure      403   {object}  auth.ErrorResponse
+// @Failure      404   {object}  model.ResultMessage
+// @Failure      500   {object}  model.ResultMessage
+// @Router       /api/v1/auth/user-login-apple [post]
+func (h *AuthHandler) UserLoginApple(c *fiber.Ctx) error {
+	user := &model.UserLoginApple{}
+
+	if err := c.BodyParser(user); err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  err,
+		})
+	}
+
+	data := h.service.UserLoginApple(c.Context(), user.TokenID)
+	return utils.FiberResponse(c, data)
+}
+
 // Send Application godoc
 // @Summary      Send application
 // @Description  Sends an application to the database

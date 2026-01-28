@@ -1455,15 +1455,15 @@ definitions:
   model.GetEditComtransResponse:
     properties:
       city:
-        type: string
+        $ref: '#/definitions/model.City'
       color:
-        type: string
+        $ref: '#/definitions/model.Color'
       comtran_brand:
-        type: string
+        $ref: '#/definitions/model.Model'
       comtran_category:
-        type: string
+        $ref: '#/definitions/model.Model'
       comtran_model:
-        type: string
+        $ref: '#/definitions/model.Model'
       crash:
         type: boolean
       created_at:
@@ -1473,7 +1473,7 @@ definitions:
       engine:
         type: integer
       engine_type:
-        type: string
+        $ref: '#/definitions/model.Model'
       id:
         type: integer
       images:
@@ -1481,6 +1481,8 @@ definitions:
           $ref: '#/definitions/model.ImageObject'
         type: array
       my_comtrans:
+        type: boolean
+      new:
         type: boolean
       odometer:
         type: integer
@@ -1516,9 +1518,9 @@ definitions:
   model.GetEditMotorcycleResponse:
     properties:
       city:
-        type: string
+        $ref: '#/definitions/model.City'
       color:
-        type: string
+        $ref: '#/definitions/model.Color'
       crash:
         type: boolean
       created_at:
@@ -1528,7 +1530,7 @@ definitions:
       engine:
         type: integer
       engine_type:
-        type: string
+        $ref: '#/definitions/model.Model'
       id:
         type: integer
       images:
@@ -1536,15 +1538,17 @@ definitions:
           $ref: '#/definitions/model.ImageObject'
         type: array
       moto_brand:
-        type: string
+        $ref: '#/definitions/model.Model'
       moto_category:
-        type: string
+        $ref: '#/definitions/model.Model'
       moto_model:
-        type: string
+        $ref: '#/definitions/model.Model'
       my_moto:
         type: boolean
+      new:
+        type: boolean
       number_of_cycles:
-        type: string
+        $ref: '#/definitions/model.Model'
       odometer:
         type: integer
       owner:

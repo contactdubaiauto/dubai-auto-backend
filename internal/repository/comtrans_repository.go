@@ -84,6 +84,7 @@ func (r *ComtransRepository) GetComtransEngines(ctx *fasthttp.RequestCtx, nameCo
 		SELECT id, ` + nameColumn + ` FROM com_engines
 	`
 	rows, err := r.db.Query(ctx, q)
+
 	if err != nil {
 		return nil, err
 	}
@@ -93,6 +94,7 @@ func (r *ComtransRepository) GetComtransEngines(ctx *fasthttp.RequestCtx, nameCo
 	for rows.Next() {
 		var engine model.GetComtransModelsResponse
 		err = rows.Scan(&engine.ID, &engine.Name)
+		data = append(data, engine)
 	}
 	return data, nil
 }
@@ -496,6 +498,8 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 			cts.year,
 			cts.odometer,
 			cts.crash,
+			cts.wheel,
+			cts.new,
 			cts.owners,
 			cts.vin_code,
 			cts.description,
@@ -505,12 +509,31 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 			cts.status,
 			cts.updated_at,
 			cts.created_at,
-			cocs.` + nameColumn + ` as comtran_category,
-			cbs.` + nameColumn + ` as comtran_brand,
-			cms.` + nameColumn + ` as comtran_model,
-			ces.` + nameColumn + ` as engine_type,
-			cs.name as city,
-			cls.` + nameColumn + ` as color,
+			json_build_object(
+				'id', cocs.id,
+				'name', cocs.` + nameColumn + `
+			) as comtran_category,
+			json_build_object(
+				'id', cbs.id,
+				'name', cbs.` + nameColumn + `
+			) as comtran_brand,
+			json_build_object(
+				'id', cms.id,
+				'name', cms.` + nameColumn + `
+			) as comtran_model,
+			json_build_object(
+				'id', ces.id,
+				'name', ces.` + nameColumn + `
+			) as engine_type,
+			json_build_object(
+				'id', cs.id,
+				'name', cs.name
+			) as city,
+			json_build_object(
+				'id', cls.id,
+				'name', cls.` + nameColumn + `,
+				'image', $3 || cls.image
+			) as color,
 			CASE
 				WHEN cts.user_id = $2 THEN TRUE
 				ELSE FALSE
@@ -518,6 +541,7 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 			images.images,
 			videos.videos
 		from comtrans cts
+		left join users u on u.id = cts.user_id
 		left join profiles pf on pf.user_id = cts.user_id
 		left join com_categories cocs on cocs.id = cts.comtran_category_id
 		left join com_brands cbs on cbs.id = cts.comtran_brand_id
@@ -548,7 +572,7 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 
 	err := r.db.QueryRow(ctx, q, comtransID, userID, r.config.IMAGE_BASE_URL).Scan(
 		&comtrans.ID, &comtrans.Owner, &comtrans.Engine, &comtrans.Power, &comtrans.Year,
-		&comtrans.Odometer, &comtrans.Crash, &comtrans.Owners, &comtrans.VinCode, &comtrans.Description,
+		&comtrans.Odometer, &comtrans.Crash, &comtrans.Wheel, &comtrans.New, &comtrans.Owners, &comtrans.VinCode, &comtrans.Description,
 		&comtrans.PhoneNumbers, &comtrans.Price, &comtrans.TradeIn, &comtrans.Status,
 		&comtrans.UpdatedAt, &comtrans.CreatedAt, &comtrans.ComtranCategory, &comtrans.ComtranBrand,
 		&comtrans.ComtranModel, &comtrans.EngineType, &comtrans.City, &comtrans.Color, &comtrans.MyComtrans,

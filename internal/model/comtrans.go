@@ -134,14 +134,15 @@ type GetEditComtransResponse struct {
 	Crash           *bool         `json:"crash"`
 	VinCode         string        `json:"vin_code"`
 	Wheel           *bool         `json:"wheel"`
+	New             *bool         `json:"new"`
 	Description     string        `json:"description"`
 	Status          string        `json:"status"`
-	ComtranCategory string        `json:"comtran_category"`
-	ComtranBrand    string        `json:"comtran_brand"`
-	ComtranModel    string        `json:"comtran_model"`
-	EngineType      string        `json:"engine_type"`
-	City            string        `json:"city"`
-	Color           string        `json:"color"`
+	ComtranCategory *Model        `json:"comtran_category"`
+	ComtranBrand    *Model        `json:"comtran_brand"`
+	ComtranModel    *Model        `json:"comtran_model"`
+	EngineType      *Model        `json:"engine_type"`
+	City            *City         `json:"city"`
+	Color           *Color        `json:"color"`
 	ID              int           `json:"id"`
 	Engine          int           `json:"engine"`
 	Power           int           `json:"power"`

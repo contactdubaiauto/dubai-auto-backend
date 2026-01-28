@@ -20764,19 +20764,19 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "city": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.City"
                 },
                 "color": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.Color"
                 },
                 "comtran_brand": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.Model"
                 },
                 "comtran_category": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.Model"
                 },
                 "comtran_model": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.Model"
                 },
                 "crash": {
                     "type": "boolean"
@@ -20791,7 +20791,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "engine_type": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.Model"
                 },
                 "id": {
                     "type": "integer"
@@ -20803,6 +20803,9 @@ const docTemplate = `{
                     }
                 },
                 "my_comtrans": {
+                    "type": "boolean"
+                },
+                "new": {
                     "type": "boolean"
                 },
                 "odometer": {
@@ -20856,10 +20859,10 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "city": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.City"
                 },
                 "color": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.Color"
                 },
                 "crash": {
                     "type": "boolean"
@@ -20874,7 +20877,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "engine_type": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.Model"
                 },
                 "id": {
                     "type": "integer"
@@ -20886,19 +20889,22 @@ const docTemplate = `{
                     }
                 },
                 "moto_brand": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.Model"
                 },
                 "moto_category": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.Model"
                 },
                 "moto_model": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.Model"
                 },
                 "my_moto": {
                     "type": "boolean"
                 },
+                "new": {
+                    "type": "boolean"
+                },
                 "number_of_cycles": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.Model"
                 },
                 "odometer": {
                     "type": "integer"

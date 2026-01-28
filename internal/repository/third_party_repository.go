@@ -902,10 +902,14 @@ func (r *ThirdPartyRepository) GetEditDealerMotorcycleByID(ctx *fasthttp.Request
 			mcs.engine,
 			mcs.power,
 			mcs.year,
-			nocs.` + nameColumn + ` as number_of_cycles,
+			json_build_object(
+				'id', nocs.id,
+				'name', nocs.` + nameColumn + `
+			) as number_of_cycles,
 			mcs.odometer,
 			mcs.crash,
 			mcs.wheel,
+			mcs.new,
 			mcs.owners,
 			mcs.vin_code,
 			mcs.description,
@@ -915,12 +919,31 @@ func (r *ThirdPartyRepository) GetEditDealerMotorcycleByID(ctx *fasthttp.Request
 			mcs.status::text,
 			mcs.updated_at,
 			mcs.created_at,
-			mocs.` + nameColumn + ` as moto_category,
-			mbs.` + nameColumn + ` as moto_brand,
-			mms.` + nameColumn + ` as moto_model,
-			meng.` + nameColumn + ` as engine_type,
-			cs.name as city,
-			cls.` + nameColumn + ` as color,
+			json_build_object(
+				'id', mocs.id,
+				'name', mocs.` + nameColumn + `
+			) as moto_category,
+			json_build_object(
+				'id', mbs.id,
+				'name', mbs.` + nameColumn + `
+			) as moto_brand,
+			json_build_object(
+				'id', mms.id,
+				'name', mms.` + nameColumn + `
+			) as moto_model,
+			json_build_object(
+				'id', meng.id,
+				'name', meng.` + nameColumn + `
+			) as engine_type,
+			json_build_object(
+				'id', cs.id,
+				'name', cs.name
+			) as city,
+			json_build_object(
+				'id', cls.id,
+				'name', cls.` + nameColumn + `,
+				'image', $3 || cls.image
+			) as color,
 			CASE
 				WHEN mcs.user_id = $2 THEN TRUE
 				ELSE FALSE
@@ -959,7 +982,7 @@ func (r *ThirdPartyRepository) GetEditDealerMotorcycleByID(ctx *fasthttp.Request
 	`
 	err := r.db.QueryRow(ctx, q, motorcycleID, dealerID, r.config.IMAGE_BASE_URL).Scan(
 		&motorcycle.ID, &motorcycle.Owner, &motorcycle.Engine, &motorcycle.Power, &motorcycle.Year,
-		&motorcycle.NumberOfCycles, &motorcycle.Odometer, &motorcycle.Crash, &motorcycle.Wheel,
+		&motorcycle.NumberOfCycles, &motorcycle.Odometer, &motorcycle.Crash, &motorcycle.Wheel, &motorcycle.New,
 		&motorcycle.Owners, &motorcycle.VinCode, &motorcycle.Description, &motorcycle.PhoneNumbers,
 		&motorcycle.Price, &motorcycle.TradeIn, &motorcycle.Status,
 		&motorcycle.UpdatedAt, &motorcycle.CreatedAt, &motorcycle.MotoCategory, &motorcycle.MotoBrand,
@@ -1135,6 +1158,8 @@ func (r *ThirdPartyRepository) GetEditDealerComtransByID(ctx *fasthttp.RequestCt
 			cts.year,
 			cts.odometer,
 			cts.crash,
+			cts.wheel,
+			cts.new,
 			cts.owners,
 			cts.vin_code,
 			cts.description,
@@ -1144,12 +1169,31 @@ func (r *ThirdPartyRepository) GetEditDealerComtransByID(ctx *fasthttp.RequestCt
 			cts.status,
 			cts.updated_at,
 			cts.created_at,
-			cocs.` + nameColumn + ` as comtran_category,
-			cbs.` + nameColumn + ` as comtran_brand,
-			cms.` + nameColumn + ` as comtran_model,
-			ces.` + nameColumn + ` as engine_type,
-			cs.name as city,
-			cls.` + nameColumn + ` as color,
+			json_build_object(
+				'id', cocs.id,
+				'name', cocs.` + nameColumn + `
+			) as comtran_category,
+			json_build_object(
+				'id', cbs.id,
+				'name', cbs.` + nameColumn + `
+			) as comtran_brand,
+			json_build_object(
+				'id', cms.id,
+				'name', cms.` + nameColumn + `
+			) as comtran_model,
+			json_build_object(
+				'id', ces.id,
+				'name', ces.` + nameColumn + `
+			) as engine_type,
+			json_build_object(
+				'id', cs.id,
+				'name', cs.name
+			) as city,
+			json_build_object(
+				'id', cls.id,
+				'name', cls.` + nameColumn + `,
+				'image', $3 || cls.image
+			) as color,
 			CASE
 				WHEN cts.user_id = $2 THEN TRUE
 				ELSE FALSE
@@ -1188,7 +1232,7 @@ func (r *ThirdPartyRepository) GetEditDealerComtransByID(ctx *fasthttp.RequestCt
 
 	err := r.db.QueryRow(ctx, q, comtransID, dealerID, r.config.IMAGE_BASE_URL).Scan(
 		&comtrans.ID, &comtrans.Owner, &comtrans.Engine, &comtrans.Power, &comtrans.Year,
-		&comtrans.Odometer, &comtrans.Crash, &comtrans.Owners, &comtrans.VinCode, &comtrans.Description,
+		&comtrans.Odometer, &comtrans.Crash, &comtrans.Wheel, &comtrans.New, &comtrans.Owners, &comtrans.VinCode, &comtrans.Description,
 		&comtrans.PhoneNumbers, &comtrans.Price, &comtrans.TradeIn, &comtrans.Status,
 		&comtrans.UpdatedAt, &comtrans.CreatedAt, &comtrans.ComtranCategory, &comtrans.ComtranBrand,
 		&comtrans.ComtranModel, &comtrans.EngineType, &comtrans.City, &comtrans.Color, &comtrans.MyComtrans,
