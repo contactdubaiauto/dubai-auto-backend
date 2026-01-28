@@ -16,6 +16,11 @@ func loadEnvVariable(key string) string {
 	return value
 }
 
+func loadEnvVariableOptional(key string) string {
+	value, _ := os.LookupEnv(key)
+	return value
+}
+
 type Config struct {
 	ClientID              string
 	MIGRATE               string
@@ -53,6 +58,7 @@ type Config struct {
 	APPLE_KEY_ID          string
 	APPLE_CLIENT_ID       string
 	APPLE_KEY_PATH        string
+	APPLE_REDIRECT_URI    string
 }
 
 var ENV Config
@@ -103,5 +109,6 @@ func Init() *Config {
 	ENV.APPLE_KEY_ID = loadEnvVariable("APPLE_KEY_ID")
 	ENV.APPLE_CLIENT_ID = loadEnvVariable("APPLE_CLIENT_ID")
 	ENV.APPLE_KEY_PATH = loadEnvVariable("APPLE_KEY_PATH")
+	ENV.APPLE_REDIRECT_URI = loadEnvVariableOptional("APPLE_REDIRECT_URI")
 	return &ENV
 }

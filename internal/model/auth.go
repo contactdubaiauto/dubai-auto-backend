@@ -7,7 +7,8 @@ type UserLoginGoogle struct {
 }
 
 type UserLoginApple struct {
-	AuthorizationCode string `json:"authorization_code" binding:"required"`
+	// For iOS native Sign in with Apple, client typically sends `identityToken` (JWT).
+	IdentityToken string `json:"identity_token"`
 }
 
 type AppleUserInfo struct {

@@ -22579,11 +22579,9 @@ const docTemplate = `{
         },
         "model.UserLoginApple": {
             "type": "object",
-            "required": [
-                "authorization_code"
-            ],
             "properties": {
-                "authorization_code": {
+                "identity_token": {
+                    "description": "For iOS native Sign in with Apple, client typically sends ` + "`" + `identityToken` + "`" + ` (JWT).",
                     "type": "string"
                 }
             }

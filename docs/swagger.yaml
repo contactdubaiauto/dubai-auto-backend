@@ -2589,10 +2589,10 @@ definitions:
     type: object
   model.UserLoginApple:
     properties:
-      authorization_code:
+      identity_token:
+        description: For iOS native Sign in with Apple, client typically sends `identityToken`
+          (JWT).
         type: string
-    required:
-    - authorization_code
     type: object
   model.UserLoginEmail:
     properties:

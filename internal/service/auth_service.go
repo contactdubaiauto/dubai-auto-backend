@@ -1,14 +1,12 @@
 package service
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"mime/multipart"
 	"net/http"
-	"net/url"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -439,100 +437,31 @@ func (s *AuthService) AdminLogin(ctx *fasthttp.RequestCtx, userReq *model.AdminL
 	}
 }
 
-func (s *AuthService) UserLoginApple(ctx *fasthttp.RequestCtx, authorizationCode string) model.Response {
-	// Step 1: Generate client secret using .p8 file
-	clientSecret, err := utils.GenerateAppleClientSecret(
-		s.config.APPLE_TEAM_ID,
-		s.config.APPLE_KEY_ID,
-		s.config.APPLE_CLIENT_ID,
-		s.config.APPLE_KEY_PATH,
-	)
-	if err != nil {
-		return model.Response{Error: fmt.Errorf("failed to generate Apple client secret: %w", err), Status: http.StatusInternalServerError}
-	}
+func (s *AuthService) UserLoginApple(ctx *fasthttp.RequestCtx, identityToken string) model.Response {
 
-	// Step 2: Exchange authorization code for access token
-	tokenData := url.Values{}
-	tokenData.Set("client_id", s.config.APPLE_CLIENT_ID)
-	tokenData.Set("client_secret", clientSecret)
-	tokenData.Set("code", authorizationCode)
-	tokenData.Set("grant_type", "authorization_code")
-
-	tokenReq, err := http.NewRequest("POST", "https://appleid.apple.com/auth/token", strings.NewReader(tokenData.Encode()))
+	claims, err := auth.VerifyAppleIDToken(identityToken)
 	if err != nil {
 		return model.Response{Error: err, Status: http.StatusBadRequest}
 	}
-	tokenReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	client := &http.Client{}
-	tokenResp, err := client.Do(tokenReq)
-	if err != nil {
-		return model.Response{Error: err, Status: http.StatusBadRequest}
-	}
-	defer tokenResp.Body.Close()
-
-	if tokenResp.StatusCode != http.StatusOK {
-		bodyBytes := make([]byte, 1024)
-		tokenResp.Body.Read(bodyBytes)
-		return model.Response{Error: fmt.Errorf("failed to exchange code for token: %s", string(bodyBytes)), Status: http.StatusBadRequest}
+	// Extract sub (required) - Apple user ID
+	sub, ok := claims["sub"].(string)
+	if !ok || sub == "" {
+		return model.Response{Error: errors.New("apple identity token missing sub"), Status: http.StatusBadRequest}
 	}
 
-	var tokenResponse struct {
-		AccessToken  string `json:"access_token"`
-		TokenType    string `json:"token_type"`
-		ExpiresIn    int    `json:"expires_in"`
-		RefreshToken string `json:"refresh_token"`
-		IDToken      string `json:"id_token"`
+	// Extract email (optional) - Apple only sends this on first authorization
+	// On subsequent logins, email will be nil/missing
+	var email string
+	if emailVal, ok := claims["email"].(string); ok && emailVal != "" {
+		email = emailVal
+		// Note: This might be a private relay email (@privaterelay.appleid.com)
+		// if the user chose "Hide My Email" option
 	}
 
-	if err := json.NewDecoder(tokenResp.Body).Decode(&tokenResponse); err != nil {
-		return model.Response{Error: err, Status: http.StatusBadRequest}
-	}
-
-	// Step 3: Decode ID token to get user info (Apple provides user info in ID token)
-	// The ID token is a JWT that contains user information
-	// We'll decode it without verification for now (in production, verify with Apple's public keys)
-	parts := strings.Split(tokenResponse.IDToken, ".")
-	if len(parts) != 3 {
-		return model.Response{Error: errors.New("invalid ID token format"), Status: http.StatusBadRequest}
-	}
-
-	// Decode base64 URL encoded payload (second part)
-	// Note: In production, you should verify the JWT signature using Apple's public keys
-	payloadBytes, err := base64.RawURLEncoding.DecodeString(parts[1])
-	if err != nil {
-		return model.Response{Error: fmt.Errorf("failed to decode ID token payload: %w", err), Status: http.StatusBadRequest}
-	}
-
-	var payload map[string]interface{}
-	if err := json.Unmarshal(payloadBytes, &payload); err != nil {
-		return model.Response{Error: fmt.Errorf("failed to parse ID token payload: %w", err), Status: http.StatusBadRequest}
-	}
-
-	var userInfo model.AppleUserInfo
-	if sub, ok := payload["sub"].(string); ok {
-		userInfo.Sub = sub
-	}
-	if email, ok := payload["email"].(string); ok {
-		userInfo.Email = email
-	}
-
-	// If email is not in ID token, try to get it from userinfo endpoint
-	if userInfo.Email == "" {
-		userInfoReq, err := http.NewRequest("GET", "https://appleid.apple.com/auth/userinfo", nil)
-		if err == nil {
-			userInfoReq.Header.Set("Authorization", "Bearer "+tokenResponse.AccessToken)
-			userInfoResp, err := client.Do(userInfoReq)
-			if err == nil && userInfoResp.StatusCode == http.StatusOK {
-				var userInfoFromAPI model.AppleUserInfo
-				if err := json.NewDecoder(userInfoResp.Body).Decode(&userInfoFromAPI); err == nil {
-					if userInfoFromAPI.Email != "" {
-						userInfo.Email = userInfoFromAPI.Email
-					}
-				}
-				userInfoResp.Body.Close()
-			}
-		}
+	userInfo := model.AppleUserInfo{
+		Sub:   sub,
+		Email: email,
 	}
 
 	u, err := s.repo.UserLoginApple(ctx, userInfo)

@@ -79,7 +79,7 @@ func (h *AuthHandler) UserLoginApple(c *fiber.Ctx) error {
 		})
 	}
 
-	data := h.service.UserLoginApple(c.Context(), user.AuthorizationCode)
+	data := h.service.UserLoginApple(c.Context(), user.IdentityToken)
 	return utils.FiberResponse(c, data)
 }
 
