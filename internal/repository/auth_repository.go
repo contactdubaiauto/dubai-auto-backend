@@ -282,3 +282,46 @@ func (r *AuthRepository) UserPhoneGetOrRegister(ctx *fasthttp.RequestCtx, userna
 
 	return userID, err
 }
+
+func (r *AuthRepository) UserLoginApple(ctx *fasthttp.RequestCtx, claims model.AppleUserInfo) (model.UserByEmail, error) {
+	var userByEmail model.UserByEmail
+
+	// Use Apple user ID (sub) as the email identifier since it's unique
+	// Apple provides email only on first authorization, so we use sub as primary identifier
+	appleID := claims.Sub
+	username := claims.Email
+	if username == "" {
+		// Generate a username from Apple ID if email is not provided
+		if len(appleID) > 8 {
+			username = "Apple User " + appleID[:8]
+		} else {
+			username = "Apple User"
+		}
+	}
+
+	// Use Apple ID (sub) as email field since it's the unique identifier
+	// If email is provided, we'll store it but use sub for lookups
+	q := `
+		INSERT INTO users (email, password, username, phone)
+		VALUES ($1, 'apple', $2, NULL)
+		ON CONFLICT (email) DO UPDATE
+		SET username = COALESCE(NULLIF($2, ''), users.username)
+		RETURNING id, role_id;
+	`
+	row := r.db.QueryRow(ctx, q, appleID, username)
+	err := row.Scan(&userByEmail.ID, &userByEmail.RoleID)
+
+	if err != nil {
+		return userByEmail, err
+	}
+
+	q = `
+		INSERT INTO profiles (user_id, username, registered_by)
+		VALUES ($1, $2, $3)
+		ON CONFLICT (user_id) DO UPDATE
+		SET username = COALESCE(NULLIF($2, ''), profiles.username);
+	`
+	_, err = r.db.Exec(ctx, q, userByEmail.ID, username, "apple")
+
+	return userByEmail, err
+}

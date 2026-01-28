@@ -2164,6 +2164,38 @@ func (h *UserHandler) GetComtrans(c *fiber.Ctx) error {
 	return utils.FiberResponse(c, data)
 }
 
+// GetComtransByID godoc
+// @Summary      Get comtrans by ID
+// @Description  Returns a comtrans by its ID
+// @Tags         comtrans
+// @Produce      json
+// @Security 	 BearerAuth
+// @Param   Accept-Language  header  string  false  "Language"
+// @Param        id   path      int  true  "Comtrans ID"
+// @Success      200  {object}  model.GetComtranResponse
+// @Failure      400  {object}  model.ResultMessage
+// @Failure      401  {object}  auth.ErrorResponse
+// @Failure		 403  {object} auth.ErrorResponse
+// @Failure      404  {object}  model.ResultMessage
+// @Failure      500  {object}  model.ResultMessage
+// @Router       /api/v1/users/comtrans/{id} [get]
+func (h *UserHandler) GetComtransByID(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	nameColumn := c.Locals("lang").(string)
+	userID := c.Locals("id").(int)
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		return utils.FiberResponse(c, model.Response{
+			Status: 400,
+			Error:  errors.New("comtrans id must be integer"),
+		})
+	}
+
+	data := h.ComtransService.GetComtransByID(c.Context(), id, userID, nameColumn)
+	return utils.FiberResponse(c, data)
+}
+
 // GetEditComtransByID godoc
 // @Summary      Get Edit comtrans by ID
 // @Description  Returns a comtrans by its ID for editing

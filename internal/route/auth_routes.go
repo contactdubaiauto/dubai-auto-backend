@@ -13,7 +13,7 @@ import (
 
 func SetupAuthRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, validator *auth.Validator) {
 	authRepository := repository.NewAuthRepository(config, db)
-	authService := service.NewAuthService(authRepository)
+	authService := service.NewAuthService(authRepository, config)
 	authHandler := http.NewAuthHandler(authService, validator)
 
 	{

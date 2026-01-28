@@ -8930,6 +8930,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/auth/user-login-apple": {
+            "post": {
+                "description": "Authenticates a user and returns a JWT token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "User login apple",
+                "parameters": [
+                    {
+                        "description": "User login apple credentials",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UserLoginApple"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.LoginFiberResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/auth/user-login-email": {
             "post": {
                 "description": "Authenticates a user and returns a JWT token",
@@ -14607,6 +14671,74 @@ const docTemplate = `{
             }
         },
         "/api/v1/users/comtrans/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns a comtrans by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "comtrans"
+                ],
+                "summary": "Get comtrans by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "Accept-Language",
+                        "in": "header"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Comtrans ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.GetComtranResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/auth.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResultMessage"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -22441,6 +22573,17 @@ const docTemplate = `{
             ],
             "properties": {
                 "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserLoginApple": {
+            "type": "object",
+            "required": [
+                "authorization_code"
+            ],
+            "properties": {
+                "authorization_code": {
                     "type": "string"
                 }
             }

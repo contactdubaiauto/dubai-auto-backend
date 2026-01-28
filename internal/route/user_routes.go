@@ -98,6 +98,7 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		// comtrans
 		r.Get("/comtrans", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetComtrans)
 		r.Get("/comtrans/:id/edit", auth.TokenGuard, auth.LanguageChecker, userHandler.GetEditComtransByID)
+		r.Get("/comtrans/:id", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetComtransByID)
 		r.Get("/comtrans/categories", auth.LanguageChecker, userHandler.GetComtransCategories)
 		r.Get("/comtrans/brands", auth.LanguageChecker, userHandler.GetComtransBrands)
 		r.Get("/comtrans/brands/:id/models", auth.LanguageChecker, userHandler.GetComtransModelsByBrandID)

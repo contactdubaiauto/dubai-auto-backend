@@ -2587,6 +2587,13 @@ definitions:
     required:
     - email
     type: object
+  model.UserLoginApple:
+    properties:
+      authorization_code:
+        type: string
+    required:
+    - authorization_code
+    type: object
   model.UserLoginEmail:
     properties:
       email:
@@ -8412,6 +8419,48 @@ paths:
       summary: User forget password
       tags:
       - auth
+  /api/v1/auth/user-login-apple:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token
+      parameters:
+      - description: User login apple credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserLoginApple'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.LoginFiberResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      summary: User login apple
+      tags:
+      - auth
   /api/v1/auth/user-login-email:
     post:
       consumes:
@@ -12071,6 +12120,50 @@ paths:
       security:
       - BearerAuth: []
       summary: Delete commercial transport
+      tags:
+      - comtrans
+    get:
+      description: Returns a comtrans by its ID
+      parameters:
+      - description: Language
+        in: header
+        name: Accept-Language
+        type: string
+      - description: Comtrans ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GetComtranResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ResultMessage'
+      security:
+      - BearerAuth: []
+      summary: Get comtrans by ID
       tags:
       - comtrans
   /api/v1/users/comtrans/{id}/buy:

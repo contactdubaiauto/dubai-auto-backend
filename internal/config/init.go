@@ -49,6 +49,10 @@ type Config struct {
 	SMTP_PORT             string
 	SMTP_MAIL             string
 	SMTP_PASSWORD         string
+	APPLE_TEAM_ID         string
+	APPLE_KEY_ID          string
+	APPLE_CLIENT_ID       string
+	APPLE_KEY_PATH        string
 }
 
 var ENV Config
@@ -95,5 +99,9 @@ func Init() *Config {
 	ENV.SMTP_PORT = loadEnvVariable("SMTP_PORT")
 	ENV.SMTP_MAIL = loadEnvVariable("SMTP_MAIL")
 	ENV.SMTP_PASSWORD = loadEnvVariable("SMTP_PASSWORD")
+	ENV.APPLE_TEAM_ID = loadEnvVariable("APPLE_TEAM_ID")
+	ENV.APPLE_KEY_ID = loadEnvVariable("APPLE_KEY_ID")
+	ENV.APPLE_CLIENT_ID = loadEnvVariable("APPLE_CLIENT_ID")
+	ENV.APPLE_KEY_PATH = loadEnvVariable("APPLE_KEY_PATH")
 	return &ENV
 }

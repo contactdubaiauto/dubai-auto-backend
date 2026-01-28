@@ -6,6 +6,15 @@ type UserLoginGoogle struct {
 	TokenID string `json:"token_id" binding:"required"`
 }
 
+type UserLoginApple struct {
+	AuthorizationCode string `json:"authorization_code" binding:"required"`
+}
+
+type AppleUserInfo struct {
+	Sub   string `json:"sub"`   // Apple user ID
+	Email string `json:"email"` // User's email (may be empty on subsequent logins)
+}
+
 type UserRegisterDevice struct {
 	DeviceID    string `json:"device_id" binding:"required"`
 	DeviceType  string `json:"device_type"`
