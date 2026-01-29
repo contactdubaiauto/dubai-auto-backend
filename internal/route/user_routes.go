@@ -61,7 +61,6 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		// cars
 		r.Get("/cars", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetCars)
 		r.Get("/cars/price-recommendation", auth.TokenGuard, userHandler.GetPriceRecommendation)
-		r.Get("/cars/:id", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetCarByID)
 		r.Get("/cars/:id/edit", auth.TokenGuard, auth.LanguageChecker, userHandler.GetEditCarByID)
 		r.Post("/cars/:id/buy", auth.TokenGuard, userHandler.BuyCar)
 		r.Post("/cars", auth.TokenGuard, userHandler.CreateCar)
@@ -73,12 +72,12 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Put("/cars", auth.TokenGuard, userHandler.UpdateCar)
 		r.Delete("/cars/:id/images", auth.TokenGuard, userHandler.DeleteCarImage)
 		r.Delete("/cars/:id/videos", auth.TokenGuard, userHandler.DeleteCarVideo)
+		r.Get("/cars/:id", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetCarByID)
 		r.Delete("/cars/:id", auth.TokenGuard, userHandler.DeleteCar)
 
 		// motorcycles
 		r.Get("/motorcycles", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetMotorcycles)
 		r.Get("/motorcycles/:id/edit", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetEditMotorcycleByID)
-		r.Get("/motorcycles/:id", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycleByID)
 		r.Post("/motorcycles", auth.TokenGuard, auth.LanguageChecker, userHandler.CreateMotorcycle)
 		r.Post("/motorcycles/:id/buy", auth.TokenGuard, auth.LanguageChecker, userHandler.BuyMotorcycle)
 		r.Post("/motorcycles/:id/cancel", auth.TokenGuard, auth.LanguageChecker, userHandler.CancelMotorcycle)
@@ -87,19 +86,19 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Post("/motorcycles/:id/images", auth.TokenGuard, auth.LanguageChecker, userHandler.CreateMotorcycleImages)
 		r.Post("/motorcycles/:id/videos", auth.TokenGuard, auth.LanguageChecker, userHandler.CreateMotorcycleVideos)
 		r.Put("/motorcycles", auth.TokenGuard, auth.LanguageChecker, userHandler.UpdateMotorcycle)
-		r.Delete("/motorcycles/:id/images", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycleImage)
-		r.Delete("/motorcycles/:id/videos", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycleVideo)
-		r.Delete("/motorcycles/:id", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycle)
 		r.Get("/motorcycles/categories", auth.LanguageChecker, motorcycleHandler.GetMotorcycleCategories)
 		r.Get("/motorcycles/number-of-cycles", auth.LanguageChecker, motorcycleHandler.GetNumberOfCycles)
 		r.Get("/motorcycles/engines", auth.LanguageChecker, motorcycleHandler.GetMotoEngines)
 		r.Get("/motorcycles/brands", auth.LanguageChecker, motorcycleHandler.GetMotorcycleBrands)
 		r.Get("/motorcycles/brands/:id/models", auth.LanguageChecker, motorcycleHandler.GetMotorcycleModelsByBrandID)
+		r.Delete("/motorcycles/:id/images", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycleImage)
+		r.Delete("/motorcycles/:id/videos", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycleVideo)
+		r.Delete("/motorcycles/:id", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycle)
+		r.Get("/motorcycles/:id", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycleByID)
 
 		// comtrans
 		r.Get("/comtrans", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetComtrans)
 		r.Get("/comtrans/:id/edit", auth.TokenGuard, auth.LanguageChecker, userHandler.GetEditComtransByID)
-		r.Get("/comtrans/:id", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetComtransByID)
 		r.Get("/comtrans/categories", auth.LanguageChecker, userHandler.GetComtransCategories)
 		r.Get("/comtrans/brands", auth.LanguageChecker, userHandler.GetComtransBrands)
 		r.Get("/comtrans/brands/:id/models", auth.LanguageChecker, userHandler.GetComtransModelsByBrandID)
@@ -118,6 +117,7 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Get("/comtrans/engines", auth.LanguageChecker, userHandler.GetComtransEngines)
 		r.Get("/comtrans/brands", auth.LanguageChecker, userHandler.GetComtransBrands)
 		r.Get("/comtrans/brands/:id/models", auth.LanguageChecker, userHandler.GetComtransModelsByBrandID)
+		r.Get("/comtrans/:id", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetComtransByID)
 
 		// likes
 		r.Get("/likes", auth.TokenGuard, auth.LanguageChecker, userHandler.Likes)
