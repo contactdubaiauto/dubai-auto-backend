@@ -340,12 +340,18 @@ alter table reports add column "item_id" int;
 
 -- password !23k5678
 insert into users (email, username, role_id, password, phone)
-values 
-    ('dealer_demo@mashynbazar.com', 'dealer', 2, '$2a$10$siAe/KIRn06ittw8XL46HuEUyNN4JQgCyZlgOW/8pVyGJHJdrSRj2', +99361616162),
-    ('logistics_demo@mashynbazar.com', 'dealer', 3, '$2a$10$siAe/KIRn06ittw8XL46HuEUyNN4JQgCyZlgOW/8pVyGJHJdrSRj2', +99361616163),
-    ('broker_demo@mashynbazar.com', 'dealer', 4, '$2a$10$siAe/KIRn06ittw8XL46HuEUyNN4JQgCyZlgOW/8pVyGJHJdrSRj2', +99361616164),
-    ('service_demo@mashynbazar.com', 'dealer', 4, '$2a$10$siAe/KIRn06ittw8XL46HuEUyNN4JQgCyZlgOW/8pVyGJHJdrSRj2', +99361616164);
+values ('dealer_demo@mashynbazar.com', 'dealer', 2, '$2a$10$siAe/KIRn06ittw8XL46HuEUyNN4JQgCyZlgOW/8pVyGJHJdrSRj2', +99361616162);
 
+insert into users (email, username, role_id, password, phone)
+values ('logistics_demo@mashynbazar.com', 'logist', 3, '$2a$10$siAe/KIRn06ittw8XL46HuEUyNN4JQgCyZlgOW/8pVyGJHJdrSRj2', +99361616163);
+
+insert into users (email, username, role_id, password, phone)
+values ('broker_demo@mashynbazar.com', 'broker', 4, '$2a$10$siAe/KIRn06ittw8XL46HuEUyNN4JQgCyZlgOW/8pVyGJHJdrSRj2', +99361616164);
+
+insert into users (email, username, role_id, password, phone)
+values ('service_demo@mashynbazar.com', 'service', 5, '$2a$10$siAe/KIRn06ittw8XL46HuEUyNN4JQgCyZlgOW/8pVyGJHJdrSRj2', +99361616165);
+
+delete from users where id in (select id from users where email in ('dealer_demo@mashynbazar.com', 'logistics_demo@mashynbazar.com', 'broker_demo@mashynbazar.com', 'service_demo@mashynbazar.com'));
 CREATE TYPE item_type_enum AS ENUM ('car', 'moto', 'comtran');
 
 alter table user_likes add column "created_at" timestamp not null default now();
@@ -488,3 +494,52 @@ ALTER TABLE profiles ALTER COLUMN registered_by SET DEFAULT 'app';
 
 -- 27.01.2026
 alter table profiles add column "unread_notifications" int default 0 not null;
+
+-- 28.01.2026
+
+-- Mock inserts for demo accounts (assume corresponding users and referenced IDs exist)
+-- Replace placeholders with actual or suitable test values as needed
+
+-- Dealer Account
+insert into profiles (
+    user_id, company_type_id, activity_field_id, vat_number, driving_experience, notification, unread_notifications,
+    username, registered_by, google, avatar, company_name, banner, contacts, address, coordinates, message, birthday,
+    documents_id, about_me
+) values (
+    (select id from users where email = 'dealer_demo@mashynbazar.com'),  1, 1, 'DEALER-123VAT', 10, true, 0,
+    'dealer_demo@mashynbazar.com', 'dealer_demo', null, null, 'Demo Dealer Company', null, null, '123 Demo Street', '40.7128,-74.0060',
+    'Welcome to the dealer demo profile.', '1985-01-01', null, 'I am a demo dealer account for testing.'
+);
+
+-- Logistics Account
+insert into profiles (
+    user_id, company_type_id, activity_field_id, vat_number, driving_experience, notification, unread_notifications,
+    username, registered_by, google, avatar, company_name, banner, contacts, address, coordinates, message, birthday,
+    documents_id, about_me
+) values (
+    (select id from users where email = 'logistics_demo@mashynbazar.com'),  2, 2, 'LOG-456VAT', 7, true, 0,
+    'logistics_demo@mashynbazar.com', 'logistics_demo', null, null, 'Demo Logistics Ltd', null, null, '456 Logistics Avenue', '34.0522,-118.2437',
+    'Welcome to the logistics demo profile.', '1990-02-02', null, 'I am a demo logistics account for testing.'
+);
+
+-- Broker Account
+insert into profiles (
+    user_id, company_type_id, activity_field_id, vat_number, driving_experience, notification, unread_notifications,
+    username, registered_by, google, avatar, company_name, banner, contacts, address, coordinates, message, birthday,
+    documents_id, about_me
+) values (
+    (select id from users where email = 'broker_demo@mashynbazar.com'),  3, 3, 'BROKER-789VAT', 5, true, 0,
+    'broker_demo@mashynbazar.com', 'broker_demo', null, null, 'Demo Broker Partners', null, null, '789 Broker Road', '51.5074,-0.1278',
+    'Welcome to the broker demo profile.', '1992-03-03', null, 'I am a demo broker account for testing.'
+);
+
+-- Car Service Account
+insert into profiles (
+    user_id, activity_field_id, vat_number, driving_experience, notification, unread_notifications,
+    username, registered_by, google, avatar, company_name, banner, contacts, address, coordinates, message, birthday,
+    documents_id, about_me
+) values (
+    (select id from users where email = 'service_demo@mashynbazar.com'),  4, 'SERVICE-321VAT', 12, true, 0,
+    'service_demo@mashynbazar.com', 'service_demo', null, null, 'Demo Car Service', null, null, '321 Service Lane', '41.9028,12.4964',
+    'Welcome to the car service demo profile.', '1988-04-04', null, 'I am a demo car service account for testing.'
+);
