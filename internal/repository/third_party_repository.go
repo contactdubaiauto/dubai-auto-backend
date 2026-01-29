@@ -852,17 +852,6 @@ func (r *ThirdPartyRepository) UpdateDealerMotorcycle(ctx *fasthttp.RequestCtx, 
 	updateArgs = append(updateArgs, motorcycle.ID)
 	paramIndex := 2
 
-	if !*motorcycle.Crash {
-		updateFields = append(updateFields, "crash = $"+strconv.Itoa(paramIndex))
-		updateArgs = append(updateArgs, false)
-		paramIndex++
-	}
-
-	if !*motorcycle.New {
-		updateFields = append(updateFields, "new = $"+strconv.Itoa(paramIndex))
-		updateArgs = append(updateArgs, false)
-		paramIndex++
-	}
 	for i, key := range keys {
 		if key != "id" && key != "user_id" {
 			updateFields = append(updateFields, fmt.Sprintf("%s = $%d", key, paramIndex))
@@ -1104,18 +1093,6 @@ func (r *ThirdPartyRepository) UpdateDealerComtrans(ctx *fasthttp.RequestCtx, co
 	var updateArgs []any
 	updateArgs = append(updateArgs, comtrans.ID)
 	paramIndex := 2
-
-	if !*comtrans.Crash {
-		updateFields = append(updateFields, "crash = $"+strconv.Itoa(paramIndex))
-		updateArgs = append(updateArgs, false)
-		paramIndex++
-	}
-
-	if !*comtrans.New {
-		updateFields = append(updateFields, "new = $"+strconv.Itoa(paramIndex))
-		updateArgs = append(updateArgs, false)
-		paramIndex++
-	}
 
 	for i, key := range keys {
 		if key != "id" && key != "user_id" {
