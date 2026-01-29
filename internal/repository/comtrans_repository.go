@@ -288,7 +288,7 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, t
 			END AS my_comtrans,
 			cts.odometer,
 			CASE
-				WHEN u.role_id = 2 THEN u.username
+				WHEN usr.role_id = 2 THEN usr.username
 				ELSE NULL
 			END AS owner_name,
 			cs.` + nameColumn + ` as city
@@ -296,7 +296,7 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, t
 		LEFT JOIN com_brands cbs ON cbs.id = cts.comtran_brand_id
 		LEFT JOIN com_models cms ON cms.id = cts.comtran_model_id
 		left join cities cs on cs.id = cts.city_id
-		LEFT JOIN users u ON u.id = cts.user_id
+		LEFT JOIN users usr ON usr.id = cts.user_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -406,14 +406,14 @@ func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransI
 			WHERE id = $1
 			RETURNING *
 		)
-		select 
+		SELECT 
 			cts.id,
 			json_build_object(
-				'id', u.id,
-				'username', u.username,
-				'avatar', $2 || pf.avatar,
+				'id', usr.id,
+				'username', usr.username,
+				'avatar', $3 || pf.avatar,
 				'contacts', pf.contacts,
-				'role_id', u.role_id
+				'role_id', usr.role_id
 			) as owner,
 			cts.engine,
 			cts.power,
@@ -436,19 +436,20 @@ func (r *ComtransRepository) GetComtransByID(ctx *fasthttp.RequestCtx, comtransI
 			cs.name as city,
 			cls.` + nameColumn + ` as color,
 			CASE
-				WHEN cts.user_id = $2 THEN TRUE
+				WHEN cts.user_id = $2::int THEN TRUE
 				ELSE FALSE
 			END AS my_comtrans,
 			images.images,
 			videos.videos
-		from updated cts
-		left join profiles pf on pf.user_id = cts.user_id
-		left join com_categories cocs on cocs.id = cts.comtran_category_id
-		left join com_brands cbs on cbs.id = cts.comtran_brand_id
-		left join com_models cms on cms.id = cts.comtran_model_id
-		left join com_engines ces on ces.id = cts.engine_id
-		left join cities cs on cs.id = cts.city_id
-		left join colors cls on cls.id = cts.color_id
+		FROM updated cts
+		LEFT JOIN users usr ON usr.id = cts.user_id
+		LEFT JOIN profiles pf ON pf.user_id = cts.user_id
+		LEFT JOIN com_categories cocs ON cocs.id = cts.comtran_category_id
+		LEFT JOIN com_brands cbs ON cbs.id = cts.comtran_brand_id
+		LEFT JOIN com_models cms ON cms.id = cts.comtran_model_id
+		LEFT JOIN com_engines ces ON ces.id = cts.engine_id
+		LEFT JOIN cities cs ON cs.id = cts.city_id
+		LEFT JOIN colors cls ON cls.id = cts.color_id
 		LEFT JOIN LATERAL (
 			SELECT json_agg(img.image) AS images
 			FROM (
@@ -487,11 +488,11 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 		select 
 			cts.id,
 			json_build_object(
-				'id', u.id,
-				'username', u.username,
-				'avatar', $2 || pf.avatar,
+				'id', usr.id,
+				'username', usr.username,
+				'avatar', $3 || pf.avatar,
 				'contacts', pf.contacts,
-				'role_id', u.role_id
+				'role_id', usr.role_id
 			) as owner,
 			cts.engine,
 			cts.power,
@@ -541,7 +542,7 @@ func (r *ComtransRepository) GetEditComtransByID(ctx *fasthttp.RequestCtx, comtr
 			images.images,
 			videos.videos
 		from comtrans cts
-		left join users u on u.id = cts.user_id
+		left join users usr on usr.id = cts.user_id
 		left join profiles pf on pf.user_id = cts.user_id
 		left join com_categories cocs on cocs.id = cts.comtran_category_id
 		left join com_brands cbs on cbs.id = cts.comtran_brand_id
