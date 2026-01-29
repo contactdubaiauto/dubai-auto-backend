@@ -1869,7 +1869,7 @@ func (r *UserRepository) GetDealers(ctx *fasthttp.RequestCtx) ([]model.ThirdPart
 	return dealers, nil
 }
 
-func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int, nameColumn string) (model.ThirdPartyGetProfileRes, error) {
+func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int, nameColumn string) (model.GetUserByIDRes, error) {
 
 	q := `
 		select
@@ -1914,7 +1914,7 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 		left join activity_fields on activity_fields.id = profiles.activity_field_id
         where users.id = $1;
 	`
-	var profile model.ThirdPartyGetProfileRes
+	var profile model.GetUserByIDRes
 	var contactsJSON []byte
 	err := r.db.QueryRow(ctx, q, userID, r.config.IMAGE_BASE_URL).Scan(
 		&profile.UserID,
@@ -1949,6 +1949,158 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 		where id = $1
 	`
 	err = r.db.QueryRow(ctx, q, userID).Scan(&profile.Email, &profile.Phone, &profile.RoleID)
+	if err != nil {
+		return profile, err
+	}
+
+	cars := make([]model.GetMyCarsResponse, 0)
+	q = `
+		with vs as (        
+			select 
+				vs.id,
+				'car' as type,
+				bs.` + nameColumn + ` as brand,
+				ms.` + nameColumn + ` as model,
+				vs.year,
+				vs.price,
+				vs.status,
+				vs.created_at,
+				images.images,
+				vs.view_count,
+				true as my_car,
+				vs.crash,
+				vs.moderation_status
+			from vehicles vs
+			left join brands bs on vs.brand_id = bs.id
+			left join models ms on vs.model_id = ms.id
+			LEFT JOIN LATERAL (
+				SELECT json_agg(img.image) AS images
+				FROM (
+					SELECT $2 || image as image
+					FROM images
+					WHERE vehicle_id = vs.id
+					ORDER BY created_at DESC
+				) img
+			) images ON true
+			where vs.user_id = $1 and status = 3
+			order by vs.id desc
+		),
+		cms as (
+			select
+				cm.id,
+				'comtran' as type,
+				cbs.` + nameColumn + ` as brand,
+				cms.` + nameColumn + ` as model,
+				cm.year,
+				cm.price,
+				cm.status,
+				cm.created_at,
+				images.images,
+				cm.view_count,
+				true as my_car,
+				cm.crash,
+				cm.moderation_status
+			from comtrans cm
+			left join com_brands cbs on cbs.id = cm.comtran_brand_id
+			left join com_models cms on cms.id = cm.comtran_model_id
+			LEFT JOIN LATERAL (
+				SELECT json_agg(img.image) AS images
+				FROM (
+					SELECT $2 || image as image
+					FROM comtran_images
+					WHERE comtran_id = cm.id
+					ORDER BY created_at DESC
+				) img
+			) images ON true
+			where cm.user_id = $1 and status = 3
+		),
+		mts as (
+			select
+				mt.id,
+				'motorcycle' as type,
+				mbs.` + nameColumn + ` as brand,
+				mms.` + nameColumn + ` as model,
+				mt.year,
+				mt.price,
+				mt.status,
+				mt.created_at,
+				mt.view_count,
+				images.images,
+				true as my_car,
+				mt.crash,
+				mt.moderation_status
+			from motorcycles mt
+			left join moto_brands mbs on mbs.id = mt.moto_brand_id
+			left join moto_models mms on mms.id = mt.moto_model_id
+			LEFT JOIN LATERAL (
+				SELECT json_agg(img.image) AS images
+				FROM (
+					SELECT $2 || image as image
+					FROM moto_images
+					WHERE moto_id = mt.id
+					ORDER BY created_at DESC
+				) img
+			) images ON true
+			where mt.user_id = $1 and status = 3
+		)
+		-- Union all three CTEs
+		select 
+			id, type, brand, model, 
+			year, price,
+			status, created_at, 
+			view_count, images, my_car, 
+			crash, moderation_status
+		from vs
+		union all
+		select 
+			id, type, brand, model, 
+			year, price,
+			status, created_at, 
+			view_count, images, my_car, 
+			crash, moderation_status
+		from cms
+		union all
+		select 
+			id, type, brand, model, 
+			year, price,
+			status, created_at, 
+			view_count, images, my_car, 
+			crash, moderation_status
+		from mts
+		order by created_at desc;
+
+	`
+	rows, err := r.db.Query(ctx, q, userID, r.config.IMAGE_BASE_URL)
+
+	if err != nil {
+		return profile, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var car model.GetMyCarsResponse
+		if err := rows.Scan(
+			&car.ID,
+			&car.Type,
+			&car.Brand,
+			&car.Model,
+			&car.Year,
+			&car.Price,
+			&car.Status,
+			&car.CreatedAt,
+			&car.ViewCount,
+			&car.Images,
+			&car.MyCar,
+			&car.Crash,
+			&car.ModerationStatus,
+		); err != nil {
+			return profile, err
+		}
+		cars = append(cars, car)
+	}
+
+	profile.Cars = cars
+
 	return profile, err
 }
 
