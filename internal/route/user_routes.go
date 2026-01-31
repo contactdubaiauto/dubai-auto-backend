@@ -72,8 +72,8 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Put("/cars", auth.TokenGuard, userHandler.UpdateCar)
 		r.Delete("/cars/:id/images", auth.TokenGuard, userHandler.DeleteCarImage)
 		r.Delete("/cars/:id/videos", auth.TokenGuard, userHandler.DeleteCarVideo)
-		r.Get("/cars/:id", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetCarByID)
 		r.Delete("/cars/:id", auth.TokenGuard, userHandler.DeleteCar)
+		r.Get("/cars/:id", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetCarByID)
 
 		// motorcycles
 		r.Get("/motorcycles", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetMotorcycles)
@@ -94,7 +94,7 @@ func SetupUserRoutes(r fiber.Router, config *config.Config, db *pgxpool.Pool, va
 		r.Delete("/motorcycles/:id/images", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycleImage)
 		r.Delete("/motorcycles/:id/videos", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycleVideo)
 		r.Delete("/motorcycles/:id", auth.TokenGuard, auth.LanguageChecker, userHandler.DeleteMotorcycle)
-		r.Get("/motorcycles/:id", auth.TokenGuard, auth.LanguageChecker, motorcycleHandler.GetMotorcycleByID)
+		r.Get("/motorcycles/:id", auth.UserGuardOrDefault, auth.LanguageChecker, motorcycleHandler.GetMotorcycleByID)
 
 		// comtrans
 		r.Get("/comtrans", auth.UserGuardOrDefault, auth.LanguageChecker, userHandler.GetComtrans)

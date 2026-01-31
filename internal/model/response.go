@@ -209,6 +209,7 @@ type GetMyCarsResponse struct {
 	CreatedAt        *time.Time `json:"created_at"`
 	Images           *[]string  `json:"images"`
 	Brand            *string    `json:"brand"`
+	City             *string    `json:"city"`
 	Status           *int       `json:"status"`
 	TradeIn          *int       `json:"trade_in"`
 	Year             *int       `json:"year"`

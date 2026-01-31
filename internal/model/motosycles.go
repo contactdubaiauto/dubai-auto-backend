@@ -167,13 +167,13 @@ type GetEditMotorcycleResponse struct {
 	VinCode        string          `json:"vin_code"`
 	Status         string          `json:"status"`
 	ID             int             `json:"id"`
-	Engine         int             `json:"engine"`
-	Power          int             `json:"power"`
 	Year           int             `json:"year"`
 	Odometer       int             `json:"odometer"`
 	Owners         int             `json:"owners"`
-	Price          int             `json:"price"`
 	TradeIn        int             `json:"trade_in"`
+	Engine         *int            `json:"engine"`
+	Power          *int            `json:"power"`
+	Price          *int            `json:"price"`
 	Description    *string         `json:"description"`
 	MotoCategory   *Model          `json:"moto_category"`
 	MotoBrand      *Model          `json:"moto_brand"`

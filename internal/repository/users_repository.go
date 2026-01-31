@@ -39,6 +39,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 				'car' as type,
 				bs.` + nameColumn + ` as brand,
 				ms.` + nameColumn + ` as model,
+				cs.` + nameColumn + ` as city,
 				vs.year,
 				vs.price,
 				vs.status,
@@ -51,6 +52,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 			from vehicles vs
 			left join brands bs on vs.brand_id = bs.id
 			left join models ms on vs.model_id = ms.id
+			left join cities cs on vs.city_id = cs.id
 			LEFT JOIN LATERAL (
 				SELECT json_agg(img.image) AS images
 				FROM (
@@ -69,6 +71,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 				'comtran' as type,
 				cbs.` + nameColumn + ` as brand,
 				cms.` + nameColumn + ` as model,
+				cs.` + nameColumn + ` as city,
 				cm.year,
 				cm.price,
 				cm.status,
@@ -81,6 +84,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 			from comtrans cm
 			left join com_brands cbs on cbs.id = cm.comtran_brand_id
 			left join com_models cms on cms.id = cm.comtran_model_id
+			left join cities cs on cm.city_id = cs.id
 			LEFT JOIN LATERAL (
 				SELECT json_agg(img.image) AS images
 				FROM (
@@ -98,6 +102,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 				'motorcycle' as type,
 				mbs.` + nameColumn + ` as brand,
 				mms.` + nameColumn + ` as model,
+				cs.` + nameColumn + ` as city,
 				mt.year,
 				mt.price,
 				mt.status,
@@ -110,6 +115,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 			from motorcycles mt
 			left join moto_brands mbs on mbs.id = mt.moto_brand_id
 			left join moto_models mms on mms.id = mt.moto_model_id
+			left join cities cs on mt.city_id = cs.id
 			LEFT JOIN LATERAL (
 				SELECT json_agg(img.image) AS images
 				FROM (
@@ -127,7 +133,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 			year, price,
 			status, created_at, 
 			view_count, images, my_car, 
-			crash, moderation_status
+			crash, moderation_status, city
 		from vs
 		union all
 		select 
@@ -135,7 +141,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 			year, price,
 			status, created_at, 
 			view_count, images, my_car, 
-			crash, moderation_status
+			crash, moderation_status, city
 		from cms
 		union all
 		select 
@@ -143,7 +149,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 			year, price,
 			status, created_at, 
 			view_count, images, my_car, 
-			crash, moderation_status
+			crash, moderation_status, city
 		from mts
 		order by created_at desc;
 
@@ -171,6 +177,7 @@ func (r *UserRepository) GetMyCars(ctx *fasthttp.RequestCtx, userID, limit, last
 			&car.MyCar,
 			&car.Crash,
 			&car.ModerationStatus,
+			&car.City,
 		); err != nil {
 			return cars, err
 		}
@@ -1961,6 +1968,7 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 				'car' as type,
 				bs.` + nameColumn + ` as brand,
 				ms.` + nameColumn + ` as model,
+				cs.` + nameColumn + ` as city,
 				vs.year,
 				vs.price,
 				vs.status,
@@ -1973,6 +1981,7 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 			from vehicles vs
 			left join brands bs on vs.brand_id = bs.id
 			left join models ms on vs.model_id = ms.id
+			left join cities cs on cs.id = vs.city_id
 			LEFT JOIN LATERAL (
 				SELECT json_agg(img.image) AS images
 				FROM (
@@ -1991,6 +2000,7 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 				'comtran' as type,
 				cbs.` + nameColumn + ` as brand,
 				cms.` + nameColumn + ` as model,
+				cs.` + nameColumn + ` as city,
 				cm.year,
 				cm.price,
 				cm.status,
@@ -2003,6 +2013,7 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 			from comtrans cm
 			left join com_brands cbs on cbs.id = cm.comtran_brand_id
 			left join com_models cms on cms.id = cm.comtran_model_id
+			left join cities cs on cs.id = cm.city_id
 			LEFT JOIN LATERAL (
 				SELECT json_agg(img.image) AS images
 				FROM (
@@ -2020,6 +2031,7 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 				'motorcycle' as type,
 				mbs.` + nameColumn + ` as brand,
 				mms.` + nameColumn + ` as model,
+				cs.` + nameColumn + ` as city,
 				mt.year,
 				mt.price,
 				mt.status,
@@ -2032,6 +2044,7 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 			from motorcycles mt
 			left join moto_brands mbs on mbs.id = mt.moto_brand_id
 			left join moto_models mms on mms.id = mt.moto_model_id
+			left join cities cs on cs.id = mt.city_id
 			LEFT JOIN LATERAL (
 				SELECT json_agg(img.image) AS images
 				FROM (
@@ -2049,7 +2062,7 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 			year, price,
 			status, created_at, 
 			view_count, images, my_car, 
-			crash, moderation_status
+			crash, moderation_status, city
 		from vs
 		union all
 		select 
@@ -2057,7 +2070,7 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 			year, price,
 			status, created_at, 
 			view_count, images, my_car, 
-			crash, moderation_status
+			crash, moderation_status, city
 		from cms
 		union all
 		select 
@@ -2065,7 +2078,7 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 			year, price,
 			status, created_at, 
 			view_count, images, my_car, 
-			crash, moderation_status
+			crash, moderation_status, city
 		from mts
 		order by created_at desc;
 
@@ -2093,6 +2106,7 @@ func (r *UserRepository) GetUserByRoleAndID(ctx *fasthttp.RequestCtx, userID int
 			&car.MyCar,
 			&car.Crash,
 			&car.ModerationStatus,
+			&car.City,
 		); err != nil {
 			return profile, err
 		}
