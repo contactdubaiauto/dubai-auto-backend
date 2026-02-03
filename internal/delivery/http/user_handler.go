@@ -1595,6 +1595,7 @@ func (h *UserHandler) CreateMotorcycle(c *fiber.Ctx) error {
 // @Param   colors       	  query   string  false  "Filter by color IDs"
 // @Param   crash       	  query   string  false  "Filter by crash status, true or empty"
 // @Param   transmissions     query   string  false  "Filter by transmission IDs"
+// @Param   categories        query   string  false  "Filter by category IDs"
 // @Param   engines           query   string  false  "Filter by engine IDs"
 // @Param   drivetrains       query   string  false  "Filter by drivetrain IDs"
 // @Param   body_types        query   string  false  "Filter by body type IDs"
