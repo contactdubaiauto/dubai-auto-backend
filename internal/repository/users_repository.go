@@ -973,11 +973,16 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int, nameColum
 				WHEN u.role_id = 2 THEN u.username
 				ELSE NULL
 			END AS owner_name,
-			cs.` + nameColumn + ` as city
+			cs.` + nameColumn + ` as city,
+			CASE 
+				WHEN ul.vehicle_id IS NOT NULL THEN true
+				ELSE false
+			END AS liked
 		from vehicles vs
 		left join brands bs on vs.brand_id = bs.id
 		left join models ms on vs.model_id = ms.id
 		left join generation_modifications gms on gms.id = vs.modification_id
+		left join user_likes ul on ul.vehicle_id = vs.id AND ul.user_id = $1
 		left join fuel_types fts on gms.fuel_type_id = fts.id
 		left join users u on u.id = vs.user_id
 		left join cities cs on cs.id = vs.city_id
@@ -1008,7 +1013,7 @@ func (r *UserRepository) GetHome(ctx *fasthttp.RequestCtx, userID int, nameColum
 		if err := rows.Scan(
 			&car.ID, &car.Type, &car.Brand, &car.Model, &car.Year, &car.Price,
 			&car.CreatedAt, &car.Images, &car.New, &car.Status, &car.TradeIn, &car.Crash,
-			&car.ViewCount, &car.MyCar, &car.OwnerName, &car.City,
+			&car.ViewCount, &car.MyCar, &car.OwnerName, &car.City, &car.Liked,
 		); err != nil {
 			return home, err
 		}

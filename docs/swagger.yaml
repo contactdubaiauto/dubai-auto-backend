@@ -1263,6 +1263,8 @@ definitions:
         items:
           type: string
         type: array
+      liked:
+        type: boolean
       model:
         type: string
       my_car:
@@ -1710,6 +1712,8 @@ definitions:
         items:
           type: string
         type: array
+      liked:
+        type: boolean
       model:
         type: string
       my_moto:
@@ -13243,6 +13247,10 @@ paths:
       - description: Filter by transmission IDs
         in: query
         name: transmissions
+        type: string
+      - description: Filter by category IDs
+        in: query
+        name: categories
         type: string
       - description: Filter by engine IDs
         in: query

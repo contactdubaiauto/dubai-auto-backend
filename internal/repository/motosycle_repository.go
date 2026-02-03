@@ -323,9 +323,14 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, userID i
 				WHEN u.role_id = 2 THEN u.username
 				ELSE NULL
 			END AS owner_name,
-			cs.` + nameColumn + ` as city
+			cs.` + nameColumn + ` as city,
+			CASE 
+				WHEN ul.moto_id IS NOT NULL THEN true
+				ELSE false
+			END AS liked
 		FROM motorcycles mcs
 		LEFT JOIN moto_brands mbs ON mbs.id = mcs.moto_brand_id
+		left join user_moto_likes ul on ul.moto_id = vs.id AND ul.user_id = $2
 		LEFT JOIN moto_models mms ON mms.id = mcs.moto_model_id
 		LEFT JOIN users u ON u.id = mcs.user_id
 		LEFT JOIN cities cs on cs.id = mcs.city_id
@@ -356,8 +361,10 @@ func (r *MotorcycleRepository) GetMotorcycles(ctx *fasthttp.RequestCtx, userID i
 		err = rows.Scan(
 			&motorcycle.ID, &motorcycle.Type, &motorcycle.Brand, &motorcycle.Model, &motorcycle.Year, &motorcycle.Price,
 			&motorcycle.CreatedAt, &motorcycle.Images,
-			&motorcycle.New, &motorcycle.Status, &motorcycle.TradeIn, &motorcycle.Crash, &motorcycle.Odometer,
-			&motorcycle.ViewCount, &motorcycle.MyMoto, &motorcycle.OwnerName, &motorcycle.City)
+			&motorcycle.New, &motorcycle.Status, &motorcycle.TradeIn,
+			&motorcycle.Crash, &motorcycle.Odometer,
+			&motorcycle.ViewCount, &motorcycle.MyMoto,
+			&motorcycle.OwnerName, &motorcycle.City, &motorcycle.Liked)
 
 		if err != nil {
 			return nil, err

@@ -164,6 +164,7 @@ type GetCarsResponse struct {
 	OwnerName *string    `json:"owner_name"`
 	City      *string    `json:"city"`
 	Odometer  *int       `json:"odometer"`
+	Liked     *bool      `json:"liked"`
 	ID        int        `json:"id"`
 }
 

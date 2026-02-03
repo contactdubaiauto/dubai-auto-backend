@@ -16308,6 +16308,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Filter by category IDs",
+                        "name": "categories",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "Filter by engine IDs",
                         "name": "engines",
                         "in": "query"
@@ -20605,6 +20611,9 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "liked": {
+                    "type": "boolean"
+                },
                 "model": {
                     "type": "string"
                 },
@@ -21282,6 +21291,9 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "liked": {
+                    "type": "boolean"
                 },
                 "model": {
                     "type": "string"

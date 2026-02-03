@@ -150,6 +150,7 @@ type GetMotorcyclesResponse struct {
 	ViewCount *int       `json:"view_count"`
 	New       *bool      `json:"new"`
 	Crash     *bool      `json:"crash"`
+	Liked     *bool      `json:"liked"`
 	MyMoto    *bool      `json:"my_moto"`
 	Odometer  *int       `json:"odometer"`
 	OwnerName *string    `json:"owner_name"`

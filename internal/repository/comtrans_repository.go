@@ -291,10 +291,15 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, t
 				WHEN usr.role_id = 2 THEN usr.username
 				ELSE NULL
 			END AS owner_name,
-			cs.` + nameColumn + ` as city
+			cs.` + nameColumn + ` as city,
+			CASE 
+				WHEN ul.comtran_id IS NOT NULL THEN true
+				ELSE false
+			END AS liked
 		FROM comtrans cts
 		LEFT JOIN com_brands cbs ON cbs.id = cts.comtran_brand_id
 		LEFT JOIN com_models cms ON cms.id = cts.comtran_model_id
+		left join user_comtran_likes ul on ul.comtran_id = cts.id AND ul.user_id = $2
 		left join cities cs on cs.id = cts.city_id
 		LEFT JOIN users usr ON usr.id = cts.user_id
 		LEFT JOIN LATERAL (
@@ -325,7 +330,8 @@ func (r *ComtransRepository) GetComtrans(ctx *fasthttp.RequestCtx, userID int, t
 			&com.ID, &com.Type, &com.Brand, &com.Model, &com.Year, &com.Price,
 			&com.CreatedAt, &com.Images,
 			&com.New, &com.Status, &com.TradeIn, &com.Crash,
-			&com.ViewCount, &com.MyComtran, &com.Odometer, &com.OwnerName, &com.City)
+			&com.ViewCount, &com.MyComtran, &com.Odometer,
+			&com.OwnerName, &com.City, &com.Liked)
 
 		if err != nil {
 			return data, err

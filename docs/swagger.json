@@ -16302,6 +16302,12 @@
                     },
                     {
                         "type": "string",
+                        "description": "Filter by category IDs",
+                        "name": "categories",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "Filter by engine IDs",
                         "name": "engines",
                         "in": "query"
@@ -20599,6 +20605,9 @@
                         "type": "string"
                     }
                 },
+                "liked": {
+                    "type": "boolean"
+                },
                 "model": {
                     "type": "string"
                 },
@@ -21276,6 +21285,9 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "liked": {
+                    "type": "boolean"
                 },
                 "model": {
                     "type": "string"

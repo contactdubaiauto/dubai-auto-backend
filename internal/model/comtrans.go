@@ -75,6 +75,8 @@ type ComtransOwner struct {
 
 type GetComtransResponse struct {
 	Type      string     `json:"type"`
+	Odometer  int        `json:"odometer"`
+	ID        int        `json:"id"`
 	CreatedAt *time.Time `json:"created_at"`
 	Images    *[]string  `json:"images"`
 	Model     *string    `json:"model"`
@@ -86,11 +88,10 @@ type GetComtransResponse struct {
 	ViewCount *int       `json:"view_count"`
 	New       *bool      `json:"new"`
 	Crash     *bool      `json:"crash"`
+	Liked     *bool      `json:"liked"`
 	MyComtran *bool      `json:"my_comtran"`
-	Odometer  int        `json:"odometer"`
 	OwnerName *string    `json:"owner_name"`
 	City      *string    `json:"city"`
-	ID        int        `json:"id"`
 }
 
 type GetComtranResponse struct {
