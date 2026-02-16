@@ -362,7 +362,7 @@ func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, pro
 	setClause = append(setClause, "last_active_date = NOW()")
 
 	// Prepend userID to args
-	args = append([]interface{}{userID}, args...)
+	args = append([]any{userID}, args...)
 
 	q = fmt.Sprintf(`
 		INSERT INTO profiles (user_id, %s)
@@ -376,12 +376,25 @@ func (r *UserRepository) UpdateProfile(ctx *fasthttp.RequestCtx, userID int, pro
 }
 
 func (r *UserRepository) SetProfileAvatar(ctx *fasthttp.RequestCtx, userID int, path string) error {
+	var username *string
 	q := `
-		INSERT INTO profiles (user_id, avatar)
-		VALUES ($2, $1)
-		ON CONFLICT (user_id) DO UPDATE SET avatar = EXCLUDED.avatar
+		select
+			username
+		from users
+		where id = $1
 	`
-	_, err := r.db.Exec(ctx, q, path, userID)
+	r.db.QueryRow(ctx, q, userID).Scan(&username)
+
+	if username == nil {
+		*username = " "
+	}
+
+	q = `
+		INSERT INTO profiles (user_id, avatar, registered_by, username)
+		VALUES ($2, $1, '', $3)
+		ON CONFLICT (user_id) DO UPDATE SET avatar = EXCLUDED.avatar, username = EXCLUDED.username
+	`
+	_, err := r.db.Exec(ctx, q, path, userID, username)
 	return err
 }
 
