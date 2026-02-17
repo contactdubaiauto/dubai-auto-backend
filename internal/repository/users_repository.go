@@ -2207,6 +2207,30 @@ func (r *UserRepository) CreateReport(ctx *fasthttp.RequestCtx, report *model.Cr
 		RETURNING id
 	`
 	err := r.db.QueryRow(ctx, q, report.ReportedUserID, userID, report.ReportType, report.ReportDescription).Scan(&id)
+	if err != nil {
+		return id, err
+	}
+
+	q = `
+		update vehicles set moderation_status = 3 where user_id = $1;
+	`
+	_, err = r.db.Exec(ctx, q, report.ReportedUserID)
+	if err != nil {
+		return id, err
+	}
+
+	q = `
+		update motorcycles set moderation_status = 3 where user_id = $1;
+	`
+	_, err = r.db.Exec(ctx, q, report.ReportedUserID)
+	if err != nil {
+		return id, err
+	}
+
+	q = `
+		update comtrans set moderation_status = 3 where user_id = $1;
+	`
+	_, err = r.db.Exec(ctx, q, report.ReportedUserID)
 	return id, err
 }
 
@@ -2233,7 +2257,7 @@ func (r *UserRepository) CreateItemReport(ctx *fasthttp.RequestCtx, report *mode
 		itemTable = "comtrans"
 	}
 	q = `
-		update ` + itemTable + ` set moderation_status = 1, status = 2 where id = $1;
+		update ` + itemTable + ` set moderation_status = 3 where id = $1;
 	`
 	_, err = r.db.Exec(ctx, q, report.ItemID)
 	return id, err
