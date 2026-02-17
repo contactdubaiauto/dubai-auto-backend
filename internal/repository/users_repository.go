@@ -2218,6 +2218,24 @@ func (r *UserRepository) CreateItemReport(ctx *fasthttp.RequestCtx, report *mode
 		RETURNING id
 	`
 	err := r.db.QueryRow(ctx, q, report.ReportedUserID, userID, report.ReportType, report.ReportDescription, report.ItemType, report.ItemID).Scan(&id)
+
+	if err != nil {
+		return id, err
+	}
+
+	var itemTable string
+	switch report.ItemType {
+	case "car":
+		itemTable = "vehicles"
+	case "moto":
+		itemTable = "motorcycles"
+	case "comtran":
+		itemTable = "comtrans"
+	}
+	q = `
+		update ` + itemTable + ` set moderation_status = 1, status = 2 where id = $1;
+	`
+	_, err = r.db.Exec(ctx, q, report.ItemID)
 	return id, err
 }
 
