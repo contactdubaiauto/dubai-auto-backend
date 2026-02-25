@@ -710,3 +710,47 @@ order by vs.id desc
 limit 50;
 
 
+
+
+with gms as (
+    select 
+        json_agg(
+            json_build_object(
+                'id', gms.id,
+                'engine', es.name, 
+                'fuel_type', fts.name, 
+                'drivetrain', ds.name, 
+                'transmission', ts.name
+            )
+        ) as modifications,
+        gms.generation_id
+    from generation_modifications gms
+    left join engines es on es.id = gms.engine_id
+    left join fuel_types fts on fts.id = gms.fuel_type_id
+    left join drivetrains ds on ds.id = gms.drivetrain_id
+    left join transmissions ts on ts.id = gms.transmission_id
+    where gms.generation_id = any (
+        select 
+            id 
+        from generations 
+        where 
+            model_id = 1772 and start_year <= 2026 and end_year >= 2000
+            and wheel = true
+    )
+    group by gms.generation_id 
+)
+select
+    gs.id,
+    gs.name as name,
+    gs.image,
+    gs.start_year,
+    gs.end_year,
+    gms.modifications
+from gms
+left join generations gs on gs.id = gms.generation_id;
+
+
+
+142
+
+/api/v1/users/brands/1283/models/14664/generations

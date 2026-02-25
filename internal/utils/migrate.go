@@ -304,7 +304,7 @@ func getGenerationID(name_ru, name, name_ae, from, to, wheelStr string, modelID 
 		select id from generations where name_ru = $1 and model_id = $2
 	`
 	var id int
-	err := db.QueryRow(context.Background(), q, name, modelID).Scan(&id)
+	err := db.QueryRow(context.Background(), q, name_ru, modelID).Scan(&id)
 
 	if err == pgx.ErrNoRows {
 		q = `
