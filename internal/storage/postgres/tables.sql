@@ -375,6 +375,7 @@ create table regions (
 
 create table generations (
     "id" serial primary key,
+    "document_id" int not null,
     "name" varchar(255) not null,
     "name_ru" varchar(255) default 'name_ru',
     "name_ae" varchar(255) default 'name_ae',

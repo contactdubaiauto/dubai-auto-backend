@@ -58,17 +58,12 @@ func MigrateV2(filePath string, db *pgxpool.Pool) error {
 			return err
 		}
 
+		generationDocumentID := rows[i][15]
 		generationNameRu := rows[i][16]
 		generationName := rows[i][17]
 		generationNameAe := rows[i][18]
 
-		if generationNameRu == "" {
-			generationNameRu = rows[i][27]
-			generationName = rows[i][28]
-			generationNameAe = rows[i][29]
-		}
-
-		generationID, exists, err := getGenerationID(generationNameRu, generationName, generationNameAe, rows[i][19], rows[i][20], rows[i][36], modelID, db)
+		generationID, exists, err := getGenerationID(generationDocumentID, generationNameRu, generationName, generationNameAe, rows[i][19], rows[i][20], rows[i][36], modelID, db)
 
 		if err != nil {
 			fmt.Println("Error getting generation ID:", err)
@@ -297,25 +292,25 @@ func getFuelTypeID(name_ru, name, name_ae string, db *pgxpool.Pool) (int, error)
 	return id, err
 }
 
-func getGenerationID(name_ru, name, name_ae, from, to, wheelStr string, modelID int, db *pgxpool.Pool) (int, bool, error) {
+func getGenerationID(documentID, name_ru, name, name_ae, from, to, wheelStr string, modelID int, db *pgxpool.Pool) (int, bool, error) {
 	wheel := wheelStr == "Левый"
 
 	q := `
-		select id from generations where name_ru = $1 and model_id = $2
+		select id from generations where document_id = $1 and model_id = $2
 	`
 	var id int
-	err := db.QueryRow(context.Background(), q, name_ru, modelID).Scan(&id)
+	err := db.QueryRow(context.Background(), q, documentID, modelID).Scan(&id)
 
 	if err == pgx.ErrNoRows {
 		q = `
 			insert into generations (
-				name, name_ru, name_ae, 
+				document_id, name, name_ru, name_ae, 
 				model_id, start_year, end_year, 
 				wheel, image
 			) 
-			values ($1, $2, $3, $4, $5, $6, $7, '') returning id
+			values ($1, $2, $3, $4, $5, $6, $7, $8, '') returning id
 		`
-		err = db.QueryRow(context.Background(), q, name, name_ru, name_ae, modelID, from, to, wheel).Scan(&id)
+		err = db.QueryRow(context.Background(), q, documentID, name, name_ru, name_ae, modelID, from, to, wheel).Scan(&id)
 		return id, false, err
 	}
 
